@@ -613,8 +613,8 @@ html.dark-mode {
 
         .fc-bg td,
         .fc-day {
-            border-right-color: @mp-cal-dark-grid-color-subtle;
-            border-left-color: @mp-cal-dark-grid-color-subtle;
+            border-right-color: transparent;
+            border-left-color: transparent;
         }
 
         .fc-time-grid .fc-slats td {
@@ -624,11 +624,11 @@ html.dark-mode {
         }
 
         .fc-time-grid .fc-slats .fc-minor td {
-            border-top-color: @mp-cal-dark-grid-color-subtle;
+            border-top: none;
         }
 
         .fc-time-grid > .fc-bg td {
-            border-right-color: @mp-cal-dark-grid-color-subtle;
+            border-right-color: transparent;
             border-left-color: transparent;
         }
 
@@ -711,8 +711,12 @@ html.dark-mode {
             background: @color-dark-main;
         }
 
+        .fc-event {
+            box-shadow: @mp-cal-dark-event-shadow;  // floating in dark mode too
+        }
+
         .fc-event:hover {
-            box-shadow: @mp-shadow-dark-sm;
+            box-shadow: @mp-cal-dark-event-shadow-hover;
         }
     }
 

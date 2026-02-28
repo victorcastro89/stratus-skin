@@ -21,6 +21,13 @@
 @mp-cal-dark-header-bg:          @color-dark-surface;
 @mp-cal-dark-today-bg:           fadeout(@color-dark-main, 88%);
 
+// Event card elevation — floating, airy look
+@mp-cal-event-shadow:            0 2px 8px rgba(26, 31, 54, 0.12);
+@mp-cal-event-shadow-hover:      0 4px 16px rgba(26, 31, 54, 0.20);
+@mp-cal-event-padding:           3px 6px;
+@mp-cal-dark-event-shadow:       0 2px 10px rgba(0, 0, 0, 0.36);
+@mp-cal-dark-event-shadow-hover: 0 4px 18px rgba(0, 0, 0, 0.52);
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // GHOST GRID — remove vertical separators, soften horizontals
@@ -35,11 +42,12 @@
     }
 
     // ── Remove vertical lines between day columns ────────────────────────────
-    // Month view, week view, day view — the vertical cell borders
+    // Month/week/day — fully transparent vertical borders; today-bg wash and
+    // weekend tint provide enough column differentiation without visual noise.
     .fc-bg td,
     .fc-day {
-        border-right-color: @mp-cal-grid-color-subtle;
-        border-left-color: @mp-cal-grid-color-subtle;
+        border-right-color: transparent;
+        border-left-color: transparent;
     }
 
     // Time grid (week/day view) — vertical borders between columns
@@ -48,9 +56,9 @@
         border-right-color: transparent;
     }
 
-    // Background columns in time grid
+    // Background columns in time grid — no vertical borders; zero visual noise
     .fc-time-grid > .fc-bg td {
-        border-right-color: @mp-cal-grid-color-subtle;
+        border-right-color: transparent;
         border-left-color: transparent;
     }
 
@@ -65,10 +73,9 @@
         border-top-color: @mp-cal-grid-color;
     }
 
-    // Minor time slats (half-hour) — even more subtle
+    // Minor time slats (half-hour) — removed entirely; only full-hour lines remain
     .fc-time-grid .fc-slats .fc-minor td {
-        border-top-color: @mp-cal-grid-color-subtle;
-        border-top-style: dashed;
+        border-top: none;
     }
 
     // ── Unthemed (default FullCalendar) border override ──────────────────────
@@ -195,12 +202,13 @@
         border-radius: @mp-cal-event-radius;
         border-width: 0;
         border-left: 3px solid;
-        padding: 1px @mp-space-xs;
-        transition: box-shadow @mp-transition-fast,
-                    transform @mp-transition-fast;
+        padding: @mp-cal-event-padding;          // 3px 6px — breathing room
+        box-shadow: @mp-cal-event-shadow;        // floating card — always elevated
+        transition: box-shadow @mp-transition-base,
+                    transform @mp-transition-base;
 
         &:hover {
-            box-shadow: @mp-shadow-sm;
+            box-shadow: @mp-cal-event-shadow-hover;
             transform: translateY(-1px);
         }
 
