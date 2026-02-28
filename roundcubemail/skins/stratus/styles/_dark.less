@@ -40,9 +40,11 @@ html.dark-mode {
             color: @color-dark-font;
 
             select {
-                background-color: @color-dark-surface;
+                @color-arrow: escape(~"@{color-dark-input}");
+                background: @color-dark-surface url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
                 color: @color-dark-font;
                 border-color: @color-dark-input-border;
+                transition: none; // prevent white→dark flash when dark-mode class is applied
             }
         }
 
@@ -52,6 +54,7 @@ html.dark-mode {
             background: transparent;
             border-color: transparent;
             color: @color-dark-font;
+            transition: none; // prevent 150ms background-color transition flash on re-render
 
             &:hover {
                 background: fadeout(@color-dark-main, 85%);
@@ -345,9 +348,8 @@ html.dark-mode {
     // ═══════════════════════════════════════════════════════════════════════════
     // FORMS
     // ═══════════════════════════════════════════════════════════════════════════
-    .form-control,
-    .custom-select {
-        background: @color-dark-input-background;
+    .form-control {
+
         border-color: @color-dark-input-border;
         color: @color-dark-input;
 
@@ -355,6 +357,39 @@ html.dark-mode {
             border-color: @color-dark-main;
             box-shadow: 0 0 0 3px fadeout(@color-dark-main, 82%);
             background: @color-dark-input-background-focus;
+        }
+    }
+
+    // Use background-color (not background shorthand) so we don't overwrite
+    // the SVG dropdown-arrow image that elastic's dark.less injects via
+    // `background: url(svg) no-repeat …`. The image layer survives; we only
+    // change the fill color beneath it.
+    .custom-select {
+        background-color: @color-dark-input-background;
+        border-color: @color-dark-input-border;
+        color: @color-dark-input;
+
+        &:focus {
+            border-color: @color-dark-main;
+            box-shadow: 0 0 0 3px fadeout(@color-dark-main, 82%);
+            background-color: @color-dark-input-background-focus;
+        }
+    }
+
+    // Datepicker month/year selects live inside the header — give them the
+    // header surface colour so they blend in instead of looking like a field.
+    .ui-datepicker .ui-datepicker-title {
+        select.ui-datepicker-month,
+        select.ui-datepicker-year {
+            @color-arrow: escape(~"@{color-dark-input}");
+            background: @color-dark-surface-raised url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+            border-color: @color-dark-border;
+            color: @color-dark-font;
+            &:focus {
+                background: @color-dark-surface-raised url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+                border-color: @color-dark-main;
+                box-shadow: 0 0 0 2px fadeout(@color-dark-main, 82%);
+            }
         }
     }
 

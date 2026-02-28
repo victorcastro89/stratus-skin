@@ -271,6 +271,9 @@ html:not(.touch) {
 .custom-select {
     border-radius: @mp-radius-md;
     border: 1px solid @color-input-border;
+    // Bootstrap sets height:calc(1.5em + .75rem + 2px) ~38px; our 0.55rem padding
+    // needs ~44px — reset to auto so the taller padding isn't clipped.
+    height: auto;
     padding: 0.55rem 0.75rem;
     font-size: @mp-font-size-base;
     transition: border-color @mp-transition-base, box-shadow @mp-transition-smooth,
@@ -285,6 +288,29 @@ html:not(.touch) {
 
 textarea.form-control {
     border-radius: @mp-radius-lg;
+}
+
+// Datepicker header selects — pre-styled to prevent FOUC
+// The calendar plugin adds .form-control/.custom-select via setTimeout(25ms),
+// causing the native OS select (gray/white chrome) to flash before JS runs.
+// Pre-applying appearance:none + background here kills that 25ms flash entirely.
+.ui-datepicker .ui-datepicker-header {
+    select {
+        // Anti-FOUC: match the final computed styles that will apply once JS
+        // adds .form-control/.custom-select 25 ms later.  Every property that
+        // changes on class-addition must be pre-set here so nothing shifts.
+        height: auto;
+        padding: 0.25rem 1.75rem 0.25rem 0.75rem; // top right bottom left — matches final
+        font-size: @mp-font-size-base;
+        line-height: 1.5;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: @color-layout-list-background url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+        border: 1px solid @color-input-border;
+        border-radius: @mp-radius-md;
+        color: @color-font;
+    }
 }
 
 // Input groups — clean rounded ends
@@ -356,7 +382,7 @@ textarea.form-control {
         padding: @mp-space-xs @mp-space-sm;
     }
 }
-
+ 
 // Attachment chips
 .message-part,
 #attachment-list li {

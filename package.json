@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "less:build": "lessc --clean-css=\"--s1 --advanced\" roundcubemail/skins/stratus/styles/styles.less roundcubemail/skins/stratus/styles/styles.min.css",
-    "less:watch": "chokidar \"roundcubemail/skins/stratus/styles/**/*.less\" -c \"npm run less:build\""
+    "less:watch": "chokidar \"roundcubemail/skins/stratus/styles/**/*.less\" -c \"npm run less:build\"",
+    "thumbnail": "node scripts/generate-thumbnail.js"
   },
   "keywords": [],
   "author": "",

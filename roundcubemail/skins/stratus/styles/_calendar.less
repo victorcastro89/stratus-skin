@@ -284,6 +284,32 @@
 // CALENDAR SIDEBAR — datepicker refinements
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// DATEPICKER ARROWS — light mode fix
+// jQuery UI theme CSS applies .ui-widget-header .ui-state-default {
+//   background: #f6f6f6; border: 1px solid #c5c5c5 } to the prev/next arrows.
+// Elastic's jqueryui.less only overrides color, never background/border, so
+// the grey box flashes during FullCalendar view transitions. Strip it here.
+// ═══════════════════════════════════════════════════════════════════════════════
+.ui-datepicker {
+    .ui-datepicker-prev,
+    .ui-datepicker-next {
+        background: transparent;
+        border-color: transparent;
+        // IMPORTANT: _animations.less applies `transition: background-color 150ms`
+        // to all <a> elements. The datepicker arrows are <a> elements. When the
+        // datepicker re-renders on calendar view change, jQuery UI momentarily
+        // applies background:#f6f6f6 before our transparent override takes effect —
+        // the 150ms transition makes that flash visible. Kill it with transition:none.
+        transition: none;
+
+        &:hover {
+            background: fadeout(@color-main, 92%);
+            border-color: transparent;
+        }
+    }
+}
+
 body.task-calendar {
     .calendar-datepicker .ui-datepicker {
         border-radius: @mp-radius-md;
@@ -330,3 +356,4 @@ body.task-calendar {
     border-bottom: 1px solid @mp-cal-grid-color;
     border-radius: @mp-radius-md @mp-radius-md 0 0;
 }
+ 
