@@ -1,0 +1,50 @@
+
+select {
+    background: transparent !important;
+}
+
+#settings-right .uibox.listbox {
+    background: #fff;
+}
+
+.footerleft, .footerright {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.footerleft input.button {
+    width: 100%;
+}
+
+.formbuttons input.button {
+    margin-bottom: 10px !important;
+}
+
+.mh_preferences input.button {
+    width: auto;
+}
+
+#taskbar > a,
+#taskbar > span {
+    display: inline-block;
+    position: relative;
+    text-transform: uppercase;
+    overflow: hidden;
+}
+
+#main-menu a.active {
+    color: #333;
+}
+
+.popup-box h5, .popup-box h2.boxtitle {
+    top: 17px;
+    font-weight: normal;
+}
+
+.new-calendar {
+    padding: 10px 10px 0 10px !important;
+}
+
+#xes-countdown-box button {
+    color: #fff;
+}

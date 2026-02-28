@@ -1,0 +1,131 @@
+<div id='event-search-controller' ng-controller="EventSearchController" ng-init="initialize()"
+     xmlns:roundcube="http://www.w3.org/1999/xhtml">
+    <div id='event-search' class='editor uibox' ng-class="{ loading: loading }" ng-show="editing" ng-cloak>
+
+        <h2 class='<roundcube:if condition="env:xelastic" />editor-title<roundcube:else />boxtitle<roundcube:endif />'>
+            <span><roundcube:label name="search" /></span>
+        </h2>
+
+        <div class='content-box' ng-show='!loading'>
+            <form id="search-input" ng-submit="search()">
+                <input type="text" id="xcalendar-search-input" class="form-control" ng-model="searchText" />
+                <button type="submit" class="button mainaction" ng-disabled="!searchText || searching || !hasEnabledCalendars()">
+                    <roundcube:label name="search" /></button>
+
+                <roundcube:if condition="env:xelastic">
+                    <button type="button" class="search-options button" data-popup="search-options-popup" ng-disabled="searching"
+                            ng-class="{modified: hasModifiedOptions()}"
+                            ng-click="rangeShortcutsVisible = false">
+                    </button>
+                <roundcube:else />
+                    <button type="button" class="search-options button" data-popup="search-options-popup" ng-disabled="searching"
+                            ng-class="{modified: hasModifiedOptions()}"
+                            onclick='UI.toggle_popup("search-options-popup", event);return false;'
+                            ng-click="rangeShortcutsVisible = false">
+                    </button>
+                <roundcube:endif />
+
+                <button type="button" class="clear-results button btn-danger" ng-click="clear()"
+                        title="<roundcube:label name='xcalendar.clear_search_results' />"
+                        ng-disabled="!hasResults() || searching"></button>
+            </form>
+
+            <div class="editor-loader" ng-show="searching">
+                <span class='xspinner'></span>
+            </div>
+
+            <div id="outdated" ng-show="!searching && searchComplete && hasResults() && outdated">
+                <div class="icon xi-information"></div>
+                <div class="text"><roundcube:label name="xcalendar.search_outdated_message" /></div>
+            </div>
+
+            <div id="no-results" ng-show="!searching && searchComplete && !hasResults()">
+                <h4><roundcube:label name="searchnomatch" /></h4>
+                <p class="result-info"><roundcube:label name="xcalendar.modify_search_options" /></p>
+            </div>
+
+            <div id="search-results" ng-show="!searching && searchComplete && hasResults()">
+                <h4>{{searchTitle}}</h4>
+                <p class="result-info"><roundcube:label name="xcalendar.date_range_subtitle" /> {{searchStartDate}} - {{searchEndDate}}</p>
+
+                <table class='propform auto-width'>
+                    <thead>
+                        <tr>
+                            <th class="title"><roundcube:label name="xcalendar.title" /></th>
+                            <th><roundcube:label name="xcalendar.start" /></th>
+                            <th><roundcube:label name="xcalendar.end" /></th>
+                            <th><roundcube:label name="xcalendar.calendar" /></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in searchResults" ng-hide="item.removed" ng-click="preview($event, item.id)">
+                            <td class='title'>{{ item.title }}</td>
+                            <td class='start'>{{ item.start }}</td>
+                            <td class='end'>{{ item.end }}</td>
+                            <td class='calendar'>{{ item.calendar_name }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pager" ng-if="totalPages > 1">
+                    <button class="button btn btn-secondary" ng-click="search(page - 1)" ng-disabled="page === 1">
+                        <roundcube:label name="previous" /></button>
+                    <button class="button btn btn-secondary" ng-repeat="pageNum in getPagesRange(page)"
+                            ng-click="search(pageNum)" ng-disabled="page === pageNum">{{ pageNum }}</button>
+                    <button class="button btn btn-secondary" ng-click="search(page + 1)" ng-disabled="page === totalPages">
+                        <roundcube:label name="next" />
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class='formbuttons editor-button-bar'>
+            <div>
+                <button class="button mainaction" ng-click="cancel()" ng-disabled="searching">
+                    <roundcube:label name="close" />
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="search-options-popup" class="popupmenu" >
+        <h5><roundcube:label name="xcalendar.date_range" /></h5>
+        <div class="range-inputs">
+            <label for="search-start-date"><roundcube:label name="xcalendar.start" /></label>
+            <input type="text" id="search-start-date" class="form-control" readonly="readonly" ng-model="startDate" />
+
+            <label for="search-end-date"><roundcube:label name="xcalendar.end" /></label>
+            <input type="text" id="search-end-date" class="form-control" readonly="readonly" ng-model="endDate" />
+        </div>
+
+        <div class="range-shortcut-links" ng-class="{'shortcuts-visible': rangeShortcutsVisible}">
+            <button type="button" class="xanchor" ng-click="rangeShortcutsVisible = true">
+                <roundcube:label name="xcalendar.show_shortcuts" /> <span></span></button>
+            <button type="button" class="xanchor" ng-click="rangeShortcutsVisible = false">
+                <roundcube:label name="xcalendar.hide_shortcuts" /> <span></span></button>
+        </div>
+        <div class="range-shortcuts" ng-show="rangeShortcutsVisible">
+            <ul>
+                <li><button type="button" class="xanchor" ng-click="setRange('this_month')"><roundcube:label name="xcalendar.this_month" /></button></li>
+                <li><button type="button" class="xanchor" ng-click="setRange('this_year')"><roundcube:label name="xcalendar.this_year" /></button></li>
+                <li><button type="button" class="xanchor" ng-click="setRange('past_30_days')"><roundcube:label name="xcalendar.past_30_days" /></button></li>
+                <li><button type="button" class="xanchor" ng-click="setRange('next_30_days')"><roundcube:label name="xcalendar.next_30_days" /></button></li>
+                <li><button type="button" class="xanchor" ng-click="setRange('past_6_months')"><roundcube:label name="xcalendar.past_6_months" /></button></li>
+                <li><button type="button" class="xanchor" ng-click="setRange('next_6_months')"><roundcube:label name="xcalendar.next_6_months" /></button></li>
+            </ul>
+
+        </div>
+        <div ng-hide="calendars.length < 2">
+            <h5><roundcube:label name="xcalendar.calendars" /></h5>
+            <div class="search-calendars">
+                <div class="search-calendar-item" ng-repeat="calendar in calendars">
+                    <input type="checkbox" class="" ng-model="calendar.checked" id="search-calendar-checkbox-{{calendar.id}}" />
+                    <label for="search-calendar-checkbox-{{calendar.id}}">{{calendar.name}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

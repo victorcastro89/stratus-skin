@@ -1,0 +1,71 @@
+
+a.button,
+input[type='button'],
+input[type='submit'],
+.uibox .boxfooter .listbutton,
+#contactsectioncontact .contactfieldcontent .contactfieldbutton,
+#uploadformlink {
+    border-radius: 5px !important;
+}
+
+#main-menu,
+.popup-box .popup-close,
+#quicksearchbar .popup-close {
+    height: 45px;
+    overflow: hidden;
+}
+
+#main-menu {
+    border-bottom: 5px solid #ddd;
+}
+
+.popup-box h5,
+#quicksearchbar h5{
+    top: 17px;
+    left: 60px !important;
+}
+
+#main-menu a,
+.popup-box .popup-close a,
+#quicksearchbar .popup-close a {
+    margin-left: 6px;
+    margin-top: 6px;
+    margin-bottom: 0;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    width: 28px;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 5px !important;
+}
+
+.popup-box .popup-close a,
+#quicksearchbar .popup-close a {
+    width: auto !important;
+    float: left;
+}
+
+#main-menu a.active {
+    color: #fff;
+}
+
+#current-folder,
+.contentbox .boxtitle,
+body.iframe .boxtitle,
+.contactfieldgroup legend {
+    color: #fff;
+    background-color: #bababa;
+}
+
+#current-folder span {
+    padding-top: 0;
+}
+
+#compose-attachments a.button,
+.contactfieldcontent a.contactfieldbutton {
+    color: #fff;
+}
+
+#xes-countdown-box button {
+    border: none;
+    color: #fff;
+}

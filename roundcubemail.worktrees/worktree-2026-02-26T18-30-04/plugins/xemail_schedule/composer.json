@@ -1,0 +1,16 @@
+{
+    "name": "roundcubeplus/xemail_schedule",
+    "type": "roundcube-plugin",
+    "description": "Allows users to schedule the delivery of their emails.",
+    "license": "Commercial",
+    "version": "1.2.7",
+    "homepage": "https://roundcubeplus.com",
+    "authors": [
+        {
+            "name": "Roundcube Plus",
+            "email": "contact@roundcubeplus.com"
+        }
+    ],
+    "repositories": [],
+    "require": {}
+}

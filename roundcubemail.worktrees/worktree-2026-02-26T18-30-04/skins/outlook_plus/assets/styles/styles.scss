@@ -1,0 +1,84 @@
+@use "colors" as skin_colors;
+@use "../../../../plugins/xframework/assets/styles/colors";
+@use "../../../../plugins/xskin/assets/styles/elastic_skins_commons";
+
+@include elastic_skins_commons.basic-styles;
+@include elastic_skins_commons.secondary-button-styles;
+
+body.xelastic.task-login {
+    background: #0075c8;
+
+    &.login-page #login-footer {
+        background: rgba(0, 0, 0, 0.4);
+        color: #fff;
+    }
+}
+
+#xsidebar-inner {
+    border-left: 1px solid;
+    @include colors.border-color;
+}
+
+.toolbarmenu.listing li:hover a.active {
+    color: #2c363a; // using light bg color on hover, prevent changing text color to white
+}
+
+.popover-header {
+    a.button {
+        color: #fff !important; // light / dark
+    }
+}
+
+.layout-phone #layout-menu.popover .cancel {
+    color: #fff !important;
+}
+
+#message-header {
+    div.header {
+        &, a {
+            background: transparent !important;
+        }
+    }
+}
+
+#layout>div>.header,
+#layout>div>.header a.button,
+.xcalendar-page .menu.toolbar a {
+    color: #fff !important;
+}
+
+@media screen and (min-width: 481px) {
+    #taskmenu a {
+        position: relative;
+        overflow: initial; // prevents the tooltips from being cut
+
+        span.inner {
+            position: absolute;
+            left: 90%;
+            bottom: -.6rem;
+            z-index: 999;
+            padding: 3px 5px !important;
+            line-height: 1rem !important;
+            display: none !important;
+            background: #fff;
+            border: 1px solid;
+            @include colors.border-color;
+            @include colors.text-color;
+
+            html.dark-mode & {
+                background: #1a2023;
+            }
+        }
+
+        &.logout span.inner {
+            bottom: 0;
+        }
+
+        &:hover span.inner {
+            display: block !important;
+        }
+    }
+}
+
+
+

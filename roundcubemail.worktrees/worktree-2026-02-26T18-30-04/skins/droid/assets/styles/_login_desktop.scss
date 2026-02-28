@@ -1,0 +1,131 @@
+body.login-page {
+    background-color: #fff;
+
+    #login-form {
+        position: static;
+        text-align: center;
+
+        .box-inner {
+            position: static;
+            width: 380px;
+            padding: 40px;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3) !important;
+            background: #f7f7f7;
+            margin: auto;
+            border-radius: 0;
+        }
+
+        .box-bottom {
+            margin-top: 10px;
+        }
+
+        h1 {
+            background: url(../images/login.png) no-repeat center top;
+            height: 96px;
+            margin: 0;
+        }
+
+        h1 span {
+            display: none;
+        }
+    }
+
+    #login-form .box-inner form {
+        padding: 0;
+
+        table,
+        tr,
+        td.title,
+        td.input {
+            display: block;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            text-align: left;
+        }
+
+        table table {
+            display: table;
+        }
+
+        table table tr {
+            display: table-row;
+        }
+
+        table table td {
+            display: table-cell;
+        }
+
+        td {
+            padding: 5px 0;
+        }
+
+        td.title {
+            padding: 8px 0 6px 0;
+        }
+
+        label {
+            text-transform: uppercase;
+        }
+
+        td.input > input[type=text],
+        td.input > input[type=password],
+        td.input > select {
+            width: 100% !important;
+            padding: 10px !important;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            font-weight: 300;
+            border: 1px solid #D9D9D9 !important;
+            border-top: 1px solid #A0A0A0 !important;
+            border-top-left-radius: 1px !important;
+            border-top-right-radius: 1px !important;
+        }
+
+        input[type=text]:hover,
+        input[type=password]:hover,
+        select:hover {
+            border-color: #B9B9B9 !important;
+        }
+
+        input[type=text]:focus,
+        input[type=password]:focus,
+        select:focus {
+            border-color: #4D90FE !important;
+        }
+
+        p.formbuttons {
+            margin: 10px 0 5px 0;
+            padding: 0;
+        }
+
+        input[type=submit],
+        button.submit,
+        a.button {
+            padding: 10px 20px 8px 20px;
+            background: #357AE8 !important;
+            color: #fff !important;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            display: block;
+            width: 100%;
+            border-radius: 1px !important;
+            border: none !important;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        input[type=submit]:hover,
+        button.submit:hover {
+            background: #4D90FE !important;
+        }
+    }
+
+    &:not(.xbackground-login-image) #bottomline {
+        background: transparent;
+
+        &, a {
+            color: #717171;
+        }
+    }
+}

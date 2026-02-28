@@ -1,0 +1,332 @@
+// stratus skin — Calendar UI declutter (Ghost Grid)
+// Overrides: libkolab/skins/elastic/include/calendar.less + fullcalendar.less
+// Design: Modern "ghost grid" — remove harsh vertical lines, soften horizontal ones,
+//         airy spacing like Google Calendar / Cron / Notion Calendar
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VARIABLES — calendar-specific design tokens
+// ═══════════════════════════════════════════════════════════════════════════════
+@mp-cal-grid-color:          fadeout(@color-border, 60%);        // very faint grid lines
+@mp-cal-grid-color-subtle:   fadeout(@color-border, 80%);        // near-invisible for verticals
+@mp-cal-header-bg:           @color-layout-header-background;
+@mp-cal-today-bg:            fadeout(@color-main, 92%);          // soft indigo wash
+@mp-cal-today-number:        @color-main;
+@mp-cal-today-indicator:     @color-main;
+@mp-cal-event-radius:        @mp-radius-sm;
+@mp-cal-popover-radius:      @mp-radius-lg;
+
+// Dark mode calendar tokens
+@mp-cal-dark-grid-color:         fadeout(@color-dark-border, 65%);
+@mp-cal-dark-grid-color-subtle:  fadeout(@color-dark-border, 85%);
+@mp-cal-dark-header-bg:          @color-dark-surface;
+@mp-cal-dark-today-bg:           fadeout(@color-dark-main, 88%);
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GHOST GRID — remove vertical separators, soften horizontals
+// ═══════════════════════════════════════════════════════════════════════════════
+
+.fc {
+
+    // ── Global border reset: make all cell borders near-invisible ────────────
+    th,
+    td {
+        border-color: @mp-cal-grid-color;
+    }
+
+    // ── Remove vertical lines between day columns ────────────────────────────
+    // Month view, week view, day view — the vertical cell borders
+    .fc-bg td,
+    .fc-day {
+        border-right-color: @mp-cal-grid-color-subtle;
+        border-left-color: @mp-cal-grid-color-subtle;
+    }
+
+    // Time grid (week/day view) — vertical borders between columns
+    .fc-time-grid .fc-slats td {
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+
+    // Background columns in time grid
+    .fc-time-grid > .fc-bg td {
+        border-right-color: @mp-cal-grid-color-subtle;
+        border-left-color: transparent;
+    }
+
+    // First column (time axis) — keep a faint right border as separator
+    .fc-axis {
+        border-right-color: @mp-cal-grid-color;
+    }
+
+    // ── Soften horizontal lines ──────────────────────────────────────────────
+    // Major time slats (full-hour)
+    .fc-time-grid .fc-slats td {
+        border-top-color: @mp-cal-grid-color;
+    }
+
+    // Minor time slats (half-hour) — even more subtle
+    .fc-time-grid .fc-slats .fc-minor td {
+        border-top-color: @mp-cal-grid-color-subtle;
+        border-top-style: dashed;
+    }
+
+    // ── Unthemed (default FullCalendar) border override ──────────────────────
+    &.fc-unthemed {
+        th,
+        td,
+        thead,
+        tbody,
+        .fc-divider,
+        .fc-row,
+        .fc-content,
+        .fc-popover,
+        .fc-list-view,
+        .fc-list-heading td {
+            border-color: @mp-cal-grid-color;
+        }
+    }
+
+    // ── Head container / header row — subtle bottom border only ──────────────
+    td.fc-head-container {
+        border-bottom-color: @mp-cal-grid-color;
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+
+    // Day header row (Mon, Tue, Wed…)
+    .fc-day-header {
+        border-left-color: transparent;
+        border-right-color: transparent;
+        padding: @mp-space-sm @mp-space-xs;
+        font-weight: @mp-font-weight-medium;
+        font-size: @mp-font-size-sm;
+        text-transform: uppercase;
+        letter-spacing: @mp-letter-spacing-wide;
+        color: @color-font-secondary;
+    }
+
+    // ── View container outer border — keep only bottom ───────────────────────
+    .fc-view.fc-widget-content {
+        border-color: @mp-cal-grid-color;
+        border-left-width: 0;
+        border-right-width: 0;
+    }
+
+    // Row internal borders
+    .fc-row {
+        border-color: @mp-cal-grid-color;
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TODAY HIGHLIGHT — soft wash instead of harsh double-border
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-day.fc-today {
+        background: @mp-cal-today-bg;
+        border-style: solid;      // override FullCalendar's double border
+    }
+
+    .fc-day-number {
+        font-size: @mp-font-size-sm;
+        padding: @mp-space-xs @mp-space-sm;
+    }
+
+    // Today's date number — accent pill
+    .fc-day-top.fc-today .fc-day-number {
+        color: #fff;
+        background: @mp-cal-today-number;
+        border-radius: @mp-radius-circle;
+        width: 1.65em;
+        height: 1.65em;
+        line-height: 1.65em;
+        text-align: center;
+        display: inline-block;
+        font-weight: @mp-font-weight-semibold;
+        padding: 0;
+        margin: @mp-space-xs;
+    }
+
+    // Now indicator — accent colored
+    .fc-now-indicator {
+        border-color: @mp-cal-today-indicator;
+    }
+
+    .fc-now-indicator-line {
+        border-top-width: 2px;
+
+        // Little dot on the left edge of the now-indicator
+        &::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            width: 8px;
+            height: 8px;
+            background: @mp-cal-today-indicator;
+            border-radius: @mp-radius-circle;
+        }
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HEADER TOOLBAR — cleaner, breathing room
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-header-toolbar {
+        background-color: @mp-cal-header-bg;
+        border-bottom: 1px solid @mp-cal-grid-color;
+        padding: @mp-space-sm @mp-space-md;
+    }
+
+    .fc-center h2 {
+        font-size: @mp-font-size-lg;
+        font-weight: @mp-font-weight-semibold;
+        letter-spacing: @mp-letter-spacing-tight;
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // EVENTS — softer, rounded, modern feel
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-event {
+        border-radius: @mp-cal-event-radius;
+        border-width: 0;
+        border-left: 3px solid;
+        padding: 1px @mp-space-xs;
+        transition: box-shadow @mp-transition-fast,
+                    transform @mp-transition-fast;
+
+        &:hover {
+            box-shadow: @mp-shadow-sm;
+            transform: translateY(-1px);
+        }
+
+        .fc-title {
+            font-weight: @mp-font-weight-medium;
+        }
+    }
+
+    // Day grid events (month view)
+    .fc-day-grid-event {
+        border-radius: @mp-cal-event-radius;
+        margin: 1px 3px 0;
+        padding: 1px @mp-space-xs;
+    }
+
+    // Time grid events (week/day view)
+    .fc-time-grid-event {
+        border-radius: @mp-cal-event-radius;
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // POPOVER ("more" events popup)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-popover {
+        border-radius: @mp-cal-popover-radius;
+        box-shadow: @mp-shadow-lg;
+        border-color: @mp-cal-grid-color;
+
+        .fc-header {
+            border-radius: @mp-cal-popover-radius @mp-cal-popover-radius 0 0;
+            padding: @mp-space-sm @mp-space-md;
+        }
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LIST VIEW — cleaner rows
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-list-view {
+        border-color: @mp-cal-grid-color;
+    }
+
+    .fc-list-heading td {
+        background: fadeout(@color-layout-header-background, 30%);
+        font-weight: @mp-font-weight-medium;
+        font-size: @mp-font-size-sm;
+        text-transform: uppercase;
+        letter-spacing: @mp-letter-spacing-wide;
+    }
+
+    .fc-list-table td {
+        border-color: @mp-cal-grid-color;
+    }
+
+    .fc-list-item:hover td {
+        background-color: fadeout(@color-main, 95%);
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TIME AXIS — lighter, smaller text
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-axis {
+        font-size: @mp-font-size-xs;
+        color: @color-font-secondary;
+        font-weight: @mp-font-weight-normal;
+    }
+
+    .fc-week-number {
+        font-size: @mp-font-size-xs;
+        color: @color-font-secondary;
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CALENDAR SIDEBAR — datepicker refinements
+// ═══════════════════════════════════════════════════════════════════════════════
+
+body.task-calendar {
+    .calendar-datepicker .ui-datepicker {
+        border-radius: @mp-radius-md;
+    }
+
+    #layout-sidebar {
+        border-right-color: @mp-cal-grid-color;
+    }
+
+    // Calendar list items — nicer spacing
+    .listing li > div.calendar .calname {
+        font-weight: @mp-font-weight-medium;
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CALENDAR CONTENT — overflow fix
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#calendar.content {
+    border-radius: @mp-radius-md;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// EVENT DETAIL VIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#eventshow {
+    .event-title {
+        font-weight: @mp-font-weight-bold;
+        letter-spacing: @mp-letter-spacing-tight;
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AGENDA OPTIONS BAR
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#agendaoptions {
+    background-color: @mp-cal-header-bg;
+    border-bottom: 1px solid @mp-cal-grid-color;
+    border-radius: @mp-radius-md @mp-radius-md 0 0;
+}

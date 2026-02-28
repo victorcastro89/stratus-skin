@@ -1,0 +1,73 @@
+@use "sass:list";
+@use "../../../../plugins/xframework/assets/styles/colors";
+@use "../../../../plugins/xskin/assets/styles/elastic_skins_commons";
+
+$map: (
+//   1-bg     2-bg     3-bg     3-bg     4-accent 5-accent 6-accent
+//   normal   dark     light    lighter  normal   dark     light
+    (#f44336, #d32f2f, #ef5350, #ef918c, #2979ff, #236fec, #5494ff),
+    (#e91e63, #c2185b, #ec407a, #ec81a7, #0091ea, #0085da, #33a7ee),
+    (#9c27b0, #7b1fa2, #ab47bc, #b97fbc, #0091ea, #0085da, #33a7ee),
+    (#673ab7, #512da8, #7e57c2, #9f87c2, #f50057, #df0355, #f73379),
+    (#3f51b5, #303f9f, #5c6bc0, #8e98c0, #f50057, #df0355, #f73379),
+    (#1976d2, #1565c0, #42a5f5, #8fbbf5, #ff1744, #f1183c, #ff4569),
+    (#039be5, #0288d1, #29b6f6, #92d3f6, #ff1744, #f1183c, #ff4569),
+    (#0097a7, #00838f, #00acc1, #6db3c1, #ff1744, #f1183c, #ff4569),
+    (#009688, #00796b, #26a69a, #76a6a1, #ff3d00, #dd2c00, #e45633),
+    (#43a047, #388e3c, #66bb6a, #86ac86, #ff3d00, #dd2c00, #e45633),
+    (#689f38, #558b2f, #7cb342, #9db382, #ff3d00, #dd2c00, #e45633),
+    (#afb42b, #9e9d24, #c0ca33, #c2ca84, #ff1744, #f1183c, #ff4569),
+    (#fbc02d, #f9a825, #fdd835, #e7cc6e, #ff1744, #f1183c, #ff4569),
+    (#ffa000, #ff8f00, #ffc107, #dec072, #0091ea, #0085da, #33a7ee),
+    (#ef6c00, #e65100, #ffa726, #e2b271, #0091ea, #0085da, #33a7ee),
+    (#e64a19, #d84315, #ff7043, #eda98b, #0091ea, #0085da, #33a7ee),
+    (#795548, #5d4037, #8d6e63, #bd9788, #0091ea, #0085da, #33a7ee),
+    (#757575, #616161, #bdbdbd, #a8a8a8, #0091ea, #0085da, #33a7ee)
+);
+
+@each $row in $map {
+    $base: list.nth($row, 1);
+    $base-dark: list.nth($row, 2);
+    $base-light: list.nth($row, 3);
+    $base-lighter: list.nth($row, 4);
+    $accent: list.nth($row, 5);
+    $accent-dark: list.nth($row, 6);
+    $accent-light: list.nth($row, 7);
+    $key: colors.color-to-hex($base);
+
+    .xcolor-#{$key} {
+        @include elastic_skins_commons.primary-button-colors($accent);
+        @include elastic_skins_commons.switchbox-colors($accent);
+        @include elastic_skins_commons.anchor-colors($accent);
+        @include elastic_skins_commons.input-colors($accent);
+        @include elastic_skins_commons.listing-colors(false, false, $accent, $accent);
+        @include elastic_skins_commons.logo-background-color($base, $base);
+        @include elastic_skins_commons.datepicker-colors($base-light, $base-light);
+    }
+
+    html.dark-mode:not(.touch) .xcolor-#{$key} ::-webkit-scrollbar-thumb {
+        background-color: $base;
+    }
+
+    @media screen and (min-width: 481px) {
+        .xcolor-#{$key} {
+            #layout-menu {
+                background-color: $base !important;
+            }
+
+            #taskmenu a.selected,
+            #taskmenu a.focus,
+            #taskmenu a:hover {
+                background-color: $base-light !important;
+            }
+        }
+    }
+}
+
+html.dark-mode body.xbg {
+    #layout > div > .header,
+    #layout > div > .header a.button,
+    .menu.toolbar a {
+        color: #333;
+    }
+}

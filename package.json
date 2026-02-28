@@ -1,0 +1,20 @@
+{
+  "name": "roundcube_plus_plugin_all",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "less:build": "lessc --clean-css=\"--s1 --advanced\" roundcubemail/skins/stratus/styles/styles.less roundcubemail/skins/stratus/styles/styles.min.css",
+    "less:watch": "chokidar \"roundcubemail/skins/stratus/styles/**/*.less\" -c \"npm run less:build\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "less": "^4.5.1",
+    "less-plugin-clean-css": "^1.6.0"
+  }
+}

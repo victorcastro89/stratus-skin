@@ -1,0 +1,483 @@
+@use "../../../xframework/assets/styles/colors";
+
+/* backgrounds */
+$images: (
+    "tile_leather",
+    "tile_leaves",
+    "tile_linen",
+    "tile_squares",
+    "tile_wood",
+    "tile_leather",
+    "tile_marble",
+    "tile_material",
+    "purple_blur",
+    "wood_lite",
+    "cover_fall",
+    "cover_fire",
+    "cover_lake",
+    "cover_log",
+    "cover_sky",
+    "cover_traffic",
+    "cover_wheat"
+);
+
+@each $image in $images {
+    body.xbg-image-#{$image} #xbackground-body {
+        background-image: url('../backgrounds/#{$image}.jpg') !important;
+    }
+}
+
+.iframe {
+    &.xbg,
+    body.xbg {
+        background: transparent !important;
+    }
+
+    #xbackground-body {
+        display: none !important;
+    }
+}
+
+/* background selection menu */
+span.xbackground-image-box {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    border: 1px solid #ddd !important;
+    background-size: cover !important;
+}
+
+span.background-box:hover {
+    border: 1px solid #aaa !important;
+}
+
+#xbackground-image-box-custom {
+    display: none;
+}
+
+#background-more-actions a {
+    background: transparent !important;
+}
+
+#xbackground-body {
+    display: none;
+    transition: all 200ms ease-in-out;
+}
+
+/* page elements */
+body.xbg {
+    background: #fff !important;
+
+    // fixes for larry
+    ul.proplist li,
+    table.propform td,
+    .listbox table.listing,
+    .listbox .boxfooter,
+    .boxfooter .listbutton {
+        background: transparent;
+    }
+
+    // the div that contains the background image
+    #xbackground-body {
+        display: block;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        z-index: -1;
+    }
+
+    .iframebox,
+    #mailview-top {
+        border: none;
+    }
+
+    ul.proplist li,
+    table.propform td,
+    .listbox .listitem,
+    .listbox .tablink,
+    .listing tbody td,
+    .listing li,
+    .folderlist li.mailbox ul,
+    .records-table tbody td {
+        border-bottom: none;
+        border-top: none;
+    }
+
+    .listbox,
+    .uibox,
+    #messageheader,
+    #mailview-bottom {
+        border: none;
+    }
+
+    ul.listing li,
+    .formbuttons,
+    .xtabs.ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor,
+    .ui-tabs.ui-widget-content,
+    &.xcalendar .ui-datepicker td a.ui-state-default,
+    &.xcalendar #calendar-grid .fc-day-header,
+    .ui-tabs .ui-tabs-nav li.tablink a,
+    .ui-tabs .ui-tabs-nav li,
+    .records-table tbody td,
+    .moreheaderstoggle,
+    #messagecontent .rightcol,
+    #messagepreview .rightcol,
+    #composeheaders,
+    #compose-attachments,
+    &.xcalendar .fc-unthemed .fc-today {
+        background-color: transparent;
+    }
+
+    ul.tabsbar li,
+    .listbox .listitem.selected,
+    .listbox .tablink.selected,
+    .listbox .listitem.selected > a,
+    .listbox .tablink.selected > a,
+    .listing tbody tr.unfocused td,
+    .listing tbody tr.selected td,
+    .listing:not(.menu) li.selected,
+    .listing:not(.menu) li.selected > a,
+    .records-table tr.selected td,
+    .records-table tr.unfocused td,
+    #settings-tabs li.selected,
+    #subscription-table li.selected,
+    #directorylist li.selected {
+        background-color: transparent !important;
+    }
+
+    .listbox .listitem.selected > a,
+    .listbox .tablink.selected > a,
+    .listing li.selected > a {
+        background-color: transparent !important;
+    }
+
+    // only some skins need to be adjusted for dark backgrounds
+    $textColorDependent: ("icloud", "litecube", "outlook", "w21");
+
+    @each $skin in $textColorDependent {
+        &.xbg-text-color-light {
+            &.skin-#{$skin} .toolbar a,
+            &.skin-#{$skin} .toolbar a:before {
+                color: #fff !important;
+            }
+        }
+    }
+
+    &.xbg-text-color-light {
+        #xsidebar-button:before {
+            color: #fff;
+        }
+    }
+
+    &.xbg-placement-cover #xbackground-body {
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    @mixin content-opacity($opacity) {
+        // only for larry-compatible skins
+        &.xlarry {
+            .listbox,
+            .uibox,
+            .ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor,
+            &.skin-icloud #topline,
+            &.skin-icloud #topnav,
+            &.skin-litecube #topline,
+            &.skin-litecube #topnav,
+            #messagelistfooter,
+            #messageheader,
+            #vertical-preview,
+            #xsidebar {
+                background-color: rgba(255, 255, 255, $opacity) !important;
+            }
+
+            #xsidebar .listbox {
+                background-color: transparent !important;
+            }
+        }
+
+        // only for elastic-compatible skins
+        &.xelastic {
+            #layout-sidebar,
+            #layout-content,
+            #layout-menu.xskin,
+            #layout-list,
+            #xsidebar {
+                background-color: rgba(255, 255, 255, $opacity) !important;
+            }
+        }
+    }
+
+    @include content-opacity(0.6);
+
+    &.xbg-content-opacity-30 { @include content-opacity(0.3); }
+    &.xbg-content-opacity-40 { @include content-opacity(0.4); }
+    &.xbg-content-opacity-50 { @include content-opacity(0.5); }
+    &.xbg-content-opacity-70 { @include content-opacity(0.7); }
+    &.xbg-content-opacity-80 { @include content-opacity(0.8); }
+    &.xbg-content-opacity-90 { @include content-opacity(0.9); }
+    &.xbg-content-opacity-100 { @include content-opacity(1); }
+
+    @mixin selected-opacity($color, $opacity) {
+        .listbox .listitem.selected,
+        .listing tbody tr.selected td,
+        .listing li.selected > a,
+        .records-table tr.selected,
+        .records-table tr.unfocused,
+        &.xcalendar .fc-month-view .fc-bg .fc-today,
+        &.xcalendar .fc-agendaWeek-view .fc-bg .fc-today,
+        &.xcalendar #sidebar-calendar .selected-range td a,
+        &.compact-message-list-preview #mailview-top.preview-visible #messagelist tr.expanded,
+        &.compact-message-list-preview #mailview-top.preview-visible #messagelist tr:hover {
+            background-color: rgba($color, $color, $color, $opacity) !important;
+        }
+    }
+
+    @include selected-opacity(255, 0.6);
+
+    &.xbg-content-opacity-70,
+    &.xbg-content-opacity-80,
+    &.xbg-content-opacity-90,
+    &.xbg-content-opacity-100 {
+        @include selected-opacity(0, 0.1);
+    }
+
+    @for $i from 1 through 10 {
+        &.xbg-image-opacity-#{$i * 10} #xbackground-body {
+            opacity: $i * 0.1;
+        }
+
+        &.xbg-blur-#{$i * 10} #xbackground-body {
+            -webkit-filter: blur(#{$i}px);
+            filter: blur(#{$i}px);
+        }
+
+        &.xbg-gray-#{$i * 10} #xbackground-body {
+            -webkit-filter: #{"grayscale(#{$i * 10}%)"};
+            filter: #{"grayscale(#{$i * 10}%)"};
+        }
+
+        // combine blur and gray so they don't overwrite each other
+        &.xbg-blur-#{$i * 10} {
+            @for $j from 1 through 10 {
+                &.xbg-gray-#{$j * 10} #xbackground-body {
+                    filter: blur(#{$i}px) #{"grayscale(#{$j * 10}%)"};
+                }
+            }
+        }
+    }
+
+    &.xmobile,
+    &.iframe,
+    &.xcalendar .ui-datepicker-title select,
+    .contactfieldgroup,
+    #xsidebar {
+        background: transparent !important;
+    }
+
+    .formbuttons.floating {
+        background: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    input[type=text],
+    input[type=password],
+    input[type=email],
+    textarea,
+    select,
+    label.switchbox,
+    a.menuselector,
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.4) !important;
+        border-color: rgba(0, 0, 0, 0.2) !important;
+        color: #333 !important;
+    }
+
+    fieldset a {
+        color: #333;
+    }
+
+    .contactfieldgroup legend {
+        background: transparent;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+    }
+}
+
+/* settings */
+
+.xlarry {
+    #sections-table #rcmrowxbackground td.section {
+        background-image: url(../images/settings.png);
+        background-position: 2px 1px;
+    }
+
+    #sections-table #rcmrowxbackground.selected td.section {
+        background-image: url(../images/settings-hot.png);
+    }
+}
+
+#xbackground-upload-error {
+    display: none;
+    margin-top: 5px;
+    @include colors.error-text-color;
+}
+
+#xbackground-upload-buttons {
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: left center;
+
+    input {
+        margin: 0 5px 0 0;
+    }
+}
+
+/* elastic */
+
+body.xelastic.xbg {
+
+    #taskmenu .special-buttons,
+    #layout>div>.footer,
+    .searchbar,
+    #layout-menu.xskin .popover-header {
+        background-color: transparent !important;
+    }
+
+    #layout-menu.xskin #taskmenu {
+        a {
+            color: #333;
+
+            &.selected,
+            &:hover {
+                background: rgba(0, 0, 0, 0.2);
+            }
+        }
+    }
+
+    .searchbar {
+        border: none;
+    }
+
+    #layout > div > .header {
+        border-color: #bcbcbc !important;
+    }
+}
+
+// elastic skin itself
+html.dark-mode body.xelastic.xbg:not(.xskin) {
+    #layout > div > .header,
+    #layout > div > .header a.button,
+    .menu.toolbar a {
+        color: #333;
+    }
+
+    #layout #layout-menu {
+        background-color: #21292c;
+    }
+}
+
+html.iframe body.xbg.xelastic {
+    #layout-sidebar,
+    #layout-content,
+    #layout-menu.xskin,
+    #layout-list,
+    #xsidebar {
+        background: transparent !important;
+    }
+}
+
+/* dark mode */
+html.dark-mode body.xbg {
+    .scroller,
+    .scroller .listing li a,
+    .scroller .listing tbody td,
+    .scroller .listing tbody td a,
+    table.propform,
+    .formcontent form,
+    .listing-info,
+    .xtabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor,
+    fieldset,
+    select option,
+    #xsidebar-inner,
+    #xsidebar-inner a,
+    #xsidebar-inner table,
+    #xsidebar .boxtitle span,
+    .xnews_feed-item .xnews_feed-link,
+    #message-header,
+    #contacttabs .input-group-text,
+    .nav-tabs .nav-link:not(.active),
+    .pagenav,
+    div.tox .tox-button.tox-button--secondary,
+    .mce-window .mce-foot .mce-btn,
+    .btn.btn-link:not(.button),
+    .input-group-append a:before,
+    .file-upload .hint,
+    #calendar-grid,
+    #calendar-grid a,
+    #sidebar-calendar,
+    #sidebar-calendar a:not(.ui-state-active),
+    &.task-calendar #new-calendar-container a:before,
+    &.xcalendar-page #new-calendar-container a:before,
+    &.xcalendar #new-calendar-container a:before,
+    &.task-xcalendar #new-calendar-container a:before,
+    .editor.uibox {
+        color: #333 !important;
+    }
+
+    .xnews_feed-preview,
+    .editor-toolbar a,
+    .xdialog-box,
+    .xdialog-box .btn-secondary,
+    .ui-dialog-buttonset .btn-secondary {
+        color: #ddd !important;
+    }
+
+    .formcontent form a {
+        color: #007bff !important;
+    }
+
+    .custom-switch .custom-control-input:checked~.custom-control-label::after,
+    .custom-switch .custom-control-label::after,
+    input[type=text],
+    input[type=password],
+    input[type=email],
+    textarea,
+    select,
+    label.switchbox,
+    a.menuselector,
+    .form-control,
+    .form-control:focus:not(.is-invalid) {
+        background-color: #fff !important;
+        color: #333 !important;
+    }
+
+    .input-group-text,
+    .listing li.selected ul,
+    .editor-button-bar {
+        background: transparent !important;
+    }
+}
+
+/* xcalendar */
+
+body.xbg.task-xcalendar,
+body.xbg.xcalendar {
+    .ui-datepicker-inline,
+    #layout-content .ui-datepicker .ui-datepicker-header,
+    #calendar-grid .fc-day-header {
+        background: transparent;
+    }
+
+    .fc-unthemed td.fc-today {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    div#main-calendar-container .editor.uibox {
+        background: #fff !important;
+    }
+}

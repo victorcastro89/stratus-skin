@@ -1,0 +1,186 @@
+5.4 (2024-11-08)
+================
+- updated license agreement
+
+5.3.9 (2024-07-15)
+==================
+- updated frontend assets
+
+5.3.8 (2023-05-25)
+==================
+- fixed the login dialog UI problems
+
+5.3.7 (2022-06-20)
+==================
+- updated the installation instructions
+
+5.3.6 (2022-05-30)
+==================
+- UI improvements and fixes
+
+5.3.5 (2021-09-08)
+==================
+- fixed the issue with the hidden layout options
+
+5.3.4 (2021-09-01)
+==================
+- removed colors from the interface options menu and added Skin Look & Feel
+- added the user option to change the icons
+- added the user option to change icons in lists
+- added the user option to change font family
+- added the user option to change font size
+- added the user option to change font thickness
+- added config.inc.php for setting default options
+- removed custom logo settings and enabled native RC logo settings
+- moved skin settings from settings.php to meta.json
+- changed the default font to Roboto
+- upgraded login page UI
+- fixed styling of primary and secondary buttons
+- fixed toolbar icon positioning
+
+5.3.3 (2021-08-05)
+==================
+- updated the skin thumbnail
+
+5.3.2 (2021-05-25)
+==================
+- made the skin compatible with RC 1.5
+
+5.3.1 (2021-01-21)
+==================
+- added styling for the x2fa plugin
+
+5.3 (2020-10-06)
+================
+- updated the ident_switch plugin UI
+
+5.2.9 (2020-09-14)
+==================
+- added styling for the new datetime picker (flatpickr)
+
+5.2.8 (2020-08-18)
+==================
+- fixed formatting of the xemail_schedule countdown controls on mobile devices
+
+5.2.7 (2020-05-04)
+==================
+- improved styling of custom login images
+
+5.2.6 (2020-02-05)
+==================
+- fixed problems with displaying some settings inputs
+
+5.2.5 (2019-12-19)
+==================
+- made the skin compatible with the ident_switch plugin
+
+5.2.4 (2019-11-07)
+==================
+- added formatting for the new sidebar functionality
+
+5.2.3 (2019-06-17)
+==================
+- updated UI to work with the new calendar attendee options
+
+5.2.2 (2019-05-22)
+==================
+- updated UI to work with Roundcube 1.4 RC1
+- added support for changing icon set in settings.php
+
+5.2.1 (2018-10-15)
+==================
+- fixed cut text in compose to/cc/bcc fields on Firefox
+
+5.2 (2018-06-04)
+================
+- fixed UI colors
+- added support for the thunderbird labels plugin
+
+5.1.9 (2017-12-06)
+==================
+- restructured css to fix a number of UI problems
+- fixed the display of the disabled menu items
+- fixed text colors on Edge, IE, and Firefox
+- fixed compatibility with xbackground
+- fixed compatibility with xcalendar
+- made the skin compatible with xbackground login images
+
+5.1.8 (2017-09-04)
+==================
+- fixed xcalendar sidebar list display
+
+5.1.7 (2017-06-28)
+==================
+- fixed remote font loading problems on cpanel
+- improved css structure and order
+
+5.1.6 (2017-06-07)
+==================
+- fixed minimum page width problems and set it to 900px
+- improved watermark frame code
+
+5.1.5 (2017-05-10)
+==================
+- fixed button hover color problems
+
+5.1.4 (2017-04-19)
+==================
+- optimized font loading
+
+5.1.3 (2017-03-17)
+==================
+- fixed text color in quota popup
+
+5.1.2 (2017-03-01)
+==================
+- restored the login button to its original location for compatibility with cPanel
+
+5.1.1 (2017-02-15)
+==================
+- added mobile quota display
+
+5.1 (2017-02-08)
+================
+- fixed address book navigation issues on IE
+
+5.0.9 (2017-02-07)
+==================
+- upgraded to use xframework rc+ icon font
+
+5.0.8 (2016-12-20)
+==================
+- fixed jquery ui fonts
+
+5.0.7 (2016-11-30)
+==================
+- fixed compose textarea font size
+
+5.0.6 (2016-11-16)
+==================
+- fixed missing inclusion of larry css styles
+
+5.0.5 (2016-10-11)
+==================
+- made skin compatible with xbackground
+- added print logo
+
+5.0.4 (2016-10-04)
+==================
+- UI tweaks
+
+5.0.3 (2016-09-27)
+==================
+- UI fixes
+- updated logo image
+
+5.0.2 (2016-08-09)
+==================
+- fixed font loading from googleapi over http instead of https
+
+5.0.1 (2016-06-02)
+==================
+- fixed some text alignment problems
+
+5.0 (2016-06-01)
+================
+- initial release

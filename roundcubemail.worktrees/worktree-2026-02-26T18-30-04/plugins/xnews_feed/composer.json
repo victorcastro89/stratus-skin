@@ -1,0 +1,16 @@
+{
+    "name": "roundcubeplus/xnews_feed",
+    "type": "roundcube-plugin",
+    "description": "Displays a user-defined RSS feed on the mail page sidebar.",
+    "license": "Commercial",
+    "version": "1.3.9",
+    "homepage": "https://roundcubeplus.com",
+    "authors": [
+        {
+            "name": "Roundcube Plus",
+            "email": "contact@roundcubeplus.com"
+        }
+    ],
+    "repositories": [],
+    "require": {}
+}

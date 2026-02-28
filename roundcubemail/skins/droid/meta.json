@@ -1,0 +1,40 @@
+{
+    "name": "Droid",
+    "author": "Roundcube Plus (https://roundcubeplus.com)",
+    "license": "Commercial",
+    "license-url": "",
+    "extends": "larry",
+    "config": {
+        "xapps-top": true,
+        "xbody-classes": "",
+        "xskin_colors": {
+            "color_01": "F44336",
+            "color_02": "E91E63",
+            "color_03": "9C27B0",
+            "color_04": "673AB7",
+            "color_05": "3F51B5",
+            "color_06": "1976D2",
+            "color_07": "039BE5",
+            "color_08": "0097A7",
+            "color_09": "009688",
+            "color_10": "43A047",
+            "color_11": "689F38",
+            "color_12": "AFB42B",
+            "color_13": "FBC02D",
+            "color_14": "FFA000",
+            "color_15": "EF6C00",
+            "color_16": "E64A19",
+            "color_17": "795548",
+            "color_18": "757575"
+        },
+        "xskin_default_icons": "material",
+        "xskin_default_list_icons": true,
+        "xskin_default_font_family": "roboto",
+        "xskin_default_font_size": "s",
+        "xskin_default_thick_font": false,
+        "xskin_default_color": "3F51B5",
+        "xlarry_font_icons": true,
+        "xlarry_square_ui": false,
+        "xlarry_light_ui": true
+    }
+}

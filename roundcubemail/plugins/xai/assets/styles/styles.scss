@@ -1,0 +1,272 @@
+@use "../../../xframework/assets/styles/colors";
+@use "../../../xframework/assets/styles/icons";
+@use "../../../xframework/assets/styles/icons_map";
+@use "../../../xframework/assets/styles/animations";
+
+// SETTINGS PAGE
+
+body.xai-settings {
+    // initially hide settings to avoid momentarily showing the content that should be hidden by js,
+    // these elements will be shown using js after the content has been processed
+    & > .formcontent,
+    & > .formbuttons {
+        display: none;
+    }
+}
+
+#xai-settings-disclaimer {
+    font-size: .95em;
+
+    .icon:before {
+        @include icons.icon(icons_map.$information);
+    }
+}
+
+// SUMMARIES IN MESSAGE LIST
+
+#xai-list-summary-popup {
+    position: absolute;
+    display: none;
+    margin: 0;
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, .5);
+
+    .icon:before {
+        @include icons.icon(icons_map.$ai);
+    }
+}
+
+table.messagelist {
+    tr.xai-generating-summary,
+    tr.xai-has-summary {
+        td.subject span.fromto {
+            position: relative;
+
+            &:before {
+                position: absolute;
+                left: 0;
+                @include icons.icon(icons_map.$ai);
+            }
+        }
+    }
+
+    tr.xai-generating-summary td.subject span.fromto:before {
+        @include animations.blinker();
+    }
+}
+
+// SUMMARY IN MESSAGE VIEW
+
+#xai-summary-box {
+    &.generating .icon:before {
+        @include animations.blinker;
+    }
+
+    .icon:before {
+        @include icons.icon(icons_map.$ai);
+    }
+}
+
+#xai-summary-menu-button {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    &:before {
+        margin: 0 !important;
+        @include icons.icon(icons_map.$vertical-menu);
+        @include colors.text-color();
+    }
+}
+
+#xai-summary-menu {
+    display: none;
+}
+
+#message-header .header-links {
+    #xai-action-show-summary,
+    #xai-action-hide-summary {
+        &:before {
+            @include icons.icon(icons_map.$ai);
+        }
+
+        &.hidden {
+            display: none;
+        }
+    }
+}
+
+// COMPOSE PAGE
+
+#xai-open-compose-dialog:before {
+    @include icons.icon(icons_map.$ai);
+}
+
+#xai-compose-dialog {
+    display: none;
+}
+
+#xai-compose-dialog #xai-compose-dialog-box {
+
+    span.small-size {
+        display: none;
+    }
+
+    .layout-small &,
+    .layout-phone &,
+    .layout-normal.touch & {
+        span.small-size {
+            display: inline-block;
+        }
+        span.regular-size {
+            display: none;
+        }
+    }
+
+    & > .xdialog-contents {
+        overflow-y: auto;
+        display: flex;
+        flex-flow: column;
+        position: relative;
+        padding: 0;
+
+        .btn-default {
+            @include colors.border-color;
+        }
+
+        .xspinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 3em;
+            margin: -1.5em 0 -1.5em 0;
+            @include colors.text-dim-color;
+        }
+
+        .properties {
+            display: flex;
+            align-items: stretch;
+
+            .propbox {
+                padding: 0 10px 10px 0;
+                flex: 1;
+
+                input,
+                select {
+                    width: 100%;
+                }
+            }
+        }
+
+        .generate-container {
+            text-align: center;
+            padding: 1rem 0 0 0;
+
+            button {
+                margin: 0 .2rem;
+            }
+        }
+    }
+
+    #xai-request {
+        flex: 0 0 auto;
+        padding: 1rem 1rem 0 1rem;
+
+        .generate-container {
+            button {
+                margin-bottom: 1rem;
+            }
+        }
+    }
+
+    #xai-result {
+        padding: 0 1rem 1rem 1rem;
+        flex: 1 1 auto;
+
+        textarea {
+            height: 100%;
+        }
+    }
+
+    #xai-compose-help {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+
+        .help-header {
+            position: relative;
+            padding: 1rem;
+
+            button {
+                position: absolute;
+                left: 1rem;
+            }
+
+            h3 {
+                font-size: 1.4rem;
+                margin: 0;
+                padding: .3rem 0;
+                text-align: center;
+            }
+        }
+
+        .help-content {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 1rem;
+            border-bottom: 1px solid;
+            @include colors.border-color;
+
+            ul {
+                list-style-position: inside;
+                padding-left: .5rem;
+            }
+
+            li {
+                margin-bottom: .5rem;
+            }
+        }
+    }
+}
+
+html.dark-mode #xai-compose-dialog-box > .xdialog-contents #xai-instructions::placeholder {
+    color: #5e5e5e;
+}
+
+body.xlarry:not(.xskin) {
+    #xai-open-compose-dialog {
+        background: url(../images/button_xai.png) no-repeat center 0;
+
+        &:before {
+            display: none;
+        }
+    }
+
+    #sections-table #rcmrowxai td.section {
+        background-image: url(../images/settings.png);
+        background-position: 2px 1px;
+    }
+
+    #sections-table #rcmrowxai.selected td.section {
+        background-image: url(../images/settings-hot.png);
+    }
+}
+
+body.xlarry {
+    #xai-compose-dialog #xai-compose-dialog-box {
+        .form-control,
+        select {
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            padding: .3em;
+            margin-top: .3em;
+        }
+
+        .xdialog-close {
+            line-height: 1.3rem;
+            background: transparent !important;
+        }
+    }
+}

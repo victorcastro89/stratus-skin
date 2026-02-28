@@ -1,0 +1,190 @@
+#main-menu {
+    z-index: 1;
+}
+
+.popup-box,
+#quicksearchbar,
+#mailview-left,
+#addressbooktoolbar,
+#folder-selector,
+.popup-box .popup-close {
+    -webkit-box-shadow: inset -6px 0 6px -4px #adadad !important;
+    box-shadow: inset -6px 0 6px -4px #adadad !important;
+}
+
+#main-menu,
+.popup-box .popup-close {
+    background: #fbfbfb;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+
+.popup-box .popup-close {
+    height: 50px;
+    overflow: hidden;
+}
+
+.popup-box .popup-close a,
+#quicksearchbar .popup-close a {
+    background: #fbfbfb;
+    padding: 15px 12px 11px 12px !important;
+    margin-right: 20px !important;
+}
+
+
+.popup-box .popup-close a:before {
+    padding: 0 !important;
+}
+
+.popup-box h5,
+#quicksearchbar h5 {
+    color: #333;
+    font-weight: normal;
+    top: 17px;
+}
+
+
+input[type='button'],
+input[type='submit'],
+button,
+input.button,
+.popup-box a,
+.popup-box #sections-table td,
+#mailFoldersBox a,
+#addressList a,
+.contactfieldbutton.deletebutton,
+.iframe a.active,
+#subscriptionTable td.name,
+div.buttonBox a,
+#message-objects div a.button,
+input.button.mainaction,
+input.button.mainaction:active,
+ul#planner_controls li a,
+ul#planner_controls li a:hover,
+ul#planner_controls li a:active,
+#message-objects div a.button,
+.listbox table.listing,
+#compose-contacts {
+    background: transparent !important;
+    color: #333;
+}
+
+.ui-button.mainaction {
+    background: #333 !important;
+}
+
+.popup-box a,
+.popup-box #sections-table td,
+#mailFoldersBox a,
+#addressList a,
+.contactfieldbutton.deletebutton,
+.iframe a.disabled,
+.iframe a.active,
+#subscriptionTable td.name,
+div.buttonBox a,
+#mailboxlist li.mailbox a,
+.googie_list td span,
+ul.toolbarmenu li a,
+#taskbar a,
+#taskbar a.button-selected,
+.minimal #taskbar a,
+.popupmenu a,
+#quicksearchbar a.search-apply,
+#quicksearchbar a.search-reset,
+#composeheaders a.iconlink.edit {
+    background: #fff;
+}
+
+.boxfooter .listbutton {
+    background: transparent;
+    color: #333;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.boxfooter a.listbutton {
+    padding-top: 3px;
+}
+
+.boxfooter .listbutton span {
+    font-size: 1.6em;
+}
+
+#messagelist tr.selected td.subject:before,
+#messagelist tr.unfocused td.subject:before,
+#messagelist tr.selected td,
+#messagelist tr.selected td a,
+#messagelist tr.selected td span,
+#messagelist tr.unfocused td a,
+#messagelist tr.unfocused td span {
+    color: #fff !important;
+}
+
+.boxpagenav a.icon.disabled,
+.pagenav a.button.disabled {
+    background: transparent !important;
+    color: #aaa !important;
+}
+
+.boxpagenav a.icon,
+#countcontrols a.button {
+    background: transparent !important;
+}
+
+#folderslist-header span {
+    display: none;
+}
+
+.popup-box h2.boxtitle {
+    font-weight: normal;
+    padding-top: 3px;
+}
+
+.uibox .boxtitle,
+.rcs-mobile-skin #mainscreen .uibox .listing thead td,
+#messagestack div {
+    background-color: #FBFBFB !important;
+}
+
+#messagestack div {
+    border-top: 1px solid #aaa;
+}
+
+#compose-contacts .boxtitle {
+    display: none;
+}
+
+#filtersetmenulink,
+#filtermenulink {
+    padding: 5px;
+}
+
+
+#calendar-list-container .new-calendar {
+    top: 4px !important;
+}
+
+body #helptoolbar {
+    top: -3px;
+}
+
+#mailboxmenulink {
+    position: relative;
+    top: -6px;
+}
+
+div.more-headers {
+    right: 20px;
+}
+
+#current-folder {
+  //  font-size: $fontSmall;
+}
+
+#compose-attachments {
+    border-top: none;
+}
+
+#xes-countdown-box button {
+    border: none;
+}

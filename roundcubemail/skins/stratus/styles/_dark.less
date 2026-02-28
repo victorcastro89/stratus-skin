@@ -1,0 +1,692 @@
+// stratus skin — Dark mode comprehensive overrides
+// Overrides: elastic/styles/dark.less + our light-mode customs
+// Design: Rich navy tones, indigo-tinted surfaces, glowing accents
+// Note: @color-dark-* variables handle most elastic overrides via dark.less.
+// This file adds supplemental rules for layout, components, and custom elements.
+
+html.dark-mode {
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BASE
+    // ═══════════════════════════════════════════════════════════════════════════
+    body {
+        background: @color-dark-background;
+    }
+
+    // Headings — lighter in dark mode
+    h1, h2, h3, h4, h5, h6 {
+        color: @color-dark-font;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // JQUERY UI DATEPICKER — fix arrows invisible in dark mode
+    // Root cause: jQuery UI theme CSS sets .ui-widget-header .ui-state-default
+    // { background: #f6f6f6; color: #454545 }. The prev/next arrow buttons carry
+    // .ui-state-default so they get a light-gray bg. Elastic's dark.less fixes
+    // `color` but never resets `background`, leaving light icons on a light box.
+    // Fix: reset background + border to transparent so arrows show on dark header.
+    // ═══════════════════════════════════════════════════════════════════════════
+    .ui-datepicker {
+        background-color: @color-dark-surface;
+        border-color: @color-dark-border;
+
+        .ui-datepicker-header {
+            background-color: @color-dark-surface-raised;
+            border-bottom-color: @color-dark-border;
+            color: @color-dark-font;
+        }
+
+        .ui-datepicker-title {
+            color: @color-dark-font;
+
+            select {
+                background-color: @color-dark-surface;
+                color: @color-dark-font;
+                border-color: @color-dark-input-border;
+            }
+        }
+
+        // Arrows: strip jQuery UI's #f6f6f6 bg so the icon is visible on dark header
+        .ui-datepicker-prev,
+        .ui-datepicker-next {
+            background: transparent;
+            border-color: transparent;
+            color: @color-dark-font;
+
+            &:hover {
+                background: fadeout(@color-dark-main, 85%);
+                border-color: transparent;
+                color: @color-dark-font;
+            }
+        }
+
+        // Day number cells
+        .ui-state-default,
+        &.ui-widget-content .ui-state-default {
+            background: transparent;
+            border-color: transparent;
+            color: @color-dark-font;
+        }
+
+        // Week day headers
+        th {
+            color: @color-dark-font-secondary;
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TASK MENU — deeper navy with indigo-tinted gradient
+    // ═══════════════════════════════════════════════════════════════════════════
+    #layout-menu {
+        background: @mp-taskmenu-dark-gradient;
+
+        // Top accent line — more subtle in dark
+        &::before {
+            opacity: 0.7;
+        }
+
+        .popover-header {
+            border-bottom-color: rgba(255, 255, 255, 0.04);
+        }
+    }
+
+    #taskmenu {
+        background: @mp-taskmenu-dark-gradient;
+        box-shadow: @mp-shadow-dark-lg;
+
+        a:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        // Selected — indigo glow, more visible in dark
+        a.selected {
+            background: fadeout(@color-dark-main, 80%);
+            box-shadow: 0 0 20px fadeout(@color-dark-main, 75%),
+                        inset 0 0 0 1px fadeout(@color-dark-main, 65%);
+        }
+
+        // Compose — dark-mode gradient with explicit white text/icon
+        // IMPORTANT: Elastic dark.less sets color:@color-dark-font on all #taskmenu a,
+        // which washes out the compose button. We must restore #fff explicitly.
+        a.compose,
+        a.task-compose {
+            background: @color-dark-main-gradient;
+            color: #fff;
+            box-shadow: 0 4px 16px fadeout(@color-dark-main, 45%);
+
+            // Restore icon color overridden by elastic dark.less
+            &:before {
+                color: #fff;
+            }
+
+            &:hover {
+                background: @color-dark-main-gradient-hover;
+                color: #fff;
+                box-shadow: 0 6px 24px fadeout(@color-dark-main, 35%);
+
+                &:before {
+                    color: #fff;
+                }
+            }
+
+            &:active {
+                color: #fff;
+
+                &:before {
+                    color: #fff;
+                }
+            }
+        }
+
+        a.logout,
+        a[href*="logout"] {
+            &:hover {
+                background: fadeout(@color-taskmenu-button-logout, 88%);
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HEADERS — dark frosted glass
+    // ═══════════════════════════════════════════════════════════════════════════
+    #layout > div > .header {
+        background: @mp-glass-dark-bg-strong;
+        backdrop-filter: blur(@mp-glass-blur);
+        -webkit-backdrop-filter: blur(@mp-glass-blur);
+        border-bottom-color: @color-dark-border;
+        box-shadow: @mp-shadow-dark-sm;
+
+        .header-title {
+            color: @color-dark-font;
+        }
+
+        a.button {
+            color: @color-dark-font;
+
+            &:hover {
+                background: fadeout(@color-dark-main, 88%);
+                color: @color-dark-main;
+            }
+        }
+    }
+
+    #layout > div > .footer {
+        background: @color-dark-surface;
+        border-top-color: @color-dark-border;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TOOLBAR
+    // ═══════════════════════════════════════════════════════════════════════════
+    .toolbar a.button,
+    #toolbar a.button {
+        color: @color-dark-font;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 88%);
+            color: @color-dark-main;
+        }
+
+        &:active,
+        &.active {
+            background: fadeout(@color-dark-main, 82%);
+            color: @color-dark-main;
+        }
+
+        &:hover:before {
+            color: @color-dark-main;
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SEARCH BAR
+    // ═══════════════════════════════════════════════════════════════════════════
+    .searchbar,
+    #searchbar {
+        background: fadeout(@color-dark-surface-raised, 50%);
+        border-color: transparent;
+
+        &:focus-within {
+            background: @color-dark-surface-raised;
+            border-color: fadeout(@color-dark-main, 60%);
+            box-shadow: 0 0 0 3px fadeout(@color-dark-main, 85%);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PANELS
+    // ═══════════════════════════════════════════════════════════════════════════
+    #sidebar,
+    #layout-sidebar {
+        background: @color-dark-surface;
+        border-right-color: @color-dark-border;
+    }
+
+    #layout-list {
+        background: @color-dark-surface;
+        border-right-color: @color-dark-border;
+    }
+
+    #layout-content {
+        background: @color-dark-background;
+    }
+
+    // Content frames — dark cards
+    .frame-content fieldset,
+    .content fieldset {
+        background: @color-dark-surface;
+        border-color: @color-dark-border;
+    }
+
+    .frame-content legend,
+    .content legend {
+        color: @color-dark-font;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LISTINGS — subtle glow on selection
+    // ═══════════════════════════════════════════════════════════════════════════
+    .listing {
+        tbody td,
+        li {
+            border-bottom-color: fadeout(@color-dark-list-border, 50%);
+        }
+
+        tbody tr:hover > td,
+        li:hover {
+            background: fadeout(@color-dark-main, 94%);
+        }
+
+        li.selected,
+        tr.selected td {
+            background: @color-dark-list-selected-background;
+        }
+    }
+
+    #messagelist,
+    .messagelist {
+        tr:hover {
+            background: fadeout(@color-dark-main, 94%);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        tr.unread td:first-child,
+        tr.unread:not(.withselection) td.selection + td {
+            border-left-color: @color-dark-main;
+        }
+
+        tr.selected td {
+            background: @color-dark-list-selected-background;
+        }
+
+        tr.flagged td.flag:before {
+            color: @mp-color-amber;
+            text-shadow: 0 0 8px fadeout(@mp-color-amber, 50%);
+        }
+
+        td.date,
+        td.size {
+            color: @color-dark-font-secondary;
+        }
+    }
+
+    // Message list loading spinner — dark variant
+    #messagelist-content:has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
+        border-color: fadeout(@color-dark-main, 80%);
+        border-top-color: @color-dark-main;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FOLDER LIST
+    // ═══════════════════════════════════════════════════════════════════════════
+    .listing.folderlist li.selected > a,
+    #mailboxlist li.selected > a {
+        background: fadeout(@color-dark-main, 82%);
+        color: @color-dark-main-light;
+    }
+
+    .listing.folderlist li > a:hover,
+    #mailboxlist li > a:hover {
+        background: fadeout(@color-dark-main, 92%);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BADGES — glow in dark
+    // ═══════════════════════════════════════════════════════════════════════════
+    .unreadcount,
+    .badge {
+        background: @color-dark-list-badge-background;
+        color: @color-dark-list-badge;
+        box-shadow: 0 0 8px fadeout(@color-dark-main, 60%);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BUTTONS
+    // ═══════════════════════════════════════════════════════════════════════════
+    .btn-primary {
+        box-shadow: 0 2px 8px fadeout(@color-dark-main, 60%);
+
+        &:hover {
+            box-shadow: 0 4px 16px fadeout(@color-dark-main, 45%);
+        }
+    }
+
+    .btn-secondary {
+        border-color: @color-dark-border;
+        color: @color-dark-font;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 90%);
+            border-color: fadeout(@color-dark-main, 55%);
+            color: @color-dark-main-light;
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FORMS
+    // ═══════════════════════════════════════════════════════════════════════════
+    .form-control,
+    .custom-select {
+        background: @color-dark-input-background;
+        border-color: @color-dark-input-border;
+        color: @color-dark-input;
+
+        &:focus {
+            border-color: @color-dark-main;
+            box-shadow: 0 0 0 3px fadeout(@color-dark-main, 82%);
+            background: @color-dark-input-background-focus;
+        }
+    }
+
+    label,
+    .form-label {
+        color: @color-dark-font-secondary;
+    }
+
+    // Custom switches
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: @color-dark-main;
+        border-color: @color-dark-main;
+    }
+
+    .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: @color-dark-main;
+        border-color: @color-dark-main;
+    }
+
+    // Recipient chips
+    .recipient-input .recipient {
+        background: fadeout(@color-dark-main, 88%);
+        border-color: fadeout(@color-dark-main, 65%);
+        color: @color-dark-main-light;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 80%);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MESSAGE VIEW
+    // ═══════════════════════════════════════════════════════════════════════════
+    #message-header {
+        border-bottom-color: @color-dark-border;
+    }
+
+    // Attachment chips
+    .message-part a,
+    #attachment-list li a {
+        background: fadeout(@color-dark-main, 90%);
+        border-color: fadeout(@color-dark-main, 70%);
+        color: @color-dark-main-light;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 82%);
+            border-color: fadeout(@color-dark-main, 50%);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DIALOGS & POPOVERS
+    // ═══════════════════════════════════════════════════════════════════════════
+    .ui-dialog {
+        background: @color-dark-surface;
+        border-color: @color-dark-border;
+        box-shadow: @mp-shadow-dark-xl;
+
+        .ui-dialog-titlebar {
+            background: @color-dark-surface-raised;
+            border-bottom-color: @color-dark-border;
+            color: @color-dark-font;
+        }
+
+        .ui-dialog-buttonpane {
+            border-top-color: @color-dark-border;
+        }
+    }
+
+    .ui-widget-overlay {
+        background: fadeout(@color-dark-background, 35%);
+    }
+
+    .popover {
+        background: @color-dark-popover-background;
+        border-color: @color-dark-popover-border;
+        box-shadow: @mp-shadow-dark-xl;
+
+        .popover-header {
+            background: @color-dark-surface-raised;
+            border-bottom-color: @color-dark-border;
+            color: @color-dark-font;
+        }
+    }
+
+    .popover .listing li a:hover {
+        background: fadeout(@color-dark-main, 88%);
+        color: @color-dark-main-light;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TOAST MESSAGES
+    // ═══════════════════════════════════════════════════════════════════════════
+    #messagestack div {
+        box-shadow: @mp-shadow-dark-lg;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TABS
+    // ═══════════════════════════════════════════════════════════════════════════
+    .nav-tabs {
+        border-bottom-color: @color-dark-border;
+
+        .nav-item .nav-link {
+            color: @color-dark-font-secondary;
+
+            &:hover {
+                color: @color-dark-main;
+                border-bottom-color: fadeout(@color-dark-main, 60%);
+            }
+
+            &.active {
+                color: @color-dark-main-light;
+                border-bottom-color: @color-dark-main;
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SCROLLBARS
+    // ═══════════════════════════════════════════════════════════════════════════
+    ::-webkit-scrollbar-thumb {
+        background: @color-dark-scrollbar-thumb;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: @color-dark-scrollbar-track;
+    }
+
+    * {
+        scrollbar-color: @color-dark-scrollbar-thumb @color-dark-scrollbar-track;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SELECTION
+    // ═══════════════════════════════════════════════════════════════════════════
+    ::selection {
+        background: fadeout(@color-dark-main, 60%);
+        color: @color-dark-font;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FOCUS RING
+    // ═══════════════════════════════════════════════════════════════════════════
+    :focus-visible {
+        outline-color: @color-dark-main;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HOVER MENU
+    // ═══════════════════════════════════════════════════════════════════════════
+    .listing-hover-menu {
+        background: @mp-glass-dark-bg-strong;
+        box-shadow: @mp-shadow-dark-md;
+        border: 1px solid @mp-glass-dark-border;
+
+        a:hover {
+            background: fadeout(@color-dark-main, 85%);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FILE UPLOAD
+    // ═══════════════════════════════════════════════════════════════════════════
+    .file-upload {
+        border-color: fadeout(@color-dark-main, 60%);
+
+        &:hover,
+        &.hover {
+            border-color: @color-dark-main;
+            background: fadeout(@color-dark-main, 94%);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // COLUMN RESIZER
+    // ═══════════════════════════════════════════════════════════════════════════
+    .column-resizer:hover {
+        background: fadeout(@color-dark-main, 65%);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MOBILE — dark branded header
+    // ═══════════════════════════════════════════════════════════════════════════
+    @media screen and (max-width: 768px) {
+        #layout > div > .header {
+            background: darken(@color-dark-main, 25%);
+            backdrop-filter: none;
+
+            .header-title { color: #fff; }
+
+            a.button {
+                color: rgba(255, 255, 255, 0.85);
+                &:hover { background: rgba(255, 255, 255, 0.10); color: #fff; }
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // QUOTA BAR
+    // ═══════════════════════════════════════════════════════════════════════════
+    .quota-widget .bar {
+        background: fadeout(@color-dark-main, 85%);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CONTACT PHOTO
+    // ═══════════════════════════════════════════════════════════════════════════
+    .contact-head .contactphoto {
+        box-shadow: @mp-shadow-dark-md;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CALENDAR — dark ghost grid
+    // ═══════════════════════════════════════════════════════════════════════════
+    .fc {
+        th,
+        td {
+            border-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-bg td,
+        .fc-day {
+            border-right-color: @mp-cal-dark-grid-color-subtle;
+            border-left-color: @mp-cal-dark-grid-color-subtle;
+        }
+
+        .fc-time-grid .fc-slats td {
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-top-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-time-grid .fc-slats .fc-minor td {
+            border-top-color: @mp-cal-dark-grid-color-subtle;
+        }
+
+        .fc-time-grid > .fc-bg td {
+            border-right-color: @mp-cal-dark-grid-color-subtle;
+            border-left-color: transparent;
+        }
+
+        &.fc-unthemed {
+            th,
+            td,
+            thead,
+            tbody,
+            .fc-divider,
+            .fc-row,
+            .fc-content,
+            .fc-popover,
+            .fc-list-view,
+            .fc-list-heading td {
+                border-color: @mp-cal-dark-grid-color;
+            }
+        }
+
+        .fc-day.fc-today {
+            background: @mp-cal-dark-today-bg;
+        }
+
+        .fc-day-top.fc-today .fc-day-number {
+            background: @color-dark-main;
+        }
+
+        .fc-header-toolbar {
+            background-color: @mp-cal-dark-header-bg;
+            border-bottom-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-center h2 {
+            color: @color-dark-font;
+        }
+
+        .fc-day-header {
+            color: @color-dark-font-secondary;
+        }
+
+        .fc-axis {
+            color: @color-dark-font-secondary;
+        }
+
+        .fc-week-number {
+            color: @color-dark-font-secondary;
+        }
+
+        td.fc-head-container {
+            border-bottom-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-list-heading td {
+            background: fadeout(@color-dark-surface-raised, 40%);
+            color: @color-dark-font-secondary;
+        }
+
+        .fc-list-table td {
+            border-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-list-item:hover td {
+            background-color: fadeout(@color-dark-main, 90%);
+        }
+
+        .fc-popover {
+            background-color: @color-dark-surface-raised;
+            border-color: @mp-cal-dark-grid-color;
+            box-shadow: @mp-shadow-dark-lg;
+
+            .fc-header {
+                color: @color-dark-font;
+            }
+        }
+
+        .fc-now-indicator {
+            border-color: @color-dark-main;
+        }
+
+        .fc-now-indicator-line::before {
+            background: @color-dark-main;
+        }
+
+        .fc-event:hover {
+            box-shadow: @mp-shadow-dark-sm;
+        }
+    }
+
+    #agendaoptions {
+        background-color: @mp-cal-dark-header-bg;
+        border-bottom-color: @mp-cal-dark-grid-color;
+    }
+
+    body.task-calendar #layout-sidebar {
+        border-right-color: @mp-cal-dark-grid-color;
+    }
+}

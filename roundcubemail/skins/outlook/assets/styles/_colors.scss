@@ -1,0 +1,108 @@
+@use "sass:list";
+
+$map: (
+    ("df5aad", (#df5aad, #ed6fbd, #c34292, #c34292)),
+    ("b0263b", (#b0263b, #be364b, #9e172b, #9e172b)),
+    ("d74c1b", (#d74c1b, #e35b2b, #c33c0d, #c33c0d)),
+    ("ff9022", (#ff9022, #fe9834, #ea7a09, #c0650b)),
+    ("83b600", (#83b600, #92c709, #75a201, #648b00)),
+    ("00860e", (#00860e, #089817, #00760d, #00760d)),
+    ("00b2b3", (#00b2b3, #03c3c4, #019fa0, #008081)),
+    ("00829a", (#00829a, #0790a9, #00748a, #00748a)),
+    ("47b4ff", (#47b4ff, #5bbcff, #269ae9, #0076c6)),
+    ("0075c8", (#0075c8, #138be1, #005797, #005797)),
+    ("3c2cb6", (#3c2cb6, #4f40c4, #2c1da4, #2c1da4)),
+    ("8d2297", (#8d2297, #ac3cb6, #791482, #791482)),
+    ("004e8d", (#004e8d, #0c60a4, #00447a, #00447a)),
+    ("001b41", (#001b41, #00265b, #093572, #093572)),
+    ("5a0600", (#5a0600, #78130c, #3f0400, #3f0400)),
+    ("3a0300", (#3a0300, #67100c, #67100c, #67100c)),
+    ("585858", (#585858, #767676, #3f3f3f, #3f3f3f)),
+    ("000000", (#000000, #3f3f3f, #3f3f3f, #3f3f3f))
+);
+
+@each $row in $map {
+    $key: list.nth($row, 1);
+    $colors: list.nth($row, 2);
+
+    body.xcolor-#{$key} button.mainaction,
+    body.xcolor-#{$key} input.button.mainaction,
+    body.xcolor-#{$key} #look-and-feel-shortcut a,
+    body.xcolor-#{$key} input.switchbox-input:checked + label.switchbox {
+        background-color: #{list.nth($colors, 1)} !important;
+        border-color: #{list.nth($colors, 1)} !important;
+
+        &:hover,
+        &:focus,
+        &:active {
+            border-color: #{list.nth($colors, 2)} !important;
+            background-color: #{list.nth($colors, 2)} !important;
+        }
+    }
+
+    body.xcolor-#{$key} .uibox .boxtitle,
+    body.xcolor-#{$key} .uibox .listing thead td,
+    body.xcolor-#{$key} .uibox .listing thead th,
+    body.xcolor-#{$key} .records-table thead td,
+    body.xcolor-#{$key} .records-table thead th,
+    body.xcolor-#{$key} #topnav,
+    body.xcolor-#{$key} #topline,
+    body.xcolor-#{$key}.minimal #topline,
+    body.xcolor-#{$key} ul#planner_controls li a,
+    body.xcolor-#{$key} .googie_list form img,
+    body.xcolor-#{$key}.iframe h1.boxtitle,
+    body.xcolor-#{$key}.xcalendar .ui-datepicker .ui-datepicker-header,
+    body.xmobile.xcolor-#{$key} #main-menu,
+    body.xmobile.xcolor-#{$key} .popup-close,
+    body.xmobile.xcolor-#{$key} #mailboxlist li.mailbox a .unreadcount,
+    body.xmobile.xcolor-#{$key} #messagelistcontainer .boxpagenav a.icon,
+    body.xmobile.xcolor-#{$key} #messagestack div,
+    body.xmobile.xcolor-#{$key} .boxfooter .listbutton,
+    body.xmobile.xcolor-#{$key} .popup-box .popup-close,
+    body.xmobile.xcolor-#{$key} #contactphoto .formlinks a,
+    body.xmobile.xcolor-#{$key} .contactfieldcontent a.contactfieldbutton,
+    body.xmobile.xcolor-#{$key} #compose-attachments a.button {
+        background: #{list.nth($colors, 1)};
+    }
+
+    body.xcolor-#{$key} .flatpickr-confirm,
+    body.xcolor-#{$key} .flatpickr-day.selected,
+    body.xmobile.xcolor-#{$key} #countcontrols .pagenavbuttons a.button:not(.disabled) {
+        background-color: #{list.nth($colors, 1)} !important;
+    }
+
+    body.xcolor-#{$key} .popupmenu,
+    body.xcolor-#{$key} #messagestack div,
+    body.xcolor-#{$key} #rcmKSearchpane,
+    body.xcolor-#{$key} .xtabs.ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor {
+        border-color: #{list.nth($colors, 1)};
+    }
+
+    body.xcolor-#{$key} a.rowLink:hover,
+    body.xcolor-#{$key} #remote-objects-message a:hover {
+        background-color: #{list.nth($colors, 2)} !important;
+    }
+
+    body.xcolor-#{$key} #topnav a.button-selected,
+    body.xcolor-#{$key} #topnav a:hover,
+    body.xcolor-#{$key} #topnav a:focus,
+    body.xcolor-#{$key} body.mailbox #inboxButton a {
+        background-color: #{list.nth($colors, 3)};
+    }
+
+    body.xcolor-#{$key} .toolbar a.button,
+    body.xcolor-#{$key} .toolbar a.button:before,
+    body.xcolor-#{$key} a.iconbutton,
+    body.xdesktop.xcolor-#{$key} .dropbutton .dropbuttontip,
+    body.xmobile.xcolor-#{$key} #mailbox list li.mailbox div.treetoggle,
+    body.xmobile.xcolor-#{$key} #directorylist li.addressbook div.collapsed,
+    body.xmobile.xcolor-#{$key} #directorylist li.addressbook div.expanded,
+    body.xmobile.xcolor-#{$key} .folderlist li.mailbox div.treetoggle:before {
+        color: #{list.nth($colors, 1)};
+    }
+
+    body.xcolor-#{$key} #main-menu a.active,
+    body.xcolor-#{$key} #xsidebar-button {
+        color: #{list.nth($colors, 3)};
+    };
+}

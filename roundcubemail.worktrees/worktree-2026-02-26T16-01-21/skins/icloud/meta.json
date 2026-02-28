@@ -1,0 +1,34 @@
+{
+    "name": "iCloud",
+    "author": "Roundcube Plus (https://roundcubeplus.com)",
+    "license": "Commercial",
+    "license-url": "",
+    "extends": "larry",
+    "config": {
+        "xapps-top": true,
+        "xbody-classes": "",
+        "xskin_colors": {
+            "color_01": "007aff",
+            "color_02": "7200ff",
+            "color_03": "00afa1",
+            "color_04": "009e13",
+            "color_05": "518901",
+            "color_06": "878901",
+            "color_07": "f92d30",
+            "color_08": "ef0087",
+            "color_09": "ff8400",
+            "color_10": "d66f00",
+            "color_11": "895401",
+            "color_12": "000000"
+        },
+        "xskin_default_icons": "outlined",
+        "xskin_default_list_icons": true,
+        "xskin_default_font_family":  "roboto",
+        "xskin_default_font_size": "n",
+        "xskin_default_thick_font": false,
+        "xskin_default_color": "007aff",
+        "xlarry_font_icons": true,
+        "xlarry_square_ui": false,
+        "xlarry_light_ui": true
+    }
+}

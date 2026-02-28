@@ -1,0 +1,109 @@
+@mixin content-box {
+    background-color: #fff;
+    border: none;
+    border-radius: 2px !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2) !important;
+    margin: 15px 0 15px 10px;
+
+    html.dark-mode & {
+        background-color: #21292C;
+    }
+}
+
+// ************* material checkboxes
+
+input.icon-checkbox {
+    & + label {
+        &:before {
+            font-weight: normal;
+            color: #434343 !important;
+            content: "\F0C8";
+        }
+
+        &:after {
+            position: absolute;
+            top: -11px;
+            left: -11px;
+            display: block;
+            background: #aaa;
+            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+            content: "";
+            transform: scale(0);
+        }
+    }
+
+    &:checked + label {
+        &:before {
+            font-weight: 900;
+            content: "\F14A";
+        }
+    }
+
+    &:focus + label:after {
+        animation: checkbox-ripple 0.5s ease-out;
+    }
+}
+
+@keyframes checkbox-ripple {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+// ************** material inputs
+
+.form-control:not(#composebody):not(.error) {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0 !important;
+
+    &:focus,
+    &.focus {
+        box-shadow: none;
+        border-width: 2px;
+    }
+}
+
+.input-group {
+    .input-group-prepend,
+    .input-group-append {
+        * {
+            background: transparent;
+            border: none;
+
+            &:focus {
+                box-shadow: none !important;
+            }
+        }
+    }
+}
+
+// ***************** material wave
+
+.wave-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.wave {
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    animation: wave-ripple 0.6s;
+}
+
+@keyframes wave-ripple {
+    100% { transform: scale(100); opacity: 0; }
+}
+
+

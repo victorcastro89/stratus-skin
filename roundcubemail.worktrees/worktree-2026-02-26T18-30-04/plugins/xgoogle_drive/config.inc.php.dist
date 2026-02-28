@@ -1,0 +1,37 @@
+<?php
+/**
+ * Roundcube Plus Google Drive plugin.
+ *
+ * Copyright 2016, Tecorama LLC.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+// Specify the Google client ID. See the README file for step-by-step instructions on obtaining the client ID.
+// Default: ''
+$config['google_drive_client_id'] = '';
+
+// Specify the view ID to use in the Drive Picker and the mime type restrictions that should be applied to the view. The view ID should be
+// specified as the array key and the mime types should be specified as the array value (in a comma-separated list if needed.) If you don't
+// specify any mime type restrictions, all files will be displayed.
+//
+// Available view IDs: https://developers.google.com/picker/docs/reference#view-id
+// Common mime types: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+//
+// Examples:
+// ['DOCS' => ''] - use the 'all document' view type and don't restrict the files by mime types
+// ['DOCS_IMAGES' => ''] - use the 'photos only' view type and don't restrict the files by mime types
+// ['DOCS_IMAGES' => 'image/png,image/jpeg'] - use the 'photos only' view type and restrict the files to png and jpeg images
+//
+// Default: ['DOCS' => '']
+$config['google_drive_select_view'] = ['DOCS' => ''];
+
+// Specify the Drive Picker authorization scopes. Each scope should be added as a new item in the array.
+// Available values: https://developers.google.com/drive/api/v3/reference/permissions/list#auth
+// Default: ['https://www.googleapis.com/auth/drive.readonly']
+$config['google_drive_select_scope'] = ['https://www.googleapis.com/auth/drive.readonly'];
+
+// Specify the Drive Picker features. Each feature should be added as a new item in the array.
+// Available values: https://developers.google.com/picker/docs/reference#feature
+// Default: ['MULTISELECT_ENABLED'];
+$config['google_drive_select_features'] = ['MULTISELECT_ENABLED'];

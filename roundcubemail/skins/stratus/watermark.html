@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stratus for Roundcube</title>
+<style>
+  /* Font Awesome "Icons" font — bundled with elastic skin */
+  @font-face {
+    font-family: 'Icons';
+    font-style: normal;
+    font-weight: 900;
+    src: url("../elastic/fonts/fa-solid-900.woff2") format("woff2"),
+         url("../elastic/fonts/fa-solid-900.woff") format("woff");
+  }
+  @font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300;
+    src: url("../elastic/fonts/roboto-v29-regular.woff2") format("woff2"),
+         url("../elastic/fonts/roboto-v29-regular.woff") format("woff");
+  }
+  @font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: url("../elastic/fonts/roboto-v29-regular.woff2") format("woff2"),
+         url("../elastic/fonts/roboto-v29-regular.woff") format("woff");
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: transparent;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .mp-watermark {
+    text-align: center;
+    padding: 2rem;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Cloud icon — Font Awesome 5 "cloud" glyph (\f0c2) */
+  .mp-watermark-icon {
+    font-family: 'Icons';
+    font-weight: 900;
+    font-size: 96px;
+    line-height: 1;
+    color: #1a1f36;
+    opacity: 0.15;
+    display: block;
+    margin-bottom: 12px;
+    /* Smooth rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Brand name */
+  .mp-watermark-text {
+    font-family: Roboto, sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #1a1f36;
+    opacity: 0.20;
+    margin-left: 0.35em; /* optical centering for letter-spacing */
+  }
+
+  /* ── Dark mode (class set by JS below) ── */
+  html.dark-mode body {
+    background: #222;
+  }
+  html.dark-mode .mp-watermark-icon {
+    color: #e8eaf6;
+    opacity: 0.10;
+  }
+  html.dark-mode .mp-watermark-text {
+    color: #e8eaf6;
+    opacity: 0.14;
+  }
+</style>
+<script>
+  // Dark mode detection (matches elastic's approach)
+  if (document.cookie.match(/colorMode=dark/)
+      || window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.classList.add('dark-mode');
+  }
+</script>
+</head>
+<body>
+  <div class="mp-watermark">
+    <!-- Font Awesome 5 cloud icon (U+F0C2) -->
+    <span class="mp-watermark-icon" aria-hidden="true">&#xf0c2;</span>
+    <span class="mp-watermark-text">stratus</span>
+  </div>
+</body>
+</html>

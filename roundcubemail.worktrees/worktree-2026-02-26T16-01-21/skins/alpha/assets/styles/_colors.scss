@@ -1,0 +1,114 @@
+@use "sass:list";
+
+$map: (
+    ("0dbb6f", (#0dbb6f, #05693d, #b4f7da, #e0fcf0)),
+    ("26bb0d", (#26bb0d, #146a05, #caf4c2, #e1fddc)),
+    ("6bbb0d", (#6bbb0d, #498206, #d7f5b4, #edfcdb)),
+    ("a0bb0d", (#a0bb0d, #687908, #dae4a0, #f9ffdc)),
+    ("bbb90d", (#bbb90d, #7f7e09, #e0dfaa, #ffffdb)),
+    ("bb9c0d", (#bb9c0d, #756209, #dbd09d, #fff8d9)),
+    ("bb7c0d", (#bb7c0d, #66450b, #e0c39e, #fff0dd)),
+    ("bb4f0d", (#bb4f0d, #723008, #d5a98f, #ffede1)),
+    ("bb0d0d", (#bb0d0d, #760707, #dc9c9c, #ffe2e2)),
+    ("bb0d53", (#bb0d53, #780a36, #ecbed0, #ffdfec)),
+    ("bb0d90", (#bb0d90, #820a64, #edbce1, #fddcf5)),
+    ("bb0db9", (#bb0db9, #780977, #e8bbe7, #ffe2ff)),
+    ("9d40cd", (#9d40cd, #622283, #e3caf0, #f3e1fc)),
+    ("7a50e4", (#7a50e4, #51339e, #d3c8ef, #eae2ff)),
+    ("274f9f", (#274f9f, #183570, #d1ddf6, #e0ebff)),
+    ("0d73bb", (#0d73bb, #064d87, #adcbdd, #e4f5ff)),
+    ("0da4bb", (#0da4bb, #066f7e, #9df0cc, #dffafd)),
+    ("666666", (#666666, #404040, #e7e7e7, #eeeeee))
+);
+
+@each $row in $map {
+    $key: list.nth($row, 1);
+    $colors: list.nth($row, 2);
+
+    body.xcolor-#{$key} button.mainaction,
+    body.xcolor-#{$key} input.button.mainaction,
+    body.xcolor-#{$key} #look-and-feel-shortcut a,
+    body.xcolor-#{$key} input.switchbox-input:checked + label.switchbox {
+        background-color: #{list.nth($colors, 1)} !important;
+        border-color: #{list.nth($colors, 1)} !important;
+
+        &:hover,
+        &:focus,
+        &:active {
+            border-color: #{list.nth($colors, 2)} !important;
+            background-color: #{list.nth($colors, 2)} !important;
+        }
+    }
+
+    /* normal */
+    body.xcolor-#{$key} #toolbar-bg,
+    body.xcolor-#{$key} #look-and-feel-shortcut a,
+    body.xcolor-#{$key}.calendar-page #messagetoolbar,
+    body.xcolor-#{$key} button.mainaction,
+    body.xcolor-#{$key} input.button.mainaction,
+    body.xcolor-#{$key} ul#planner_controls li a,
+    body.xmobile.xcolor-#{$key} #main-menu a,
+    body.xmobile.xcolor-#{$key} .boxfooter .listbutton,
+    body.xmobile.xcolor-#{$key} #mailFoldersBox a,
+    body.xmobile.xcolor-#{$key} #addressList a,
+    body.xmobile.xcolor-#{$key} .contactfieldbutton.deletebutton,
+    body.xmobile.xcolor-#{$key} .iframe a.active,
+    body.xmobile.xcolor-#{$key} #subscriptionTable td.name,
+    body.xmobile.xcolor-#{$key} div.buttonBox a,
+    body.xmobile.xcolor-#{$key} #message-objects div a.button,
+    body.xmobile.xcolor-#{$key} input.button.mainaction,
+    body.xcolor-#{$key} input.switchbox-input:checked + label.switchbox,
+    body.xmobile.xcolor-#{$key} #countcontrols .pagenavbuttons a.button:not(.disabled),
+    body.xmobile.xcolor-#{$key} #compose-attachments a.button {
+        background: #{list.nth($colors, 1)} !important;
+    }
+
+    body.xmobile.xcolor-#{$key} .folderlist li.mailbox div.treetoggle:before {
+        color: #{list.nth($colors, 1)};
+    }
+
+    /* dark */
+    body.xcolor-#{$key} #mainscreen .toolbar a.button,
+    body.xmobile.xcolor-#{$key} #main-menu a.active {
+        background-color: #{list.nth($colors, 2)} !important;
+    }
+
+    body.xcolor-#{$key} #mainscreen .toolbar a.button:hover {
+        background-color: #{list.nth($colors, 3)} !important;
+    }
+
+    /* light */
+    body.xcolor-#{$key} .records-table thead td,
+    body.xcolor-#{$key} .records-table thead th,
+    body.xcolor-#{$key} .boxtitle,
+    body.xcolor-#{$key} .uibox .listing thead td,
+    body.xcolor-#{$key} .uibox .listing thead th,
+    body.xcolor-#{$key}.iframe h1.boxtitle {
+        border-color: #{list.nth($colors, 3)};
+    }
+
+    /* lighter */
+    body.xcolor-#{$key} .records-table thead td,
+    body.xcolor-#{$key} .records-table thead th,
+    body.xcolor-#{$key} #messageheader,
+    body.xcolor-#{$key} .uibox .boxtitle,
+    body.xcolor-#{$key} .uibox .listing thead td,
+    body.xcolor-#{$key} .uibox .listing thead th,
+    body.xcolor-#{$key} #composeheaders,
+    body.xcolor-#{$key} #mailview-right #messageheader,
+    body.xcolor-#{$key}.iframe h1.boxtitle,
+    body.xcolor-#{$key}.xcalendar .ui-datepicker .ui-datepicker-header {
+        background-color: #{list.nth($colors, 4)};
+    }
+
+    body.xcolor-#{$key} {
+        .listing:not(#mailboxlist) li.selected,
+        .listing:not(#mailboxlist) li.selected > a,
+        .listing:not(#mailboxlist) tbody tr.unfocused td,
+        .listing:not(#mailboxlist) tbody tr.selected td,
+        .records-table.focus tr.selected td {
+            background-color: #{list.nth($colors, 4)} !important;
+        }
+    }
+
+}

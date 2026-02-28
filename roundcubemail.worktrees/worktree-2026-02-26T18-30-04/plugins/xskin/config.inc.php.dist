@@ -1,0 +1,92 @@
+<?php
+/**
+ * Roundcube Plus Skin plugin.
+ *
+ * Copyright 2019, Tecorama LLC.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+// Specify the url to the branding image that should be displayed as the message preview watermark. If this option is set to null, the skins
+// will use the default watermark located here: [roundcube]/plugins/xskin/assets/images/watermark.png
+// Example: $config['preview_branding'] = 'http://yourdomain.com/images/watermark.png';
+// Default: null
+$config['preview_branding'] = null;
+
+// This setting allows you to always include a custom css file regardless of which skin is loaded.
+// Example: $config['overwrite_css'] = 'http://yourdomain.com/styles/custom.css';
+// Default: null
+$config['overwrite_css'] = null;
+
+// Set this option to true if you want to remove the skin selection from the interface option dropdown menu.
+// Default: false
+$config['disable_menu_skins'] = false;
+
+// Set this option to true if you want to remove the language selection from the interface option dropdown menu.
+// Default: false
+$config['disable_menu_languages'] = false;
+
+// Set this option to true if you want to disable mobile detection and force the skins to use the desktop interface on mobile devices. This
+// setting is applicable only to the larry-based skins; it will have no effect on the elastic-based skins.
+// NOTE: This setting applies to Larry-based skins only.
+// Default: false
+$config['disable_mobile_interface'] = false;
+
+// Specify the third-party plugins you use that don't function properly and should be disabled on mobile devices.
+// NOTE: This setting applies to Larry-based skins only.
+// Default: []
+$config['disable_plugins_on_mobile'] = [];
+
+// If you find that the Roundcube html editor causes problems on mobile devices, you can disable the html composition support on mobile
+// devices by setting this option to false.
+// NOTE: This setting applies to Larry-based skins only.
+// Default: true
+$config['allow_mobile_html_composing'] = true;
+
+// Set this option to true if you want to disable the skin color-changing menu. If you disable the menu, the skins will use the color last
+// selected by the user or if the user never changed the color, the default color specified in [roundcube]/skins/[skin_name]/settings.php
+// NOTE: This setting applies to Larry-based skins only.
+// Default: false
+$config['disable_menu_colors'] = false;
+
+// By default the skins use fonts loaded from the remote Google font repository. Set this value to true to disable the remote fonts and
+// force the skins to use locally hosted fonts only. For the elastic-based skins it will be a local copy of Roboto (included with elastic)
+// and for the larry-based skins it will be a locally available sans-serif font with preference for Lucida Grande or Verdana. Setting this
+// value to true will also disable the font selection in the skins' Look & Feel settings section.
+// Default: false
+$config['disable_remote_skin_fonts'] = false;
+
+// Specify the plugins that don't follow the Roundcube plugin development guidelines regarding skin support. Some developers don't
+// account for the possibility of their plugins being used under different skins than the default 'larry' and 'classic'. They hard-code
+// those skin names into their code which effectively makes the plugins unusable under any other skin. The xskin plugin can fix this problem
+// by making those plugin believe they run under larry even if in reality they run under a different skin. For this functionality to work,
+// the xskin plugin must be included at the very beginning of the plugin array in config/config.inc.php.
+$config['fix_plugins'] = [
+    "carddav",
+    "compose_in_taskbar",
+    "contactus",
+    "google_ads",
+    "impressum",
+    "jappix4roundcube",
+    "keyboard_shortcuts",
+    "message_highlight",
+    "moreuserinfo",
+    "myrc_sprites",
+    "nabble",
+    "persistent_login",
+    "planner",
+    "plugin_manager",
+    "pwtools",
+    "register",
+    "settings",
+    "sticky_notes",
+    "taskbar",
+    "tasklist",
+    "timepicker",
+    "threecol",
+    "scheduled_sending",
+    "summary",
+    "vcard_send",
+    "vkeyboard",
+];
+

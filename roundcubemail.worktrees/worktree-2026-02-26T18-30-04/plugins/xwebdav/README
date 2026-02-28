@@ -1,0 +1,40 @@
+ROUNDCUBE PLUS WEBDAV PLUGIN
+============================
+This plugin adds the option of saving email attachments to a WebDAV server, inserting links to composed messages from a WebDAV
+server, or downloading files from a WebDAV server and attaching them to composed messages.
+
+REQUIREMENTS
+------------
+- Roundcube: 1.5, 1.6
+- PHP: 7.4 or higher
+- PHP cURL extension
+- PHP SimpleXML extension
+
+INSTALLATION
+------------
+1. Copy the directories xwebdav and xframework included in this package to the 'plugins' directory of your Roundcube installation.
+
+2. Rename the file <roundcube>/plugins/xwebdav/config.inc.php.dist to config.inc.php.
+
+3. Edit the file <roundcube>/plugins/xwebdav/config.inc.php and modify the settings according to your needs.
+
+4. Edit the file <roundcube>/config/config.inc.php, add xwebdav to the plugins array and specify your license key.
+
+For more information on installing Roundcube Plus plugins see:
+https://roundcubeplus.com/helpdesk/knowledgebase.php?article=29
+
+SERVICE PROVIDERS
+-----------------
+Currently only Nextcloud WebDAV servers are supported. In order to use Nextcloud you can either host it on your own server or use
+one of the ready-made Nextcloud services. Nextcloud.com provides a list of providers that can get you started:
+
+https://nextcloud.com/signup/
+
+LICENSE
+-------
+This plugin is distributed under a commercial license. In order to use the plugin, you must purchase the license
+from Tecorama LLC. See the LICENSE file for details.
+
+COPYRIGHT
+---------
+Copyright (c) 2025, Tecorama LLC

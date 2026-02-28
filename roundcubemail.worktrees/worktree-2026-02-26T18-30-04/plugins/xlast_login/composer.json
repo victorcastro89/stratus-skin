@@ -1,0 +1,16 @@
+{
+    "name": "roundcubeplus/xlast_login",
+    "type": "roundcube-plugin",
+    "description": "Displays information about the last user login on the sidebar as a verification that the email account has not been hacked and used by somebody else.",
+    "license": "Commercial",
+    "version": "1.3.5",
+    "homepage": "https://roundcubeplus.com",
+    "authors": [
+        {
+            "name": "Roundcube Plus",
+            "email": "contact@roundcubeplus.com"
+        }
+    ],
+    "repositories": [],
+    "require": {}
+}

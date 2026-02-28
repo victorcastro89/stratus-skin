@@ -1,0 +1,16 @@
+{
+    "name": "roundcubeplus/xcompose",
+    "type": "roundcube-plugin",
+    "description": "Provides additional message composition settings.",
+    "license": "Commercial",
+    "version": "1.1.8",
+    "homepage": "https://roundcubeplus.com",
+    "authors": [
+        {
+            "name": "Roundcube Plus",
+            "email": "contact@roundcubeplus.com"
+        }
+    ],
+    "repositories": [],
+    "require": {}
+}

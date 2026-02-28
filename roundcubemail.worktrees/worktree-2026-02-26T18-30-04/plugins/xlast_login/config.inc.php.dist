@@ -1,0 +1,47 @@
+<?php
+/**
+ * Roundcube Plus Last Login plugin.
+ *
+ * Copyright 2016, Tecorama LLC.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+// Specifies the provider that will be used to get the geolocation data from the user's IP.
+// Available options: 'maxmind', 'geoiploc'.
+// Default: 'maxmind'
+// Both the available providers use local databases to obtain the data, they don't connect to any external services.
+// To keep the data up-to-date, make sure to upgrade this plugin regularly.
+// MaxMind: http://dev.maxmind.com/geoip/
+// GeoIpLoc: http://chir.ag/projects/geoiploc/
+$config['geolocation_provider'] = "maxmind";
+
+// By default the plugin will use the free Country MaxMind database (http://dev.maxmind.com/geoip/).
+// If you would like to provide more detail for the last login record, you can point this to your own version of the
+// MaxMind database: either the free City database or the commercial City or Country database. Specify the full path
+// to the database located on your file system.
+// For example: /home/username/GeoLite2-City.mmdb
+// Default: false
+$config['maxmind_database'] = false;
+
+// If you provided your own MaxMind database of the type 'City' in the maxmind_database setting above, set this option
+// to true. This will add the city, latitude and longitude information to the geolocation record.
+// This option is only available if geolocation_provider is set to 'maxmind'.
+// Default: false
+$config['maxmind_city'] = true;
+
+// Specifies the url of the service that provides more information about the IP address of the last login. If this
+// option is set, a 'More data' link will be displayed in the Last Login sidebar box. The placeholder %s will be
+// replaced with the IP address. If you don't want to display the 'More data' link, set this option to false.
+// Default: "http://whatismyipaddress.com/ip/%s"
+$config['more_data_url'] = "http://whatismyipaddress.com/ip/%s";
+
+// Specifies whether the Google Maps link should be displayed in the Last Login sidebar box. The link will only be
+// displayed if you use the MaxMind City database and the latitude and longitude information is available for the IP.
+// Default: true
+$config['show_map_link'] = true;
+
+// Specifies whether the "What's this" link should be displayed in the Last Login sidebar box. This link opens a dialog
+// box explaining what the last login information is used for.
+// Default: true
+$config['show_whats_this_link'] = true;

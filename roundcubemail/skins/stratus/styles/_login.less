@@ -1,0 +1,348 @@
+// stratus skin — Login page styles
+// Overrides: elastic login — animated gradient bg, glassmorphic card, refined form
+// Design: "Atmospheric Modern" — immersive gradient, frosted glass, fluid inputs
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOGIN PAGE CONTAINER
+// ═══════════════════════════════════════════════════════════════════════════════
+.task-login {
+
+    // Animated mesh gradient background
+    body {
+        background: linear-gradient(-45deg, 
+            @color-taskmenu-background, 
+            darken(@color-main, 18%), 
+            @mp-color-violet, 
+            darken(@color-taskmenu-background, 5%)
+        );
+        background-size: 400% 400%;
+        animation: mp-gradient-shift 20s ease infinite;
+        min-height: 100vh;
+
+        // Subtle dot pattern overlay
+        &::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 0;
+        }
+    }
+
+    // Center the form
+    #layout-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: @mp-space-2xl;
+        position: relative;
+        z-index: 1;
+    }
+
+    // ─── Logo — Cloud icon ─────────────────────────────────────────────────
+    #logo {
+        position: static;   // reset elastic's position:relative + top:16vh
+        top: auto;
+        margin-bottom: @mp-space-2xl;
+        max-width: 80px;
+        filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.18));
+        opacity: 0.92;
+        transition: opacity @mp-transition-base;
+
+        img {
+            max-width: 100%;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    // ─── Login form card — frosted glass ─────────────────────────────────────
+    #login-form {
+        position: static;   // reset elastic's position:relative + top:20vh
+        top: auto;
+        background: @mp-glass-bg;
+        backdrop-filter: blur(@mp-glass-blur-strong);
+        -webkit-backdrop-filter: blur(@mp-glass-blur-strong);
+        border: 1px solid @mp-glass-border;
+        border-radius: @mp-radius-2xl;
+        box-shadow: @mp-shadow-2xl,
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        padding: @mp-space-3xl @mp-space-2xl @mp-space-2xl;
+        width: 100%;
+        max-width: 400px;
+        animation: mp-scale-in @mp-transition-slow forwards;
+
+        // Subtle top accent line
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 3px;
+            background: @color-main-gradient;
+            border-radius: 0 0 @mp-radius-pill @mp-radius-pill;
+        }
+
+        // Form heading area
+        h1, .login-title {
+            text-align: center;
+            color: @color-black;
+            font-size: @mp-font-size-xl;
+            font-weight: @mp-font-weight-bold;
+            margin-bottom: @mp-space-xl;
+            letter-spacing: @mp-letter-spacing-tight;
+        }
+
+        // ─── Input fields ────────────────────────────────────────────────────
+        .form-control {
+            border-radius: @mp-radius-lg;
+            border: 1px solid fadeout(@color-border, 30%);
+            background: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1rem;
+            font-size: @mp-font-size-base;
+
+            &::placeholder {
+                color: fadeout(@color-font-secondary, 30%);
+                font-weight: @mp-font-weight-normal;
+            }
+
+            &:focus {
+                background: rgba(255, 255, 255, 0.85);
+                border-color: @color-main;
+                box-shadow: 0 0 0 4px fadeout(@color-main, 82%),
+                            @mp-shadow-sm;
+            }
+        }
+
+        // Row spacing
+        .row,
+        .form-group,
+        .input-group {
+            margin-bottom: @mp-space-md;
+        }
+
+        // Labels inside form
+        label {
+            color: @color-font;
+            font-weight: @mp-font-weight-medium;
+            font-size: @mp-font-size-sm;
+            margin-bottom: @mp-space-xs;
+        }
+
+        // ─── Submit button — gradient with hover elevation ───────────────────
+        input[type="submit"],
+        button[type="submit"],
+        .input-group-append .btn,
+        #rcmloginsubmit {
+            background: @color-main-gradient;
+            border: none;
+            color: #fff;
+            border-radius: @mp-radius-lg;
+            font-weight: @mp-font-weight-semibold;
+            font-size: @mp-font-size-base;
+            letter-spacing: @mp-letter-spacing-wide;
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            margin-top: @mp-space-sm;
+            box-shadow: 0 4px 16px fadeout(@color-main, 55%);
+            cursor: pointer;
+
+            &:hover,
+            &:focus {
+                background: @color-main-gradient-hover;
+                box-shadow: 0 6px 24px fadeout(@color-main, 40%);
+                transform: translateY(-1px);
+            }
+
+            &:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 8px fadeout(@color-main, 55%);
+            }
+        }
+
+        // Remember me checkbox
+        .custom-control {
+            padding-top: @mp-space-xs;
+
+            .custom-control-label {
+                font-size: @mp-font-size-sm;
+                color: @color-font-secondary;
+            }
+        }
+
+        // OAuth login
+        .oauthlogin {
+            margin-top: @mp-space-lg;
+            padding-top: @mp-space-lg;
+            border-top: 1px solid fadeout(@color-border, 50%);
+            text-align: center;
+
+            a {
+                display: inline-flex;
+                align-items: center;
+                padding: @mp-space-sm @mp-space-lg;
+                border-radius: @mp-radius-md;
+                border: 1px solid @color-border;
+                background: rgba(255, 255, 255, 0.5);
+                color: @color-font;
+                font-weight: @mp-font-weight-medium;
+                transition: background @mp-transition-base, box-shadow @mp-transition-smooth;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.8);
+                    box-shadow: @mp-shadow-sm;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+
+    // ─── Footer links ────────────────────────────────────────────────────────
+    #login-footer {
+        margin-top: @mp-space-xl;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: @mp-font-size-sm;
+        text-align: center;
+
+        & > div {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: @mp-radius-lg;
+            padding: @mp-space-md @mp-space-lg;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color @mp-transition-base;
+
+            &:hover {
+                color: #fff;
+            }
+        }
+    }
+
+    // ─── Login addon area ────────────────────────────────────────────────────
+    #login-addon {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: @mp-radius-lg;
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOGIN — DARK MODE
+// ═══════════════════════════════════════════════════════════════════════════════
+html.dark-mode .task-login {
+
+    body {
+        background: linear-gradient(-45deg, 
+            darken(@color-dark-background, 5%), 
+            @color-dark-surface, 
+            darken(@mp-color-violet, 35%), 
+            @color-dark-background
+        );
+        background-size: 400% 400%;
+        animation: mp-gradient-shift 20s ease infinite;
+    }
+
+    #login-form {
+        background: @mp-glass-dark-bg;
+        backdrop-filter: blur(@mp-glass-blur-strong);
+        -webkit-backdrop-filter: blur(@mp-glass-blur-strong);
+        border-color: @mp-glass-dark-border;
+        box-shadow: @mp-shadow-dark-xl,
+                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+        h1, .login-title {
+            color: @color-dark-font;
+        }
+
+        .form-control {
+            background: fadeout(@color-dark-background, 40%);
+            border-color: @color-dark-border;
+            color: @color-dark-font;
+
+            &::placeholder {
+                color: @color-dark-font-secondary;
+            }
+
+            &:focus {
+                background: fadeout(@color-dark-background, 20%);
+                border-color: @color-dark-main;
+                box-shadow: 0 0 0 4px fadeout(@color-dark-main, 80%),
+                            @mp-shadow-dark-sm;
+            }
+        }
+
+        label {
+            color: @color-dark-font;
+        }
+
+        input[type="submit"],
+        button[type="submit"],
+        #rcmloginsubmit {
+            box-shadow: 0 4px 16px fadeout(@color-dark-main, 50%);
+
+            &:hover {
+                box-shadow: 0 6px 24px fadeout(@color-dark-main, 35%);
+            }
+        }
+
+        .oauthlogin a {
+            border-color: @color-dark-border;
+            background: fadeout(@color-dark-surface, 50%);
+            color: @color-dark-font;
+
+            &:hover {
+                background: fadeout(@color-dark-surface-raised, 30%);
+            }
+        }
+    }
+
+    #login-footer {
+        color: fadeout(@color-dark-font, 50%);
+
+        & > div {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.04);
+        }
+
+        a {
+            color: fadeout(@color-dark-font, 30%);
+            &:hover { color: @color-dark-font; }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOGIN — RESPONSIVE
+// ═══════════════════════════════════════════════════════════════════════════════
+@media screen and (max-width: 480px) {
+    .task-login {
+        #login-form {
+            padding: @mp-space-2xl @mp-space-lg @mp-space-xl;
+            border-radius: @mp-radius-xl;
+            max-width: 100%;
+        }
+
+        #logo {
+            max-width: 120px;
+        }
+    }
+}

@@ -1,0 +1,90 @@
+<?php
+/**
+ * Roundcube Plus Email Schedule plugin.
+ *
+ * Copyright 2018, Tecorama LLC.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+// Specifies the default message sending delay value in minutes. The users will be able to change this value in the
+// settings. To disable message scheduling, set this value to zero.
+// Available values: 0, 5, 10, 15, 30, 60, 120, 360
+// Default value: 0
+$config['xemail_schedule_delay'] = 0;
+
+// Specifies whether the scheduled messages that are to be sent in less than 5 minutes will be highlighted in the
+// scheduled message list.
+// Available values: 1, 0
+// Default value: 1
+$config['xemail_schedule_highlight'] = 1;
+
+// Specifies the amount of seconds that the cron execution should be delayed by. This might be useful if you're running more than one
+// cron job every minute and you want to space out the server load. The php script will sleep for the specified number of seconds before
+// executing the cron job function.
+// Available values: [integer in the range of 0 - 30]
+// Default value: 0
+$config['xemail_schedule_cron_execution_delay'] = 0;
+
+// Specifies the amount of seconds that need to elapse since the last cron execution before the plugin disables
+// the scheduling options on the compose page. This option is a safety valve that prevents the users from scheduling
+// their messages if the cron job that triggers message sending is not running.
+// Available values: [integer larger than 60]
+// Default value: 120
+$config['xemail_schedule_cron_error_delay'] = 120;
+
+// Specifies the amount of milliseconds the plugin will wait after sending each message when executed by the cron job.
+// To disable the wait and send all the scheduled messages right away, set this option to 0.
+// More info: If a lot of scheduled messages are sent to the mail server one after another, the users who are trying
+// to send their messages using the compose page at the same time might experience delays. If you discover that this is
+// happening on your server, you can slow down the cron message sending by specifying a pause here. Don't make the pause
+// too long though, or the delivery of the scheduled messages might be delayed.
+// Available values: [integer larger or equal to zero]
+// Default value: 0
+$config['xemail_schedule_delivery_pause'] = 0;
+
+// If this option is set to true, the program will store the current user's smtp settings (server, port, ssl mode,
+// helo host, username, password) with the scheduled message in the database. The password will be stored encrypted.
+// This way, the exact settings used for scheduling the message will be used to send it.
+// If this option is set to false, the smtp server settings from the config will always be used for sending the
+// scheduled emails, and you will need to specify global credentials for logging in to the smtp server in:
+// xemail_schedule_smtp_user and xemail_schedule_smtp_pass.
+// Storing the credentials in the database is simpler, doesn't require any additional configuration, and makes it
+// possible to use the scheduler on server setups that do not handle sending messages from one user account while using
+// credentials of another. The downside is that the user password is stored in the database (encrypted) and that if the
+// user changes the account password, the scheduled messages will not be sent. Enable at your own risk.
+// Note: when using the xmultibox plugin to send messages from different smtp servers than the default, the smtp
+// settings and credentials will always be stored in the database when scheduling messages.
+// Available values: true or false
+// Default value: false
+$config['xemail_schedule_store_credentials_with_messages'] = false;
+
+// If xemail_schedule_store_credentials_with_messages is set to false, this option specifies the smtp username that will
+// be used when sending scheduled messages. If your smtp server doesn't require authentication, set this value to false.
+// Unlike the smtp_user setting in the main Roundcube config, this value does not accept %u for the name of the
+// currently logged-in user, since there is no logged-in user when scheduled messages are sent via cron.
+// Available values: string or false
+// Default value: false;
+$config['xemail_schedule_smtp_user'] = false;
+
+// If xemail_schedule_store_credentials_with_messages is set to false, this option specifies the smtp password that will
+// be used when sending scheduled messages. If your smtp server doesn't require authentication, set this value to false.
+// Unlike the smtp_user setting in the main Roundcube config, this value does not accept %p for the password of the
+// currently logged in user, since there is no logged-in user when scheduled messages are sent via cron.
+// Available values: string or false
+// Default value: false;
+$config['xemail_schedule_smtp_pass'] = false;
+
+// SMTP connection timeout in seconds. For connection timeout, Roundcube uses the 'smtp_timeout' configuration value,
+// which defaults to the 'default_socket_timeout' PHP setting, typically set to 60 seconds. If there is an issue
+// connecting to the SMTP server, such a long timeout can significantly delay the sending of scheduled messages. You can
+// specify a shorter timeout here or set this value to 0 to keep using the default Roundcube setting.
+// Available values: integers in the range 0 - 60
+// Default value: 0
+$config['xemail_schedule_smtp_timeout'] = 0;
+
+// Specifies the default value of the countdown shown before sending email messages. The users will be able to change
+// this value in the settings. To disable the countdown, set this value to false
+// Available values: false, 3, 5, 10, 15
+// Default value: 5
+$config['xemail_schedule_countdown'] = 5;

@@ -1,0 +1,139 @@
+body.login-page {
+    background-color: #d7e6f1;
+
+    #login-form {
+        width: 466px;
+        padding: 0 20px;
+        background: url(../images/login.png) top left no-repeat;
+
+
+        #logo {
+            padding: 30px 30px 0 30px;
+        }
+
+        .box-inner {
+            padding: 0;
+            background: #f0f0f0;
+            border: 1px solid #c0c0c0;
+            border-radius: 10px !important;
+            text-align: center;
+        }
+
+        h1 {
+            display: none;
+
+        }
+
+        .box-inner form {
+            padding: 20px 30px;
+        }
+
+        table td.title,
+        table td.input {
+            display: block;
+            text-align: left;
+            padding: 0;
+            width: 100%;
+        }
+
+        .box-inner form td {
+            padding: 5px 0;
+        }
+
+        .box-inner form label {
+            text-transform: uppercase;
+            font-size: 1.2em;
+        }
+
+        .box-inner form input[type=text],
+        .box-inner form input[type=password],
+        .box-inner form select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            border-radius: 5px !important;
+            border: 1px solid #c1c0c0;
+        }
+
+        .box-inner form p.formbuttons {
+            text-align: right;
+            margin: 10px 0 5px 0;
+            padding: 0;
+        }
+
+        .box-inner form {
+            input[type=submit],
+            button.submit,
+            a.button {
+                padding: 10px 20px 8px 20px;
+                background: #85c35b;
+                color: #fff;
+                font-size: 1.4em;
+                text-transform: uppercase;
+            }
+
+            input[type=submit]:hover,
+            button.submit:hover {
+                background: #6fae45 !important;
+            }
+        }
+
+        #login-title {
+            background: #0c6db5;
+            text-align: center;
+            color: #fff;
+            padding: 10px 0;
+            margin: 0;
+            font-size: 1.8em;
+            border-top-left-radius: 10px !important;
+            border-top-right-radius: 10px !important;
+            display: block !important;
+        }
+
+        #topnav {
+            -webkit-box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            box-shadow: none !important;
+        }
+
+        .boxtitle {
+            padding: 15px 0;
+            background: #0C6DB5;
+            border-top-left-radius: 10px !important;
+            border-top-right-radius: 10px !important;
+            color: #fff;
+        }
+
+        td.boxtitle {
+            background: none;
+            color: #333;
+        }
+
+        form[name=contactus] .boxtitle div,
+        form[name=contactus] textarea,
+        form[name=contactus] input[type=text] {
+            width: 300px !important;
+        }
+
+        .box-bottom {
+            width: 466px;
+        }
+    }
+
+    #header #topnav #taskbar {
+        background: #0C6DB5 !important;
+    }
+
+    &:not(.xbackground-login-image) #bottomline {
+        background: transparent;
+
+        &, a {
+            color: #717171;
+        }
+    }
+}
+
+body.xbackground-login-image #login-form .box-inner {
+    border: none;
+}

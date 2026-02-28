@@ -1,0 +1,23 @@
+<?php
+/**
+ * Roundcube Plus Dropbox plugin.
+ *
+ * Copyright 2016, Tecorama LLC.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+// Specify the Dropbox app key. For details, see: https://www.dropbox.com/developers/chooser
+// Available values: a string containing the app key
+// Default: ''
+$config['dropbox_app_key'] = '';
+
+// Specify whether the user will be allowed to select more than one file.
+// Available values: true, false
+// Default: false
+$config['dropbox_multiselect'] = true;
+
+// Specify the array of file extensions allowed to be selected. Leave the array empty to allow all extensions.
+// Available values: an array of strings
+// Default: []
+$config['dropbox_extensions'] = [];

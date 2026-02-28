@@ -1,0 +1,55 @@
+ROUNDCUBE PLUS DROPBOX PLUGIN
+=============================
+
+This plugin provides the following functionality:
+
+1. It adds a Dropbox button to the attach area of the compose page and allows selecting files from a Dropbox
+   directory. The selected files can be either inserted as links to the message body or downloaded to the server and
+   attached to the message as normal file attachments.
+
+2. It adds Dropbox menu items to the attachment drop-down menus on the message view page. The menu items allow
+   saving (uploading) the attachments to a Dropbox directory.
+
+3. It adds Dropbox links to the attachments displayed in the message body, under "Show" and "Download".
+   The links allow saving the attachments to a Dropbox directory.
+
+REQUIREMENTS
+------------
+- Roundcube: 1.5, 1.6
+- PHP: 7.4 or higher
+- Config: Dropbox App key
+
+INSTALLATION
+------------
+1. Copy the directories xdropbox and xframework included in this package to the 'plugins' directory of your Roundcube
+   installation.
+
+2. Rename the file <roundcube>/plugins/xdropbox/config.inc.php.dist to config.inc.php.
+
+3. Edit the file <roundcube>/plugins/xdropbox/config.inc.php, specify your Dropbox app key and configure the plugin
+   according to your needs. In order to get the app key, you need to create a Dropbox app:
+   https://www.dropbox.com/developers/apps/create
+
+4. Make sure that the temp directory specified in the Roundcube config file is writable, otherwise the plugin
+   will not be able to save email attachments.
+
+5. Edit the file <roundcube>/config/config.inc.php, add xdropbox to the plugins array and specify your license key.
+
+For more information on installing Roundcube Plus plugins see:
+https://roundcubeplus.com/helpdesk/knowledgebase.php?article=29
+
+COMPATIBILITY
+-------------
+This plugin has been created for the standard version of Roundcube as provided on the Roundcube website:
+https://roundcube.net. It might not work properly with customized versions of Roundcube including the version
+provided as part of the Kolab system. Please note that we cannot provide any technical support for the plugin
+deployed on a non-standard version of Roundcube.
+
+LICENSE
+-------
+This plugin is distributed under a commercial license. In order to use the plugin, you must purchase the license
+from Tecorama LLC. See the LICENSE file for details.
+
+COPYRIGHT
+---------
+Copyright (c) 2025, Tecorama LLC

@@ -1,0 +1,21 @@
+<?php
+/**
+ * Roundcube Plus Compose plugin.
+ *
+ * Copyright 2016, Roundcubeplus.com.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+// Specify the default font size of the plain text compose editor.
+// The available options are: 8pt, 9pt, 10pt, 11pt, 12pt, 13pt, 14pt
+// The original default value is: 9pt
+// Note that this font size will not be sent with the message. It's for composition display only.
+// The user will be able to change this option in Settings / Preferences / Composing Messages
+$config['xcompose_plain_font_size'] = "9pt";
+
+// Specify the default font family of the plain text compose editor.
+// The original default value is: null
+// Note that this font will not be sent with the message. It's for the composition display only.
+// This setting is system-wide; the users will not be able to change this option.
+$config['xcompose_plain_font_family'] = null;

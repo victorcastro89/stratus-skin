@@ -1,0 +1,113 @@
+<div id='xsignature-preview'>
+    <div style='{{style.font}}'>
+
+        <table id='signature-table' class='plain-table' style='color:{{data.text_color}};{{style.table}}'>
+            <tr class='row'>
+                <td id='cell-11' style='{{style.font}}{{data.grid[11].style}}' colspan='3'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(11)'></div>
+                </td>
+            </tr>
+            <tr class='row'>
+                <td id='cell-21' style='{{style.font}}{{data.grid[21].style}}' colspan='3'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(21)'></div>
+                </td>
+            </tr>
+            <tr class='row'>
+                <td id='cell-31' style='{{style.font}}{{data.grid[31].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(31)'></div>
+                </td>
+                <td id='cell-32' style='{{style.font}}{{data.grid[32].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(32)'></div>
+                </td>
+                <td id='cell-33' style='{{style.font}}{{data.grid[33].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(33)'></div>
+                </td>
+            </tr>
+            <tr class='row'>
+                <td id='cell-41' style='{{style.font}}{{data.grid[41].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(41)'></div>
+                </td>
+                <td id='cell-42' style='{{style.font}}{{data.grid[42].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(42)'></div>
+                </td>
+                <td id='cell-43' style='{{style.font}}{{data.grid[43].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(43)'></div>
+                </td>
+            </tr>
+            <tr class='row'>
+                <td id='cell-51' style='{{style.font}}{{data.grid[51].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(51)'></div>
+                </td>
+                <td id='cell-52' style='{{style.font}}{{data.grid[52].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(52)'></div>
+                </td>
+                <td id='cell-53' style='{{style.font}}{{data.grid[53].style}}'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(53)'></div>
+                </td>
+            </tr>
+            <tr class='row'>
+                <td id='cell-61' style='{{style.font}}{{data.grid[61].style}}' colspan='3'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(61)'></div>
+                </td>
+            </tr>
+            <tr class='row'>
+                <td id='cell-71' style='{{style.font}}{{data.grid[71].style}}' colspan='3'>
+                    <div ng-if='designing' class='cell-editor' ng-click='showCellPopup(71)'></div>
+                </td>
+            </tr>
+        </table>
+
+        <div style='margin-top:10px;color:{{data.disclaimer_color}};{{style.font}}{{data.disclaimer_size != "normal" ? "font-size:" + disclaimerFontSizes[data.disclaimer_size] + ";": ""}}'
+             ng-if='data.disclaimer'>{{data.disclaimer}}</div>
+    <div>
+</div>
+
+<div id='xsignature-storage'>
+    <div class='box' id='data-name' ng-show='data.name' style='{{data.format.name.box_style}}'>
+        <div ng-if='data.name' style='{{data.format.name.style}}'>
+            {{data.name}}<span ng-if='data.format.name.layout=="row"' style='white-space:pre'>{{data.name_separator}}</span>
+        </div>
+    </div>
+
+    <div class='box' id='data-position' ng-show='data.position' style='{{data.format.position.box_style}}'>
+        <div style='{{data.format.position.style}}' ng-if='data.position'>
+            {{data.position}}<span style='white-space:pre' ng-if='data.format.position.layout=="row"'>{{data.position_separator}}</span>
+        </div>
+    </div>
+
+    <div class='box' id='data-organization' ng-show='data.organization' style='{{data.format.organization.box_style}}'>
+        <div style='{{data.format.organization.style}}' ng-if='data.organization'>
+            {{data.organization}}<span style='white-space:pre' ng-if='data.format.organization.layout=="row"'>{{data.organization_separator}}</span>
+        </div>
+    </div>
+
+    <div class='box' id='data-social'>
+        <div style='{{style.data}}text-align:{{data.format.social.align}};' ng-if='data.social_items.length'>
+            <a ng-repeat='item in data.social_items' href='{{item.link}}' style='{{data.social_icon_layout == "column" ? "display:block;padding-bottom:5px;" : "display:inline-block;padding-right:5px;"}}'>
+                <img ng-src='{{item.src}}' alt='{{item.name}}' height='{{item.size}}' width='{{item.size}}' />
+            </a>
+        </div>
+    </div>
+
+    <div class='box' id='data-details'>
+        <div style='{{style.data}}' ng-if='data.details.length'>
+            <table class='plain-table' ng-if='data.detail_layout == "column"' style='{{style.table}}'>
+                <tr ng-repeat='item in data.details'>
+                    <td ng-if='hasDetailTitles && data.detail_show_title' style='{{style.td}}padding:0 5px 0 0;color:{{data.detail_title_color}};{{data.format.detail_title.style}}'>{{item.title}}</td>
+                    <td style='{{style.td}}padding:0 5px 0 0;{{data.format.detail_value.style}}' ng-bind-html='item.output | html'></td>
+                </tr>
+            </table>
+            <div ng-if='data.detail_layout != "column"' style='max-width:250px;'>
+                <span ng-repeat='(index, item) in data.details'>
+                    <span ng-if='item.title && data.detail_show_title' style='color:{{data.detail_title_color}};{{data.format.detail_title.style}}'>{{item.title}}</span>
+                    <span style='{{data.format.detail_value.style}}' ng-bind-html='item.output | html'></span>
+                    <span ng-if='data.detail_separator && index < data.details.length - 1'>{{data.detail_separator}}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class='box' id='data-logo'>
+        <div style='{{style.data}}{{style.logoWidth}}' ng-if='data.logo' id='xsignature-logo'></div>
+    </div>
+</div>

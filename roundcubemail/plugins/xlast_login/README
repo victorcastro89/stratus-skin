@@ -1,0 +1,45 @@
+ROUNDCUBE PLUS LAST LOGIN PLUGIN
+================================
+
+This plugin displays information about the last user login on the sidebar. Displaying this information can be
+used to make sure the email account has not been hacked and accessed by somebody else.
+
+REQUIREMENTS
+------------
+- Roundcube: 1.5, 1.6
+- PHP: 7.4 or higher
+- PHP Extensions: bcmath (for Geo IP to country functions)
+- Database: SQLite / MySQL / Postgres
+
+INSTALLATION
+------------
+1. Copy the directories xlast_login and xframework included in this package to the 'plugins' directory of your Roundcube
+   installation.
+
+2. Rename the file <roundcube>/plugins/xlast_login/config.inc.php.dist to config.inc.php.
+
+3. Edit the file <roundcube>/plugins/xlast_login/config.inc.php and configure the plugin according to your needs.
+
+4. Edit the file <roundcube>/config/config.inc.php, add xlast_login to the plugins array and specify your license key.
+
+For more information on installing Roundcube Plus plugins see:
+https://roundcubeplus.com/helpdesk/knowledgebase.php?article=29
+
+The users will be able to remove the last login information from the sidebar by unchecking "Show Last Login" in the
+Sidebar section of the Settings page.
+
+COMPATIBILITY
+-------------
+This plugin has been created for the standard version of Roundcube as provided on the Roundcube website:
+https://roundcube.net. It might not work properly with customized versions of Roundcube including the version
+provided as part of the Kolab system. Please note that we cannot provide any technical support for the plugin
+deployed on a non-standard version of Roundcube.
+
+LICENSE
+-------
+This plugin is distributed under a commercial license. In order to use the plugin, you must purchase the license
+from Tecorama LLC. See the LICENSE file for details.
+
+COPYRIGHT
+---------
+Copyright (c) 2025, Tecorama LLC

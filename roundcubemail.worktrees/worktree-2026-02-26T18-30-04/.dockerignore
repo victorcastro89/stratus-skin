@@ -1,0 +1,33 @@
+# Git files
+.git
+.github
+.gitignore
+
+# Dependencies (will be installed in container)
+vendor/
+node_modules/
+
+# Temp and logs (will be created in container)
+temp/*
+logs/*
+!temp/.htaccess
+!logs/.htaccess
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs/
+tests/
+.ci/
+
+# Build artifacts
+*.log

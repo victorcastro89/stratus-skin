@@ -1,0 +1,115 @@
+services:
+  # ---------- Local mail server (IMAP + SMTP) ----------
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    container_name: mailserver
+    hostname: mail.example.test
+    domainname: example.test
+    ports:
+      - "3025:25"    # SMTP
+      - "3143:143"   # IMAP
+      - "3587:587"   # Submission
+    volumes:
+      - maildata:/var/mail
+      - mailstate:/var/mail-state
+      - maillogs:/var/log/mail
+      - ./docker-data/dms/config/:/tmp/docker-mailserver/
+    environment:
+      # Disable heavy services not needed for dev
+      - ENABLE_SPAMASSASSIN=0
+      - ENABLE_CLAMAV=0
+      - ENABLE_FAIL2BAN=0
+      - ENABLE_POSTGREY=0
+      - ENABLE_AMAVIS=0
+      - ENABLE_UPDATE_CHECK=0
+      # No SSL for local dev (plain IMAP/SMTP)
+      - SSL_TYPE=
+      # Allow relay from any container on the same docker network
+      - PERMIT_DOCKER=connected-networks
+      - OVERRIDE_HOSTNAME=mail.example.test
+      - POSTFIX_INET_PROTOCOLS=ipv4
+      - DOVECOT_INET_PROTOCOLS=ipv4
+      # Accept mail without strict hostname checks
+      - ENABLE_SRS=0
+    restart: unless-stopped
+    healthcheck:
+      test: ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  # ---------- Roundcube webmail ----------
+  roundcube:
+    build: .
+    container_name: roundcube-dev
+    ports:
+      - "8000:80"
+    volumes:
+      # Mount the entire application for live reloading
+      - ./:/var/www/html:delegated
+    depends_on:
+      mailserver:
+        condition: service_healthy
+    environment:
+      - PHP_IDE_CONFIG=serverName=roundcube-docker
+    working_dir: /var/www/html
+    command: >
+      bash -c "
+        # Create temp and logs dirs and fix permissions
+        mkdir -p /var/www/html/temp /var/www/html/logs;
+        chown -R www-data:www-data /var/www/html/temp /var/www/html/logs;
+        chmod 770 /var/www/html/temp /var/www/html/logs;
+
+        # Install PHP dependencies if not present
+        if [ ! -d 'vendor' ]; then
+          echo 'Installing PHP dependencies...';
+          composer install --no-interaction;
+        fi;
+
+        # Install JS/CSS dependencies (jQuery, Bootstrap, etc.) if not present
+        if [ ! -f 'program/js/jquery.min.js' ] || [ ! -f 'skins/elastic/deps/bootstrap.min.css' ]; then
+          echo 'Installing JS/CSS dependencies...';
+          bin/install-jsdeps.sh;
+        else
+          echo 'JS/CSS dependencies already installed, skipping.';
+        fi;
+
+        # Compile LESS stylesheets if CSS is missing
+        if [ ! -f 'skins/elastic/styles/styles.css' ]; then
+          echo 'Compiling elastic skin LESS...';
+          lessc skins/elastic/styles/styles.less skins/elastic/styles/styles.css;
+        else
+          echo 'Elastic CSS already compiled, skipping.';
+        fi;
+
+        # Initialize database if needed (check for non-empty file)
+        if [ ! -s '/var/www/html/temp/roundcube.db' ]; then
+          echo 'Initializing database...';
+          rm -f /var/www/html/temp/roundcube.db;
+          bin/initdb.sh --dir=SQL || true;
+        else
+          echo 'Database already exists, skipping init.';
+        fi;
+
+        # Ensure DB file is writable by Apache
+        chown www-data:www-data /var/www/html/temp/roundcube.db 2>/dev/null;
+        chmod 660 /var/www/html/temp/roundcube.db 2>/dev/null;
+
+        echo '========================================';
+        echo 'Roundcube Development Server Started';
+        echo 'Access at: http://localhost:8000';
+        echo '';
+        echo 'Test accounts:';
+        echo '  alice@example.test / password123';
+        echo '  bob@example.test   / password123';
+        echo '========================================';
+
+        # Start Apache in foreground
+        apache2-foreground
+      "
+
+volumes:
+  maildata:
+  mailstate:
+  maillogs:

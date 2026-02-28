@@ -1,0 +1,137 @@
+ROUNDCUBE PLUS GOOGLE DRIVE PLUGIN
+==================================
+
+This plugin provides the following functionality:
+
+1. It adds a Google Drive button to the "Options and attachments" area of the Roundcube compose page and allows selecting files from a
+Google Drive directory. The selected files can be either inserted as links to the message body or downloaded to the server and attached to
+the message as normal file attachments.
+
+2. It adds Google Drive menu items to the attachment drop-down menus on the Roundcube message view page. The menu items allow saving
+(uploading) the attachments to a Google Drive directory.
+
+3. It adds Google Drive links to the attachments displayed in the message body (under "Show" and "Download".) The links allow saving the
+attachments to a Google Drive directory.
+
+REQUIREMENTS
+------------
+
+- Roundcube: 1.5, 1.6
+- PHP: 7.4 or higher
+- Config: Google Client ID
+
+INSTALLATION
+------------
+
+1. Copy the directories xgoogle_drive and xframework included in this package to the 'plugins' directory of your Roundcube installation.
+
+2. Rename the file <roundcube>/plugins/xgoogle_drive/config.inc.php.dist to config.inc.php.
+
+3. Edit the file <roundcube>/plugins/xgoogle_drive/config.inc.php, specify your client ID and configure the plugin according to your needs.
+See the section below for information on how to obtain your client ID.
+
+4. Make sure that the temp directory specified in the Roundcube config file is writable, otherwise the plugin will not be able to save email
+attachments.
+
+5. Edit the file <roundcube>/config/config.inc.php, add xgoogle_drive to the plugins array and specify your license key.
+
+For more information on installing Roundcube Plus plugins see: https://roundcubeplus.com/helpdesk/knowledgebase.php?article=29
+
+COMPATIBILITY
+-------------
+This plugin has been created for the standard version of Roundcube as provided on the Roundcube website:
+https://roundcube.net. It might not work properly with customized versions of Roundcube including the version
+provided as part of the Kolab system. Please note that we cannot provide any technical support for the plugin
+deployed on a non-standard version of Roundcube.
+
+OBTAINING GOOGLE CLIENT ID
+--------------------------
+
+In order to successfully connect to Google Drive, this plugin needs a properly configured Google client ID. The process of creating a
+working client ID in the Google Cloud Platform is complicated and requires taking a large number of steps. We will outline those steps for
+you below but in order to fully understand the concepts and the options you'll be configuring you may need to read the help provided on the
+pages you'll be navigating.
+
+1. Log in to the Google Cloud Platform.
+
+    Use your Google account to log in to the Cloud Platform at https://console.cloud.google.com/projectselector2/apis/dashboard
+
+2. Create a new project.
+
+    a) Click the "Select a project" button on the top bar.
+
+    b) Click the "NEW PROJECT" button.
+
+    c) Type a name for your project and click "CREATE". (The name of the project is not important; it will only identify this project in the
+    list of projects that you might have in the Cloud Platform.)
+
+3. Set up OAuth consent screen.
+
+    IMPORTANT: Depending on how you configure the app in this step, Google might or might not want to manually verify your app when you
+    publish it. For example, if you specify your company's name or upload a logo, your app will get flagged for manual verification. This
+    process can be lengthy (several days to a week) and might require providing additional information via email.
+
+    If you want to start using your app right away, fill out only the required fields and avoid the settings that will trigger the
+    verification process. You can always launch your app with the minimal settings and while it's up and running add your company's info and
+    wait for the verification.
+
+    You can find out what will trigger the verification process here: https://support.google.com/cloud/answer/10311615#verification-status
+
+    a) Click "OAuth consent screen" on the left sidebar. Click "External" when asked about "User Type" and click "CREATE".
+
+    b) Step 1: OAuth consent screen. Fill the required fields and make sure to click "+ ADD DOMAIN" and specify the domain where your
+    Roundcube is installed.
+
+    c) Step 2: Scopes. No need to change anything here.
+
+    d) Step 3: Test users. When you first create your app with User Type: External, its publishing status will be set to "Testing". While in
+    the testing mode, only the users specified here will be able to access the app. Add your Google email address here. After you publish
+    the app and its status changes to "In Production," these test users will not be necessary any more.
+
+    e) Step 4: Summary. You're done. You can go back to the dashboard now.
+
+4. Create credentials.
+
+    a) Click "Credentials" on the left sidebar.
+
+    b) Click "+ CREATE CREDENTIALS" on the top bar, click "OAuth client ID".
+
+    c) When asked about Application type, select "Web application".
+
+    d) Type some name for your client ID. In the section "Authorized JavaScript origins" click "+ ADD URI" and specify the URL where your
+    Roundcube is installed. Note that in order to publish the app (step 5) your Roundcube needs to run over an encrypted connection (https).
+
+    e) You will be shown a popup with a client ID and secret code. Copy the client ID and paste it in the xgoogle_drive config file in the
+    variable "google_drive_client_id". The client ID will be in this format:
+    xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
+
+5. Enable Google Drive API
+
+    a) Click "Dashboard" on the left sidebar, then click "+ ENABLE APIS AND SERVICES" on the top bar.
+
+    b) Find a tile named "Google Drive API", click it and then click "Enable".
+
+6. Publish App.
+
+    Your application should work in a testing mode now and you should be able to log in to your Google Drive from within Roundcube. To test
+    it, navigate to your Roundcube's compose page and click the "Google Drive" button that appears on the right sidebar, in the "Options and
+    attachments" section. A popup window should appear asking you to log in to Google. Log in using the account that you specified in the
+    "Test users" section in the previous step. You'll be warned that the app runs in a test mode. After going through a couple more initial
+    agreement/configuration pages, you should see the contents of your Google Drive.
+
+    If your app is working properly, you can publish it and make it available to all your Roundcube users. In Google Cloud Platform click
+    "OAuth consent screen" and then click "PUBLISH APP". If your app doesn't need verification, it'll be up and running right away.
+
+    Note that Google enforces a limit on how many people can use your app per day. If the number of your users exceeds your initial limit,
+    you may need to send Google a request to raise your quota. The link to submit the request is on the "OAuth consent screen" page.
+
+LICENSE
+-------
+
+This plugin is distributed under a commercial license. In order to use the plugin, you must purchase the license from Tecorama LLC. See the
+LICENSE file for details.
+
+COPYRIGHT
+---------
+
+Copyright (c) 2025, Tecorama LLC

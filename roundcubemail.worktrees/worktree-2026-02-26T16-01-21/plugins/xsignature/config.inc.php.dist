@@ -1,0 +1,171 @@
+<?php
+/**
+ * Roundcube Plus Signature plugin.
+ *
+ * Copyright 2016, Tecorama LLC.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+// The file system directory where the signature logos are stored. Make sure the server has write permissions to this directory.
+// Format: string
+// Default value: RCUBE_INSTALL_PATH . "data/xsignature"
+$config['logo_dir'] = RCUBE_INSTALL_PATH . "data/xsignature";
+
+// User's name.
+// Format: string
+// Default value: 'Sample name'
+$config['name'] = 'Sample name';
+
+// User's position or title
+// Format: string
+// Default value: 'Sample position'
+$config['position'] = 'Sample position';
+
+// User's organization or company.
+// Format: string
+// Default value: 'Sample organization'
+$config['organization'] = 'Sample organization';
+
+// The color of the signature text.
+// Available values: html color codes
+// Default value: '#000'
+$config['text_color'] = '#000';
+
+// The color of the links in the signature text.
+// Available values: html color codes
+// Default value: '#0066ff'
+$config['link_color'] = '#0066ff';
+
+// The font family of the signature text.
+// Available values: 'serif', 'sans-serif', 'cursive', 'monospace'
+// Default value: 'sans-serif'
+$config['font_family'] = 'sans-serif';
+
+// The font size of the signature text.
+// Available values: 'small', 'medium', 'large'
+// Default value: 'medium'
+$config['font_size'] = 'medium';
+
+// The array containing the signature details (email, website, etc.)
+// Format:[title => value, ...]
+// Available values: an array with keys specifying the detail titles and values specifying their text.
+// If you set this value to null, a preset array will be used.
+// Default value: null
+$config['details'] = null;
+
+// The layout of the detail items.
+// Available values: 'column', 'row'
+// Default value: 'column'
+$config['detail_layout'] = 'column';
+
+// The text separating the details when displaying the 'row' layout.
+// Available values: any string of characters
+// Default value: ' | '
+$config['detail_separator'] = ' | ';
+
+// Indicates whether the detail titles should be displayed.
+// Available values: true, false
+// Default value: true
+$config['detail_show_title'] = true;
+
+// The font color of the detail titles.
+// Available values: html color codes
+// Default value: '#000'
+$config['detail_title_color'] = '#000';
+
+// The size of the disclaimer text. This value is relative to the font_size value.
+// Available values: 'tiny', 'small', 'normal'
+// Default value: 'small'
+$config['disclaimer_size'] = 'small';
+
+// The disclaimer text.
+// Format: string
+// Default value: ''
+$config['disclaimer'] = '';
+
+// The color of the disclaimer text.
+// Available values: html color codes
+// Default value: '#aaa'
+$config['disclaimer_color'] = '#aaa';
+
+// Specifies whether the disclaimer should be included in the plain text version of the signature.
+// Available values: true, false
+// Default value: true
+$config['disclaimer_in_plain_text'] = true;
+
+// The array specifying the social items displayed in the signature.
+// Format: [
+//  ['name' => 'name-of-service', 'link' => 'url'],
+//  ['name' => 'name-of-service', 'link' => 'url'],
+//  ...
+//  ];
+// Available names:
+// behance, dribbble, facebook, github, instagram, linkedin, pinterest, signal, skype, telegram, x, vimeo, whatsapp, youtube
+// If you set this value to null, a preset array will be used.
+// Default value: null
+$config['social_items'] = null;
+
+// The file format of the social icons. Svg will produce smaller signature code but might not be displayed properly by some email programs.
+// Available values: 'png', 'svg'
+// Default value: 'png'
+$config['social_icon_format'] = 'png';
+
+// The social icon style.
+// Available values:
+// 'hand_drawn', 'logotype', 'logotype_black', 'outline', 'round_black', 'round_flat', 'round_gloss', 'square_black', 'square_flat',
+// 'square_gloss', 'xmas'
+// Default value: 'round_flat'
+$config['social_icon_style'] = 'round_flat';
+
+// The size of the social icons.
+// Available values: 'small', 'medium', 'large'
+// Default value: 'medium'
+$config['social_icon_size'] = 'medium';
+
+// The social icon layout.
+// Available values: 'row', 'column'
+// Default value: 'row'
+$config['social_icon_layout'] = 'row';
+
+// Specifies whether the social icons should be included in the plain text version of the signature.
+// Available values: true, false
+// Default value: true
+$config['social_in_plain_text'] = true;
+
+// The maximum permitted size of the uploaded logo image files (in bytes.)
+// WARNING: The uploaded images are included in the outgoing emails and increase the email size. Don't make this value too large.
+// Available values: a number indicating the file size
+// Default value: 100000
+$config['max_logo_size'] = 100000;
+
+// Specifies whether the logo can be resized by the users.
+// Available values: true, false
+// Default value: true
+$config['logo_resizable'] = true;
+
+// Specifies the logo HTML alt attribute. The users will be able to change this option in the signature settings.
+// Format: string
+// Default value: 'Sample organization'
+$config['logo_alt'] = 'Sample organization';
+
+// The logo that will appear in the users' signature by default. Using SVG images is preferred since they retain their quality on high
+// resolution screens.
+// Available values: a URI to an image or a base64-encoded string
+// 1. Using a URI to an image.
+//      a) If you use an SVG image, you MUST place it in the Roundcube directory so it's accessible via the Roundcube domain. The content of
+//      the image file will be re-downloaded using javascript in order to convert it to base64 and if the image is not located under the
+//      Roundcube domain, the download will fail due to CORS restrictions. It's best to specify a relative URI and let the domain be
+//      prepended automatically. For example, if you place the image in the root directory of your Roundcube installation, all you'll need
+//      to specify here is the file name, like this: 'my-logo.svg'
+//      b) If you use a PNG, JPG, or GIF image, the file can be accessed via any domain because it doesn't need to be re-downloaded in order
+//      to convert it to base64. You can place your image in the Roundcube directory and specify a relative URI or on a different server and
+//      specify a full URI. If you decide to specify a full URI, make sure to use the https protocol if your Roundcube runs over https,
+//      otherwise you'll get browser warnings or errors.
+// 2. Using a base64-encoded string.
+//      If you can't use the above URI option, you can convert your image to a base64 string and paste the string here. The string must be
+//      in data URI format that begins with "data:image/". The string will be included in the users' signatures as is, so make sure it's not
+//      too long as not to unnecessarily increase the size of the emails sent by your users.
+// If you set this option to null, the default svg image that ships with the plugin will be used.
+// Default value: null
+$config['custom_signature_logo'] = null;
