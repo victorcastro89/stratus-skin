@@ -1,0 +1,55 @@
+ROUNDCUBE PLUS BACKGROUND PLUGIN
+================================
+
+This plugin adds options for changing the Roundcube background.
+
+REQUIREMENTS
+------------
+- Roundcube: 1.5, 1.6
+- PHP: 7.4 or higher
+- PHP GD2 extension
+
+INSTALLATION
+------------
+1. Copy the directories xbackground and xframework included in this package to the 'plugins' directory of your Roundcube
+   installation.
+
+2. Rename the file <roundcube>/plugins/xbackground/config.inc.php.dist to config.inc.php.
+
+3. Edit the file <roundcube>/plugins/xbackground/config.inc.php and configure the plugin according to your needs.
+
+4. Edit the file <roundcube>/config/config.inc.php, add xbackground to the plugins array and specify your license key.
+
+For more information on installing Roundcube Plus plugins see:
+https://roundcubeplus.com/helpdesk/knowledgebase.php?article=29
+
+COMPATIBILITY
+-------------
+1. This plugin has been created for the standard version of Roundcube as provided on the Roundcube website:
+   https://roundcube.net. It might not work properly with customized versions of Roundcube including the version
+   provided as part of the Kolab system. Please note that we cannot provide any technical support for the plugin
+   deployed on a non-standard version of Roundcube.
+
+2. This plugin will work with the 'larry' and 'elastic' skins, but due to the limitations of those skins, some content
+   boxes will not be transparent and some options might not be available. For best results we recommend using one of the
+   Roundcube Plus skins.
+
+3. For the automatic text color detection, the GC image library must be installed on the server.
+
+BROWSER SUPPORT
+---------------
+The image filter options will work with the following browsers:
+
+Chrome 18+
+Firefox 35+
+Opera 15+
+Safari 6.0+
+
+LICENSE
+-------
+This plugin is distributed under a commercial license. In order to use the plugin, you must purchase the license
+from Tecorama LLC. See the LICENSE file for details.
+
+COPYRIGHT
+---------
+Copyright (c) 2025, Tecorama LLC

@@ -43,6 +43,12 @@ $config['plugins'] = [
     'hide_blockquote',
     'attachment_reminder',
     'vcard_attachments',
+    // Kolab calendar + dependencies (installed via composer)
+    'libkolab',
+    'libcalendaring',
+    'calendar',
+    // CardDAV contacts sync
+    'carddav',
 ];
 
 // ---------- Logging (dev) ----------

@@ -1,0 +1,24 @@
+// stratus skin — Main LESS entry point
+// Overrides: elastic/styles/styles.less — imports all partials in order
+// Design: "Atmospheric Modern" — layered depth, fluid motion, atmospheric color
+
+// 1. Elastic's full stylesheet (must come FIRST — provides base structure)
+@import "../../elastic/styles/styles";
+
+// 2. Fix font paths — elastic's @font-face uses "../fonts/" relative to
+//    elastic/styles/, but our compiled CSS lives in stratus/styles/, so
+//    we override with the correct path to elastic's fonts directory.
+@import "_fonts";
+
+// 3. Variable overrides (MUST come AFTER elastic — LESS lazy eval: last def wins)
+//    Without this order, elastic's @color-main:#37beff overrides our #5c6bc0.
+@import "_variables";
+
+// 3. Our additional styles layered on top (order matters)
+@import "_typography";       // Font system, text hierarchy
+@import "_animations";       // Transitions, keyframes, motion system
+@import "_layout";           // Taskmenu, header, toolbar, panels
+@import "_components";       // Buttons, lists, forms, dialogs, scrollbars
+@import "_calendar";         // Calendar ghost grid, events, decluttered UI
+@import "_dark";             // Dark mode comprehensive overrides
+@import "_login";            // Login page (glassmorphic)

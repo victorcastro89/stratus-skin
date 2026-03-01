@@ -1,0 +1,172 @@
+1.3.3 (2025-12-03)
+==================
+- fixed light mode UI on the login page
+- translation improvements
+
+1.3.2 (2025-10-14)
+==================
+- added compatibility with Roundcube 1.7-beta
+- added technical documentation for AI Assistant
+
+1.3.1 (2025-02-24)
+==================
+- improved compatibility with dark mode
+- fixed js app compatibility
+
+1.3 (2024-11-08)
+================
+- added Arabic translation
+- added Bulgarian translation
+- added Chinese (Simplified) translation
+- added Chinese (Traditional) translation
+- added Estonian translation
+- added Greek translation
+- added Hungarian translation
+- added Japanese translation
+- added Korean translation
+- added Latvian translation
+- added Portuguese (Portugal) translation
+- added Slovak translation
+- added Swedish translation
+- updated license agreement
+
+1.2.9 (2024-01-31)
+==================
+- updated ajax calls system
+- fixed settings background image icons
+- fixed error messages when uploading images
+
+1.2.8 (2023-05-25)
+==================
+- added semi-transparent background to the elastic skin login box when background images are used
+
+1.2.7 (2023-05-09)
+==================
+- added Norwegian translation
+
+1.2.6 (2023-02-15)
+==================
+- made the plugin fully compatible with PHP 8.2
+- added Czech translation
+- added Danish translation
+- added Dutch translation
+- added Finnish translation
+- added German translation
+- added Indonesian translation
+- added Lithuanian translation
+- added Portuguese translation
+- added Romanian translation
+- added Slovenian translation
+- added Spanish translation
+- added Turkish translation
+
+1.2.5 (2022-12-16)
+==================
+- added hover arrows for changing background images on the login screen (top left and right screen corners)
+
+1.2.4 (2022-05-30)
+==================
+- restructured html insertions to prevent compatibility issues with third party plugins
+
+1.2.3 (2022-04-06)
+==================
+- fixed some potential html encoding problems
+
+1.2.2 (2022-01-31)
+==================
+- fixed PHP warnings in the Roundcube 1.5.2 about dialog
+
+1.2.1 (2022-01-11)
+==================
+- fixed the issues with saving of the uploaded image
+- fixed the UI of the applied backgrounds in RC 1.5 dark mode
+- fixed some PHP warnings
+- added the Italian translation
+- upgraded the PHP code syntax
+- changed the minimum required Roundcube version to 1.4
+
+1.2 (2021-09-01)
+================
+- made the plugin compatible with the upgraded skins UI
+
+1.1.9 (2021-08-05)
+==================
+- ensured compatibility with the xframework upgrade
+
+1.1.8 (2020-11-25)
+==================
+- fixed problems with invisible menu items
+
+1.1.7 (2020-11-11)
+==================
+- disabled the plugin on print pages
+
+1.1.6 (2020-05-07)
+==================
+- fixed the problem with login background image not working properly with some skins
+
+1.1.5 (2019-11-07)
+==================
+- upgraded the plugin to work with Roundcube 1.4 RC2
+
+1.1.4 (2019-09-04)
+==================
+- small fixes to the image upload functions
+
+1.1.3 (2019-09-02)
+==================
+- changed the image upload function to re-save the files and limit formats to jpg, png, and gif
+- changed plugin requirements to include the GD2 PHP extension
+- fixed image upload progress handling on errors
+
+1.1.2 (2019-07-11)
+==================
+- translated to French
+
+1.1.1 (2019-05-22)
+==================
+- upgraded to work with Roundcube 1.4 RC1
+
+1.1 (2018-06-04)
+================
+- upgraded the plugin to be compatible with Elastic beta
+- fixed input/select control text color
+
+1.0.8 (2017-12-06)
+==================
+- fixed the single login background image functionality
+
+1.0.7 (2017-12-06)
+==================
+- added ability to set a login background image
+- added compatibility with the xbackground gallery extension
+- fixed the xbackground_text_color config option
+
+1.0.6 (2017-03-07)
+==================
+- added Polish translation
+
+1.0.5 (2017-02-15)
+==================
+- standardized translation files
+
+1.0.4 (2017-02-07)
+==================
+- improved compatibility with rc+ skins
+
+1.0.3 (2017-01-04)
+==================
+- added new protected properties to make the plugin compatible with upgraded xframework
+
+1.0.2 (2016-12-09)
+==================
+- made plugin compatible with xactivate
+- updated license agreement
+
+1.0.1 (2016-11-30)
+==================
+- made plugin compatible with the updated framework
+
+1.0 (2016-11-16)
+================
+- initial release

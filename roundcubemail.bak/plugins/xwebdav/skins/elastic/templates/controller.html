@@ -1,0 +1,77 @@
+<div id="xwebdav-dialog-controller" ng-controller="XwebdavDialogController" ng-init="initialize()" ng-cloak
+    ng-class="{authenticated:authenticated, 'files-selectable':dialogType != 'LIST_DIR'}" ng-show="dialogVisible"
+    ng-click="hideDialog()">
+
+    <div id="xwebdav-dialog" ng-click="$event.stopPropagation()">
+        <div id="xwebdav-progress" class="xspinner" ng-show="progress"></div>
+
+        <div id="xwebdav-title">
+            <h3 ng-show="authenticated">{{dialogTitle}}</h3>
+            <h3 ng-show="!authenticated">[~login_to_provider~]</h3>
+            <a href="javascript:void(0)" ng-click="hideDialog()">&times;</a>
+        </div>
+
+        <div id="xwebdav-error" ng-if="!progress && error">{{error}}</div>
+
+        <div id="xwebdav-breadcrumbs" ng-show="authenticated">
+            <span class="select-all" ng-class="{checked: allChecked}" ng-show="list.length && dialogType != 'LIST_DIR'">
+                <span class="checkbox" ng-click="checkAll()" ng-model="allChecked"></span>
+            </span>
+            <span ng-repeat="item in breadcrumbs" ng-click="navigateViaBreadcrumbs(item)" ng-class="item.type" ng-show="dialogType != 'LIST_SHARE'">
+                <span class="chevron" ng-show="item.type == 'chevron'">&gt;</span>
+                <span class="ellipse" ng-show="item.type == 'ellipse'">...</span>
+                <span class="directory home" ng-show="item.type == 'link' && !$index"><span></span></span>
+                <span class="directory" ng-show="item.type == 'link' && $index">{{item.name}}</span>
+            </span>
+        </div>
+
+        <div id="xwebdav-empty" ng-show="authenticated && !list.length && !progress">
+            <span ng-show="linkType != 'preview'">[~folder_empty~]</span>
+            <span ng-show="linkType == 'preview'">[~no_shares~]</span>
+        </div>
+
+        <div id="xwebdav-list" ng-show="authenticated">
+            <table class="table table-hover table-sm" ng-show="authenticated">
+                <tr class="item" ng-repeat="item in list" ng-click="navigateViaList($index)"
+                    ng-class="{checked:item.checked, dir:item.type == 'dir', file:item.type != 'dir'}">
+                    <td class="file-check" ng-show="dialogType != 'LIST_DIR'">
+                        <span class="checkbox" ng-show="item.hasCheckbox"></span>
+                    </td>
+                    <td class="file-icon"><span class="icon"></span></td>
+                    <td class="file-name">{{item.name}}</td>
+                    <td class="file-size">{{item.sizeFormatted}}</td>
+                    <td class="file-date">{{item.dateFormatted}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="xwebdav-buttons" ng-show="authenticated">
+            <button type="button" class="btn btn-secondary logout" ng-click="logout()" ng-disabled="progress">[~logout~]</button>
+            <button type="button" class="btn btn-primary insert" ng-click="finishSelecting()" ng-show="action=='select'" ng-disabled="progress || !hasChecked()">
+                <span ng-show="dialogType == 'LIST_SHARE'">[~insert_link~]</span>
+                <span ng-show="dialogType != 'LIST_SHARE'">[~download_and_attach~]</span>
+            </button>
+            <button type="button" class="btn btn-primary save" ng-click="finishSaving()" ng-show="action=='save'" ng-disabled="progress">[~save~]</button>
+            <button type="button" class="btn btn-secondary cancel" ng-click="hideDialog()" ng-disabled="progress">[~cancel~]</button>
+        </div>
+
+        <form method="post" id="xwebdav-login" ng-submit="getList()" ng-show="!authenticated">
+            <div class="xwebdav-label">
+                <label for="xwebdav-username">[~username~]</label>
+            </div>
+            <div class="xwebdav-input">
+                <input type="text" name="xwebdav-username" id="xwebdav-username" class="form-control" value="" autocapitalize="off" ng-model="username" />
+            </div>
+            <div class="xwebdav-label">
+                <label for="xwebdav-password">[~password~]</label>
+            </div>
+            <div class="xwebdav-input password-container">
+                <input type="password" name="xwebdav-password" id="xwebdav-password" class="form-control" value="" autocapitalize="off" ng-model="password" />
+                <div id="xwebdav-show-password" ng-click="showPassword()"></div>
+            </div>
+            <div class="buttons">
+                <button type="submit" class="btn btn-primary" ng-disabled="!username || !password">[~login~]</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -117,4 +117,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## License
 
-Creative Commons Attribution-ShareAlike 3.0 — see `skins/stratus/meta.json`.
+Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0) — see [skins/stratus/LICENSE](skins/stratus/LICENSE).

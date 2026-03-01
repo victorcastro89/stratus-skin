@@ -1,0 +1,178 @@
+.uibox {
+    border: none;
+}
+
+.uibox#pluginbody {
+    border: 1px solid #ddd;
+}
+
+
+body.xlarry-font-icons #taskbar .minmodetoggle {
+    padding-top: 12px;
+}
+
+#taskbar a.button-apps {
+    padding-left: 10px;
+}
+
+#addresslist .boxpagenav a,
+.ui-datepicker-header a,
+.ui-datepicker-header select {
+    color: #fff !important;
+}
+
+.boxfooter a {
+    color: #666 !important;
+}
+
+.boxtitle {
+    text-align: left;
+}
+
+.iframe .boxtitle a,
+.boxtitle a {
+    color: #fff;
+}
+
+.iframe h1.boxtitle {
+    color: #fff;
+    border-bottom: none;
+}
+
+#messagelistfooter a {
+    color: #333;
+}
+
+.googie_list td {
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid #ddd;
+}
+
+.googie_list td.googie_list_onhover {
+    background: #E9E9E9;
+}
+
+.googie_list form {
+    padding: 6px !important;
+}
+
+.googie_list form img {
+    background: #6b6b6b;
+    padding: 1px 3px 2px 3px;
+    float: right;
+}
+
+.toolbar a.button.spellcheck.selected {
+    color: #333;
+}
+
+#searchmenulink:before,
+#searchreset:before {
+    color: #777 !important;
+}
+
+#searchmenulink:before {
+    position: relative;
+    top: -1px;
+}
+
+#messagelist :before {
+    top: 2px !important;
+}
+
+.button-interface-options:before {
+    top: 2px;
+}
+
+#interface-options {
+    color: #333;
+}
+
+#compact-message-list-header {
+    padding: 3px 8px;
+}
+
+.compact-message-list-always #mailview-top,
+.compact-message-list-preview #mailview-top.preview-visible {
+    #messagelistcontainer {
+        top: 26px;
+    }
+}
+
+.toolbar a.button:before {
+    font-size: 20px !important;
+}
+
+table.quota-info td,
+table.quota-info th {
+    color: #333;
+}
+
+// fix cut text on firefox
+.headers-table.compose-headers textarea {
+    height: 1.4em !important;
+}
+
+/* xcalendar */
+
+body.xcalendar-page .editor .formbuttons,
+body.xcalendar .editor .formbuttons,
+body.task-xcalendar .editor .formbuttons {
+    border-bottom: 1px solid #ddd;
+}
+
+#calendar-grid .fc-toolbar .fc-button {
+    color: #fff;
+}
+
+.xcalendar .ui-datepicker .ui-datepicker-header {
+    background: #666666;
+}
+
+.xcalendar .ui-datepicker .ui-datepicker-month,
+.xcalendar .ui-datepicker .ui-datepicker-year,
+.xcalendar .ui-datepicker .ui-datepicker-prev,
+.xcalendar .ui-datepicker .ui-datepicker-next,
+.xcalendar .fc-state-default,
+.xcalendar .boxtitle button {
+    color: #fff !important;
+    text-shadow: none;
+}
+
+.xcalendar .fc-list-view {
+    border: 1px solid #ddd;
+    border-top: none;
+}
+
+#calendar-grid-controller {
+    border: 1px solid #ddd;
+}
+
+#sidebar-calendar table.ui-datepicker-calendar {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+// xsidebar
+
+#xsidebar .boxtitle :before {
+    color: #fff;
+}
+
+
+/* plugin: ident_switch */
+
+#plugin-ident_switch-account {
+    border: none;
+    margin-top: 13px !important;
+    background: transparent;
+    color: #fff;
+    font-size: 110%;
+    float: left;
+
+    option {
+        color: #333;
+    }
+}

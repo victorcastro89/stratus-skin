@@ -1,0 +1,45 @@
+<div id="holiday-controller" ng-controller="HolidayController" ng-init="initialize()" xmlns:roundcube="http://www.w3.org/1999/xhtml">
+    <div class='editor uibox' ng-class="{ loading: loading }" ng-show="editing" ng-cloak>
+        <roundcube:if condition="env:xelastic" />
+        <h2 class='editor-title'>
+        <roundcube:else />
+        <h2 class='boxtitle'>
+        <roundcube:endif />
+            <span><roundcube:label name="xcalendar.holiday_calendars" /></span>
+            <a class='header-close' href='javascript:void(0)' ng-click='cancel()'><roundcube:label name="close" /></a>
+        </h2>
+
+        <div class='content-box' ng-hide='loading'>
+            <div ng-repeat='(group, items) in list'>
+
+                <h4 class='holiday-title'>
+                    <span ng-show="group === 'religions'"><roundcube:label name="xcalendar.religious_holidays" /></span>
+                    <span ng-show="group === 'countries'"><roundcube:label name="xcalendar.country_holidays" /></span>
+                </h4>
+
+                <table class='holiday-content'>
+                    <tr ng-repeat='item in items' ng-class='{ added: added.indexOf(item.url) !== -1 }'>
+                        <td>{{item.name}}</td>
+                        <td class='actions'>
+                            <button type="button" class="btn btn-xs"
+                                    ng-class="{busy:sending == item.url,
+                                        'btn-secondary': added.indexOf(item.url) === -1,
+                                        'btn-danger': added.indexOf(item.url) !== -1}"
+                                    ng-click="addOrRemove(item.url, item.name)">
+                                <span>{{added.indexOf(item.url) === -1 ?
+                                    '<roundcube:label name="xcalendar.add" />' : '<roundcube:label name="xcalendar.remove" />'}}</span>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class='formbuttons editor-button-bar' ng-hide='loading'>
+            <div>
+                <input type='button' class='button mainaction' ng-click='cancel()' value='<roundcube:label name="close" />'>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,105 @@
+<?php
+/**
+ * Roundcube Plus Quotes plugin.
+ *
+ * Copyright 2016, Tecorama LLC.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+$labels = [];
+$labels['app_menu_title'] = 'Allekirjoitus';
+$labels['signature_preview'] = 'Allekirjoituksen esikatselu';
+$labels['signature_builder'] = 'Signature Builder';
+$labels['enable'] = 'Ota Signature Builder käyttöön';
+$labels['preview'] = 'Esikatselu';
+$labels['main'] = 'Main';
+$labels['details'] = 'Yksityiskohdat';
+$labels['social'] = 'Sosiaalinen';
+$labels['disclaimer'] = 'Vastuuvapauslauseke';
+$labels['style'] = 'Tyyli';
+$labels['export'] = 'Vie';
+$labels['select_design'] = 'Valitse muotoilu';
+$labels['name'] = 'Nimi';
+$labels['position'] = 'Asema';
+$labels['user'] = 'Käyttäjä';
+$labels['logo'] = 'Logo';
+$labels['resize_note'] = 'Voit muuttaa kuvan kokoa napsauttamalla ja vetämällä esikatselussa näkyvää kuvaa.';
+$labels['colors'] = 'Värit';
+$labels['fonts'] = 'Kirjasimet';
+$labels['items'] = 'Tuotteet';
+$labels['image'] = 'Kuva';
+$labels['text'] = 'Teksti';
+$labels['social_hand_drawn'] = 'Käsin piirretty';
+$labels['social_logotype'] = 'Logotyyppi';
+$labels['social_logotype_black'] = 'Logotyyppi musta';
+$labels['social_outline'] = 'Luonnos';
+$labels['social_round_black'] = 'Pyöreä musta';
+$labels['social_round_flat'] = 'Pyöreä litteä';
+$labels['social_round_gloss'] = 'Pyöreä kiilto';
+$labels['social_square_black'] = 'Neliön muotoinen musta';
+$labels['social_square_flat'] = 'Neliön muotoinen litteä';
+$labels['social_square_gloss'] = 'Neliön kiilto';
+$labels['social_xmas'] = 'Joulu';
+$labels['templates'] = 'Mallit';
+$labels['template_note'] = 'Mallin käyttäminen korvaa kaikki muutokset, jotka olet tehnyt muotoilueditorilla.';
+$labels['enable_image_resizing'] = 'Ota kuvan koon muuttaminen käyttöön';
+$labels['layout'] = 'Asettelu';
+$labels['separator'] = 'Erotin';
+$labels['column'] = 'Pylväs';
+$labels['row'] = 'Rivi';
+$labels['include_in_plain_text'] = 'Sisällytetään pelkkään tekstimuotoiseen allekirjoitukseen';
+$labels['show'] = 'Näytä';
+$labels['hide'] = 'Piilota';
+$labels['no_change'] = 'Ei muutosta';
+$labels['text_color'] = 'Tekstin väri';
+$labels['show_titles'] = 'Näytä otsikot';
+$labels['title_color'] = 'Otsikko väri';
+$labels['title_style'] = 'Otsikon tyyli';
+$labels['link_color'] = 'Linkin väri';
+$labels['font_family'] = 'Fonttiperhe';
+$labels['font_size'] = 'Kirjasinkoko';
+$labels['alignment'] = 'Kohdistus';
+$labels['disclaimer_size'] = 'Vastuuvapauslausekkeen fonttikoko';
+$labels['social_icon_style'] = 'Sosiaalisen kuvakkeen tyyli';
+$labels['social_icon_size'] = 'Sosiaalisen kuvakkeen koko';
+$labels['add_item'] = 'Lisää tuote';
+$labels['small'] = 'Pieni';
+$labels['medium'] = 'Medium';
+$labels['large'] = 'Suuri';
+$labels['tiny'] = 'Tiny';
+$labels['normal'] = 'Normaali';
+$labels['bold'] = 'Rohkea';
+$labels['serif'] = 'Serif';
+$labels['sans_serif'] = 'Sans-serif';
+$labels['cursive'] = 'Kursiivinen';
+$labels['monospace'] = 'Monospace';
+$labels['start_designing'] = 'Avaa suunnittelueditori';
+$labels['finish_designing'] = 'Sulje muotoilueditori';
+$labels['designer_info'] = 'Järjestä niiden sijainnit uudelleen vetämällä ja pudottamalla alla olevan taulukon elementtejä. Säädä solujen ominaisuuksia napsauttamalla hammasratas-kuvakkeita.';
+$labels['cell_properties'] = 'Solun ominaisuudet';
+$labels['left_padding'] = 'Vasen pehmuste';
+$labels['right_padding'] = 'Oikea pehmuste';
+$labels['top_padding'] = 'Top pehmuste';
+$labels['bottom_padding'] = 'Pohjan pehmuste';
+$labels['left_border'] = 'Vasen reuna';
+$labels['right_border'] = 'Oikea reuna';
+$labels['top_border'] = 'Yläreunus';
+$labels['bottom_border'] = 'Alareuna';
+$labels['border'] = 'Raja:';
+$labels['left'] = 'Vasen';
+$labels['right'] = 'Oikea';
+$labels['top'] = 'Top';
+$labels['bottom'] = 'Pohja';
+$labels['middle'] = 'Keskimmäinen';
+$labels['vertical_align'] = 'Pystysuora linjaus:';
+$labels['export_note'] = 'Käytä tätä HTML-koodia, jos haluat sisällyttää allekirjoituksesi toiseen sähköpostiohjelmaan.';
+$labels['copy_to_clipboard'] = 'Kopioi leikepöydälle';
+$labels['close_design_editor_note'] = 'Sulje muotoilueditori, jotta saat allekirjoituksen HTML-koodin.';
+$labels['copy_success_note'] = 'Allekirjoitus kopioitu leikepöydälle';
+$labels['details_email'] = 'Sähköposti:';
+$labels['details_website'] = 'Verkkosivusto:';
+$labels['details_phone'] = 'Puhelin:';
+$labels['details_mobile'] = 'Matkapuhelin:';
+$labels['details_address'] = 'Osoite:';
+$labels['image_alternative_text'] = 'Vaihtoehtoinen teksti';

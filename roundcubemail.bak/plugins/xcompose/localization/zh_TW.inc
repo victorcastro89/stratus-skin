@@ -1,0 +1,12 @@
+<?php
+/**
+ * Roundcube Plus Compose plugin.
+ *
+ * Copyright 2016, Roundcubeplus.com.
+ *
+ * @license Commercial. See the LICENSE file for details.
+ */
+
+$labels = [];
+
+$labels['setting_plain_font_size'] = '純文字訊息的預設字型大小';

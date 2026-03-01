@@ -1,0 +1,126 @@
+<div id="xai-compose-dialog" class="xdialog-mask" ng-controller="XAIComposeController" ng-init="initialize()">
+    <div class="xdialog-box full-screen" id="xai-compose-dialog-box">
+        <div class="xdialog-title">
+            [+xai.ai_assistant+]
+            <button class="xdialog-close" onclick="xai.closeComposeDialog()">&times</button>
+        </div>
+        <div class="xdialog-contents">
+            <div id="xai-request" ng-show="!helpVisible">
+                <div class="properties">
+                    <div class="propbox">
+                        <div>
+                            <label for="xai-to">
+                                <span class="regular-size">[+xai.compose_label_to+]</span>
+                                <span class="small-size">[+recipient+]</span>
+                            </label>
+                            <span class='xinfo right'><div>[+xai.compose_tip_to+]</div></span>
+                        </div>
+                        <input type="text" class="form-control" id="xai-to" ng-model="data.to" ng-disabled="busy" />
+                    </div>
+                    <div class="propbox">
+                        <div>
+                            <label for="xai-from">
+                                <span class="regular-size">[+xai.compose_label_from+]</span>
+                                <span class="small-size">[+sender+]</span>
+                            </label>
+                            <span class='xinfo'><div>[+xai.compose_tip_from+]</div></span>
+                        </div>
+                        <input type="text"  class="form-control" id="xai-from" ng-model="data.from" ng-disabled="busy" />
+                    </div>
+                    <div class="propbox">
+                        <div>
+                            <label for="xai-style">[+xai.compose_label_style+]</label>
+                            <span class='xinfo'><div>[+xai.compose_tip_style+]</div></span>
+                        </div>
+                        <select ng-cloak id="xai-style" ng-model="data.compose_style" ng-disabled="busy">
+                            <option ng-repeat="(key, name) in styleOptions" value="{{key}}">{{name}}</option>
+                        </select>
+                    </div>
+                    <div class="propbox">
+                        <div>
+                            <label for="xai-length">[+xai.compose_label_length+]</label>
+                            <span class='xinfo'><div>[+xai.compose_tip_length+]</div></span>
+                        </div>
+                        <select ng-cloak id="xai-length" ng-model="data.compose_length" ng-disabled="busy">
+                            <option ng-repeat="(key, name) in lengthOptions" value="{{key}}">{{name}}</option>
+                        </select>
+                    </div>
+                    <div class="propbox">
+                        <div>
+                            <label for="xai-creativity">[+xai.compose_label_creativity+]</label>
+                            <span class='xinfo'><div>[+xai.compose_tip_creativity+]</div></span>
+                        </div>
+                        <select ng-cloak id="xai-creativity" ng-model="data.compose_creativity" ng-disabled="busy">
+                            <option ng-repeat="(key, name) in creativityOptions" value="{{key}}">{{name}}</option>
+                        </select>
+                    </div>
+                    <div class="propbox">
+                        <div>
+                            <label for="xai-language">[+xai.compose_label_language+]</label>
+                            <span class='xinfo'><div>[+xai.compose_tip_language+]</div></span>
+                        </div>
+                        <select ng-cloak id="xai-language" ng-model="data.compose_language" ng-disabled="busy">
+                            <option ng-repeat="(key, name) in languageOptions" value="{{key}}">{{name}}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <div>
+                        <label for="xai-instructions">[+xai.compose_label_instructions+]</label>
+                        <span class='xinfo right'><div>[+xai.compose_tip_instructions+]</div></span>
+                    </div>
+                    <textarea id="xai-instructions"  class="form-control" placeholder="[+xai.compose_instructions_placeholder+]"
+                              ng-model="data.instructions" ng-disabled="busy"></textarea>
+                </div>
+
+                <div class="generate-container">
+                    <button type="button" class='btn btn-success' ng-click="insertEmail()" ng-show="generated && !busy">
+                        [+xai.compose_insert_email+]
+                    </button>
+                    <button type="button" class='btn btn-primary' ng-click="generate()" ng-show="!busy">
+                        <span ng-show="!generated">[+xai.compose_generate_email+]</span>
+                        <span ng-show="generated">[+xai.compose_generate_again+]</span>
+                    </button>
+                    <button type="button" class='btn btn-primary' ng-click="stopGenerating()" ng-show="busy" ng-disabled="!generated">
+                        [+xai.compose_stop_generating+]
+                    </button>
+                    <button type="button" class='btn btn-default' ng-click="helpVisible = true" ng-disabled="busy">
+                        [+xai.compose_help_button_show+]
+                    </button>
+                </div>
+            </div>
+
+            <div id="xai-result" ng-show="!helpVisible">
+                <textarea id="xai-email"  class="form-control" ng-model="email" ng-disabled="busy"></textarea>
+            </div>
+
+            <div id="xai-compose-help" ng-show="helpVisible">
+                <div class="help-header">
+                    <button type="button" class='btn btn-primary' ng-click="helpVisible = false">&lt; [+xai.compose_help_button_hide+]</button>
+                    <h3>[+xai.compose_help_title+]</h3>
+                </div>
+                <div class="help-content">
+                    <p>[+xai.compose_help_info+]</p>
+                    [~examples~]
+                </div>
+            </div>
+        </div>
+
+        <div class="xdialog-mask" ng-show="error">
+            <div class="xdialog-box">
+                <div class="xdialog-title">
+                    [+xai.ai_assistant+]
+                    <button class="xdialog-close" ng-click="hideErrorDialog()">&times</button>
+                </div>
+                <div class="xdialog-contents">{{error}}</div>
+                <div class="xdialog-buttons">
+                    <button type="button" class="btn btn-primary" ng-click="hideErrorDialog()">[+ok+]</button>
+                    <button type="button" class="btn btn-default" ng-click="hideErrorDialog(); helpVisible = true">
+                        [+xai.compose_error_help_button+]</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

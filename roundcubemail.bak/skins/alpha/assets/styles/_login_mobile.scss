@@ -1,0 +1,39 @@
+body.login-page {
+    background: #000 url(../images/body.png);
+}
+
+.login-page.xmobile #login-form {
+    color: #fff !important;
+
+    table td,
+    table td.title,
+    table td.input,
+    #ifplcontainer label,
+    legend,
+    .boxtitle,
+    input.button,
+    button.submit {
+        color: #fff !important;
+    }
+
+    form {
+        background: transparent;
+    }
+
+    input.button,
+    button.submit {
+        background: #0075c8;
+        border: none;
+    }
+
+    .boxtitle {
+        border-color: #fff;
+    }
+
+    #login-title,
+    #bottomline {
+        &, a {
+            color: #ddd !important;
+        }
+    }
+}

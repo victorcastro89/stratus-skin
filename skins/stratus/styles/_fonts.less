@@ -3,8 +3,10 @@
 // inlines elastic's CSS (which uses "../fonts/" relative to elastic/styles/)
 // but our compiled output lives in stratus/styles/, making that path invalid.
 // These declarations come after the elastic import and override the broken paths.
+// Path is relative to the compiled CSS location: skins/stratus/styles/
+// → ../../elastic/fonts/ resolves to skins/elastic/fonts/
 
-@mp-font-path: "../../../roundcubemail/skins/elastic/fonts";
+@mp-font-path: "../../elastic/fonts";
 
 @font-face {
   font-family: 'Icons';

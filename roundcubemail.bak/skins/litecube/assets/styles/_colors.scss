@@ -1,0 +1,325 @@
+@use "sass:list";
+
+$map: (
+    //          dark     darker   darkest  light    lighter  lightest
+    ("6da1d3", (#6da1d3, #1F75CC, #166ac0, #BFD9F2, #D3E8FF, #E9F4FF)),
+    ("6dcfd3", (#6dcfd3, #1fbecc, #16aac0, #bfeef2, #d3f9ff, #e9fcff)),
+    ("6dd374", (#6dd374, #1fcc2b, #2fae50, #bff2c3, #d3ffd5, #e9ffec)),
+    ("b76dd3", (#b76dd3, #a51fcc, #9900cc, #e4bff2, #edd3ff, #fae9ff)),
+    ("d3bc6d", (#d3bc6d, #cca51f, #c09616, #f2e4bf, #fff5d3, #fffae9)),
+    ("ce7070", (#ce7070, #970000, #cc1f1f, #f8d7d7, #ffd3d3, #feefef))
+);
+
+body.xcolor-6da1d3 #topline {
+    color: blue;
+}
+
+@each $row in $map {
+    $key: list.nth($row, 1);
+    $colors: list.nth($row, 2);
+
+    /* color 1 - dark */
+
+    body.xmobile.xcolor-#{$key} .popup-close,
+    body.xmobile.xcolor-#{$key} #mailboxlist li.mailbox a .unreadcount,
+    body.xmobile.xcolor-#{$key} #messagelistcontainer .boxpagenav a.icon,
+    body.xmobile.xcolor-#{$key} #messagelistcontainer .pagenav a.button,
+    body.xmobile.xcolor-#{$key} #messagestack div,
+    body.xmobile.xcolor-#{$key} #message-objects div a.button,
+    body.xmobile.xcolor-#{$key} .boxfooter .listbutton {
+        background-color: #{list.nth($colors, 1)};
+    }
+
+    body.xcolor-#{$key} input.switchbox-input:checked + label.switchbox,
+    body.xcolor-#{$key} #messageheader a.button.selected {
+        background-color: #{list.nth($colors, 1)} !important;
+    }
+
+    body.xcolor-#{$key} .records-table td span:before,
+    body.xcolor-#{$key} .records-table th span:before,
+    body.xcolor-#{$key} .records-table th a:before,
+    body.xcolor-#{$key} .records-table thead td div:before,
+    body.xcolor-#{$key} .records-table thead th div:before,
+    body.xcolor-#{$key} .records-table thead td a:after,
+    body.xcolor-#{$key} .records-table thead th a:after,
+    body.xcolor-#{$key} .records-table div.expanded,
+    body.xcolor-#{$key} .records-table div.collapsed,
+    body.xcolor-#{$key} .boxfooter .listbutton.groupactions:before,
+    body.xcolor-#{$key} #rss a,
+    body.xcolor-#{$key} a.iconbutton:before,
+    body.xcolor-#{$key} .minmodetoggle:before,
+    body.xcolor-#{$key} #mailpreviewtoggle,
+    body.xcolor-#{$key} .toolbar a.button:before,
+    body.xcolor-#{$key} .boxfooter .listbutton.groupactions,
+    body.xcolor-#{$key} .boxfooter .listbutton.add,
+    body.xcolor-#{$key} .boxfooter .listbutton.delete,
+    body.xcolor-#{$key} .boxfooter .listbutton.removegroup,
+    body.xcolor-#{$key} .boxfooter .listbutton.addto .inner,
+    body.xcolor-#{$key} .boxfooter .listbutton.addcc .inner,
+    body.xcolor-#{$key} .boxfooter .listbutton.addbcc .inner,
+    body.xcolor-#{$key} .boxfooter .countdisplay,
+    body.xcolor-#{$key}.xskin #apps-menu a.app-item > div.icon,
+    body.xmobile.xcolor-#{$key} #folderlist-footer #quotadisplay,
+    body.xmobile.xcolor-#{$key} #mailboxlist li.mailbox div.treetoggle,
+    body.xmobile.xcolor-#{$key} #directorylist li.addressbook div.collapsed,
+    body.xmobile.xcolor-#{$key} #directorylist li.addressbook div.expanded,
+    body.xmobile.xcolor-#{$key} #main-menu a,
+    body.xmobile.xcolor-#{$key} #full-headers .more-headers,
+    body.xmobile.xcolor-#{$key} #attachment-list .delete,
+    body.xmobile.xcolor-#{$key} #attachment-list .drop,
+    body.xmobile.xcolor-#{$key} #messageheader .pagenav a.button,
+    body.xmobile.xcolor-#{$key} #messagelist td.subject:before,
+    body.xmobile.xcolor-#{$key} #messagelist tr.selected td.subject:before,
+    body.xmobile.xcolor-#{$key} #messagelist tr.unfocused td.subject:before,
+    body.xmobile.xcolor-#{$key} .folderlist li.mailbox div.treetoggle:before {
+        color: #{list.nth($colors, 1)};
+    }
+
+    body.xcolor-#{$key} .flatpickr-confirm,
+    body.xcolor-#{$key} .flatpickr-day.selected,
+    body.xmobile.xcolor-#{$key} .popup-close a,
+    body.xmobile.xcolor-#{$key} .popup-box h5,
+    body.xmobile.xcolor-#{$key} .popup-box .boxtitle,
+    body.xmobile.xcolor-#{$key} .popup-box .boxtitle span,
+    body.xmobile.xcolor-#{$key} #quicksearchbar .popup-close a {
+        color: #{list.nth($colors, 1)} !important;
+    }
+
+    body.xcolor-#{$key} button,
+    body.xcolor-#{$key} a.btn,
+    body.xcolor-#{$key} .button,
+    body.xcolor-#{$key} #remote-objects-message a.button,
+    body.xcolor-#{$key} #messageheader a.button,
+    body.xcolor-#{$key} #messageheader .buttongroup,
+    body.xcolor-#{$key} input[type=button],
+    body.xcolor-#{$key} input[type=button]:hover,
+    body.xcolor-#{$key} fieldset,
+    body.xcolor-#{$key} a.menuselector,
+    body.xcolor-#{$key} #topnav,
+    body.xcolor-#{$key}.minimal #topnav,
+    body.xcolor-#{$key} #taskbar a.button-selected,
+    body.xcolor-#{$key} .popupmenu,
+    body.xcolor-#{$key} #messagestack div,
+    body.xcolor-#{$key} #maillistmode.selected,
+    body.xcolor-#{$key} #mailthreadmode.selected,
+    body.xcolor-#{$key} #rcmKSearchpane,
+    body.xcolor-#{$key} .xtabs.ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor,
+    body.xdesktop.xcolor-#{$key} select,
+    body.xmobile.xcolor-#{$key} #main-menu,
+    body.xmobile.xcolor-#{$key} .popup-close,
+    body.xmobile.xcolor-#{$key} #all-headers {
+        border-color: #{list.nth($colors, 1)} !important;
+    }
+
+    body.xdesktop.xcolor-#{$key} input[type=text],
+    body.xdesktop.xcolor-#{$key} input[type=password],
+    body.xdesktop.xcolor-#{$key} input[type=email],
+    body.xdesktop.xcolor-#{$key} textarea,
+    body.xcolor-#{$key} input.button,
+    body.xcolor-#{$key} a.btn,
+    body.xcolor-#{$key} .buttons a.button,
+    body.xcolor-#{$key} .ui-dialog button.ui-button,
+    body.xcolor-#{$key} .flatpickr-confirm,
+    body.xcolor-#{$key} .flatpickr-day.selected,
+    body.xmobile.xcolor-#{$key} #main-menu a,
+    body.xcolor-#{$key} input.switchbox-input:checked + label.switchbox,
+    body.xmobile.xcolor-#{$key} a.contactfieldbutton,
+    body.xmobile.xcolor-#{$key} #uploadformlink {
+        border: 1px solid #ddd !important;
+        border-color: #{list.nth($colors, 1)} !important;
+    }
+
+    /* color 2 - darker */
+
+    body.xcolor-#{$key} body.mailbox #inboxButton a {
+        background-color: #{list.nth($colors, 2)};
+    }
+
+    body.xcolor-#{$key} .uibox .boxtitle,
+    body.xcolor-#{$key} #xsidebar .boxtitle :before,
+    body.xcolor-#{$key} .widescreen #messagelistheader,
+    body.xcolor-#{$key}.xcalendar .ui-datepicker .ui-datepicker-header select,
+    body.xcolor-#{$key}.xcalendar .ui-datepicker .ui-datepicker-header a,
+    body.xcolor-#{$key}.xcalendar .ui-datepicker .ui-datepicker-header span,
+    body.xcolor-#{$key} .records-table thead tr .status span.status,
+    body.xcolor-#{$key} .records-table thead tr .flag span.flagged,
+    body.xcolor-#{$key} .records-table thead tr .attachment span.attachment,
+    body.xcolor-#{$key} .records-table thead tr .priority span.priority,
+    body.xcolor-#{$key} .records-table thead td a,
+    body.xcolor-#{$key} .records-table thead th a {
+        color: #{list.nth($colors, 2)} !important;
+    }
+
+    /* color 3 - darkest */
+
+    body.xdesktop.xcolor-#{$key} a
+    {
+        color: #{list.nth($colors, 3)};
+    }
+
+    body.xcolor-#{$key} button,
+    body.xcolor-#{$key} input[type=button],
+    body.xcolor-#{$key} input[type=submit],
+    body.xcolor-#{$key} input[type=reset],
+    body.xcolor-#{$key} .buttons a.button,
+    body.xcolor-#{$key} #compose-attachments a.button,
+    body.xcolor-#{$key} input.button,
+    body.xcolor-#{$key} a.btn,
+    body.xcolor-#{$key} input.button:active,
+    body.xcolor-#{$key} .buttons a.button,
+    body.xcolor-#{$key} .formbuttons input.button,
+    body.xcolor-#{$key} input.button.mainaction,
+    body.xcolor-#{$key} #login-form input.button,
+    body.xcolor-#{$key} #topline .topleft a,
+    body.xcolor-#{$key} #topline .topright a,
+    body.xcolor-#{$key} #topline .topright a.button-logout,
+    body.xcolor-#{$key} #topline .topright span,
+    body.xcolor-#{$key} .username select.deco,
+    body.xcolor-#{$key} #taskbar a span.button-inner,
+    body.xcolor-#{$key} .toolbar a.button,
+    body.xcolor-#{$key} #topline,
+    body.xcolor-#{$key} .minimal #topline,
+    body.xcolor-#{$key} #main-menu a.active,
+    body.xcolor-#{$key} #taskbar a.button-calendar span.button-inner,
+    body.xcolor-#{$key} #taskbar a.button-calendar.button-selected span.button-inner,
+    body.xcolor-#{$key} ul#planner_controls li a,
+    body.xmobile.xcolor-#{$key} a.contactfieldbutton,
+    body.xmobile.xcolor-#{$key} #uploadformlink,
+    body.xmobile.xcolor-#{$key} .tablink a {
+        color: #{list.nth($colors, 3)} !important;
+    }
+
+    body.xcolor-#{$key}.xcalendar button.new-calendar,
+    body.xcolor-#{$key}.xcalendar .calendar-item a:before,
+    body.xcolor-#{$key}.xcalendar #calendar-grid .fc-icon  {
+        color: #{list.nth($colors, 3)} !important;
+    }
+
+    /* color 4 - light */
+
+    body.xcolor-#{$key} .uibox,
+    body.xcolor-#{$key} #compose-content,
+    body.xcolor-#{$key} #mailview-top,
+    body.xcolor-#{$key} #mailview-bottom,
+    body.xcolor-#{$key} #messagebody p.image-attachment,
+    body.xcolor-#{$key} .records-table.fixedheader,
+    body.xcolor-#{$key} #messagelistfooter,
+    body.xcolor-#{$key} .moreheaderstoggle,
+    body.xcolor-#{$key} #messageheader,
+    body.xcolor-#{$key} #composeheaders,
+    body.xcolor-#{$key} #composeoptions,
+    body.xcolor-#{$key} #compose-attachments,
+    body.xcolor-#{$key} #compose-contacts #directorylist,
+    body.xcolor-#{$key} .listbox .boxfooter,
+    body.xcolor-#{$key} #taskbar a,
+    body.xcolor-#{$key} .minimal #taskbar a,
+    body.xcolor-#{$key} ul#planner_controls li a,
+    body.xcolor-#{$key} .boxtitle, .uibox .listing thead td,
+    body.xcolor-#{$key} .boxtitle, .uibox .listing thead th,
+    body.xcolor-#{$key}.iframe h1.boxtitle,
+    body.xcolor-#{$key} #vertical-preview,
+    body.xcolor-#{$key} .widescreen #messagelistheader {
+        border-color: #{list.nth($colors, 4)};
+    }
+
+    body.xmobile.xcolor-#{$key} #messageheader .pagenav a.button.disabled {
+        color: #{list.nth($colors, 4)};
+    }
+
+    /* color 5 - lighter */
+
+    body.xcolor-#{$key} .listbox .listitem.selected,
+    body.xcolor-#{$key} .listbox .tablink.selected,
+    body.xcolor-#{$key} .listbox .listitem.selected > a,
+    body.xcolor-#{$key} .listbox .tablink.selected > a,
+    body.xcolor-#{$key} .listing tbody tr.unfocused td,
+    body.xcolor-#{$key} .listing tbody tr.selected td,
+    body.xcolor-#{$key} .listing li.selected,
+    body.xcolor-#{$key} .listing li.selected > a,
+    body.xcolor-#{$key} #mailboxlist li.mailbox .unreadcount,
+    body.xdesktop.xcolor-#{$key} #composeoptionstoggle,
+    body.xmobile.xcolor-#{$key}  #main-menu a.active {
+        background-color: #{list.nth($colors, 5)};
+    }
+
+    body.xcolor-#{$key} button.button:hover,
+    body.xcolor-#{$key} a.btn:hover,
+    body.xcolor-#{$key} a.button:hover,
+    body.xcolor-#{$key} .ui-dialog button.ui-button:hover,
+    body.xcolor-#{$key} #compose-attachments a.button:hover,
+    body.xcolor-#{$key} input.button:hover,
+    body.xcolor-#{$key} input[type=button]:hover,
+    body.xcolor-#{$key} .records-table tr.selected,
+    body.xcolor-#{$key} .records-table tr.unfocused,
+    body.xcolor-#{$key} .records-table tr.selected td,
+    body.xcolor-#{$key} .records-table tr.unfocused td,
+    body.xcolor-#{$key} a.rowLink:hover,
+    body.xcolor-#{$key} #xsidebar .boxtitle,
+    body.xcolor-#{$key} #remote-objects-message a:hover,
+    body.xcolor-#{$key}.compact-message-list-always #mailview-top tr:hover,
+    body.xcolor-#{$key}.compact-message-list-preview #mailview-top.preview-visible tr:hover,
+    body.xmobile.xcolor-#{$key}  #messagelist tr.selected,
+    body.xmobile.xcolor-#{$key}  #messagelist tr.unfocused,
+    body.xmobile.xcolor-#{$key}  #messagelist tr.selected td.date{
+        background-color: #{list.nth($colors, 5)} !important;
+    }
+
+    body.xcolor-#{$key} #mailboxlist li.mailbox ul,
+    body.xcolor-#{$key} .listbox .listitem,
+    body.xcolor-#{$key} .listbox .tablink,
+    body.xcolor-#{$key} .listing tbody td,
+    body.xcolor-#{$key} .listing li {
+        border-color: #{list.nth($colors, 5)};
+    }
+
+    body.xcolor-#{$key}.compact-message-list-always #mailview-top tr,
+    body.xcolor-#{$key}.compact-message-list-preview #mailview-top.preview-visible tr {
+        border-color: #{list.nth($colors, 5)} !important;
+    }
+
+    /* color 6 - lightest */
+
+   // body.xdesktop.xcolor-#{$key} a.button,
+    body.xcolor-#{$key} #compose-attachments a.button,
+    body.xcolor-#{$key} button.button,
+    body.xcolor-#{$key} button.mainaction,
+    body.xcolor-#{$key} .ui-dialog button.ui-button,
+    body.xcolor-#{$key} #remote-objects-message .button,
+    body.xcolor-#{$key} input.button,
+    body.xcolor-#{$key} a.btn,
+    body.xcolor-#{$key} input[type=button],
+    body.xcolor-#{$key} .widescreen #messagelistheader,
+    body.xcolor-#{$key} .flatpickr-confirm,
+    body.xcolor-#{$key} .flatpickr-day.selected,
+    body.xmobile.xcolor-#{$key} a.contactfieldbutton,
+    body.xmobile.xcolor-#{$key} #uploadformlink {
+        background-color: #{list.nth($colors, 6)} !important;
+    }
+
+    body.xcolor-#{$key} #composeheaders,
+    body.xcolor-#{$key} #composebodycontainer .mce-panel,
+    body.xcolor-#{$key} #taskbar a,
+    body.xcolor-#{$key} .minimal #taskbar a,
+    body.xcolor-#{$key} .moreheaderstoggle,
+    body.xcolor-#{$key} #messageheader,
+    body.xcolor-#{$key} .records-table thead td,
+    body.xcolor-#{$key} .records-table thead th,
+    body.xcolor-#{$key} input[type=button],
+    body.xcolor-#{$key} .uibox .listing thead td,
+    body.xcolor-#{$key} .uibox .listing thead th,
+    body.xcolor-#{$key} .uibox .boxtitle,
+    body.xcolor-#{$key}.xcalendar .ui-datepicker .ui-datepicker-header,
+    body.xdesktop.xcolor-#{$key} .listbox,
+    body.xdesktop.xcolor-#{$key} .buttons a.button,
+    body.xcolor-#{$key} ul#planner_controls li a,
+    body.xcolor-#{$key} #messagelistfooter,
+    body.xcolor-#{$key} #mailpreviewtoggle,
+    body.xcolor-#{$key}.iframe h1.boxtitle,
+    body.xmobile.xcolor-#{$key} #main-menu a {
+        background-color: #{list.nth($colors, 6)};
+    }
+
+    body.xcolor-#{$key} .popupmenu a:hover {
+        background-color: #{list.nth($colors, 6)} !important;
+    }
+}
