@@ -136,6 +136,27 @@ if [ -d "$APP/plugins/calendar" ] && [ -f "$APP/temp/roundcube.db" ]; then
   fi
 fi
 
+# ── libkolab plugin tables ────────────────────────────────────────────────────
+if [ -d "$APP/plugins/libkolab" ] && [ -f "$APP/temp/roundcube.db" ]; then
+  echo "Checking libkolab tables..."
+  if ! _table_exists kolab_folders; then
+    echo "🗄️  Installing libkolab tables..."
+    LIBKOLAB_INIT="$APP/plugins/libkolab/SQL/sqlite.initial.sql"
+    if [ -f "$LIBKOLAB_INIT" ]; then
+      php -r "
+        \$db = new PDO('sqlite:$APP/temp/roundcube.db');
+        \$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        \$sql = file_get_contents('$LIBKOLAB_INIT');
+        \$db->exec(\$sql);
+      " && echo "✅ libkolab tables created"
+    else
+      echo "⚠️  libkolab INIT schema not found: $LIBKOLAB_INIT"
+    fi
+  else
+    echo "✅ libkolab tables already exist"
+  fi
+fi
+
 # ── Banner ────────────────────────────────────────────────────────────────────
 cat <<EOF
 

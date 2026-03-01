@@ -28,7 +28,36 @@ else
     echo "✅ Roundcube source already present"
 fi
 
-# ── 2. Symlink our skins into Roundcube ──────────────────────────────────────
+# ── 2. Patch composer.json with extra plugins ───────────────────────────────
+# Upstream Roundcube doesn't ship kolab/calendar or roundcube/carddav.
+# We inject them into composer.json so `composer install` (in Docker) picks
+# them up automatically. Node.js is already a prerequisite for LESS builds.
+echo ""
+echo "📦 Ensuring extra plugins in composer.json..."
+node -e "
+  const fs = require('fs');
+  const path = process.argv[1] + '/composer.json';
+  const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+  const extras = {
+    'kolab/calendar':    '~3.6.1',
+    'roundcube/carddav': '~5.0'
+  };
+  let changed = false;
+  for (const [name, ver] of Object.entries(extras)) {
+    if (!pkg.require[name]) {
+      pkg.require[name] = ver;
+      changed = true;
+      console.log('  ➕ Added ' + name + ' ' + ver);
+    } else {
+      console.log('  ✅ ' + name + ' already present');
+    }
+  }
+  if (changed) {
+    fs.writeFileSync(path, JSON.stringify(pkg, null, 4) + '\n');
+  }
+" "$RC_DIR"
+
+# ── 3. Symlink our skins into Roundcube ──────────────────────────────────────
 echo ""
 echo "🔗 Linking custom skins..."
 for skin_dir in "$REPO_ROOT"/skins/*/; do
@@ -47,7 +76,7 @@ for skin_dir in "$REPO_ROOT"/skins/*/; do
     fi
 done
 
-# ── 3. Symlink our plugins into Roundcube ────────────────────────────────────
+# ── 4. Symlink our plugins into Roundcube ────────────────────────────────────
 echo ""
 echo "🔗 Linking custom plugins..."
 for plugin_dir in "$REPO_ROOT"/plugins/*/; do
@@ -67,7 +96,7 @@ for plugin_dir in "$REPO_ROOT"/plugins/*/; do
     fi
 done
 
-# ── 4. Generate Roundcube config from template ──────────────────────────────
+# ── 5. Generate Roundcube config from template ──────────────────────────────
 echo ""
 RC_CONFIG="$RC_DIR/config/config.inc.php"
 if [ ! -f "$RC_CONFIG" ]; then
@@ -80,7 +109,7 @@ else
     echo "✅ Roundcube config already exists"
 fi
 
-# ── 5. Copy Docker env if missing ───────────────────────────────────────────
+# ── 6. Copy Docker env if missing ───────────────────────────────────────────
 echo ""
 DOCKER_ENV="$REPO_ROOT/docker/.env"
 if [ ! -f "$DOCKER_ENV" ]; then
@@ -90,7 +119,7 @@ else
     echo "✅ Docker .env already exists"
 fi
 
-# ── 6. Install Node.js dev dependencies (for LESS compilation) ──────────────
+# ── 7. Install Node.js dev dependencies (for LESS compilation) ──────────────
 echo ""
 if [ ! -d "$REPO_ROOT/node_modules" ]; then
     echo "📦 Installing Node.js dependencies..."
@@ -100,7 +129,7 @@ else
     echo "✅ Node.js dependencies already installed"
 fi
 
-# ── 7. Create necessary directories ─────────────────────────────────────────
+# ── 8. Create necessary directories ─────────────────────────────────────────
 mkdir -p "$RC_DIR/temp" "$RC_DIR/logs"
 
 # ── Done ─────────────────────────────────────────────────────────────────────

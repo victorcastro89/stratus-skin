@@ -1,7 +1,7 @@
 {
 	"name": "Stratus",
 	"author": "Stratus Skin Project",
-	"license": "Creative Commons Attribution-ShareAlike",
+	"license": "Creative Commons Attribution-ShareAlike 3.0",
 	"license-url": "http://creativecommons.org/licenses/by-sa/3.0/",
 	"extends": "elastic",
 	"config": {
