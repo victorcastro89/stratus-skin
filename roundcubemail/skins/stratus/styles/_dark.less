@@ -657,7 +657,7 @@ html.dark-mode {
 
         .fc-header-toolbar {
             background-color: @mp-cal-dark-header-bg;
-            border-bottom-color: @mp-cal-dark-grid-color;
+            border-bottom-color: transparent;
         }
 
         .fc-center h2 {
@@ -717,6 +717,132 @@ html.dark-mode {
 
         .fc-event:hover {
             box-shadow: @mp-cal-dark-event-shadow-hover;
+        }
+
+        // ── Header & Navigation dark overrides (Phase 1.6.2) ─────────────────
+
+        // Date headline
+        .fc-center h2 {
+            color: @color-dark-font;
+        }
+
+        // View-switcher pill strip — dark bg
+        .fc-header-toolbar .fc-left .btn-group {
+            background: @mp-cal-dark-nav-bg;
+            border-color: @mp-cal-dark-nav-border;
+
+            .btn.btn-secondary {
+                color: @color-dark-font-secondary;
+
+                &:hover:not(.active) {
+                    background: fadeout(@color-dark-main, 85%);
+                    color: @color-dark-main;
+                }
+
+                &.active {
+                    background: @color-dark-main;
+                    color: #fff;
+                    box-shadow: 0 2px 6px fadeout(@color-dark-main, 55%);
+                }
+            }
+        }
+
+        // Nav buttons — prev/today/next dark styling
+        .fc-header-toolbar .fc-right .btn-group {
+            .btn.btn-secondary {
+                border-color: @color-dark-border;
+                color: @color-dark-font;
+
+                &:hover {
+                    background: fadeout(@color-dark-main, 88%);
+                    border-color: fadeout(@color-dark-main, 55%);
+                    color: @color-dark-main;
+                }
+
+                &.today {
+                    background: @color-dark-main;
+                    border-color: @color-dark-main;
+                    box-shadow: 0 2px 8px fadeout(@color-dark-main, 55%);
+
+                    &:hover,
+                    &:focus {
+                        background: lighten(@color-dark-main, 8%);
+                        border-color: lighten(@color-dark-main, 8%);
+                        box-shadow: 0 4px 12px fadeout(@color-dark-main, 45%);
+                    }
+                }
+            }
+        }
+    }
+
+    // ── Calendar toolbar dark (create pill + overflow trigger) ────────────────
+    body.task-calendar {
+        // Sidebar datepicker container — dark surface
+        #layout-sidebar .mp-sidebar-datepicker {
+            background: @color-dark-surface;
+            border-bottom-color: @color-dark-border;
+
+            .ui-datepicker {
+                background: transparent;
+            }
+
+            .ui-datepicker-header {
+                background: transparent;
+                border-color: transparent;
+            }
+
+            .ui-datepicker-title {
+                color: @color-dark-font;
+            }
+
+            .ui-datepicker-prev:hover,
+            .ui-datepicker-next:hover {
+                background: fadeout(@color-dark-main, 85%);
+            }
+
+            .ui-datepicker-calendar thead th {
+                color: @color-dark-font-secondary;
+            }
+        }
+
+        #datepicker .ui-datepicker td.ui-datepicker-today a,
+        #datepicker .ui-datepicker td.ui-datepicker-today .ui-state-default {
+            background: @color-dark-main;
+            color: @color-dark-font;
+            box-shadow: 0 2px 6px fadeout(@color-dark-main, 55%);
+        }
+
+        #datepicker .ui-datepicker td:not(.ui-datepicker-today) a:hover,
+        #datepicker .ui-datepicker td:not(.ui-datepicker-today) .ui-state-default:hover {
+            background: fadeout(@color-dark-main, 86%);
+            color: @color-dark-main;
+        }
+
+        // Create button — now in #mp-cal-actions (Tier B template)
+        #mp-cal-actions > a.button.create {
+            color: @color-dark-font;
+
+            &:not(.disabled):hover,
+            &:not(.disabled):focus {
+                background-color: @color-dark-border;
+                color: @color-dark-font;
+            }
+        }
+
+        // More button — popover trigger for secondary actions
+        #layout-content > .header > a.toolbar-menu-button {
+            color: @color-dark-font;
+
+            &[aria-expanded="true"] {
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            &:hover,
+            &:focus {
+                background-color: @color-dark-border;
+                color: @color-dark-font;
+            }
         }
     }
 

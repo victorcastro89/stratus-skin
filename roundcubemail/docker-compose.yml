@@ -54,8 +54,10 @@ services:
     environment:
       - PHP_IDE_CONFIG=serverName=roundcube-docker
     working_dir: /var/www/html
-    command: >
-      bash -c "
+    command:
+      - bash
+      - -c
+      - |
         # Create temp and logs dirs and fix permissions
         mkdir -p /var/www/html/temp /var/www/html/logs;
         chown -R www-data:www-data /var/www/html/temp /var/www/html/logs;
@@ -65,6 +67,17 @@ services:
         if [ ! -d 'vendor' ]; then
           echo 'Installing PHP dependencies...';
           composer install --no-interaction;
+        else
+          echo '✅ PHP dependencies already installed';
+        fi;
+
+        # Install CardDAV plugin dependencies if not present
+        if [ -d 'plugins/carddav' ] && [ ! -d 'plugins/carddav/vendor' ]; then
+          echo 'Installing CardDAV plugin dependencies...';
+          cd plugins/carddav && composer install --no-dev --no-interaction && cd /var/www/html;
+          echo '✅ CardDAV dependencies installed';
+        elif [ -d 'plugins/carddav/vendor' ]; then
+          echo '✅ CardDAV dependencies already installed';
         fi;
 
         # Install JS/CSS dependencies (jQuery, Bootstrap, etc.) if not present
@@ -83,18 +96,99 @@ services:
           echo 'Elastic CSS already compiled, skipping.';
         fi;
 
-        # Initialize database if needed (check for non-empty file)
-        if [ ! -s '/var/www/html/temp/roundcube.db' ]; then
+        # Initialize database if needed (idempotent schema check)
+        if php -r '
+            $$db = new PDO("sqlite:/var/www/html/temp/roundcube.db");
+            $$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            try {
+              $$db->query("SELECT 1 FROM users LIMIT 1");
+              exit(0);
+            } catch (Exception $$e) {
+              exit(1);
+            }
+          ' 2>/dev/null; then
+          echo 'Database schema already exists, skipping init.';
+        else
           echo 'Initializing database...';
           rm -f /var/www/html/temp/roundcube.db;
           bin/initdb.sh --dir=SQL || true;
-        else
-          echo 'Database already exists, skipping init.';
         fi;
 
         # Ensure DB file is writable by Apache
-        chown www-data:www-data /var/www/html/temp/roundcube.db 2>/dev/null;
-        chmod 660 /var/www/html/temp/roundcube.db 2>/dev/null;
+        if [ -f '/var/www/html/temp/roundcube.db' ]; then
+          chown www-data:www-data /var/www/html/temp/roundcube.db 2>/dev/null || true;
+          chmod 660 /var/www/html/temp/roundcube.db 2>/dev/null || true;
+        fi;
+
+        # Initialize CardDAV plugin tables if not present
+        if [ -d 'plugins/carddav' ] && [ -f '/var/www/html/temp/roundcube.db' ]; then
+          echo 'Checking CardDAV plugin database tables...';
+          php -r '
+            try {
+              $$db = new PDO("sqlite:/var/www/html/temp/roundcube.db");
+              $$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+              try {
+                $$db->query("SELECT 1 FROM carddav_accounts LIMIT 1");
+                $$exists = true;
+              } catch (Exception $$e) {
+                $$exists = false;
+              }
+
+              if (!$$exists) {
+                echo "Installing CardDAV database tables...\n";
+                if (file_exists("/var/www/html/plugins/carddav/dbmigrations/0000-dbinit/sqlite3.sql")) {
+                  $$sql = file_get_contents("/var/www/html/plugins/carddav/dbmigrations/0000-dbinit/sqlite3.sql");
+                  $$sql = str_replace("TABLE_PREFIX", "", $$sql);
+                  $$db->exec($$sql);
+                  if (file_exists("/var/www/html/plugins/carddav/dbmigrations/0017-accountentities/sqlite3.sql")) {
+                    $$sql = file_get_contents("/var/www/html/plugins/carddav/dbmigrations/0017-accountentities/sqlite3.sql");
+                    $$sql = str_replace("TABLE_PREFIX", "", $$sql);
+                    $$db->exec($$sql);
+                  }
+                  echo "✅ CardDAV tables created\n";
+                } else {
+                  echo "⚠️  CardDAV migration files not found\n";
+                }
+              } else {
+                echo "✅ CardDAV tables already exist\n";
+              }
+            } catch (Exception $$e) {
+              echo "⚠️  CardDAV table check failed: " . $$e->getMessage() . "\n";
+            }
+          ' || echo '⚠️  CardDAV initialization skipped';
+        fi;
+
+        # Initialize calendar plugin tables if not present
+        if [ -d 'plugins/calendar' ] && [ -f '/var/www/html/temp/roundcube.db' ]; then
+          echo 'Checking calendar plugin database tables...';
+          if php -r '
+            try {
+              $$db = new PDO("sqlite:/var/www/html/temp/roundcube.db");
+              $$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+              try {
+                $$db->query("SELECT 1 FROM calendars LIMIT 1");
+                $$exists = true;
+              } catch (Exception $$e) {
+                $$exists = false;
+              }
+
+              if (!$$exists) {
+                echo "Calendar tables not found, will run initdb\n";
+                exit(1);
+              } else {
+                echo "✅ Calendar tables already exist\n";
+                exit(0);
+              }
+            } catch (Exception $$e) {
+              echo "⚠️  Calendar table check failed: " . $$e->getMessage() . "\n";
+              exit(1);
+            }
+          '; then
+            :
+          else
+            bin/initdb.sh --dir=plugins/calendar/drivers/database/SQL && echo '✅ Calendar tables created' || echo '⚠️  Calendar initialization skipped';
+          fi;
+        fi;
 
         echo '========================================';
         echo 'Roundcube Development Server Started';
@@ -105,9 +199,12 @@ services:
         echo '  bob@example.test   / password123';
         echo '========================================';
 
+        # Suppress Apache startup warning in dev container
+        echo 'ServerName localhost' > /etc/apache2/conf-available/servername.conf;
+        a2enconf servername >/dev/null 2>&1 || true;
+
         # Start Apache in foreground
         apache2-foreground
-      "
 
 volumes:
   maildata:

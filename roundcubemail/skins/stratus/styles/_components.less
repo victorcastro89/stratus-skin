@@ -640,3 +640,66 @@ textarea.form-control {
         }
     }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TINYMCE EDITOR — proper content margin and styling
+// ═══════════════════════════════════════════════════════════════════════════════
+.tox.tox-tinymce {
+    border-radius: @mp-radius-lg;
+    border: 1px solid @color-input-border;
+    
+    &.focused,
+    &:focus-within {
+        border-color: @color-main;
+        box-shadow: 0 0 0 3px fadeout(@color-main, 85%);
+    }
+}
+
+// Legacy TinyMCE 4.x
+.mce-tinymce {
+    border-radius: @mp-radius-lg;
+    border: 1px solid @color-input-border;
+    
+    &.mce-focused {
+        border-color: @color-main;
+        box-shadow: 0 0 0 3px fadeout(@color-main, 85%);
+    }
+}
+
+// TinyMCE 5+ toolbar styling
+.tox-toolbar-overlord,
+.tox-toolbar__primary {
+    background: @color-layout-header-background;
+    border-bottom: 1px solid @color-layout-border;
+}
+
+// TinyMCE 5+ buttons
+.tox-tbtn {
+    border-radius: @mp-radius-sm;
+    transition: background @mp-transition-fast;
+    
+    &:hover:not(.tox-tbtn--disabled) {
+        background: fadeout(@color-main, 92%) !important;
+    }
+}
+
+// TinyMCE 5+ edit area needs padding via parent container
+.tox-edit-area {
+    padding: @mp-space-md;
+}
+
+// Legacy TinyMCE 4.x
+.mce-toolbar-grp {
+    background: @color-layout-header-background;
+    border-bottom: 1px solid @color-layout-border;
+    padding: @mp-space-xs;
+}
+
+.mce-btn {
+    border-radius: @mp-radius-sm;
+    transition: background @mp-transition-fast;
+    
+    &:hover {
+        background: fadeout(@color-main, 92%);
+    }
+}

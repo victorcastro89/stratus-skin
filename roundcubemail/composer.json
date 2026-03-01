@@ -18,7 +18,8 @@
         "roundcube/plugin-installer": "~0.3.5",
         "roundcube/rtf-html-php": "^2.1",
         "symfony/polyfill-php85": "^1.33.0",
-        "kolab/calendar": "~3.6.1"
+        "kolab/calendar": "~3.6.1",
+        "roundcube/carddav": "~5.0"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.13",
