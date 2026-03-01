@@ -1,0 +1,4 @@
+[submodule "roundcubemail"]
+	path = roundcubemail
+	url = https://github.com/roundcube/roundcubemail.git
+	branch = release-1.6
