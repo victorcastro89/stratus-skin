@@ -1,2 +1,35 @@
-node_modules
-roundcubemail/plugins/carddav/
+# ====================================================================
+# Stratus Skin Project — .gitignore
+# ====================================================================
+# This repo only tracks: our custom skins, plugins, Docker setup,
+# config templates, build tooling, and AI agent system.
+# The upstream Roundcube source is a git submodule (roundcubemail/).
+# ====================================================================
+
+# ── Upstream Roundcube (submodule — tracked by .gitmodules, not here) ──
+# The submodule reference is tracked; its contents are not.
+
+# ── Generated / runtime files ──────────────────────────────────────────
+node_modules/
+*.min.css
+!skins/*/styles/styles.min.css
+
+# ── Compiled CSS (rebuild with `npm run less:build`) ───────────────────
+skins/*/styles/styles.css
+
+# ── Secrets & local config ─────────────────────────────────────────────
+docker/.env
+roundcubemail/config/config.inc.php
+
+# ── OS / editor junk ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ── Stale artifacts from pre-restructure ──────────────────────────────
+config.inc.php
+config.inc copy.php
+roundcubemail.worktrees/
+README_CALDAV.md

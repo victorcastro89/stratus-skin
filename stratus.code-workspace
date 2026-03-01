@@ -1,8 +1,19 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": ".",
+			"name": "Stratus Skin Project"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			"roundcubemail/program/**": true,
+			"roundcubemail/vendor/**": true,
+			"roundcubemail/SQL/**": true,
+			"roundcubemail/tests/**": true,
+			"roundcubemail/installer/**": true,
+			"roundcubemail.worktrees/**": true,
+			"node_modules/**": true
+		}
+	}
 }

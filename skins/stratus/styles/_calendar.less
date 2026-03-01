@@ -1,0 +1,781 @@
+// stratus skin — Calendar UI declutter (Ghost Grid)
+// Overrides: libkolab/skins/elastic/include/calendar.less + fullcalendar.less
+// Design: Modern "ghost grid" — remove harsh vertical lines, soften horizontal ones,
+//         airy spacing like Google Calendar / Cron / Notion Calendar
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VARIABLES — calendar-specific design tokens
+// ═══════════════════════════════════════════════════════════════════════════════
+@mp-cal-grid-color:          fadeout(@color-border, 60%);        // very faint grid lines
+@mp-cal-grid-color-subtle:   fadeout(@color-border, 80%);        // near-invisible for verticals
+@mp-cal-header-bg:           @color-layout-header-background;
+@mp-cal-today-bg:            fadeout(@color-main, 92%);          // soft indigo wash
+@mp-cal-today-number:        @color-main;
+@mp-cal-today-indicator:     @color-main;
+@mp-cal-event-radius:        @mp-radius-sm;
+@mp-cal-popover-radius:      @mp-radius-lg;
+
+// Dark mode calendar tokens
+@mp-cal-dark-grid-color:         fadeout(@color-dark-border, 65%);
+@mp-cal-dark-grid-color-subtle:  fadeout(@color-dark-border, 85%);
+@mp-cal-dark-header-bg:          @color-dark-surface;
+@mp-cal-dark-today-bg:           fadeout(@color-dark-main, 88%);
+
+// Event card elevation — floating, airy look
+@mp-cal-event-shadow:            0 2px 8px rgba(26, 31, 54, 0.12);
+@mp-cal-event-shadow-hover:      0 4px 16px rgba(26, 31, 54, 0.20);
+@mp-cal-event-padding:           3px 6px;
+@mp-cal-dark-event-shadow:       0 2px 10px rgba(0, 0, 0, 0.36);
+@mp-cal-dark-event-shadow-hover: 0 4px 18px rgba(0, 0, 0, 0.52);
+
+// Header & Navigation tokens — Phase 1.6.2
+@mp-cal-nav-bg:                  fadeout(@color-main, 95%);       // pill strip bg
+@mp-cal-nav-border:              fadeout(@color-main, 85%);       // pill strip border
+@mp-cal-today-pill-shadow:       0 2px 8px fadeout(@color-main, 60%);
+@mp-cal-today-pill-shadow-hover: 0 4px 12px fadeout(@color-main, 50%);
+// Dark equivalents
+@mp-cal-dark-nav-bg:             fadeout(@color-dark-main, 90%);
+@mp-cal-dark-nav-border:         fadeout(@color-dark-main, 75%);
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GHOST GRID — remove vertical separators, soften horizontals
+// ═══════════════════════════════════════════════════════════════════════════════
+
+.fc {
+
+    // ── Global border reset: make all cell borders near-invisible ────────────
+    th,
+    td {
+        border-color: @mp-cal-grid-color;
+    }
+
+    // ── Remove vertical lines between day columns ────────────────────────────
+    // Month/week/day — fully transparent vertical borders; today-bg wash and
+    // weekend tint provide enough column differentiation without visual noise.
+    .fc-bg td,
+    .fc-day {
+        border-right-color: transparent;
+        border-left-color: transparent;
+    }
+
+    // Time grid (week/day view) — vertical borders between columns
+    .fc-time-grid .fc-slats td {
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+
+    // Background columns in time grid — no vertical borders; zero visual noise
+    .fc-time-grid > .fc-bg td {
+        border-right-color: transparent;
+        border-left-color: transparent;
+    }
+
+    // First column (time axis) — keep a faint right border as separator
+    .fc-axis {
+        border-right-color: @mp-cal-grid-color;
+    }
+
+    // ── Soften horizontal lines ──────────────────────────────────────────────
+    // Major time slats (full-hour)
+    .fc-time-grid .fc-slats td {
+        border-top-color: @mp-cal-grid-color;
+    }
+
+    // Minor time slats (half-hour) — removed entirely; only full-hour lines remain
+    .fc-time-grid .fc-slats .fc-minor td {
+        border-top: none;
+    }
+
+    // ── Unthemed (default FullCalendar) border override ──────────────────────
+    &.fc-unthemed {
+        th,
+        td,
+        thead,
+        tbody,
+        .fc-divider,
+        .fc-row,
+        .fc-content,
+        .fc-popover,
+        .fc-list-view,
+        .fc-list-heading td {
+            border-color: @mp-cal-grid-color;
+        }
+    }
+
+    // ── Head container / header row — subtle bottom border only ──────────────
+    td.fc-head-container {
+        border-bottom-color: @mp-cal-grid-color;
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+
+    // Day header row (Mon, Tue, Wed…)
+    .fc-day-header {
+        border-left-color: transparent;
+        border-right-color: transparent;
+        padding: @mp-space-sm @mp-space-xs;
+        font-weight: @mp-font-weight-medium;
+        font-size: @mp-font-size-sm;
+        text-transform: uppercase;
+        letter-spacing: @mp-letter-spacing-wide;
+        color: @color-font-secondary;
+    }
+
+    // ── View container outer border — keep only bottom ───────────────────────
+    .fc-view.fc-widget-content {
+        border-color: @mp-cal-grid-color;
+        border-left-width: 0;
+        border-right-width: 0;
+    }
+
+    // Row internal borders
+    .fc-row {
+        border-color: @mp-cal-grid-color;
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TODAY HIGHLIGHT — soft wash instead of harsh double-border
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-day.fc-today {
+        background: @mp-cal-today-bg;
+        border-style: solid;      // override FullCalendar's double border
+    }
+
+    .fc-day-number {
+        font-size: @mp-font-size-sm;
+        padding: @mp-space-xs @mp-space-sm;
+    }
+
+    // Today's date number — accent pill
+    .fc-day-top.fc-today .fc-day-number {
+        color: #fff;
+        background: @mp-cal-today-number;
+        border-radius: @mp-radius-circle;
+        width: 1.65em;
+        height: 1.65em;
+        line-height: 1.65em;
+        text-align: center;
+        display: inline-block;
+        font-weight: @mp-font-weight-semibold;
+        padding: 0;
+        margin: @mp-space-xs;
+    }
+
+    // Now indicator — accent colored
+    .fc-now-indicator {
+        border-color: @mp-cal-today-indicator;
+    }
+
+    .fc-now-indicator-line {
+        border-top-width: 2px;
+
+        // Little dot on the left edge of the now-indicator
+        &::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            width: 8px;
+            height: 8px;
+            background: @mp-cal-today-indicator;
+            border-radius: @mp-radius-circle;
+        }
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HEADER TOOLBAR — cleaner, breathing room
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-header-toolbar {
+        background-color: @mp-cal-header-bg;
+        border-bottom: 1px solid @mp-cal-grid-color;
+        padding: @mp-space-sm @mp-space-md;
+        align-items: center;
+    }
+
+    // ── Date headline — enlarged, bold display ───────────────────────────────
+    // Note: Phase 2 JS will split into day-label (small/caps) + date-number (2rem)
+    // sub-spans for a two-line Google Calendar-style display.
+    .fc-center h2 {
+        font-size: 1.25rem;
+        font-weight: @mp-font-weight-bold;
+        letter-spacing: @mp-letter-spacing-tight;
+        color: @color-font;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+    }
+
+    // ── View-switcher — pill tab strip (Day / Week / Month / Agenda) ─────────
+    // Elastic JS wraps FC view buttons in .btn-group.btn-group-toggle inside .fc-left
+    .fc-header-toolbar .fc-left .btn-group {
+        background: @mp-cal-nav-bg;
+        border: none;
+        border-radius: 12px;
+        padding: 2px;
+        gap: 0;
+
+        // Override Bootstrap .btn-group border-radius resets
+        // .btn:first-child,
+        // .btn:last-child,
+        // .btn:not(:first-child):not(:last-child) {
+        //     border-radius: 18px;
+        // }
+
+        .btn.btn-secondary {
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: @color-font-secondary;
+            font-weight: @mp-font-weight-medium;
+            font-size: @mp-font-size-sm;
+            padding: 5px 14px;
+            transition: background @mp-transition-base,
+                        color @mp-transition-base,
+                        box-shadow @mp-transition-base;
+
+            &:hover:not(.active) {
+                background: fadeout(@color-main, 88%);
+                color: @color-main;
+            }
+
+            &.active {
+                background: @color-main;
+                color: #fff;
+                box-shadow: 0 2px 6px fadeout(@color-main, 60%);
+            }
+        }
+    }
+
+    // ── Navigation buttons — Prev / Today / Next ─────────────────────────────
+    // Elastic JS builds a .btn-group inside .fc-right with .btn.prev / .btn.today / .btn.next
+    .fc-header-toolbar .fc-right .btn-group {
+        display: flex;
+        align-items: center;
+        gap: @mp-space-xs;
+        background: transparent;
+        border: none;
+        padding: 0;
+
+        .btn.btn-secondary {
+            border: 1px solid @color-border;
+            border-radius: @mp-radius-md;
+            color: @color-font;
+            font-size: @mp-font-size-sm;
+            font-weight: @mp-font-weight-medium;
+            padding: 5px 12px;
+            transition: background @mp-transition-base,
+                        color @mp-transition-base,
+                        border-color @mp-transition-base,
+                        box-shadow @mp-transition-base;
+
+            &:hover {
+                background: fadeout(@color-main, 94%);
+                border-color: fadeout(@color-main, 60%);
+                color: @color-main;
+            }
+
+            // Today — primary pill CTA
+            &.today {
+                background: @color-main;
+                color: #fff;
+                border-color: @color-main;
+                border-radius: 12px;
+                padding: 5px 18px;
+                font-weight: @mp-font-weight-semibold;
+                box-shadow: @mp-cal-today-pill-shadow;
+
+                &:hover,
+                &:focus {
+                    background: darken(@color-main, 8%);
+                    border-color: darken(@color-main, 8%);
+                    box-shadow: @mp-cal-today-pill-shadow-hover;
+                }
+
+                &:active {
+                    transform: translateY(0);
+                    box-shadow: 0 1px 4px fadeout(@color-main, 70%);
+                }
+            }
+        }
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // EVENTS — softer, rounded, modern feel
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-event {
+        border-radius: @mp-cal-event-radius;
+        border-width: 0;
+        border-left: 3px solid;
+        padding: @mp-cal-event-padding;          // 3px 6px — breathing room
+        box-shadow: @mp-cal-event-shadow;        // floating card — always elevated
+        transition: box-shadow @mp-transition-base,
+                    transform @mp-transition-base;
+
+        &:hover {
+            box-shadow: @mp-cal-event-shadow-hover;
+            transform: translateY(-1px);
+        }
+
+        .fc-title {
+            font-weight: @mp-font-weight-medium;
+        }
+    }
+
+    // Day grid events (month view)
+    .fc-day-grid-event {
+        border-radius: @mp-cal-event-radius;
+        margin: 1px 3px 0;
+        padding: 1px @mp-space-xs;
+    }
+
+    // Time grid events (week/day view)
+    .fc-time-grid-event {
+        border-radius: @mp-cal-event-radius;
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // POPOVER ("more" events popup)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-popover {
+        border-radius: @mp-cal-popover-radius;
+        box-shadow: @mp-shadow-lg;
+        border-color: @mp-cal-grid-color;
+
+        .fc-header {
+            border-radius: @mp-cal-popover-radius @mp-cal-popover-radius 0 0;
+            padding: @mp-space-sm @mp-space-md;
+        }
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LIST VIEW — cleaner rows
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-list-view {
+        border-color: @mp-cal-grid-color;
+    }
+
+    .fc-list-heading td {
+        background: fadeout(@color-layout-header-background, 30%);
+        font-weight: @mp-font-weight-medium;
+        font-size: @mp-font-size-sm;
+        text-transform: uppercase;
+        letter-spacing: @mp-letter-spacing-wide;
+    }
+
+    .fc-list-table td {
+        border-color: @mp-cal-grid-color;
+    }
+
+    .fc-list-item:hover td {
+        background-color: fadeout(@color-main, 95%);
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TIME AXIS — lighter, smaller text
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    .fc-axis {
+        font-size: @mp-font-size-xs;
+        color: @color-font-secondary;
+        font-weight: @mp-font-weight-normal;
+    }
+
+    .fc-week-number {
+        font-size: @mp-font-size-xs;
+        color: @color-font-secondary;
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CALENDAR SIDEBAR — datepicker promoted to top
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DATEPICKER ARROWS — light mode fix
+// jQuery UI theme CSS applies .ui-widget-header .ui-state-default {
+//   background: #f6f6f6; border: 1px solid #c5c5c5 } to the prev/next arrows.
+// Elastic's jqueryui.less only overrides color, never background/border, so
+// the grey box flashes during FullCalendar view transitions. Strip it here.
+// ═══════════════════════════════════════════════════════════════════════════════
+.ui-datepicker {
+    .ui-datepicker-prev,
+    .ui-datepicker-next {
+        background: transparent;
+        border-color: transparent;
+        // IMPORTANT: _animations.less applies `transition: background-color 150ms`
+        // to all <a> elements. The datepicker arrows are <a> elements. When the
+        // datepicker re-renders on calendar view change, jQuery UI momentarily
+        // applies background:#f6f6f6 before our transparent override takes effect —
+        // the 150ms transition makes that flash visible. Kill it with transition:none.
+        transition: none;
+
+        &:hover {
+            background: fadeout(@color-main, 92%);
+            border-color: transparent;
+        }
+    }
+}
+
+body.task-calendar {
+    .calendar-datepicker .ui-datepicker {
+        border-radius: @mp-radius-md;
+    }
+
+    // ── Sidebar layout: datepicker at top ────────────────────────────────────
+    #layout-sidebar {
+        display: flex;
+        flex-direction: column;
+
+        // Datepicker container — top of sidebar, clean card-like area
+        .mp-sidebar-datepicker {
+            flex-shrink: 0;
+            padding: @mp-space-md @mp-space-sm @mp-space-xs;
+            background: @color-layout-sidebar-background;
+            border-bottom: 1px solid @color-border;
+
+            // Make the datepicker fill the sidebar width with no extra chrome
+            .ui-datepicker {
+                width: 100% !important; // IMPORTANT: jQuery UI sets inline width
+                box-shadow: none;
+                border: none;
+                background: transparent;
+                margin: 0;
+                padding: 0;
+            }
+
+            // Header row — month/year nav, compact and elegant
+            .ui-datepicker-header {
+                background: transparent;
+                border: none;
+                padding: @mp-space-xs @mp-space-xs @mp-space-sm;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            // Title — month + year centered
+            .ui-datepicker-title {
+                font-weight: @mp-font-weight-semibold;
+                font-size: @mp-font-size-base;
+                color: @color-font;
+                letter-spacing: @mp-letter-spacing-tight;
+                order: 0;
+                flex: 1;
+                text-align: center;
+            }
+
+            // Prev/Next arrow buttons — ghost pill buttons
+            .ui-datepicker-prev,
+            .ui-datepicker-next {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                width: 28px;
+                height: 28px;
+                border-radius: @mp-radius-circle;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background @mp-transition-base;
+
+                &:hover {
+                    background: fadeout(@color-main, 90%);
+                }
+            }
+
+            .ui-datepicker-prev {
+                order: -1;
+            }
+
+            .ui-datepicker-next {
+                order: 1;
+            }
+
+            // Day-of-week header row
+            .ui-datepicker-calendar thead th {
+                font-size: @mp-font-size-xs;
+                font-weight: @mp-font-weight-medium;
+                color: @color-font-secondary;
+                text-transform: uppercase;
+                letter-spacing: @mp-letter-spacing-wide;
+                padding: @mp-space-xs 0;
+                text-align: center;
+            }
+
+            // Day cells — compact grid
+            .ui-datepicker-calendar td {
+                padding: 1px;
+                text-align: center;
+            }
+        }
+
+        // Header sits below datepicker
+        > .header {
+            flex-shrink: 0;
+            order: 1;
+        }
+
+        // Datepicker (with a11y label) sits at top
+        > #aria-label-minical {
+            order: -2;
+        }
+        > .mp-sidebar-datepicker {
+            order: -1;
+        }
+
+        // Search & scroller fill remaining space
+        > .searchbar {
+            order: 2;
+            flex-shrink: 0;
+        }
+        > #calendars-content {
+            order: 3;
+            flex: 1 1 auto;
+            min-height: 0; // allow flex shrinking
+        }
+    }
+
+    // Mini-calendar date cells — circular day chips
+    #datepicker .ui-datepicker td a {
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+        padding: 0;
+        margin: 2px auto;
+        border-radius: @mp-radius-circle;
+        text-align: center;
+        transition: background @mp-transition-base,
+                    color @mp-transition-base,
+                    box-shadow @mp-transition-base;
+    }
+
+    // High-contrast today marker in mini-calendar
+    #datepicker .ui-datepicker td.ui-datepicker-today a,
+    #datepicker .ui-datepicker td.ui-datepicker-today .ui-state-default {
+        background: @color-main;
+        color: @color-btn-primary;
+        font-weight: @mp-font-weight-semibold;
+        box-shadow: 0 2px 6px fadeout(@color-main, 60%);
+    }
+
+    // Mini-calendar hover state
+    #datepicker .ui-datepicker td:not(.ui-datepicker-today) a:hover,
+    #datepicker .ui-datepicker td:not(.ui-datepicker-today) .ui-state-default:hover {
+        background: fadeout(@color-main, 90%);
+        color: @color-main;
+    }
+
+    #layout-sidebar {
+        border-right-color: @mp-cal-grid-color;
+    }
+
+    // Calendar list items — nicer spacing
+    .listing li > div.calendar .calname {
+        font-weight: @mp-font-weight-medium;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ROUNDCUBE CALENDAR TOOLBAR — Tier B template layout
+    // ═══════════════════════════════════════════════════════════════════════════
+    // The stratus calendar template (plugins/calendar/templates/calendar.html)
+    // moves the Create button OUTSIDE #calendartoolbar into #mp-cal-actions.
+    // This prevents elastic's toolbar_init() JS from detaching it into the
+    // popover, which caused the header layout-shift bug.
+    // Secondary actions (Print/Import/Export) stay in #calendartoolbar and are
+    // processed normally into #toolbar-menu popover by elastic JS.
+
+    // Header — breathing room + vertical centering
+    #layout-content > .header {
+        padding-left: @mp-space-md;
+        padding-right: @mp-space-md;
+        align-items: center;
+    }
+
+    // ── #mp-cal-actions — persistent inline Create button ─────────────────────
+    // This element is NOT .toolbar.menu, so toolbar_init() ignores it.
+    // It anchors the right side of the header flex layout permanently.
+    #layout-content > .header > #mp-cal-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        height: @layout-header-height;
+    }
+
+    // "Create event" — vertical icon+label like mail toolbar items
+    #mp-cal-actions > a.button.create {
+        display: block;
+        background: transparent;
+        color: @color-toolbar-button;
+        border: 0;
+        border-radius: 0;
+        height: @layout-header-height;
+        min-width: 3.2rem;
+        max-width: 6rem;
+        width: auto;
+        padding: .45rem;
+        margin: 0;
+        line-height: 1.5;
+        cursor: pointer;
+        font-size: 1rem;
+        text-align: center;
+        box-shadow: none;
+        font-weight: normal;
+        transition: color @mp-transition-base,
+                    background @mp-transition-base;
+
+        // Icon — centered above label
+        &:before {
+            display: block !important;
+            float: none !important;
+            width: auto !important;
+            height: 1.75rem !important;
+            margin: 0 !important;
+        }
+
+        // Label below icon
+        .inner {
+            display: block;
+            font-size: 90%;
+            font-weight: normal;
+        }
+
+        &:not(.disabled):hover,
+        &:not(.disabled):focus {
+            background-color: @color-toolbar-button-background-hover;
+            color: @color-toolbar-button;
+        }
+
+        &.disabled {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+    }
+
+    // ── More button (popup trigger for Print/Import/Export) ───────────────────
+    // IMPORTANT: elastic hides `a.toolbar-menu-button` on desktop (>769px).
+    // We force it visible so secondary actions are always reachable.
+    #layout-content > .header > a.toolbar-menu-button {
+        display: block !important;    // override elastic desktop hide
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative;
+        color: @color-toolbar-button;
+        border: 0 !important;
+        border-radius: 0;
+        height: @layout-header-height;
+        min-width: 3.2rem;
+        max-width: 6rem;
+        width: auto;
+        padding: .45rem;
+        margin: 0 !important;
+        line-height: 1.5;
+        cursor: pointer;
+        font-size: 1rem;
+        text-align: center;
+        background: transparent;
+        box-shadow: none;
+        font-weight: normal;
+        transition: color @mp-transition-base,
+                    background @mp-transition-base;
+
+        // Keep button visible even when popover is open
+        &[aria-expanded="true"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        // Icon — horizontal ellipsis
+        &:before {
+            content: "\f141" !important;   // fa-ellipsis-h
+            display: block !important;
+            float: none !important;
+            width: auto !important;
+            height: 1.75rem !important;
+            margin: 0 !important;
+        }
+
+        // "More" label via pseudo-element
+        &:after {
+            content: "More";
+            display: block;
+            font-size: 90%;
+            font-weight: normal;
+            line-height: 1.2;
+        }
+
+        .inner {
+            display: block;
+            font-size: 90%;
+            font-weight: normal;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: @color-toolbar-button-background-hover;
+            color: @color-toolbar-button;
+        }
+    }
+
+    // Hide spacer in popover (no Create in popover to separate from)
+    .popover-body #toolbar-menu > li.spacer {
+        display: none !important;
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CALENDAR CONTENT — overflow fix
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#calendar.content {
+    border-radius: @mp-radius-md;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// EVENT DETAIL VIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#eventshow {
+    .event-title {
+        font-weight: @mp-font-weight-bold;
+        letter-spacing: @mp-letter-spacing-tight;
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AGENDA OPTIONS BAR
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#agendaoptions {
+    background-color: @mp-cal-header-bg;
+    border-bottom: 1px solid @mp-cal-grid-color;
+    border-radius: @mp-radius-md @mp-radius-md 0 0;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// QUICKVIEW — remove eye SVG shown in calendar grid when quickview is active
+// ═══════════════════════════════════════════════════════════════════════════════
+
+.fc {
+    body.quickview-active & .fc-scroller {
+        background-image: none !important;
+    }
+}

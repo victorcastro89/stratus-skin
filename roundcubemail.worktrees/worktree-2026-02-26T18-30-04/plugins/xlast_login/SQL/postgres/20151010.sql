@@ -1,2 +1,0 @@
-ALTER TABLE users ADD xlast_login VARCHAR(1024) DEFAULT '';
-

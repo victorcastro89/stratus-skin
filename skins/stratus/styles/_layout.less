@@ -1,0 +1,353 @@
+// stratus skin — Layout customizations
+// Overrides: elastic layout structure — taskmenu, header, toolbar, panels
+// Design: "Atmospheric Modern" — layered depth, fluid motion, generous spacing
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TASK MENU — Navy gradient sidebar with pill navigation
+// ═══════════════════════════════════════════════════════════════════════════════
+#layout-menu {
+    background: @mp-taskmenu-gradient;
+    position: relative; // For ::before accent. NOT on #taskmenu — it collapses to height:0 (floated children).
+    overflow: visible; // Allow ::after tooltips on taskmenu items to escape
+
+    // Subtle top accent line
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 20%;
+        right: 20%;
+        height: 2px;
+        background: @color-main-gradient;
+        border-radius: @mp-radius-pill;
+        z-index: 1;
+    }
+
+    // Logo container area
+    .popover-header {
+        background: transparent;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+        img {
+            filter: brightness(0) invert(1);
+            opacity: 0.9;
+        }
+    }
+
+    // Special-buttons (about + logout) pinned at viewport bottom-left.
+    // Background must match the gradient end color (#151a2e) to blend seamlessly.
+    .special-buttons {
+        background-color: #151a2e;
+    }
+}
+
+#taskmenu {
+    background: @mp-taskmenu-gradient;
+    border-right: none;
+    box-shadow: @mp-shadow-lg;
+    overflow: visible; // Allow ::after tooltips to extend beyond the sidebar
+    // NOTE: DO NOT add position:relative here — #taskmenu has float:left children
+    // so it collapses to height:0. Adding position:relative would make
+    // .special-buttons { position:absolute; bottom:0 } anchor to a 0-height box,
+    // causing about/logout to appear at the top overlapping the compose button.
+
+    // All menu items — pill shape with smooth transitions
+    a {
+        border-radius: @mp-radius-pill;
+        margin: 2px 0;
+        padding: 8px 4px;
+        transition: background @mp-transition-smooth, color @mp-transition-base,
+                    box-shadow @mp-transition-smooth, transform @mp-transition-fast;
+        position: relative; // Safe: 'a' has content height, not floated children
+    }
+
+    // Icon-only sidebar: span.inner acts as tooltip floating to the right.
+    // Using a real DOM element (gmail_plus pattern) instead of ::after + opacity
+    // transition — display:none/block is instantaneous and never missed on fast
+    // mouse moves, unlike CSS opacity transitions which can be interrupted.
+    span.inner {
+        position: absolute;
+        left: calc(100% + 12px);
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: @mp-font-size-xs;
+        white-space: nowrap;
+        background: @color-black;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: @mp-radius-sm;
+        z-index: 9999;
+        pointer-events: none;
+        box-shadow: @mp-shadow-md;
+        line-height: 1.4;
+        display: none !important; // Hidden by default; shown via a:hover below
+    }
+
+    a:hover span.inner {
+        display: block !important; // Instant — no transition timing to miss
+    }
+
+    // Hover state — subtle glass fill
+    a:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+    }
+
+    // Selected state — indigo glow pill
+    // NOTE: Do NOT override ::before here — elastic uses .menu a.{task}::before for icon font.
+    // Same specificity, our file loads later, so ::before { content:'' } would wipe the icon.
+    // NOTE: Do NOT use pointer-events:none — it swallows the click event before
+    // rcmail.command('switch-task',...) can fire, breaking all task navigation.
+    // Instead, lock the background via an explicit :hover override.
+    a.selected {
+        background: fadeout(@color-main, 75%);
+        color: #fff;
+        box-shadow: 0 0 16px fadeout(@color-main, 80%),
+                    inset 0 0 0 1px fadeout(@color-main, 70%);
+        font-weight: @mp-font-weight-semibold;
+        cursor: default;
+
+        // Override elastic's `a.selected:hover { background: rgba(255,255,255,0.06) }`
+        // so the active pill doesn't flicker on mouse-enter.
+        &:hover {
+            background: fadeout(@color-main, 75%);
+            color: #fff;
+            box-shadow: 0 0 16px fadeout(@color-main, 80%),
+                        inset 0 0 0 1px fadeout(@color-main, 70%);
+        }
+    }
+
+    // Compose/action button — gradient pill with elevation
+    a.compose,
+    a.task-compose {
+        background: @color-main-gradient;
+        color: #fff;
+        border-radius: @mp-radius-pill;
+        margin: 10px 0; // No horizontal margin — sidebar width is fixed, 6px each side would overflow
+        box-shadow: 0 4px 12px fadeout(@color-main, 55%);
+        font-weight: @mp-font-weight-medium;
+
+        &:hover {
+            background: @color-main-gradient-hover;
+            box-shadow: 0 6px 20px fadeout(@color-main, 45%);
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px fadeout(@color-main, 60%);
+        }
+    }
+
+    // Logout — separated, subtle red
+    a.logout,
+    a[href*="logout"] {
+        opacity: 0.65;
+
+        &:hover {
+            opacity: 1;
+            background: fadeout(@color-taskmenu-button-logout, 85%);
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LAYOUT HEADER — frosted glass toolbar
+// ═══════════════════════════════════════════════════════════════════════════════
+#layout > div > .header {
+    background: @mp-glass-bg-strong;
+    backdrop-filter: blur(@mp-glass-blur);
+    -webkit-backdrop-filter: blur(@mp-glass-blur);
+    border-bottom: 1px solid fadeout(@color-layout-border, 30%);
+    box-shadow: @mp-shadow-xs;
+
+    // Header title
+    .header-title {
+        font-weight: @mp-font-weight-semibold;
+    }
+
+    // Header nav/icon buttons only (back-list-button, toolbar-menu-button, etc.)
+    // Excludes plugin toolbar buttons (archive, junk) which have .button but not .icon
+    a.button.icon {
+        color: @color-font;
+        border-radius: @mp-radius-md;
+        padding: 4px 8px;
+        transition: background @mp-transition-base, color @mp-transition-base;
+
+        &:hover {
+            background: fadeout(@color-main, 92%);
+            color: @color-main;
+        }
+    }
+}
+
+#layout > div > .footer {
+    background: @color-layout-footer-background;
+    border-top: 1px solid @color-layout-border;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TOOLBAR — clean ghost buttons with smooth fills
+// ═══════════════════════════════════════════════════════════════════════════════
+.toolbar,
+#toolbar {
+    a.button {
+        border-radius: @mp-radius-md;
+        padding: 0.45rem;  // match elastic .menu.toolbar a — keeps archive/junk aligned with other toolbar buttons
+        color: @color-font;
+        transition: background @mp-transition-base, color @mp-transition-base,
+                    box-shadow @mp-transition-smooth;
+
+        &:hover {
+            background: fadeout(@color-main, 92%);
+            color: @color-main;
+        }
+
+        &:active,
+        &.active {
+            background: fadeout(@color-main, 88%);
+            color: @color-main;
+        }
+
+        // Icon color transition
+        &:before {
+            transition: color @mp-transition-base;
+        }
+
+        &:hover:before {
+            color: @color-main;
+        }
+    }
+
+    // Toolbar separators
+    .spacer,
+    .toolbar-separator {
+        opacity: 0.15;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SEARCH BAR — pill-shaped with expanding focus glow
+// ═══════════════════════════════════════════════════════════════════════════════
+.searchbar,
+#searchbar {
+    background: @color-searchbar-background;
+    border-radius: @mp-radius-pill;
+    border: 1px solid transparent;
+    transition: border-color @mp-transition-base, box-shadow @mp-transition-smooth,
+                background @mp-transition-base;
+
+    &:focus-within {
+        background: #fff;
+        border-color: fadeout(@color-main, 60%);
+        box-shadow: 0 0 0 3px fadeout(@color-main, 88%);
+    }
+
+    input[type="text"],
+    input[type="search"] {
+        border-radius: @mp-radius-pill;
+        border: none;
+        background: transparent;
+        padding-left: @mp-space-md;
+
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    // Search icon
+    a.button.search {
+        border-radius: @mp-radius-circle;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SIDEBAR — clean with subtle hierarchy
+// ═══════════════════════════════════════════════════════════════════════════════
+#sidebar,
+#layout-sidebar {
+    background: @color-layout-sidebar-background;
+    border-right: 1px solid @color-layout-border;
+
+    // Smooth panel transitions
+    & > .scroller {
+        transition: opacity @mp-transition-slow;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LIST PANEL
+// ═══════════════════════════════════════════════════════════════════════════════
+#layout-list {
+    border-right: 1px solid @color-layout-border;
+    background: @color-layout-list-background;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTENT AREA — clean canvas
+// ═══════════════════════════════════════════════════════════════════════════════
+#layout-content {
+    background: @color-layout-content-background;
+}
+
+// Frame content (settings pages, help, etc.)
+.frame-content,
+.content {
+    padding: @mp-space-xl;
+
+    // Content frames get subtle card-like treatment
+    fieldset {
+        border-radius: @mp-radius-lg;
+        border: 1px solid @color-layout-border;
+        padding: @mp-space-lg;
+        margin-bottom: @mp-space-lg;
+        background: #fff;
+    }
+
+    legend {
+        font-weight: @mp-font-weight-semibold;
+        font-size: @mp-font-size-md;
+        color: @color-font;
+        padding: 0 @mp-space-sm;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLUMN RESIZERS — subtle, wider hit area
+// ═══════════════════════════════════════════════════════════════════════════════
+.column-resizer {
+    opacity: 0;
+    transition: opacity @mp-transition-base;
+    width: 5px;
+
+    &:hover {
+        opacity: 1;
+        background: fadeout(@color-main, 70%);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MOBILE LAYOUT ADJUSTMENTS
+// ═══════════════════════════════════════════════════════════════════════════════
+@media screen and (max-width: 768px) {
+    // Mobile header — branded indigo
+    #layout > div > .header {
+        background: @color-main;
+        backdrop-filter: none;
+        border-bottom: none;
+        box-shadow: @mp-shadow-md;
+
+        .header-title {
+            color: #fff;
+        }
+
+        a.button {
+            color: rgba(255, 255, 255, 0.9);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.12);
+                color: #fff;
+            }
+        }
+    }
+}
