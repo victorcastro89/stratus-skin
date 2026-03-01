@@ -1,0 +1,77 @@
+<div id="layout-menu">
+	<h2 id="aria-label-tasknav" class="voice"><roundcube:label name="arialabeltasknav" /></h2>
+	<div class="popover-header">
+		<roundcube:object name="logo" src="/images/logo.svg" id="logo" alt="Logo" />
+		<a class="button icon cancel"><span class="inner"><roundcube:label name="close" /></span></a>
+	</div>
+	<div id="taskmenu" class="menu toolbar" role="navigation" aria-labelledby="aria-label-tasknav">
+		<span class="action-buttons">
+			<roundcube:if condition="env:action == 'compose' and env:task == 'mail'" />
+				<roundcube:button command="compose" type="link" class="compose selected"
+					label="compose" title="writenewmessage" innerclass="inner" />
+			<roundcube:else />
+				<roundcube:button command="compose" type="link" class="compose"
+					label="compose" title="writenewmessage" innerclass="inner"
+					data-fab="true" data-fab-task="mail" data-fab-action="none" />
+			<roundcube:endif />
+		</span>
+		<roundcube:if condition="env:action == 'compose' and env:task == 'mail'" />
+			<roundcube:button command="mail" label="mail" title="mail" type="link" innerClass="inner"
+				class="mail" />
+		<roundcube:else />
+			<roundcube:button command="mail" label="mail" title="mail" type="link" innerClass="inner"
+				class="mail" classSel="mail selected" />
+		<roundcube:endif />
+		<roundcube:button command="addressbook" label="contacts" title="contacts" type="link" innerClass="inner"
+			class="contacts" classSel="contacts selected" />
+		<roundcube:container name="taskbar" id="taskmenu" />
+		<roundcube:button command="settings" label="settings" title="settings" type="link" innerClass="inner"
+			class="settings" classSel="settings selected" />
+		<span class="special-buttons">
+			<roundcube:if condition="config:dark_mode_support" />
+				<roundcube:add_label name="darkmode" />
+				<roundcube:add_label name="lightmode" />
+				<roundcube:button name="theme" label="darkmode" title="darkmode" type="link" innerClass="inner" class="theme dark" />
+			<roundcube:endif />
+			<roundcube:button name="about" label="about" title="about" type="link"
+				class="about" innerClass="inner" onclick="UI.about_dialog(this)" />
+			<roundcube:button command="logout" label="logout" title="logout" type="link"
+				class="logout" innerClass="inner" />
+		</span>
+	</div>
+</div>
+<script>
+// stratus: Reliable task switching during page loads.
+//
+// Problem: rcmail.command('switch-task') returns false when rcmail is busy
+// (previous task still loading). The onclick="return rcmail.command(...)"
+// then calls preventDefault(), which ALSO blocks the href — so the click
+// silently does nothing while the page is loading.
+//
+// Fix: intercept all task-nav clicks ourselves, prevent default, move .selected
+// immediately for visual feedback, then navigate directly via window.location.href.
+// This bypasses rcmail's busy lock entirely — task switches are just page
+// navigations and are always safe to fire.
+(function () {
+    var menu = document.getElementById('taskmenu');
+    if (!menu) return;
+    menu.addEventListener('click', function (e) {
+        var link = e.target.closest('a[href]');
+        // Skip special-buttons (about, theme, logout) and action-buttons (compose)
+        if (!link || link.closest('.special-buttons') || link.closest('.action-buttons')) return;
+
+        // Take over navigation — prevents both the onclick return-false AND
+        // any double-navigate from the original href.
+        e.preventDefault();
+
+        // Move .selected immediately for instant visual feedback during load
+        menu.querySelectorAll('a.selected').forEach(function (a) {
+            if (!a.closest('.action-buttons')) a.classList.remove('selected');
+        });
+        link.classList.add('selected');
+
+        // Navigate directly — always works regardless of rcmail.busy state
+        window.location.href = link.href;
+    });
+}());
+</script>

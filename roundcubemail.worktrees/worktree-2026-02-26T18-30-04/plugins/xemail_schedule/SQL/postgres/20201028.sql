@@ -1,1 +1,0 @@
-ALTER TABLE xemail_schedule_queue ADD error_message VARCHAR(255) NOT NULL DEFAULT '';

@@ -55,6 +55,28 @@
           "column": 4
         }
       }
+    },
+    {
+      "label": "Setup Dev Environment",
+      "type": "shell",
+      "command": "./scripts/setup.sh",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Docker Dev",
+      "type": "shell",
+      "command": "./start-dev.sh",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Docker Dev"
+      },
+      "problemMatcher": []
     }
   ]
 }

@@ -1,17 +1,18 @@
 {
-  "name": "roundcube_plus_plugin_all",
+  "name": "stratus-skin",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Stratus — A modern Roundcube skin extending elastic",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "less:build": "lessc --clean-css=\"--s1 --advanced\" roundcubemail/skins/stratus/styles/styles.less roundcubemail/skins/stratus/styles/styles.min.css",
-    "less:watch": "chokidar \"roundcubemail/skins/stratus/styles/**/*.less\" -c \"npm run less:build\"",
+    "less:build": "lessc --clean-css=\"--s1 --advanced\" skins/stratus/styles/styles.less skins/stratus/styles/styles.min.css",
+    "less:watch": "chokidar \"skins/stratus/styles/**/*.less\" -c \"npm run less:build\"",
+    "setup": "./scripts/setup.sh",
+    "start": "./start-dev.sh",
     "thumbnail": "node scripts/generate-thumbnail.js"
   },
-  "keywords": [],
+  "keywords": ["roundcube", "skin", "webmail"],
   "author": "",
-  "license": "ISC",
+  "license": "CC-BY-SA-3.0",
   "type": "commonjs",
   "devDependencies": {
     "chokidar-cli": "^3.0.0",

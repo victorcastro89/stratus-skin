@@ -1,1 +1,0 @@
-ALTER TABLE xemail_schedule_queue ADD server_config TEXT NOT NULL;

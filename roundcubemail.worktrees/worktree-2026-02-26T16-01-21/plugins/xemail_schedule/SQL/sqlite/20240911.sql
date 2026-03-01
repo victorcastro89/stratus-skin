@@ -1,1 +1,0 @@
--- this plugin is not supported on SQLite
