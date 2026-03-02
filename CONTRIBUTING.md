@@ -4,29 +4,42 @@ Thank you for your interest in contributing! This guide covers everything you ne
 
 ## Getting Started
 
-1. **Fork & clone** the repository (include submodules):
+1. **Fork & clone** the repository:
    ```bash
-   git clone --recurse-submodules <your-fork-url>
+   git clone <your-fork-url>
    cd stratus-skin
    ```
 
-2. **Run the setup script:**
+2. **First-time setup + start everything:**
    ```bash
-   ./scripts/setup.sh
-   ```
-   This will: clone Roundcube (if needed), symlink your skins/plugins into Roundcube, generate a config with a random `des_key`, and install Node.js dependencies.
-
-3. **Start the dev environment:**
-   ```bash
-   ./start-dev.sh
+   npm start
    ```
 
-4. **Start the LESS watcher:**
+
+3. **Start the LESS watcher** (in a separate terminal):
    ```bash
    npm run less:watch
    ```
 
-5. Open http://localhost:8000 — log in with `victor@example.test` / `password123`.
+4. Open http://localhost:8000 — log in with `victor@example.test` / `password123`.
+
+### Useful Commands
+
+| Command | What it does |
+|---|---|
+| `npm start` | Setup + build + start containers |
+| `npm stop` | Stop all containers |
+| `npm run setup` | Re-run setup only (no Docker) |
+| `npm run docker:up` | Start containers (skip setup) |
+| `npm run docker:down` | Stop and remove containers |
+| `npm run docker:restart` | Restart the Roundcube container |
+| `npm run docker:logs` | Tail Roundcube logs |
+| `npm run docker:logs:mail` | Tail mailserver logs |
+| `npm run docker:logs:all` | Tail all container logs |
+| `npm run docker:ps` | Show container status |
+| `npm run docker:shell` | Open a bash shell in the container |
+| `npm run less:build` | One-shot LESS compile |
+| `npm run less:watch` | Auto-recompile on save |
 
 ## Project Architecture
 
@@ -52,6 +65,7 @@ The skin's entry point is `skins/stratus/styles/styles.less`. It imports in this
 ```bash
 npm run less:build     # one-shot compile → styles.min.css
 npm run less:watch     # auto-recompile on any .less file change
+npm run docker:logs    # tail Roundcube container logs
 ```
 
 ## Coding Conventions

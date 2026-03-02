@@ -33,33 +33,54 @@ services:
       - ENABLE_SRS=0
     restart: unless-stopped
     healthcheck:
-      test: ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1
+      # Gate on submission (587) and IMAP (143) — ports Roundcube actually connects to
+      test: ss -lnt | grep -q ':587' && ss -lnt | grep -q ':143' || exit 1
       interval: 15s
       timeout: 5s
       retries: 20
-      start_period: 60s
+      start_period: 90s
 
   # ---------- Roundcube webmail ----------
   roundcube:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: roundcube/roundcubemail:latest-apache
     container_name: roundcube-dev
+    restart: unless-stopped
     ports:
       - "8000:80"
     volumes:
-      # Roundcube core (cloned by setup.sh)
-      - ../roundcubemail:/var/www/html:delegated
-      # Mount our custom skins/plugins on top (bind mount beats symlinks)
+      # Persist web root on host (Roundcube source + composer-installed plugins).
+      # The official entrypoint copies /usr/src/roundcubemail/ here on first start.
+      - ./www:/var/www/html
+      # Our custom skin (bind mount overlays the persisted web root)
       - ../skins/stratus:/var/www/html/skins/stratus:delegated
-      # Mount config
-      - ../roundcubemail/config/config.inc.php:/var/www/html/config/config.inc.php:delegated
+      # To mount custom plugins, add bind mounts here, e.g.:
+      #- ../plugins/my_plugin:/var/www/html/plugins/my_plugin:delegated
+
+      # Persist config on host for easy editing (overlays default config in image)
+      - ./config/:/var/roundcube/config/ 
+      # Persist SQLite database on host
+      - ./db/sqlite:/var/roundcube/db
+      # Custom PHP settings (upload limits, timezone, etc.)
+      - ./roundcube.ini:/usr/local/etc/php/conf.d/zzz_roundcube-custom.ini:ro
     depends_on:
       mailserver:
         condition: service_healthy
     environment:
-      - PHP_IDE_CONFIG=serverName=roundcube-docker
-
+      # All values sourced from .env
+      - ROUNDCUBEMAIL_DEFAULT_HOST
+      - ROUNDCUBEMAIL_DEFAULT_PORT
+      - ROUNDCUBEMAIL_SMTP_SERVER
+      - ROUNDCUBEMAIL_SMTP_PORT
+      - ROUNDCUBEMAIL_DB_TYPE
+      - ROUNDCUBEMAIL_SKIN
+      - ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE
+      - ROUNDCUBEMAIL_PRODUCT_NAME
+      - ROUNDCUBEMAIL_SUPPORT_URL
+      # Install plugins via Composer on container start (idempotent — skipped if already present)
+      # - ROUNDCUBEMAIL_COMPOSER_PLUGINS=kolab/calendar,roundcube/carddav
+      # - ROUNDCUBEMAIL_PLUGINS=archive,zipdownload,emoticons,identicon,jqueryui,markasjunk,newmail_notifier,hide_blockquote,attachment_reminder,vcard_attachments,libcalendaring,calendar,carddav
+      - ROUNDCUBEMAIL_COMPOSER_PLUGINS
+      - ROUNDCUBEMAIL_PLUGINS
 volumes:
   maildata:
   mailstate:

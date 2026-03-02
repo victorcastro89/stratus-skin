@@ -1,4 +1,2 @@
-[submodule "roundcubemail"]
-	path = roundcubemail
-	url = https://github.com/roundcube/roundcubemail.git
-	branch = release-1.6
+# Intentionally empty.
+# roundcubemail is managed as a standalone local clone by scripts/setup.sh.

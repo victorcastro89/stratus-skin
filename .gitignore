@@ -3,11 +3,11 @@
 # ====================================================================
 # This repo only tracks: our custom skins, plugins, Docker setup,
 # config templates, build tooling, and AI agent system.
-# The upstream Roundcube source is a git submodule (roundcubemail/).
+# The upstream Roundcube source is a local git clone (roundcubemail/),
+# always ignored by this repository.
 # ====================================================================
 
-# ── Upstream Roundcube (submodule — tracked by .gitmodules, not here) ──
-# The submodule reference is tracked; its contents are not.
+# ── Upstream Roundcube (standalone clone — not tracked here) ─────────
 
 # ── Generated / runtime files ──────────────────────────────────────────
 node_modules/
@@ -19,7 +19,11 @@ skins/*/styles/styles.css
 
 # ── Secrets & local config ─────────────────────────────────────────────
 docker/.env
-roundcubemail/config/config.inc.php
+roundcubemail/
+
+# ── Docker host-mounted volumes (Roundcube web root + SQLite DB) ───────
+docker/www/
+docker/db/
 
 # ── OS / editor junk ──────────────────────────────────────────────────
 .DS_Store
