@@ -1,0 +1,237 @@
+<!-- Stratus pagenav override — mass-action bar with enabled + active states for mail -->
+<roundcube:if condition="template:name == 'mail'" />
+<div class="pagenav menu footer small mp-mass-action-bar" role="toolbar" aria-label="<roundcube:label name="arialabellistnav" />">
+	<div class="mp-mass-action-left">
+		<!-- Checkbox trigger (always visible) — toggles select / deselect-all -->
+		<a href="#select" id="mp-mass-select-toggle" class="mp-mass-action-trigger select disabled" title="<roundcube:label name="select" />">
+			<span class="mp-mass-action-checkbox" aria-hidden="true"></span>
+			<span class="inner"><roundcube:label name="select" /></span>
+		</a>
+		<!-- Action buttons (visible only when messages selected — active state) -->
+		<div class="mp-mass-action-actions" aria-label="Message actions">
+			<span class="mp-mass-action-divider" aria-hidden="true"></span>
+			<roundcube:button command="delete" type="link"
+				class="mp-action-btn delete disabled" classAct="mp-action-btn delete"
+				title="deletemessage" innerclass="inner" label="delete" />
+			<roundcube:button id="mp-action-archive" command="plugin.archive" type="link"
+				class="mp-action-btn archive" classAct="mp-action-btn archive"
+				title="buttontitle" label="buttontext" domain="archive" innerclass="inner" />
+			<roundcube:button command="move" type="link"
+				class="mp-action-btn move disabled" classAct="mp-action-btn move"
+				title="moveto" innerclass="inner" label="moveto" />
+			<roundcube:button command="mark" prop="flagged" type="link"
+				class="mp-action-btn flag disabled" classAct="mp-action-btn flag"
+				title="markflagged" innerclass="inner" label="markflagged" />
+			<roundcube:button command="mark" prop="unread" type="link"
+				class="mp-action-btn unread disabled" classAct="mp-action-btn unread"
+				title="markunread" innerclass="inner" label="markunread" />
+			<span class="mp-mass-action-divider" aria-hidden="true"></span>
+			<roundcube:button command="checkmail" type="link"
+				class="mp-action-btn sync" classAct="mp-action-btn sync"
+				title="checkmail" innerclass="inner" label="refresh" />
+			<a href="#more" class="mp-action-btn more" data-popup="mp-massaction-menu"
+				title="<roundcube:label name="moreactions" />">
+				<span class="inner"><roundcube:label name="more" /></span>
+			</a>
+		</div>
+	</div>
+	<div class="mp-mass-action-right">
+		<!-- Selected count chip (active state only) -->
+		<span id="mp-selected-count" class="mp-mass-action-chip" aria-live="polite"></span>
+		<!-- Message count (enabled state only, hidden when active) -->
+		<roundcube:object name="messageCountDisplay" class="pagenav-text mp-mass-action-count" aria-live="polite" aria-relevant="text" />
+		<roundcube:button command="previouspage" type="link" class="prevpage disabled" classAct="prevpage"
+			title="previouspage" label="previous" innerclass="inner" />
+		<roundcube:button command="nextpage" type="link" class="nextpage disabled" classAct="nextpage"
+			title="nextpage" label="next" innerclass="inner" />
+	</div>
+</div>
+<!-- Toggle active state (action icons + chip) based on actual message selection -->
+<script>
+(function() {
+	if (!window.rcmail) return;
+	rcmail.addEventListener('init', function() {
+		var list = rcmail.message_list;
+		if (!list) return;
+		var bar = document.querySelector('.mp-mass-action-bar');
+		var chip = document.getElementById('mp-selected-count');
+		var toggle = document.getElementById('mp-mass-select-toggle');
+		if (!bar) return;
+		var archiveBtn = document.getElementById('mp-action-archive') || bar.querySelector('.mp-action-btn.archive');
+		var archiveActionPending = false;
+
+		function logArchive(eventName, extra) {
+			if (!window.console || typeof console.log !== 'function') return;
+			console.log('[Stratus Archive]', eventName, extra || {});
+		}
+
+		// Resolve the archive folder target.
+		function detectArchiveFolder() {
+			if (rcmail.env.archive_folder) return rcmail.env.archive_folder;
+			var mboxes = rcmail.env.mailboxes || {};
+			for (var key in mboxes) {
+				if (mboxes.hasOwnProperty(key) && mboxes[key]['class'] === 'archive') {
+					return key;
+				}
+			}
+			return null;
+		}
+
+		// // Monkey-patch triggerEvent to log ALL events after archive click (debug only)
+		// var _origTrigger = rcmail.triggerEvent;
+		// rcmail.triggerEvent = function(evt) {
+		// 	if (archiveActionPending) {
+		// 		logArchive('EVENT>> ' + evt, { archiveActionPending: archiveActionPending });
+		// 	}
+		// 	return _origTrigger.apply(this, arguments);
+		// };
+
+		var archiveTarget = detectArchiveFolder();
+
+		// Hide archive button when no archive folder can be resolved
+		if (archiveBtn && !archiveTarget) {
+			archiveBtn.style.setProperty('display', 'none', 'important');
+			logArchive('archive-btn-hidden-no-target');
+		}
+
+		function updateSelection() {
+			var sel = list.get_selection();
+			var count = sel.length;
+			if (count > 0) {
+				bar.classList.add('mp-has-selection');
+				if (toggle) toggle.classList.remove('disabled');
+				if (chip) chip.textContent = count + ' selected';
+			} else {
+				bar.classList.remove('mp-has-selection');
+				if (toggle) toggle.classList.add('disabled');
+				if (chip) chip.textContent = '';
+			}
+		}
+
+		// Click handler: if selection exists → deselect all
+		if (toggle) {
+			toggle.addEventListener('click', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (bar.classList.contains('mp-has-selection')) {
+					list.clear_selection();
+					updateSelection();
+				}
+			});
+		}
+
+		if (archiveBtn) {
+			archiveBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				archiveActionPending = true;
+				logArchive('archive-btn-click', {
+					mailbox: rcmail.env.mailbox,
+					archiveTarget: detectArchiveFolder(),
+					hasArchiveFunction: typeof rcmail_archive === 'function'
+				});
+
+				// Primary: archive plugin handles selection, subfolder routing, mark-as-read
+				if (typeof rcmail_archive === 'function') {
+					rcmail_archive();
+					return;
+				}
+
+				// Fallback: plain move when archive.js is not loaded
+				var target = detectArchiveFolder();
+				if (!target) return;
+				if (rcmail.env.mailbox === target
+					|| (rcmail.env.mailbox || '').indexOf(target + rcmail.env.delimiter) === 0) {
+					archiveActionPending = false;
+					return;
+				}
+				rcmail.move_messages(target);
+			});
+		}
+
+		list.addEventListener('select', updateSelection);
+		// Also update when list is cleared/reloaded
+		rcmail.addEventListener('listupdate', updateSelection);
+		rcmail.addEventListener('afterexpunge', updateSelection);
+
+		/**
+		 * After archive move completes, ensure any newly-created archive
+		 * folder appears in the sidebar, then refresh unread counts.
+		 *
+		 * Roundcube's archive plugin creates the target IMAP folder on the
+		 * fly but does NOT update the client-side folder list — it shows
+		 * "Reload the page to see the new archive folders" instead.
+		 *
+		 * We fix this by detecting missing folders in the treelist widget
+		 * and inserting them dynamically so the user never needs to reload.
+		 */
+		rcmail.addEventListener('responseaftermove', function() {
+			if (!archiveActionPending) return;
+			archiveActionPending = false;
+
+			var archiveRoot = rcmail.env.archive_folder;
+			if (archiveRoot && rcmail.treelist && !rcmail.get_folder_li(archiveRoot)) {
+				// Archive root folder was just created server-side.
+				// Build an <a> link matching Roundcube's folder_list() output
+				// and insert it into the treelist widget.
+				var delim = rcmail.env.delimiter || '/';
+				var rawName = archiveRoot.split(delim).pop();
+
+				// Use the archive plugin's localized label when available
+				var displayName = rcmail.get_label('archivefolder', 'archive');
+				if (!displayName || displayName === 'archivefolder') displayName = rawName;
+
+				var jsName = archiveRoot.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+				var href = rcmail.url('list', { _mbox: archiveRoot });
+				var linkHtml = '<a href="' + href + '"'
+					+ ' onclick="return rcmail.command(\'list\',\'' + jsName + '\',this,event)"'
+					+ ' rel="' + rcmail.quote_html(archiveRoot) + '">'
+					+ rcmail.quote_html(displayName)
+					+ '</a>';
+
+				// Determine parent (null = top-level). Handles nested
+				// archive roots like "INBOX.Archive" in some IMAP setups.
+				var parts = archiveRoot.split(delim);
+				var parentId = parts.length > 1 ? parts.slice(0, -1).join(delim) : null;
+
+				rcmail.treelist.insert({
+					id: archiveRoot,
+					html: linkHtml,
+					classes: ['mailbox', 'archive']
+				}, parentId, false);
+
+				// If the server already sent set_unread_count for this folder
+				// earlier in the same move response, render it now that the
+				// node exists in DOM.
+				rcmail.set_unread_count_display(archiveRoot, false);
+
+				logArchive('archive-folder-inserted', { folder: archiveRoot, parent: parentId });
+			}
+
+			// Refresh all folder unread counts via native check-recent
+			rcmail.refresh();
+		});
+		updateSelection();
+	});
+})();
+</script>
+<roundcube:else />
+<!-- Non-mail templates: standard elastic paging -->
+<div class="pagenav menu footer small" role="toolbar" aria-label="<roundcube:label name="arialabellistnav" />">
+	<roundcube:button command="firstpage" type="link" class="firstpage disabled" classAct="firstpage"
+		title="firstpage" label="first" innerclass="inner" />
+	<roundcube:button command="previouspage" type="link" class="prevpage disabled" classAct="prevpage"
+		title="previouspage" label="previous" innerclass="inner" />
+	<roundcube:if condition="template:name == 'addressbook'" />
+		<span class="pagenav-text" aria-live="polite" aria-relevant="text">
+			<roundcube:object name="recordsCountDisplay" label="fromtoshort" />
+		</span>
+	<roundcube:else />
+		<span class="pagenav-text" aria-live="polite" aria-relevant="text">&nbsp;</span>
+	<roundcube:endif />
+	<roundcube:button command="nextpage" type="link" class="nextpage disabled" classAct="nextpage"
+		title="nextpage" label="next" innerclass="inner" />
+	<roundcube:button command="lastpage" type="link" class="lastpage disabled" classAct="lastpage"
+		title="lastpage" label="last" innerclass="inner" />
+</div>
+<roundcube:endif />

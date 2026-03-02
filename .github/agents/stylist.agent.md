@@ -12,7 +12,18 @@ You are the **styling specialist** for the `stratus` Roundcube skin. You own all
 1. Read `.github/memory/context.md` — current project state
 2. Read `.github/memory/decisions.md` — architectural decisions (9 ADRs)
 3. Read `.github/memory/roadmap.md` — what's done, what's next
-4. After completing work, update all three memory files
+4. Check `.github/feature-specs/` for an existing approved spec for the work
+5. After completing work, update memory files and spec status
+
+### Feature Spec Gate (New Features Only)
+
+If you are implementing a **new feature from the roadmap** (not a bug fix or tweak):
+1. Check if an `APPROVED` spec exists in `.github/feature-specs/`
+2. If NO spec exists → create one following `.github/instructions/feature-specs.instructions.md`, present summary to human, and **STOP until approved**
+3. If a `DRAFT` spec exists → present it to human and **STOP until approved**
+4. If an `APPROVED` spec exists → proceed with implementation
+
+Skip this gate for: bug fixes, minor tweaks, or when human says "skip spec".
 
 ## Your Responsibilities
 
@@ -41,7 +52,7 @@ You are the **styling specialist** for the `stratus` Roundcube skin. You own all
 
 ### File Structure (READ-ONLY reference)
 ```
-roundcubemail/skins/elastic/styles/
+docker/www/skins/elastic/styles/
 ├── colors.less          # ~280 color variables (THE source of truth)
 ├── variables.less       # Dimensions, breakpoints, imports colors.less
 ├── mixins.less          # .font-icon-class, .overflow-ellipsis, .font-family, .style-input-focus
@@ -452,7 +463,7 @@ mix(@color1, @color2, 50%) // Blend two colors
 
 ### Compile Command
 ```bash
-cd roundcubemail/skins/stratus && npx lessc --clean-css="--s1 --advanced" styles/styles.less > styles/styles.min.css
+cd docker/www/skins/stratus && npx lessc --clean-css="--s1 --advanced" styles/styles.less > styles/styles.min.css
 ```
 
 ### Validation Checklist (run after every change)
@@ -488,15 +499,15 @@ Use browser DevTools to verify contrast. Key pairs to check:
 
 | File | Lines | Content |
 |------|-------|---------|
-| `roundcubemail/skins/elastic/styles/colors.less` | 278 | ALL color variables (light + dark) |
-| `roundcubemail/skins/elastic/styles/variables.less` | 63 | Dimensions, breakpoints, optional import hooks |
-| `roundcubemail/skins/elastic/styles/mixins.less` | 62 | Reusable mixins |
-| `roundcubemail/skins/elastic/styles/global.less` | 150 | Fonts, reset, scrollbar base |
-| `roundcubemail/skins/elastic/styles/layout.less` | 415 | Responsive layout, #layout, header/footer |
-| `roundcubemail/skins/elastic/styles/dark.less` | 1135 | Full dark mode override rules |
-| `roundcubemail/skins/elastic/styles/styles.less` | 477 | Main entry + login, addressbook, mail, settings styles |
-| `roundcubemail/skins/elastic/styles/widgets/` | 9 files | buttons, lists, forms, dialogs, menu, messages, editor, jqueryui, common |
-| `roundcubemail/skins/elastic/meta.json` | — | Config reference (layout, dark_mode_support, logo types) |
+| `docker/www/skins/elastic/styles/colors.less` | 278 | ALL color variables (light + dark) |
+| `docker/www/skins/elastic/styles/variables.less` | 63 | Dimensions, breakpoints, optional import hooks |
+| `docker/www/skins/elastic/styles/mixins.less` | 62 | Reusable mixins |
+| `docker/www/skins/elastic/styles/global.less` | 150 | Fonts, reset, scrollbar base |
+| `docker/www/skins/elastic/styles/layout.less` | 415 | Responsive layout, #layout, header/footer |
+| `docker/www/skins/elastic/styles/dark.less` | 1135 | Full dark mode override rules |
+| `docker/www/skins/elastic/styles/styles.less` | 477 | Main entry + login, addressbook, mail, settings styles |
+| `docker/www/skins/elastic/styles/widgets/` | 9 files | buttons, lists, forms, dialogs, menu, messages, editor, jqueryui, common |
+| `docker/www/skins/elastic/meta.json` | — | Config reference (layout, dark_mode_support, logo types) |
 
 ---
 

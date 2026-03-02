@@ -47,9 +47,9 @@ Thank you for your interest in contributing! This guide covers everything you ne
 
 | What you edit | Where it lives | Where Roundcube sees it |
 |---|---|---|
-| Skin LESS/templates | `skins/stratus/` | `roundcubemail/skins/stratus/` (symlink) |
-| Companion plugin | `plugins/stratus_helper/` | `roundcubemail/plugins/stratus_helper/` (symlink) |
-| Config template | `config/config.inc.php.dist` | `roundcubemail/config/config.inc.php` (generated) |
+| Skin LESS/templates | `skins/stratus/` | `docker/www/skins/stratus/` (symlink) |
+| Companion plugin | `plugins/stratus_helper/` | `docker/www/plugins/stratus_helper/` (symlink) |
+| Config template | `config/config.inc.php.dist` | `docker/www/config/config.inc.php` (generated) |
 | Docker setup | `docker/` | N/A (used by `docker compose`) |
 
 ### LESS Compilation
@@ -102,7 +102,7 @@ npm run docker:logs    # tail Roundcube container logs
 
 ### Overriding a Roundcube template
 
-1. Find the elastic template in `roundcubemail/skins/elastic/templates/`
+1. Find the elastic template in `docker/www/skins/elastic/templates/`
 2. Copy it to the same relative path under `skins/stratus/templates/`
 3. Where possible, include the parent: `<roundcube:include file="..." skinPath="skins/elastic" />`
 4. Add your customizations around the include

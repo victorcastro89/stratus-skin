@@ -1,0 +1,103 @@
+<?php
+
+/**
+ * Stratus Helper – default configuration
+ *
+ * Copy this file to config.inc.php and adjust to your needs.
+ */
+
+// ── Folder Refresh ──────────────────────────────────────────────────────────
+// Enable automatic folder list refresh after move/archive actions.
+$config['stratus_folder_refresh'] = true;
+
+// ── Color Scheme ────────────────────────────────────────────────────────────
+// Default color scheme key for new users (must exist in stratus_color_schemes).
+$config['stratus_color_scheme_default'] = 'indigo';
+
+// Available color schemes. Each entry: primary (light), primary_dark (dark mode), label.
+// Admins can add/remove schemes here. Keys must be alphanumeric + hyphens.
+$config['stratus_color_schemes'] = [
+    'indigo'  => [
+        'primary'      => '#5c6bc0',
+        'primary_dark' => '#7986cb',
+        'label'        => 'Indigo',
+    ],
+    'ocean'   => [
+        'primary'      => '#0288d1',
+        'primary_dark' => '#4fc3f7',
+        'label'        => 'Ocean Blue',
+    ],
+    'emerald' => [
+        'primary'      => '#2e7d32',
+        'primary_dark' => '#66bb6a',
+        'label'        => 'Emerald',
+    ],
+    'rose'    => [
+        'primary'      => '#c62828',
+        'primary_dark' => '#ef5350',
+        'label'        => 'Rose',
+    ],
+    'amber'   => [
+        'primary'      => '#f57f17',
+        'primary_dark' => '#ffca28',
+        'label'        => 'Amber',
+    ],
+    'purple'  => [
+        'primary'      => '#7b1fa2',
+        'primary_dark' => '#ba68c8',
+        'label'        => 'Purple',
+    ],
+    'teal'    => [
+        'primary'      => '#00796b',
+        'primary_dark' => '#4db6ac',
+        'label'        => 'Teal',
+    ],
+    'slate'   => [
+        'primary'      => '#455a64',
+        'primary_dark' => '#90a4ae',
+        'label'        => 'Slate',
+    ],
+];
+
+// ── Font Preference ─────────────────────────────────────────────────────────
+// Default font key for new users (must exist in stratus_fonts).
+$config['stratus_font_default'] = 'system';
+
+// Available fonts. 'url' is a Google Fonts stylesheet URL (null for system fonts).
+$config['stratus_fonts'] = [
+    'system'    => [
+        'family' => "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+        'url'    => null,
+        'label'  => 'System Default',
+    ],
+    'inter'     => [
+        'family' => "'Inter', sans-serif",
+        'url'    => 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        'label'  => 'Inter',
+    ],
+    'roboto'    => [
+        'family' => "'Roboto', sans-serif",
+        'url'    => 'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
+        'label'  => 'Roboto',
+    ],
+    'open-sans' => [
+        'family' => "'Open Sans', sans-serif",
+        'url'    => 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap',
+        'label'  => 'Open Sans',
+    ],
+    'lato'      => [
+        'family' => "'Lato', sans-serif",
+        'url'    => 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap',
+        'label'  => 'Lato',
+    ],
+    'poppins'   => [
+        'family' => "'Poppins', sans-serif",
+        'url'    => 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
+        'label'  => 'Poppins',
+    ],
+    'nunito'    => [
+        'family' => "'Nunito', sans-serif",
+        'url'    => 'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap',
+        'label'  => 'Nunito',
+    ],
+];

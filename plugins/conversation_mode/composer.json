@@ -1,0 +1,28 @@
+{
+    "name": "roundcube/conversation_mode",
+    "type": "roundcube-plugin",
+    "description": "Conversation Mode for Roundcube: groups related messages into conversations sorted by latest activity, with newest-first message display.",
+    "license": "GPL-3.0-or-later",
+    "version": "0.1.0",
+    "authors": [
+        {
+            "name": "Stratus Team",
+            "role": "Developer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0",
+        "roundcube/plugin-installer": ">=0.1.3"
+    },
+    "extra": {
+        "roundcube": {
+            "min-version": "1.6.0"
+        }
+    }
+}

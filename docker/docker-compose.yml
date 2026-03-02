@@ -42,7 +42,7 @@ services:
 
   # ---------- Roundcube webmail ----------
   roundcube:
-    image: roundcube/roundcubemail:latest-apache
+    image: roundcube/roundcubemail:1.6.13-apache
     container_name: roundcube-dev
     restart: unless-stopped
     ports:
@@ -54,18 +54,25 @@ services:
       # Our custom skin (bind mount overlays the persisted web root)
       - ../skins/stratus:/var/www/html/skins/stratus:delegated
       # To mount custom plugins, add bind mounts here, e.g.:
-      #- ../plugins/my_plugin:/var/www/html/plugins/my_plugin:delegated
+      - ../plugins/conversation_mode:/var/www/html/plugins/conversation_mode:delegated
+      - ../plugins/stratus_helper:/var/www/html/plugins/stratus_helper:delegated
 
       # Persist config on host for easy editing (overlays default config in image)
-      - ./config/:/var/roundcube/config/ 
+      - ./config/:/var/roundcube/config/
+      - ./logs/:/var/roundcube/logs/
       # Persist SQLite database on host
       - ./db/sqlite:/var/roundcube/db
-      # Custom PHP settings (upload limits, timezone, etc.)
-      - ./roundcube.ini:/usr/local/etc/php/conf.d/zzz_roundcube-custom.ini:ro
+      # # Custom PHP settings (upload limits, timezone, etc.)
+      # - ./roundcube.ini:/usr/local/etc/php/conf.d/zzz_roundcube-custom.ini:ro
+      # Composer config to bypass pear/http_request2 security advisory block (dev only)
+      - ./composer-global-config.json:/var/www/.composer/config.json:ro
+
     depends_on:
       mailserver:
         condition: service_healthy
     environment:
+      # Point Composer at our custom global config (audit bypass)
+      - COMPOSER_HOME=/var/www/.composer
       # All values sourced from .env
       - ROUNDCUBEMAIL_DEFAULT_HOST
       - ROUNDCUBEMAIL_DEFAULT_PORT
@@ -81,6 +88,8 @@ services:
       # - ROUNDCUBEMAIL_PLUGINS=archive,zipdownload,emoticons,identicon,jqueryui,markasjunk,newmail_notifier,hide_blockquote,attachment_reminder,vcard_attachments,libcalendaring,calendar,carddav
       - ROUNDCUBEMAIL_COMPOSER_PLUGINS
       - ROUNDCUBEMAIL_PLUGINS
+      # Suppress "could not detect root package version" warning from Composer
+      - COMPOSER_ROOT_VERSION=1.6.13
 volumes:
   maildata:
   mailstate:

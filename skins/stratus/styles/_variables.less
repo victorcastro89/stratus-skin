@@ -100,7 +100,7 @@
 @color-main-gradient:       linear-gradient(135deg, #5c6bc0 0%, #7c4dff 100%);
 @color-main-gradient-hover: linear-gradient(135deg, darken(#5c6bc0, 6%) 0%, darken(#7c4dff, 6%) 100%);
 @color-black:               #1a1f36;
-@color-font:                #2d3550;
+@color-font:                #4a5278;
 @color-font-secondary:      #6b7399;
 @color-link:                #5c6bc0;
 @color-link-hover:          darken(@color-link, 12%);
@@ -260,3 +260,16 @@
 @color-dark-blockquote-0-border:        @color-dark-blockquote-0;
 @color-dark-blockquote-1-border:        @color-dark-blockquote-1;
 @color-dark-blockquote-2-border:        @color-dark-blockquote-2;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CSS CUSTOM PROPERTIES — runtime switching bridge (stratus_helper plugin)
+// Compile-time defaults from LESS vars; overridden at runtime by the plugin's
+// injected <style id="stratus-helper-vars"> block.
+// ═══════════════════════════════════════════════════════════════════════════════
+:root {
+    --stratus-primary:          @color-main;
+    --stratus-primary-dark:     @color-dark-main;
+    --stratus-primary-rgb:      92, 107, 192;    // #5c6bc0
+    --stratus-primary-dark-rgb: 121, 134, 203;   // #7986cb
+    --stratus-font-family:      @mp-font-family;
+}

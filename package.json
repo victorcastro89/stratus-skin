@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "setup": "./scripts/setup.sh",
-    "docker:up": "cd docker && docker compose up -d",
+    "docker:up": "cd docker && docker compose up -d ",
     "docker:down": "cd docker && docker compose down",
     "docker:restart": "cd docker && docker compose restart roundcube",
     "docker:logs": "cd docker && docker compose logs -f roundcube",
@@ -13,9 +13,11 @@
     "docker:logs:all": "cd docker && docker compose logs -f",
     "docker:ps": "cd docker && docker compose ps",
     "docker:shell": "docker exec -it roundcube-dev bash",
-    "start": "./scripts/setup.sh && cd docker && docker compose up -d",
+    "start": "./scripts/setup.sh && cd docker && docker compose up -d ",
     "stop": "cd docker && docker compose down",
-    "less:build": "lessc --clean-css=\"--s1 --advanced\" skins/stratus/styles/styles.less skins/stratus/styles/styles.min.css && node scripts/fix-stratus-font-paths.js",
+        "mail:seed": "./scripts/seed-emails.sh",
+    "mail:clean": "./scripts/clean-emails.sh",
+    "less:build": "lessc --include-path=docker/www/skins --clean-css=\"--s1 --advanced\" skins/stratus/styles/styles.less skins/stratus/styles/styles.min.css",
     "less:watch": "chokidar \"skins/stratus/styles/**/*.less\" -c \"npm run less:build\"",
     "thumbnail": "node scripts/generate-thumbnail.js"
   },

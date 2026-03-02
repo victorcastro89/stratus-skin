@@ -1,0 +1,2 @@
+[02-Mar-2026 18:54:00 +0000]: <dbdbecba> User alice@example.test [172.67.153.189]; Message <148ce4cd14bc4af3ee079027ad950284@example.test> for alice@example.test; 250: 2.0.0 Ok: queued as 8D3D92E799
+[02-Mar-2026 18:59:01 +0000]: <f6fe9c26> User alice@example.test [172.67.153.189]; Message <bf84bfbac6e4678254f14fd440001d61@example.test> for alice@example.test; 250: 2.0.0 Ok: queued as 839092E7A0

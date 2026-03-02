@@ -1,0 +1,30 @@
+/**
+ * Stratus Helper – Preferences page styles (elastic skin override)
+ *
+ * Enhances the Settings → Stratus Appearance section with:
+ * - Color swatch previews in the scheme dropdown
+ * - Font preview text in the font dropdown
+ */
+
+/* ── Color scheme select: show small swatch before each option ── */
+#ff_stratus_color_scheme {
+    min-width: 200px;
+}
+
+/* ── Font select: wider to accommodate font names ── */
+#ff_stratus_font_family {
+    min-width: 200px;
+}
+
+/* ── Stratus section header icon (reuse elastic pattern) ── */
+#sections-table tr.stratus td.icon::before {
+    content: "\f53f"; /* palette icon */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+/* ── Settings form layout adjustments ── */
+.propform fieldset.stratus legend {
+    font-weight: 600;
+    color: var(--stratus-primary, #5c6bc0);
+}

@@ -46,7 +46,7 @@ The skin's `meta.json` must include:
 
 ### Directory Structure Target
 ```
-roundcubemail/skins/stratus/
+docker/www/skins/stratus/
 ├── meta.json
 ├── composer.json
 ├── thumbnail.png
@@ -68,9 +68,9 @@ roundcubemail/skins/stratus/
 ```
 
 ### Elastic Parent Reference
-- Colors: `roundcubemail/skins/elastic/styles/colors.less` (~280 vars)
-- Variables: `roundcubemail/skins/elastic/styles/variables.less`
-- Layout template: `roundcubemail/skins/elastic/templates/includes/layout.html`
+- Colors: `docker/www/skins/elastic/styles/colors.less` (~280 vars)
+- Variables: `docker/www/skins/elastic/styles/variables.less`
+- Layout template: `docker/www/skins/elastic/templates/includes/layout.html`
 
 ## Handoff Protocol
 

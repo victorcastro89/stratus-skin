@@ -1,0 +1,202 @@
+// stratus skin — Runtime theming layer (CSS custom properties)
+// Bridges compile-time LESS vars with runtime switching via stratus_helper plugin.
+// These rules use var(--stratus-*) so the plugin can override them without recompilation.
+// Only components that NEED runtime color switching are listed here.
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FONT FAMILY — runtime switchable
+// ═══════════════════════════════════════════════════════════════════════════════
+body {
+    font-family: var(--stratus-font-family);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PRIMARY BUTTONS — gradient replaced with solid var() color for runtime switching
+// ═══════════════════════════════════════════════════════════════════════════════
+.btn-primary,
+a.btn-primary,
+button.btn-primary {
+    background: var(--stratus-primary);
+    box-shadow: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.3);
+
+    &:hover,
+    &:focus {
+        background: var(--stratus-primary);
+        filter: brightness(0.92);
+        box-shadow: 0 4px 16px rgba(var(--stratus-primary-rgb), 0.45);
+    }
+
+    &:active {
+        box-shadow: 0 1px 4px rgba(var(--stratus-primary-rgb), 0.35);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECONDARY BUTTON HOVER — accent tint
+// ═══════════════════════════════════════════════════════════════════════════════
+.btn-secondary:hover,
+.btn-secondary:focus,
+a.btn-secondary:hover,
+a.btn-secondary:focus {
+    background: rgba(var(--stratus-primary-rgb), 0.06);
+    border-color: rgba(var(--stratus-primary-rgb), 0.40);
+    color: var(--stratus-primary);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BADGES — accent background
+// ═══════════════════════════════════════════════════════════════════════════════
+.badge {
+    background-color: var(--stratus-primary);
+}
+
+// Folder badges in the sidebar
+#mailboxlist .unreadcount {
+    background-color: var(--stratus-primary);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LIST SELECTION — accent highlight
+// ═══════════════════════════════════════════════════════════════════════════════
+.listing tbody tr.focused > td,
+.listing tbody tr.selected > td,
+.listing li.selected {
+    background: rgba(var(--stratus-primary-rgb), 0.08);
+}
+
+.listing .listing-info .listing-mark {
+    color: var(--stratus-primary);
+}
+
+// Focus indicator bar (left border on focused row)
+.listing tbody tr.focused > td:first-child::before,
+.listing tbody tr.selected > td:first-child::before {
+    background-color: var(--stratus-primary);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LINKS — accent color
+// ═══════════════════════════════════════════════════════════════════════════════
+a {
+    color: var(--stratus-primary);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUT FOCUS — accent border
+// ═══════════════════════════════════════════════════════════════════════════════
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--stratus-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--stratus-primary-rgb), 0.25);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHECKBOX / RADIO — accent color
+// ═══════════════════════════════════════════════════════════════════════════════
+.custom-control-input:checked ~ .custom-control-label::before,
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--stratus-primary);
+    border-color: var(--stratus-primary);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TASKMENU — selected glow (uses LESS for gradient, CSS var for glow color)
+// ═══════════════════════════════════════════════════════════════════════════════
+#taskmenu a.selected {
+    box-shadow: 0 0 14px rgba(var(--stratus-primary-rgb), 0.35);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TOOLBAR BUTTON HOVER — accent tint
+// ═══════════════════════════════════════════════════════════════════════════════
+.toolbar a.button:hover,
+a.button.icon:not(.btn):hover {
+    background: rgba(var(--stratus-primary-rgb), 0.08);
+    color: var(--stratus-primary);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FLOATING ACTION BUTTON — accent glow
+// ═══════════════════════════════════════════════════════════════════════════════
+.floating-action-buttons a.button {
+    box-shadow: 0 10px 15px -3px rgba(var(--stratus-primary-rgb), 0.3),
+                0 0 10px rgba(var(--stratus-primary-rgb), 0.2);
+
+    &:hover {
+        box-shadow: 0 20px 25px -5px rgba(var(--stratus-primary-rgb), 0.35),
+                    0 0 20px rgba(var(--stratus-primary-rgb), 0.3);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DARK MODE — use dark variant of primary
+// ═══════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+    .btn-primary,
+    a.btn-primary,
+    button.btn-primary {
+        background: var(--stratus-primary-dark);
+        box-shadow: 0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.3);
+
+        &:hover,
+        &:focus {
+            background: var(--stratus-primary-dark);
+            box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
+        }
+    }
+
+    a {
+        color: var(--stratus-primary-dark);
+    }
+
+    .badge,
+    #mailboxlist .unreadcount {
+        background-color: var(--stratus-primary-dark);
+    }
+
+    .listing tbody tr.focused > td,
+    .listing tbody tr.selected > td,
+    .listing li.selected {
+        background: rgba(var(--stratus-primary-dark-rgb), 0.15);
+    }
+
+    .listing tbody tr.focused > td:first-child::before,
+    .listing tbody tr.selected > td:first-child::before {
+        background-color: var(--stratus-primary-dark);
+    }
+
+    .form-control:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: var(--stratus-primary-dark);
+        box-shadow: 0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.25);
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::before,
+    .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: var(--stratus-primary-dark);
+        border-color: var(--stratus-primary-dark);
+    }
+
+    #taskmenu a.selected {
+        box-shadow: 0 0 14px rgba(var(--stratus-primary-dark-rgb), 0.35);
+    }
+
+    .toolbar a.button:hover,
+    a.button.icon:not(.btn):hover {
+        background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+        color: var(--stratus-primary-dark);
+    }
+
+    .btn-secondary:hover,
+    .btn-secondary:focus,
+    a.btn-secondary:hover,
+    a.btn-secondary:focus {
+        background: rgba(var(--stratus-primary-dark-rgb), 0.10);
+        border-color: rgba(var(--stratus-primary-dark-rgb), 0.40);
+        color: var(--stratus-primary-dark);
+    }
+}

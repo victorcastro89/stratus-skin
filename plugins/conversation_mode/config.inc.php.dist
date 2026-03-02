@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * Conversation Mode – default configuration
+ *
+ * Copy this file to config.inc.php and adjust to your needs.
+ */
+
+// Default list mode for new users: 'list' (standard), 'threads', or 'conversations'
+$config['conversation_mode_default'] = 'list';
+
+// Maximum number of conversation rows per page
+$config['conversation_mode_page_size'] = 50;
+
+// Time window (in days) for subject-based fallback grouping.
+// Messages with the same normalized subject within this window may be grouped.
+$config['conversation_mode_subject_window_days'] = 30;
+
+// Enable fallback subject-based grouping when RFC headers are missing.
+// Set to false to rely only on Message-ID / In-Reply-To / References.
+$config['conversation_mode_subject_fallback'] = true;
+
+// Cache TTL in seconds (0 = rebuild every request, 3600 = 1 hour)
+$config['conversation_mode_cache_ttl'] = 300;

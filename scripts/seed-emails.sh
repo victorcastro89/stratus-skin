@@ -12,14 +12,14 @@ echo "=========================="
 echo ""
 
 # Check if docker-compose is running
-if ! docker compose -f "$SCRIPT_DIR/docker-compose.yml" ps | grep -q "Up"; then
+if ! docker compose -f "$PROJECT_ROOT/docker/docker-compose.yml" ps | grep -q "Up"; then
     echo "❌ Docker containers are not running."
     echo "   Start them with: cd docker && docker compose up -d"
     exit 1
 fi
 
 # Get the roundcube container name
-CONTAINER=$(docker compose -f "$SCRIPT_DIR/docker-compose.yml" ps -q roundcube 2>/dev/null)
+CONTAINER=$(docker compose -f "$PROJECT_ROOT/docker/docker-compose.yml" ps -q roundcube 2>/dev/null)
 
 if [ -z "$CONTAINER" ]; then
     echo "❌ Could not find roundcube container."
@@ -28,13 +28,29 @@ fi
 
 echo "📦 Installing PHP IMAP extension if needed..."
 docker exec "$CONTAINER" bash -c "
-    if ! php -m | grep -q imap; then
-        apt-get update -qq && apt-get install -y -qq libc-client-dev libkrb5-dev > /dev/null 2>&1
-        docker-php-ext-configure imap --with-kerberos --with-imap-ssl > /dev/null 2>&1
-        docker-php-ext-install -j\$(nproc) imap > /dev/null 2>&1
+    set -e
+
+    if php -m | grep -qi '^imap$'; then
+        echo '✅ IMAP extension already installed'
+        exit 0
+    fi
+
+    echo 'ℹ️  IMAP extension missing. Installing via install-php-extensions...'
+
+    # Use mlocati/docker-php-extension-installer (handles deps automatically)
+    if [ ! -x /usr/local/bin/install-php-extensions ]; then
+        curl -sSLf -o /usr/local/bin/install-php-extensions \
+            https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions
+        chmod +x /usr/local/bin/install-php-extensions
+    fi
+
+    install-php-extensions imap
+
+    if php -m | grep -qi '^imap$'; then
         echo '✅ IMAP extension installed'
     else
-        echo '✅ IMAP extension already installed'
+        echo '❌ Failed to install/enable PHP IMAP extension'
+        exit 1
     fi
 "
 
@@ -42,8 +58,9 @@ echo ""
 echo "📧 Running email seeder..."
 echo ""
 
-# Run the seeder script inside the container
-docker exec "$CONTAINER" php /var/www/html/docker/seed-emails.php
+# Copy the seeder script into the container and run it
+docker cp "$SCRIPT_DIR/seed-emails.php" "$CONTAINER:/tmp/seed-emails.php"
+docker exec "$CONTAINER" php /tmp/seed-emails.php
 
 echo ""
 echo "🎉 Done! Log in to Roundcube at http://localhost:8000"

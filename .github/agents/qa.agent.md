@@ -18,6 +18,7 @@ You are the **quality assurance specialist** for the `stratus` Roundcube skin. Y
 
 ## Critical Rules
 - Always check `.github/memory/decisions.md` and `context.md` before starting
+- Check `.github/feature-specs/` for relevant specs — verify implementation matches the approved spec
 - Report issues clearly with file, line number, and severity
 - Update memory files (especially `roadmap.md` bugs section) when finding issues
 
@@ -26,7 +27,7 @@ You are the **quality assurance specialist** for the `stratus` Roundcube skin. Y
 ### LESS Compilation Check
 ```bash
 # Compile and check for errors
-cd roundcubemail/skins/stratus
+cd docker/www/skins/stratus
 npx lessc styles/styles.less styles/styles.css 2>&1
 
 # Compile minified
@@ -60,7 +61,7 @@ wc -c styles/styles.min.css
 ### meta.json Validation
 ```bash
 # Check JSON syntax
-python3 -c "import json; json.load(open('roundcubemail/skins/stratus/meta.json'))"
+python3 -c "import json; json.load(open('docker/www/skins/stratus/meta.json'))"
 
 # Required fields
 # - name, extends, config.dark_mode_support, config.supported_layouts

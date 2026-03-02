@@ -19,6 +19,7 @@ skins/*/styles/styles.css
 
 # ── Secrets & local config ─────────────────────────────────────────────
 docker/.env
+docker/config/custom.inc.php
 roundcubemail/
 
 # ── Docker host-mounted volumes (Roundcube web root + SQLite DB) ───────

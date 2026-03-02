@@ -854,4 +854,65 @@ html.dark-mode {
     body.task-calendar #layout-sidebar {
         border-right-color: @mp-cal-dark-grid-color;
     }
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MASS-ACTION BAR — dark mode overrides
+    // ═══════════════════════════════════════════════════════════════════════════
+    .mp-mass-action-bar {
+        background: @color-dark-layout-header-background;
+        border-bottom-color: @color-dark-border;
+    }
+
+    .mp-mass-action-trigger {
+        color: @color-dark-font;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 88%);
+        }
+    }
+
+    .mp-mass-action-checkbox {
+        border-color: @color-dark-checkbox;
+
+        .mp-mass-action-trigger:hover & {
+            border-color: @color-dark-main;
+        }
+
+        .mp-has-selection .mp-mass-action-trigger & {
+            background: @color-dark-main;
+            border-color: @color-dark-main;
+        }
+    }
+
+    .mp-mass-action-count {
+        color: @color-dark-font-secondary;
+    }
+
+    .mp-mass-action-bar .prevpage,
+    .mp-mass-action-bar .nextpage {
+        color: @color-dark-font;
+
+        &:hover:not(.disabled) {
+            background: fadeout(@color-dark-main, 88%);
+            color: @color-dark-main;
+        }
+    }
+
+    // Active state dark overrides
+    .mp-mass-action-divider {
+        background: @color-dark-border;
+    }
+
+    .mp-action-btn {
+        color: @color-dark-font;
+
+        &:hover:not(.disabled) {
+            background: fadeout(@color-dark-main, 88%);
+            color: @color-dark-main;
+        }
+    }
+
+    .mp-mass-action-chip {
+        background: @color-dark-main;
+    }
 }
+

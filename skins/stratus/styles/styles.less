@@ -3,8 +3,8 @@
 // Design: "Atmospheric Modern" — layered depth, fluid motion, atmospheric color
 
 // 1. Elastic's full stylesheet (must come FIRST — provides base structure)
-// Path: from skins/stratus/styles/ → roundcubemail/skins/elastic/styles/
-@import "../../../roundcubemail/skins/elastic/styles/styles";
+// Path resolved via lessc --include-path=docker/www/skins → elastic/styles/styles.less
+@import "elastic/styles/styles";
 
 // 2. Fix font paths — elastic's @font-face uses "../fonts/" relative to
 //    elastic/styles/, but our compiled CSS lives in stratus/styles/, so
@@ -23,3 +23,4 @@
 @import "_calendar";         // Calendar ghost grid, events, decluttered UI
 @import "_dark";             // Dark mode comprehensive overrides
 @import "_login";            // Login page (glassmorphic)
+@import "_runtime";          // Runtime theming (CSS custom properties for stratus_helper)

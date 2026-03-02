@@ -26,16 +26,16 @@
 
 | Status | Task | Notes |
 |--------|------|-------|
-| ✅ | Create `roundcubemail/skins/stratus/meta.json` | Extends elastic, dark mode, indigo theme-color |
+| ✅ | Create `docker/www/skins/stratus/meta.json` | Extends elastic, dark mode, indigo theme-color |
 | ✅ | Add `skins/stratus/LICENSE` | Creative Commons Attribution-ShareAlike 3.0 notice |
 | ✅ | Add `skins/stratus/README.md` | Credits + CC BY-SA 3.0 notice |
-| ✅ | Create `roundcubemail/skins/stratus/composer.json` | Package metadata |
-| ✅ | Create `roundcubemail/skins/stratus/styles/styles.less` | Imports _variables → elastic → our partials |
-| ✅ | Create `roundcubemail/skins/stratus/styles/_variables.less` | ~110 overrides, full indigo palette |
-| ✅ | Create `roundcubemail/skins/stratus/styles/_layout.less` | Taskmenu, header, panels |
-| ✅ | Create `roundcubemail/skins/stratus/styles/_components.less` | Buttons, lists, badges, scrollbars |
-| ✅ | Create `roundcubemail/skins/stratus/styles/_dark.less` | Supplemental dark rules |
-| ✅ | Create `roundcubemail/skins/stratus/styles/_login.less` | Gradient bg + card form |
+| ✅ | Create `docker/www/skins/stratus/composer.json` | Package metadata |
+| ✅ | Create `docker/www/skins/stratus/styles/styles.less` | Imports _variables → elastic → our partials |
+| ✅ | Create `docker/www/skins/stratus/styles/_variables.less` | ~110 overrides, full indigo palette |
+| ✅ | Create `docker/www/skins/stratus/styles/_layout.less` | Taskmenu, header, panels |
+| ✅ | Create `docker/www/skins/stratus/styles/_components.less` | Buttons, lists, badges, scrollbars |
+| ✅ | Create `docker/www/skins/stratus/styles/_dark.less` | Supplemental dark rules |
+| ✅ | Create `docker/www/skins/stratus/styles/_login.less` | Gradient bg + card form |
 | ✅ | Compile `styles.min.css` | ~128KB, 0 errors |
 | ✅ | Create `templates/includes/layout.html` | Injects stratus CSS link in `<head>` |
 | ✅ | Create `templates/login.html` | Inherits elastic login |
@@ -65,7 +65,7 @@
 
 ## Phase 1.6 — Calendar UI Improvements
 
-> Target file: `roundcubemail/skins/stratus/styles/_calendar.less` (new partial; imported in `styles.less` after elastic).
+> Target file: `docker/www/skins/stratus/styles/_calendar.less` (new partial; imported in `styles.less` after elastic).
 > All rules scoped under `.task-calendar` to avoid bleed into other views. Dark mode rules added in `_dark.less`.
 
 ### 1 — Grid Declutter
@@ -113,14 +113,134 @@
 
 | Status | Task | Notes |
 |--------|------|-------|
-| 🔲 | Create plugin directory structure | `roundcubemail/plugins/stratus_helper/` |
-| 🔲 | Create `stratus_helper.php` | Main plugin class |
-| 🔲 | Implement color scheme switching | Runtime color changes via user prefs |
-| 🔲 | Implement font preference | Google Fonts integration |
-| 🔲 | Implement user preferences UI | Settings panel for skin options |
-| 🔲 | Implement preference persistence | Save to Roundcube DB |
-| 🔲 | Add localization support | Multi-language strings |
-| 🔲 | Create plugin config | `config.inc.php.dist` |
+| ✅ | Create plugin directory structure | `plugins/stratus_helper/` + docker-compose mount + Roundcube config |
+| ✅ | Create `stratus_helper.php` | Main plugin class — init, appearance injection, AJAX actions, preferences |
+| ✅ | Implement `refresh_folders` action | `plugin.stratus.refresh_folders` action clears IMAP cache + `getunread` refresh. Wired in `pagenav.html` `responseaftermove` listener (replaced TODO stub). |
+| ✅ | Implement color scheme switching | 8 presets (indigo/ocean/emerald/rose/amber/purple/teal/slate). CSS custom properties injected via `<style id="stratus-helper-vars">`. AJAX `plugin.stratus.set_scheme` for live switching. |
+| ✅ | Implement font preference | 7 options (system/inter/roboto/open-sans/lato/poppins/nunito). Google Fonts `<link>` injected server-side. AJAX `plugin.stratus.set_font` for live switching. |
+| ✅ | Implement user preferences UI | Settings → Stratus Appearance section with color scheme + font dropdowns. Live preview on change. |
+| ✅ | Implement preference persistence | `save_prefs()` for `stratus_color_scheme` + `stratus_font_family`. Respects `dont_override`. |
+| ✅ | Add localization support | `localization/en_US.inc` with section/field/scheme/font labels |
+| ✅ | Create plugin config | `config.inc.php.dist` with 8 color schemes, 7 fonts, folder refresh toggle |
+
+---
+
+## Conversation Mode Plugin (`plugins/conversation_mode/`)
+
+> Standalone Roundcube plugin — skin-agnostic, works with any skin.
+> Spec: `.github/feature-specs/conversation-mode-latest-first.md`
+
+### Phase 1 — MVP
+
+| Status | Task | Notes |
+|--------|------|-------|
+| ✅ | Plugin scaffold | `conversation_mode.php`, `composer.json`, `config.inc.php.dist` |
+| ✅ | Conversation grouping service | Union-find on Message-ID / In-Reply-To / References |
+| ✅ | Subject fallback grouping | Normalized subject + time-window heuristic |
+| ✅ | Session-based cache layer | Configurable TTL, in-memory + session persistence |
+| ✅ | AJAX endpoints | `conv.list`, `conv.open`, `conv.refresh`, `conv.setmode` |
+| ✅ | User preference integration | `message_list_mode` in Settings → Mailbox |
+| ✅ | Client-side JS | Toggle, conversation list, detail view, pagination |
+| ✅ | Skin-agnostic CSS | Default baseline + Elastic overrides |
+| ✅ | Localization | English strings (`en_US.inc`) |
+| ✅ | v3 Template-binding architecture | `skins/stratus/templates/mail.html` carries conversation containers; JS binds to DOM at init; `data-conv-mode` attr on `#layout-list` drives CSS show/hide (not JS). Plugin's elastic dir has NO `templates/` subdir. |
+| 🔲 | Deploy & test in Docker | Install into running Roundcube, verify IMAP grouping |
+
+### Phase 1.5 — UI Overhaul (Outlook-Grade List & Reading Pane)
+
+> **Goal:** Make conversation list rows and message detail feel like Outlook/modern mail clients.
+> **Reference:** Roundcube's native `rcube_list_widget` features; Outlook new web app conversation UX.
+>
+> **What Roundcube's original list provides (must match):**
+> - `rcube_list_widget` integration: keyboard nav, multi-select, drag-and-drop, column sort
+> - Widescreen 3-column layout (`threads | subject+fromto+date+status | flags`)
+> - Flex-wrapped subject cell: subject line + from/to + date + size all in one `td.subject`
+> - Status icons via Font Awesome: unread dot, replied, forwarded, replied+forwarded combo
+> - Flag toggle on click, attachment icon, thread expand/collapse chevrons
+> - Row classes: `.unread` (bold subject), `.flagged` (amber), `.deleted` (strikethrough), `.selected`
+> - Hover behavior: date ↔ size swap on hover, flag icon appears on hover (touch)
+> - `data-list="message_list"` + ARIA roles for accessibility
+> - Sort headers (click column header → sort by that column)
+> - Proper page navigation (pagenav.html)
+>
+> **What Outlook adds beyond Roundcube:**
+> - 3-line row: **Line 1** sender + count · **Line 2** subject · **Line 3** preview snippet + timestamp
+> - Sender avatar/initials circle (colored) at row left
+> - Bold + accent-color dot for unread (not just bold text)
+> - Hover action bar (archive, delete, flag, pin) floating on row right
+> - Reading pane integration: clicking a conversation shows full thread in `#layout-content` iframe, not replacing the list
+> - Collapsible messages in reading pane (latest expanded, older collapsed with one-click expand)
+> - Inline reply/forward at bottom of reading pane thread
+> - Swipe gestures on mobile (left = delete, right = flag)
+> - Conversation-level actions: select-all-in-conversation, move-conversation, mute
+
+#### 1 — Conversation Row Layout (match native `rcube_list_widget`)
+
+| Status | Task | Notes |
+|--------|------|-------|
+| ✅ | Use `rcube_list_widget` for conv rows | Build conversation rows as proper `rcube_list_widget` entries so keyboard, selection, drag-drop, right-click all work natively. Reuse `add_message_row` pattern with custom col types. |
+| ✅ | Widescreen flex row (3-line Outlook style) | Adapt elastic's widescreen template: **Line 1** = sender names + message count badge · **Line 2** = subject (bold if unread) · **Line 3** = snippet (gray) + relative date (right-aligned). Use flex layout in `td.subject` like elastic does. |
+| ✅ | Sender avatar / initials circle | Generate colored circle with first-letter initials from sender name. CSS `width:36px; height:36px; border-radius:50%; font-weight:600; text-align:center` in a new `td.conv-avatar` cell. Color derived from sender name hash (19-color deterministic palette). |
+| ✅ | Proper status icons (Font Awesome) | Replace emoji flags (📎⚑) with FA icons matching elastic: `.fa-paperclip` (attachment), `.fa-flag` (flagged). Unread indicator is now a dot, not an icon. |
+| ✅ | Unread styling: bold + accent dot | Unread conversations get bold sender + bold subject + small colored circle (`.conv-unread-dot`) left of subject, not just a numeric badge. |
+| ✅ | Message count badge | Pill badge after sender: `(3)` in muted color, like Outlook's count. Only shown when count > 1. |
+| ✅ | Hover action bar | On row hover, show a floating action strip (archive, delete, flag) on the right side over the date. CSS `position:absolute; right:0; display:none → inline-flex on hover`. Icons only, no text. |
+
+> **Architecture note:** Conversation containers live in `skins/stratus/templates/mail.html` (stratus skin override, 267 lines). The plugin has **no** `skins/elastic/templates/` directory. Panel toggling is attribute-driven (`data-conv-mode="list"|"conversations"` on `#layout-list`); CSS rules handle show/hide. JS (v3, 913 lines) calls `resolve_dom()` once at init and only fills/clears pre-existing containers.
+
+#### 2 — Reading Pane Integration (show conversation in `#layout-content`)
+
+| Status | Task | Notes |
+|--------|------|-------|
+| 🔲 | Load conversation into reading pane | Clicking a conversation row should render messages in `#layout-content` / `#messagecontframe` (the standard reading pane), NOT replace the list. Use `rcmail.show_contentframe()` or inject into iframe. |
+| 🔲 | Conversation thread view in reading pane | Render messages as stacked cards (newest first). Latest message expanded, older messages collapsed (show only sender + date + first line). Click to expand/collapse. |
+| 🔲 | Message expand/collapse toggle | Each message card has a clickable header. Collapsed = one-line summary. Expanded = full headers + body. Smooth height transition (200ms). |
+| 🔲 | Inline reply / forward | At the bottom of the reading-pane thread, add reply/forward action buttons that trigger Roundcube's native compose (`rcmail.command('reply')`). |
+| 🔲 | Reading pane empty state | When no conversation is selected, show a branded empty state in the reading pane (matching existing Roundcube watermark pattern). |
+
+#### 3 — Selection, Actions & Context Menu
+
+| Status | Task | Notes |
+|--------|------|-------|
+| 🔲 | Multi-select support | Checkbox on each row (toggled via click or Ctrl+click). Bulk actions bar appears above list when ≥1 selected. |
+| 🔲 | Conversation-level actions | Mark conversation read/unread, flag/unflag, move, delete, archive. These apply to ALL messages in the conversation. Wire to existing Roundcube commands. |
+| 🔲 | Right-click context menu | Reuse Roundcube's existing `rcm_messagemenu` popup pattern. Items: Open, Reply, Reply All, Forward, Mark Read/Unread, Flag, Move, Delete. |
+| 🔲 | Drag-and-drop | Conversation rows draggable to folder list for move operations. Reuse `rcube_list_widget` drag events. |
+
+#### 4 — Sorting, Search & Pagination
+
+| Status | Task | Notes |
+|--------|------|-------|
+| 🔲 | Sort controls | Allow sorting conversations by: latest date (default), sender name, subject, unread count. Use Roundcube's sort header click pattern. |
+| 🔲 | Search integration | When user searches, conversation mode should filter/group search results into conversations. Wire into Roundcube's `searchform` and `search_filter`. |
+| 🔲 | Proper page navigation | Replace custom pagination div with Roundcube's native `pagenav.html` include pattern (`roundcube:object name="pagenavigation"`). Consistent with standard list. |
+
+#### 5 — Mobile & Responsive
+
+| Status | Task | Notes |
+|--------|------|-------|
+| 🔲 | Touch-friendly rows | Taller row height (≥56px), larger tap targets, no hover-only elements visible on touch. |
+| 🔲 | Swipe gestures | Left-swipe = delete (red bg), right-swipe = flag (amber bg). Use `touchstart`/`touchmove`/`touchend`. |
+| 🔲 | Mobile conversation detail | Full-screen conversation detail (hide list) on phone layout. Back button returns to list. Use Roundcube's `layout-phone` pattern. |
+
+### Phase 2 — State Correctness
+
+| Status | Task | Notes |
+|--------|------|-------|
+| 🔲 | Move/delete action sync | Update conversation cache when messages are moved/deleted |
+| 🔲 | Mark read/flagged sync | Update aggregated unread/flagged counts |
+| 🔲 | Cache invalidation hardening | Incremental refresh via modseq/folder sync |
+| 🔲 | DB-backed cache (optional) | Persistent conversation index for large mailboxes |
+
+### Phase 3 — UX Polish
+
+| Status | Task | Notes |
+|--------|------|-------|
+| 🔲 | Keyboard navigation | Arrow keys, Enter to open, Escape to close. Full `rcube_list_widget` keyboard support should come free from Phase 1.5 §1. |
+| 🔲 | Performance optimization | Lazy loading, virtual scrolling for large mailboxes |
+| 🔲 | Cross-folder conversations | Optional merge of sent/drafts into conversation |
+| 🔲 | Conversation search | Search within conversation mode |
+| 🔲 | Additional localizations | Add more languages |
 
 ---
 

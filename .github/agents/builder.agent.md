@@ -23,11 +23,42 @@ Every time you are invoked, follow this loop:
 - If the developer gave a specific request, prioritize that
 - If they said "continue" or "next", pick the next 🔲 items in order
 
+### Step 2.5 — Feature Spec (MANDATORY for new features)
+
+**Before writing any implementation code**, you MUST create a feature spec and get human approval:
+
+1. **Create a spec file** in `.github/feature-specs/` following the naming convention: `<phase>-<short-kebab-name>.md`
+2. **Include all required sections** (see `.github/instructions/feature-specs.instructions.md`):
+   - Roadmap Reference (exact phase + section + item names)
+   - Summary, Goals, Non-Goals
+   - User Experience
+   - Technical Design (architecture, files to create/modify)
+   - Files Changed (explicit list)
+   - Dark Mode Considerations (if visual)
+   - Validation Criteria (testable checklist)
+   - Risks / Open Questions
+3. **Set status to `DRAFT`** at the top of the spec
+4. **Present a concise summary** to the human and **ASK FOR APPROVAL**
+5. **STOP and wait** — do NOT proceed to Step 3 until the human explicitly approves
+6. If the human requests changes, update the spec and ask again
+7. Once approved, update the spec status to `APPROVED` and proceed to Step 3
+
+**When to skip this step:**
+- Bug fixes (non-feature work)
+- Trivial changes (typos, comment updates, variable renames)
+- The human explicitly says "skip spec" or "just do it"
+- A spec already exists and is `APPROVED` for the items being built
+
+**When this step is required:**
+- Any new 🔲 feature from the roadmap
+- Any structural change (new files, new templates, new plugin features)
+- Any feature that touches multiple files or domains (styles + templates + JS)
+
 ### Step 3 — Build
 Execute the tasks. You handle ALL domains:
 
 **Structure** (meta.json, composer.json, directories):
-- Read elastic's equivalents for reference: `roundcubemail/skins/elastic/`
+- Read elastic's equivalents for reference: `docker/www/skins/elastic/`
 - Create files following the directory structure in the roadmap
 - Validate JSON files after creating them
 
@@ -46,18 +77,18 @@ Execute the tasks. You handle ALL domains:
 - Keep `<roundcube:object>` calls intact
 
 **Build & Validate** (after creating/changing files):
-- Compile: `cd roundcubemail/skins/stratus && npx lessc styles/styles.less styles/styles.css 2>&1`
-- Minify: `npx lessc --clean-css="--s1 --advanced" styles/styles.less styles/styles.min.css 2>&1`
-- Check JSON: `python3 -c "import json; json.load(open('roundcubemail/skins/stratus/meta.json'))"`
+- Compile: `npm run less:build`
+- Check JSON: `python3 -c "import json; json.load(open('docker/www/skins/stratus/meta.json'))"`
 - Grep for convention violations: hardcoded hex in rules, missing `mp-` prefix, SCSS syntax
 - Check dark mode coverage: every `mp-*` class with color should have `html.dark-mode` variant
 - Verify all LESS imports resolve
 
-### Step 4 — Update Memory
+### Step 4 — Update Memory & Spec
 After completing work:
 1. Update `.github/memory/context.md` — what was done, what changed, what's next
 2. Update `.github/memory/roadmap.md` — mark completed items ✅, note any bugs
 3. If an architectural decision was made, append to `.github/memory/decisions.md`
+4. Update the feature spec status to `IMPLEMENTED` if all items in the spec are done
 
 ## Critical Rules
 - The skin extends `elastic` via `"extends": "elastic"` in `meta.json`
@@ -65,20 +96,20 @@ After completing work:
 - CSS prefix: `mp-` for all custom classes
 - Dark mode: `html.dark-mode` selector + `@color-dark-*` variables
 - Template override: `<roundcube:include file="..." skinPath="skins/elastic" />`
-- Compile: `cd roundcubemail/skins/stratus && npx lessc --clean-css="--s1 --advanced" styles/styles.less > styles/styles.min.css`
+- Compile: `cd docker/www/skins/stratus && npx lessc --clean-css="--s1 --advanced" styles/styles.less > styles/styles.min.css`
 
 ## Elastic Reference Files
 
 Always consult before building:
 | What | Path |
 |------|------|
-| Colors (~280 vars) | `roundcubemail/skins/elastic/styles/colors.less` |
-| Variables (dimensions) | `roundcubemail/skins/elastic/styles/variables.less` |
-| Dark mode (1135 lines) | `roundcubemail/skins/elastic/styles/dark.less` |
-| Mixins | `roundcubemail/skins/elastic/styles/mixins.less` |
-| Main stylesheet | `roundcubemail/skins/elastic/styles/styles.less` |
-| Layout template | `roundcubemail/skins/elastic/templates/includes/layout.html` |
-| Login template | `roundcubemail/skins/elastic/templates/login.html` |
+| Colors (~280 vars) | `docker/www/skins/elastic/styles/colors.less` |
+| Variables (dimensions) | `docker/www/skins/elastic/styles/variables.less` |
+| Dark mode (1135 lines) | `docker/www/skins/elastic/styles/dark.less` |
+| Mixins | `docker/www/skins/elastic/styles/mixins.less` |
+| Main stylesheet | `docker/www/skins/elastic/styles/styles.less` |
+| Layout template | `docker/www/skins/elastic/templates/includes/layout.html` |
+| Login template | `docker/www/skins/elastic/templates/login.html` |
 
 ## Plugin UI Customization (Calendar, etc.)
 
@@ -104,11 +135,11 @@ Use `render_page`, `template_object_*`, or `template_container` hooks from `stra
 ### Calendar Plugin Reference Files
 | What | Path |
 |------|------|
-| Calendar elastic templates (6) | `roundcubemail/plugins/calendar/skins/elastic/templates/` |
-| Calendar PHP UI class | `roundcubemail/plugins/calendar/lib/calendar_ui.php` |
-| Calendar main plugin | `roundcubemail/plugins/calendar/calendar.php` |
-| Our calendar LESS | `roundcubemail/skins/stratus/styles/_calendar.less` |
-| Stratus plugin overrides | `roundcubemail/skins/stratus/plugins/calendar/` (create when needed) |
+| Calendar elastic templates (6) | `docker/www/plugins/calendar/skins/elastic/templates/` |
+| Calendar PHP UI class | `docker/www/plugins/calendar/lib/calendar_ui.php` |
+| Calendar main plugin | `docker/www/plugins/calendar/calendar.php` |
+| Our calendar LESS | `docker/www/skins/stratus/styles/_calendar.less` |
+| Stratus plugin overrides | `docker/www/skins/stratus/plugins/calendar/` (create when needed) |
 
 ### Calendar Templates (in `plugins/calendar/skins/elastic/templates/`)
 | Template | Purpose | Override Priority |

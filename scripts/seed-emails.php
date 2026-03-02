@@ -23,17 +23,23 @@ class EmailSeeder
     private array $users;
     private string $host;
     private int $port;
+    private bool $hasImap;
 
     public function __construct(string $host, int $port, array $users)
     {
         $this->host = $host;
         $this->port = $port;
         $this->users = $users;
+        $this->hasImap = extension_loaded('imap');
     }
 
     public function seed(): void
     {
         echo "🌱 Starting email seeding...\n\n";
+
+        if (!$this->hasImap) {
+            echo "⚠️  PHP IMAP extension is not available. Using SMTP fallback (INBOX-only seeding).\n\n";
+        }
 
         foreach ($this->users as $user) {
             echo "📧 Seeding mailbox: {$user['email']}\n";
@@ -46,6 +52,11 @@ class EmailSeeder
 
     private function seedUserMailbox(string $email, string $password): void
     {
+        if (!$this->hasImap) {
+            $this->seedInboxViaSmtp($email);
+            return;
+        }
+
         $imap = @imap_open(
             "{{$this->host}:{$this->port}/novalidate-cert}INBOX",
             $email,
@@ -58,7 +69,7 @@ class EmailSeeder
         }
 
         // Get other users for conversation simulation
-        $otherUsers = array_filter($this->users, fn($u) => $u['email'] !== $email);
+        $otherUsers = array_values(array_filter($this->users, fn($u) => $u['email'] !== $email));
 
         // Seed different types of emails
         $this->seedInbox($imap, $email, $otherUsers);
@@ -70,15 +81,22 @@ class EmailSeeder
         echo "  ✅ Completed\n";
     }
 
-    private function seedInbox($imap, string $email, array $otherUsers): void
+    private function seedInboxViaSmtp(string $email): void
     {
-        echo "  📥 INBOX...";
-        
+        echo "  📥 INBOX (SMTP fallback)...";
+
+        $otherUsers = array_values(array_filter($this->users, fn($u) => $u['email'] !== $email));
+
+        $threadMessages = array_merge(
+            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 3, 'Project Discussion'),
+            $this->createConversationThread($email, $otherUsers[1]['email'] ?? 'bob@example.test', 5, 'Design Review'),
+            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 8, 'Release Planning')
+        );
+
         $templates = [
             $this->createWelcomeEmail($email),
             $this->createMeetingInvite($email, $otherUsers[0]['email'] ?? 'alice@example.test'),
             $this->createNewsletterEmail($email),
-            $this->createThreadedConversation($email, $otherUsers[0]['email'] ?? 'alice@example.test'),
             $this->createHtmlEmail($email, $otherUsers[1]['email'] ?? 'bob@example.test'),
             $this->createPlainTextEmail($email, $otherUsers[0]['email'] ?? 'alice@example.test'),
             $this->createEmailWithAttachment($email, $otherUsers[1]['email'] ?? 'bob@example.test'),
@@ -87,8 +105,135 @@ class EmailSeeder
             $this->createRecentEmail($email, $otherUsers[0]['email'] ?? 'alice@example.test', 1),
         ];
 
+        $templates = array_merge($templates, $threadMessages);
+
+        $sent = 0;
         foreach ($templates as $template) {
-            imap_append($imap, "{{$this->host}:{$this->port}/novalidate-cert}INBOX", $template);
+            if ($this->sendViaSmtp($template, $email)) {
+                $sent++;
+            }
+        }
+
+        echo " {$sent}/" . count($templates) . " emails\n";
+    }
+
+    private function sendViaSmtp(string $rawMessage, string $recipient): bool
+    {
+        $smtpHost = getenv('SMTP_HOST') ?: $this->host;
+        $smtpPort = (int)(getenv('SMTP_PORT') ?: 25);
+
+        $fromHeader = $this->extractHeader($rawMessage, 'From') ?: 'admin@example.test';
+        $fromAddress = $this->extractEmailAddress($fromHeader) ?: 'admin@example.test';
+
+        $socket = @fsockopen($smtpHost, $smtpPort, $errno, $errstr, 10);
+        if (!$socket) {
+            echo "\n    ⚠️  SMTP connect failed: {$errstr} ({$errno})";
+            return false;
+        }
+
+        stream_set_timeout($socket, 10);
+
+        try {
+            $this->expectSmtpCode($socket, [220]);
+            $this->smtpCommand($socket, 'EHLO seeder.local', [250]);
+            $this->smtpCommand($socket, "MAIL FROM:<{$fromAddress}>", [250]);
+            $this->smtpCommand($socket, "RCPT TO:<{$recipient}>", [250, 251]);
+            $this->smtpCommand($socket, 'DATA', [354]);
+
+            $normalized = str_replace(["\r\n", "\r"], "\n", $rawMessage);
+            $lines = explode("\n", $normalized);
+            $dotStuffed = [];
+            foreach ($lines as $line) {
+                $dotStuffed[] = str_starts_with($line, '.') ? '.' . $line : $line;
+            }
+            $messageData = implode("\r\n", $dotStuffed) . "\r\n.\r\n";
+            fwrite($socket, $messageData);
+            $this->expectSmtpCode($socket, [250]);
+            $this->smtpCommand($socket, 'QUIT', [221]);
+        } catch (RuntimeException $e) {
+            fclose($socket);
+            echo "\n    ⚠️  SMTP send failed for {$recipient}: {$e->getMessage()}";
+            return false;
+        }
+
+        fclose($socket);
+        return true;
+    }
+
+    private function smtpCommand($socket, string $command, array $okCodes): void
+    {
+        fwrite($socket, $command . "\r\n");
+        $this->expectSmtpCode($socket, $okCodes);
+    }
+
+    private function expectSmtpCode($socket, array $okCodes): void
+    {
+        $response = '';
+        while (($line = fgets($socket, 1024)) !== false) {
+            $response .= $line;
+            if (strlen($line) >= 4 && $line[3] === ' ') {
+                break;
+            }
+        }
+
+        if ($response === '') {
+            throw new RuntimeException('empty SMTP response');
+        }
+
+        $code = (int)substr($response, 0, 3);
+        if (!in_array($code, $okCodes, true)) {
+            throw new RuntimeException(trim($response));
+        }
+    }
+
+    private function extractHeader(string $rawMessage, string $headerName): ?string
+    {
+        if (preg_match('/^' . preg_quote($headerName, '/') . ':\s*(.+)$/mi', $rawMessage, $matches)) {
+            return trim($matches[1]);
+        }
+
+        return null;
+    }
+
+    private function extractEmailAddress(string $input): ?string
+    {
+        if (preg_match('/<([^>]+)>/', $input, $matches)) {
+            return trim($matches[1]);
+        }
+
+        if (preg_match('/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i', $input, $matches)) {
+            return trim($matches[0]);
+        }
+
+        return null;
+    }
+
+    private function seedInbox($imap, string $email, array $otherUsers): void
+    {
+        echo "  📥 INBOX...";
+
+        $threadMessages = array_merge(
+            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 3, 'Project Discussion'),
+            $this->createConversationThread($email, $otherUsers[1]['email'] ?? 'bob@example.test', 5, 'Design Review'),
+            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 8, 'Release Planning')
+        );
+        
+        $templates = [
+            $this->createWelcomeEmail($email),
+            $this->createMeetingInvite($email, $otherUsers[0]['email'] ?? 'alice@example.test'),
+            $this->createNewsletterEmail($email),
+            $this->createHtmlEmail($email, $otherUsers[1]['email'] ?? 'bob@example.test'),
+            $this->createPlainTextEmail($email, $otherUsers[0]['email'] ?? 'alice@example.test'),
+            $this->createEmailWithAttachment($email, $otherUsers[1]['email'] ?? 'bob@example.test'),
+            $this->createUrgentEmail($email, $otherUsers[0]['email'] ?? 'alice@example.test'),
+            $this->createOldEmail($email, 'support@example.com', 365),
+            $this->createRecentEmail($email, $otherUsers[0]['email'] ?? 'alice@example.test', 1),
+        ];
+
+        $templates = array_merge($templates, $threadMessages);
+
+        foreach ($templates as $template) {
+            $this->appendMessage($imap, "INBOX", $template);
         }
 
         echo " " . count($templates) . " emails\n";
@@ -108,7 +253,7 @@ class EmailSeeder
         ];
 
         foreach ($templates as $template) {
-            imap_append($imap, "{{$this->host}:{$this->port}/novalidate-cert}Sent", $template);
+            $this->appendMessage($imap, "Sent", $template);
         }
 
         echo " " . count($templates) . " emails\n";
@@ -126,7 +271,7 @@ class EmailSeeder
         ];
 
         foreach ($templates as $template) {
-            imap_append($imap, "{{$this->host}:{$this->port}/novalidate-cert}Drafts", $template, "\\Draft");
+            $this->appendMessage($imap, "Drafts", $template, "\\Draft");
         }
 
         echo " " . count($templates) . " emails\n";
@@ -145,10 +290,31 @@ class EmailSeeder
         ];
 
         foreach ($projectEmails as $template) {
-            imap_append($imap, "{{$this->host}:{$this->port}/novalidate-cert}Projects", $template);
+            $this->appendMessage($imap, "Projects", $template);
         }
 
         echo " 2 emails\n";
+    }
+
+    private function appendMessage($imap, string $mailbox, string $message, string $flags = ''): bool
+    {
+        $imapPath = "{{$this->host}:{$this->port}/novalidate-cert}{$mailbox}";
+        $internalDate = $this->extractImapInternalDate($message);
+
+        return imap_append($imap, $imapPath, $message, $flags, $internalDate ?: null);
+    }
+
+    private function extractImapInternalDate(string $rawMessage): string
+    {
+        $headerDate = $this->extractHeader($rawMessage, 'Date');
+        if ($headerDate) {
+            $timestamp = strtotime($headerDate);
+            if ($timestamp !== false) {
+                return date('d-M-Y H:i:s O', $timestamp);
+            }
+        }
+
+        return date('d-M-Y H:i:s O');
     }
 
     // Email template generators
@@ -252,29 +418,84 @@ You're receiving this because you subscribed to our newsletter.<br>
 EMAIL;
     }
 
-    private function createThreadedConversation(string $to, string $from): string
+    private function createConversationThread(string $to, string $from, int $length, string $subject): array
     {
-        $messageId = uniqid() . '@example.test';
-        $date = date('r', strtotime('-3 days'));
-        
-        return <<<EMAIL
-From: $from
-To: $to
-Subject: Re: Project Discussion
+        $length = max(3, min(8, $length));
+        $messages = [];
+        $messageIds = [];
+        $renderedBodies = [];
+        $messageMeta = [];
+
+        for ($i = 0; $i < $length; $i++) {
+            $fromAddress = $i % 2 === 0 ? $from : $to;
+            $toAddress = $i % 2 === 0 ? $to : $from;
+            $date = date('r', strtotime('-' . (10 - $i) . ' hours'));
+            $messageId = $this->generateMessageId();
+            $messageIds[] = $messageId;
+
+            $isReply = $i > 0;
+            $subjectLine = $isReply ? "Re: {$subject}" : $subject;
+            $inReplyTo = $isReply ? "\nIn-Reply-To: <{$messageIds[$i - 1]}>" : '';
+            $references = $isReply ? "\nReferences: <" . implode('> <', array_slice($messageIds, 0, $i)) . ">" : '';
+
+            $latestReplyText = $this->createThreadBody($i, $fromAddress, $subject);
+            $body = $latestReplyText;
+
+            if ($isReply) {
+                $previousBody = $renderedBodies[$i - 1];
+                $previousFrom = $messageMeta[$i - 1]['from'];
+                $previousDate = $messageMeta[$i - 1]['date'];
+                $body .= "\n\nOn {$previousDate}, {$previousFrom} wrote:\n" . $this->quoteForReply($previousBody);
+            }
+
+            $renderedBodies[] = $body;
+            $messageMeta[] = ['from' => $fromAddress, 'date' => $date];
+
+            $messages[] = <<<EMAIL
+From: $fromAddress
+To: $toAddress
+Subject: $subjectLine
 Date: $date
-Message-ID: <$messageId>
-In-Reply-To: <original@example.test>
-References: <original@example.test>
+Message-ID: <$messageId>$inReplyTo$references
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 
-I agree with your points. Let's schedule a follow-up meeting.
-
-What does your calendar look like next week?
-
-Best,
-{$this->getFirstName($from)}
+$body
 EMAIL;
+        }
+
+        return $messages;
+    }
+
+    private function quoteForReply(string $text): string
+    {
+        $normalized = str_replace(["\r\n", "\r"], "\n", $text);
+        $lines = explode("\n", $normalized);
+
+        return implode("\n", array_map(fn($line) => '> ' . $line, $lines));
+    }
+
+    private function createThreadBody(int $index, string $from, string $subject): string
+    {
+        $name = $this->getFirstName($from);
+
+        $messages = [
+            "Starting thread about {$subject}.\n\nCan we align on approach and timeline?\n\nBest,\n{$name}",
+            "Great start. I reviewed the notes and agree with the direction.\n\nI added a few comments inline.\n\n- {$name}",
+            "Thanks, this looks good.\n\nI can take the next action item and report back tomorrow.\n\n{$name}",
+            "Quick update: first draft is done and pushed for review.\n\nPlease check when you have a moment.\n\n{$name}",
+            "I reviewed the draft and left feedback.\n\nMain ask is tightening the edge-case handling.\n\n{$name}",
+            "Applied the feedback and retested locally.\n\nAll core scenarios pass now.\n\n{$name}",
+            "Looks much better now.\n\nIf no blockers, we can finalize this in today's sync.\n\n{$name}",
+            "Perfect, closing the loop here.\n\nLet's track follow-ups in the next planning cycle.\n\nThanks!\n{$name}",
+        ];
+
+        return $messages[min($index, count($messages) - 1)];
+    }
+
+    private function generateMessageId(): string
+    {
+        return str_replace('.', '', uniqid('msg', true)) . '@example.test';
     }
 
     private function createHtmlEmail(string $to, string $from): string
@@ -501,12 +722,6 @@ EMAIL;
 }
 
 // Main execution
-if (!extension_loaded('imap')) {
-    echo "❌ Error: PHP IMAP extension is not installed.\n";
-    echo "   Run: docker exec -it roundcube-dev apt-get install -y php-imap && docker-php-ext-enable imap\n";
-    exit(1);
-}
-
 $seeder = new EmailSeeder(
     $config['mailserver'],
     $config['port'],

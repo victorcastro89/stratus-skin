@@ -8,7 +8,7 @@ You are the **template specialist** for the `stratus` Roundcube skin. You own al
 
 ## Your Responsibilities
 
-1. **Template overrides** — Create and maintain templates in `roundcubemail/skins/stratus/templates/`
+1. **Template overrides** — Create and maintain templates in `docker/www/skins/stratus/templates/`
 2. **Roundcube tag system** — Correctly use `<roundcube:*>` template tags
 3. **Parent inclusion** — Properly include elastic parent templates where needed
 4. **Layout structure** — Manage the DOM structure for our custom skin
@@ -28,6 +28,18 @@ You are the **template specialist** for the `stratus` Roundcube skin. You own al
 1. Read `.github/memory/context.md` — current project state
 2. Read `.github/memory/decisions.md` — prior architectural decisions (especially ADR-008: Minimal Template Overrides)
 3. Read `.github/memory/roadmap.md` — what's done, what's next
+4. Check `.github/feature-specs/` for an existing approved spec for the work
+5. After completing work, update memory files and spec status
+
+### Feature Spec Gate (New Features Only)
+
+If you are implementing a **new feature from the roadmap** (not a bug fix or tweak):
+1. Check if an `APPROVED` spec exists in `.github/feature-specs/`
+2. If NO spec exists → create one following `.github/instructions/feature-specs.instructions.md`, present summary to human, and **STOP until approved**
+3. If a `DRAFT` spec exists → present it to human and **STOP until approved**
+4. If an `APPROVED` spec exists → proceed with implementation
+
+Skip this gate for: bug fixes, minor tweaks, or when human says "skip spec".
 
 ---
 
@@ -331,7 +343,7 @@ This is a partial — it outputs the `<html><head>` opening and the start of `<b
 Since layout.html is a partial (not a full HTML page), our override MUST maintain the same structure. The correct approach:
 
 ```html
-<!-- roundcubemail/skins/stratus/templates/includes/layout.html -->
+<!-- docker/www/skins/stratus/templates/includes/layout.html -->
 <!-- stratus skin — Layout override: injects our CSS after elastic's -->
 <roundcube:include file="includes/layout.html" skinPath="skins/elastic" />
 <link rel="stylesheet" href="/styles/styles.min.css" />
@@ -599,19 +611,19 @@ After creating or editing any template:
 
 | What | Path |
 |------|------|
-| Our templates | `roundcubemail/skins/stratus/templates/` |
-| Elastic templates | `roundcubemail/skins/elastic/templates/` |
-| Elastic layout | `roundcubemail/skins/elastic/templates/includes/layout.html` |
-| Elastic footer | `roundcubemail/skins/elastic/templates/includes/footer.html` |
-| Elastic menu | `roundcubemail/skins/elastic/templates/includes/menu.html` |
-| Elastic login | `roundcubemail/skins/elastic/templates/login.html` |
-| Elastic mail | `roundcubemail/skins/elastic/templates/mail.html` |
-| Elastic message | `roundcubemail/skins/elastic/templates/message.html` |
-| Elastic compose | `roundcubemail/skins/elastic/templates/compose.html` |
-| Elastic settings | `roundcubemail/skins/elastic/templates/settings.html` |
-| Elastic README | `roundcubemail/skins/elastic/README.md` |
-| Template engine PHP | `roundcubemail/program/include/rcmail_output_html.php` |
-| Our meta.json | `roundcubemail/skins/stratus/meta.json` |
+| Our templates | `docker/www/skins/stratus/templates/` |
+| Elastic templates | `docker/www/skins/elastic/templates/` |
+| Elastic layout | `docker/www/skins/elastic/templates/includes/layout.html` |
+| Elastic footer | `docker/www/skins/elastic/templates/includes/footer.html` |
+| Elastic menu | `docker/www/skins/elastic/templates/includes/menu.html` |
+| Elastic login | `docker/www/skins/elastic/templates/login.html` |
+| Elastic mail | `docker/www/skins/elastic/templates/mail.html` |
+| Elastic message | `docker/www/skins/elastic/templates/message.html` |
+| Elastic compose | `docker/www/skins/elastic/templates/compose.html` |
+| Elastic settings | `docker/www/skins/elastic/templates/settings.html` |
+| Elastic README | `docker/www/skins/elastic/README.md` |
+| Template engine PHP | `docker/www/program/include/rcmail_output_html.php` |
+| Our meta.json | `docker/www/skins/stratus/meta.json` |
 | Project decisions | `.github/memory/decisions.md` |
 | Project context | `.github/memory/context.md` |
 | Project roadmap | `.github/memory/roadmap.md` |

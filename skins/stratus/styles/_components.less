@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // BUTTONS — rounded with gradient primary & ghost secondary
 // ═══════════════════════════════════════════════════════════════════════════════
-.btn-primary,
+.btn-primary, 
 a.btn-primary,
 button.btn-primary {
     background: @color-main-gradient;
@@ -702,4 +702,284 @@ textarea.form-control {
     &:hover {
         background: fadeout(@color-main, 92%);
     }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MASS-ACTION BAR — replaces header select trigger, positioned below search
+// Uses flex order to sit between searchbar and message list in #layout-list
+// Only applies when .mp-mass-action-bar is present (mail template)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Hide the old header select trigger to avoid duplicate controls (mail only)
+#messagelist-header .toolbar a.select[data-popup="listselect-menu"] {
+    display: none;
+}
+
+// Flex order: reposition bar below search, push scroller after it
+// #layout-list is display:flex; flex-direction:column — DOM order:
+//   header(0) → searchbar(0) → searchmenu(0) → scroller(0) → pagenav(0)
+// We set bar=1, scroller=2 so visual order becomes:
+//   header → searchbar → searchmenu → mass-action-bar → scroller
+.mp-mass-action-bar {
+    order: 1;
+}
+
+#layout-list #messagelist-content {
+    order: 2;
+}
+
+// Mass-action bar layout
+.mp-mass-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 @mp-space-sm !important;
+    height: 40px;
+    background: @color-layout-header-background;
+    border-bottom: 1px solid @color-layout-border;
+    gap: @mp-space-sm;
+}
+
+// Left group: checkbox trigger + action buttons
+.mp-mass-action-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+// Override elastic's global `a.disabled { pointer-events: none }` on select trigger
+// when there is a selection, so the user can click to deselect all
+.mp-mass-action-bar.mp-has-selection .mp-mass-action-trigger {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.mp-mass-action-trigger {
+    display: flex !important;
+    align-items: center;
+    gap: 2px;
+    padding: @mp-space-xs @mp-space-sm;
+    border-radius: @mp-radius-sm;
+    cursor: pointer;
+    transition: background @mp-transition-fast;
+    color: @color-font;
+    text-decoration: none;
+    min-width: 0 !important;    // override elastic .pagenav a min-width
+    flex-grow: 0 !important;    // override elastic .pagenav a flex-grow
+    height: auto !important;    // override elastic .pagenav a height
+
+    &:hover {
+        background: fadeout(@color-main, 92%);
+    }
+
+    &:before {
+        display: none !important; // hide elastic's default icon
+    }
+
+    > .inner {
+        display: none; // screen-reader text, hidden visually
+    }
+}
+
+// Checkbox square indicator
+.mp-mass-action-checkbox {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid @color-input-border;
+    border-radius: 3px;
+    background: transparent;
+    transition: border-color @mp-transition-fast, background @mp-transition-fast;
+    flex-shrink: 0;
+
+    .mp-mass-action-trigger:hover & {
+        border-color: @color-main;
+    }
+
+    // When selection is active, show checked state
+    .mp-has-selection .mp-mass-action-trigger & {
+        background: @color-main;
+        border-color: @color-main;
+        // Checkmark via pseudo-element
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 0;
+            width: 5px;
+            height: 9px;
+            border: solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+    }
+}
+
+
+
+// Right group: message count + prev/next nav
+.mp-mass-action-right {
+    display: flex;
+    align-items: center;
+    gap: @mp-space-xs;
+    flex-shrink: 0;
+    margin-left: auto; // push to right edge
+}
+
+.mp-mass-action-count {
+    font-size: @mp-font-size-sm;
+    color: @color-font-secondary;
+    white-space: nowrap;
+    flex-grow: 0 !important;   // override elastic .pagenav-text flex-grow
+    padding: 0 @mp-space-xs;
+}
+
+// Prev/next buttons inside mass-action bar
+.mp-mass-action-bar .prevpage,
+.mp-mass-action-bar .nextpage {
+    flex-grow: 0 !important;
+    min-width: 28px !important;
+    width: 28px;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: @mp-radius-sm;
+    transition: background @mp-transition-fast;
+    color: @color-font;
+
+    &:hover:not(.disabled) {
+        background: fadeout(@color-main, 92%);
+        color: @color-main;
+    }
+
+    &.disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+
+    &:before {
+        margin: 0 !important;
+        line-height: 28px !important;
+        font-size: 1rem;
+        font-weight: 900; // angle-left/right are solid-only
+    }
+
+    // Hide elastic's inner label text
+    .inner {
+        display: none;
+    }
+}
+
+// Hide first/last page buttons (not present in our template, but defensive)
+.mp-mass-action-bar .firstpage,
+.mp-mass-action-bar .lastpage {
+    display: none;
+}
+
+// Hide the page number input from elastic
+.mp-mass-action-bar input[type="text"] {
+    display: none;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MASS-ACTION BAR — Active state (visible when messages are selected)
+// Controlled via #layout-list:has(.listing.withselection) — the .withselection
+// class lives on #messagelist and is toggled by Roundcube's selection logic
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Action buttons container — hidden by default, shown when selection active
+.mp-mass-action-actions {
+    display: none;
+    align-items: center;
+    gap: 2px;
+}
+
+.mp-mass-action-bar.mp-has-selection .mp-mass-action-actions {
+    display: flex;
+}
+
+// Vertical divider between action groups
+.mp-mass-action-divider {
+    width: 1px;
+    height: 20px;
+    background: @color-layout-border;
+    margin: 0 @mp-space-xs;
+    flex-shrink: 0;
+}
+
+// Individual action buttons (icon-only, compact)
+.mp-action-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: @mp-radius-sm;
+    color: @color-font;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background @mp-transition-fast, color @mp-transition-fast;
+    flex-shrink: 0;
+    flex-grow: 0 !important;
+    min-width: 0 !important;
+
+    &:before {
+        margin: 0 !important;
+        font-size: 1rem;
+        line-height: 32px !important;
+        font-weight: 400; // fa-regular-400 outline icons
+    }
+
+    // "more" (ellipsis) only exists in solid set
+    &.more:before {
+        font-weight: 900;
+    }
+
+    // sync (refresh) icon — not in elastic's icon map, define explicitly
+    &.sync:before {
+        content: "\f021"; // fa-arrows-rotate / fa-sync
+        font-weight: 900;
+    }
+
+    &:hover:not(.disabled) {
+        background: fadeout(@color-main, 90%);
+        color: @color-main;
+    }
+
+    &.disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+
+    // Hide inner label text (icon-only buttons)
+    .inner {
+        display: none;
+    }
+}
+
+// "N selected" chip — pill badge, hidden by default
+.mp-mass-action-chip {
+    display: none;
+    align-items: center;
+    padding: 2px @mp-space-sm;
+    background: @color-main;
+    color: #fff;
+    font-size: @mp-font-size-xs;
+    border-radius: @mp-radius-pill;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+// Active state toggles: show chip + hide count when messages selected
+.mp-mass-action-bar.mp-has-selection .mp-mass-action-chip {
+    display: flex;
+}
+
+.mp-mass-action-bar.mp-has-selection .mp-mass-action-count {
+    display: none;
 }

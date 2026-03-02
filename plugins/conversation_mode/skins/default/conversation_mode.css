@@ -1,0 +1,500 @@
+/**
+ * Conversation Mode – Default skin styles (v3: template-binding architecture)
+ *
+ * Panel visibility is driven by the [data-conv-mode] attribute on #layout-list.
+ * JS sets data-conv-mode="list" or "conversations" and CSS handles show/hide.
+ *
+ * Skin-agnostic baseline that works with any Roundcube skin.
+ * Skins can override these by placing conversation_mode.css in their own
+ * skin folder.
+ */
+
+/* ═══════════════════════════════════════════════
+   Panel Toggling via data-conv-mode attribute
+   ═══════════════════════════════════════════════ */
+
+/* Default: standard list visible, conversation panels hidden */
+#conv-list-content,
+#conv-pagination,
+#conv-detail,
+#conv-empty {
+  display: none;
+}
+
+/* List mode: standard visible, conversation hidden */
+#layout-list[data-conv-mode="list"] #messagelist-content { display: block; }
+#layout-list[data-conv-mode="list"] #conv-list-content   { display: none; }
+#layout-list[data-conv-mode="list"] #conv-pagination      { display: none; }
+
+/* Conversation mode: conversation visible, standard hidden */
+#layout-list[data-conv-mode="conversations"] #messagelist-content { display: none; }
+#layout-list[data-conv-mode="conversations"] #conv-list-content   { display: block; }
+#layout-list[data-conv-mode="conversations"] .pagenav:not(.conv-pagination) { display: none; }
+
+/* Standard pagenav: hide in conversation mode, show in list mode */
+#layout-list[data-conv-mode="conversations"] > .footer.pagenav:last-child { display: none; }
+
+
+/* ═══════════════════════════════════════════════
+   Conversation List (table + rcube_list_widget)
+   ═══════════════════════════════════════════════ */
+
+.conv-list.conv-outlook {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.conv-list.conv-outlook tbody tr.message {
+  cursor: pointer;
+  border-bottom: 1px solid #e8e8e8;
+  transition: background-color 0.15s ease;
+  position: relative;
+}
+
+.conv-list.conv-outlook tbody tr.message:hover {
+  background-color: #f5f7fa;
+}
+
+.conv-list.conv-outlook tbody tr.message.selected,
+.conv-list.conv-outlook tbody tr.message.focused {
+  background-color: #e3ecf7;
+}
+
+/* ── Avatar Column ───────────────────────────── */
+
+.conv-list.conv-outlook td.conv-avatar {
+  width: 48px;
+  padding: 10px 4px 10px 12px;
+  vertical-align: top;
+}
+
+.conv-avatar-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1;
+  text-transform: uppercase;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* ── Subject Column (3-line flex) ────────────── */
+
+.conv-list.conv-outlook td.subject {
+  padding: 8px 8px 8px 4px;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+/* Line 1: Sender + count + date */
+.conv-line1 {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 2px;
+  line-height: 1.4;
+}
+
+.conv-sender {
+  flex: 1 1 auto;
+  font-size: 0.9rem;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conv-list.conv-outlook tr.unread .conv-sender {
+  font-weight: 700;
+  color: #111;
+}
+
+.conv-count {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #666;
+  background: #e8e8e8;
+  border-radius: 9px;
+}
+
+.conv-date {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: #888;
+  white-space: nowrap;
+}
+
+/* Line 2: Subject + icons */
+.conv-line2 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+  line-height: 1.35;
+}
+
+.conv-unread-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #1a73e8;
+}
+
+.conv-subject-text {
+  flex: 1 1 auto;
+  font-size: 0.875rem;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conv-list.conv-outlook tr.unread .conv-subject-text {
+  font-weight: 600;
+  color: #111;
+}
+
+.conv-status-icons {
+  flex-shrink: 0;
+  display: inline-flex;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.conv-status-icons .fa-flag {
+  color: #f9a825;
+}
+
+.conv-status-icons .fa-paperclip {
+  color: #888;
+}
+
+/* Line 3: Snippet */
+.conv-line3 {
+  display: block;
+  font-size: 0.8rem;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+
+/* ── Flags / Actions Column ──────────────────── */
+
+.conv-list.conv-outlook td.flags.conv-flags-cell {
+  width: 90px;
+  padding: 10px 8px;
+  vertical-align: middle;
+  text-align: right;
+  position: relative;
+}
+
+/* Hover action bar (hidden by default, shown on row hover) */
+.conv-hover-actions {
+  display: none;
+  gap: 2px;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 6px;
+  padding: 4px 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  z-index: 5;
+}
+
+.conv-list.conv-outlook tr.message:hover .conv-hover-actions {
+  display: inline-flex;
+}
+
+.conv-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  color: #666;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.conv-action-btn:hover {
+  background-color: #e8e8e8;
+  color: #333;
+}
+
+.conv-action-btn.conv-action-delete:hover {
+  background-color: #fce4ec;
+  color: #c62828;
+}
+
+.conv-action-btn.conv-action-flag:hover {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.conv-action-btn .fa {
+  font-size: 0.8rem;
+}
+
+/* ── Empty state ─────────────────────────────── */
+
+.conv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 20px;
+  text-align: center;
+  color: #999;
+  font-size: 1rem;
+}
+
+.conv-empty-icon {
+  font-size: 2rem;
+  opacity: 0.4;
+}
+
+.conv-empty-text {
+  font-size: 0.95rem;
+}
+
+/* ── Detail view ─────────────────────────────── */
+
+.conv-detail-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.conv-detail-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #fafbfc;
+  flex-shrink: 0;
+}
+
+.conv-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: #1a73e8;
+  text-decoration: none;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.conv-back-btn:hover {
+  text-decoration: underline;
+}
+
+.conv-detail-subject {
+  margin: 4px 0;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.conv-detail-meta {
+  color: #666;
+  font-size: 0.85em;
+}
+
+/* ── Message cards (in detail view) ──────────── */
+
+.conv-messages {
+  padding: 8px 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.conv-message-card {
+  margin: 8px 16px;
+  padding: 14px 18px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+  transition: box-shadow 0.15s ease;
+}
+
+.conv-message-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.conv-message-card.unread {
+  border-left: 3px solid #1a73e8;
+}
+
+.conv-message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.conv-msg-from-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.conv-msg-avatar.conv-avatar-circle {
+  width: 28px;
+  height: 28px;
+  font-size: 0.7rem;
+}
+
+.conv-msg-from {
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+.conv-msg-date {
+  color: #888;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.conv-msg-subject {
+  color: #444;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+}
+
+.conv-msg-actions {
+  text-align: right;
+}
+
+.conv-msg-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-size: 0.8em;
+  color: #1a73e8;
+  border: 1px solid #1a73e8;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.conv-msg-open:hover {
+  background: #1a73e8;
+  color: #fff;
+}
+
+/* ── Pagination ──────────────────────────────── */
+
+.conv-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 0.9em;
+}
+
+.conv-page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #1a73e8;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.conv-page-btn:hover {
+  background: #e3ecf7;
+}
+
+.conv-page-btn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.conv-page-info {
+  color: #666;
+}
+
+/* ── Toggle button ───────────────────────────── */
+
+.conv-toggle.conv-active .inner,
+.conv-toggle.conv-active {
+  color: #1a73e8;
+}
+
+/* ── Flagged row amber indicator ─────────────── */
+
+.conv-list.conv-outlook tr.flagged {
+  border-left: 3px solid #f9a825;
+}
+
+/* ── Conversation list scroller (same as standard) ── */
+
+.conv-conversation-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* ── Responsive: touch-friendly sizing ───────── */
+
+@media screen and (max-width: 768px) {
+  .conv-list.conv-outlook td.conv-avatar {
+    width: 40px;
+    padding: 8px 2px 8px 8px;
+  }
+
+  .conv-avatar-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+
+  .conv-list.conv-outlook td.subject {
+    padding: 6px 4px;
+  }
+
+  .conv-list.conv-outlook td.flags.conv-flags-cell {
+    width: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .conv-hover-actions {
+    display: none !important;
+  }
+
+  .conv-message-card {
+    margin: 6px 8px;
+    padding: 10px 12px;
+  }
+}
