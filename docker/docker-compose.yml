@@ -42,55 +42,37 @@ services:
 
   # ---------- Roundcube webmail ----------
   roundcube:
-    image: roundcube/roundcubemail:1.6.13-apache
+    build:
+      context: .
+      dockerfile: Dockerfile.roundcube
     container_name: roundcube-dev
     restart: unless-stopped
     ports:
       - "8000:80"
     volumes:
-      # Persist web root on host (Roundcube source + composer-installed plugins).
-      # The official entrypoint copies /usr/src/roundcubemail/ here on first start.
-      - ./www:/var/www/html
-      # Our custom skin (bind mount overlays the persisted web root)
-      - ../skins/stratus:/var/www/html/skins/stratus:delegated
-      # To mount custom plugins, add bind mounts here, e.g.:
-      - ../plugins/conversation_mode:/var/www/html/plugins/conversation_mode:delegated
-      - ../plugins/stratus_helper:/var/www/html/plugins/stratus_helper:delegated
-
-      # Persist config on host for easy editing (overlays default config in image)
-      - ./config/:/var/roundcube/config/
-      - ./logs/:/var/roundcube/logs/
+      # Roundcube source (git clone on host — symlinks for skins/plugins already inside)
+      - ../roundcubemail:/var/www/html:delegated
+      # Live Roundcube config from repo (edit docker/config/roundcube.config.inc.php in realtime)
+      - ./config/custom.inc.php:/var/www/html/config/config.inc.php
+      # Resolve Roundcube symlinks like ../../plugins/* and ../../skins/* from /var/www/html
+      - ../plugins:/var/www/plugins:delegated
+      - ../skins:/var/www/skins:delegated
       # Persist SQLite database on host
       - ./db/sqlite:/var/roundcube/db
-      # # Custom PHP settings (upload limits, timezone, etc.)
-      # - ./roundcube.ini:/usr/local/etc/php/conf.d/zzz_roundcube-custom.ini:ro
-      # Composer config to bypass pear/http_request2 security advisory block (dev only)
-      - ./composer-global-config.json:/var/www/.composer/config.json:ro
-
+      # Logs
+      - ./logs:/var/roundcube/logs
+      # Custom PHP settings (upload limits, timezone, etc.)
+      - ./roundcube.ini:/usr/local/etc/php/conf.d/zzz_roundcube-custom.ini
+      # Composer cache (speeds up rebuilds)
+      - composer-cache:/root/.composer
+    entrypoint: ["/usr/local/bin/entrypoint.sh"]
     depends_on:
       mailserver:
         condition: service_healthy
     environment:
-      # Point Composer at our custom global config (audit bypass)
-      - COMPOSER_HOME=/var/www/.composer
-      # All values sourced from .env
-      - ROUNDCUBEMAIL_DEFAULT_HOST
-      - ROUNDCUBEMAIL_DEFAULT_PORT
-      - ROUNDCUBEMAIL_SMTP_SERVER
-      - ROUNDCUBEMAIL_SMTP_PORT
-      - ROUNDCUBEMAIL_DB_TYPE
-      - ROUNDCUBEMAIL_SKIN
-      - ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE
-      - ROUNDCUBEMAIL_PRODUCT_NAME
-      - ROUNDCUBEMAIL_SUPPORT_URL
-      # Install plugins via Composer on container start (idempotent — skipped if already present)
-      # - ROUNDCUBEMAIL_COMPOSER_PLUGINS=kolab/calendar,roundcube/carddav
-      # - ROUNDCUBEMAIL_PLUGINS=archive,zipdownload,emoticons,identicon,jqueryui,markasjunk,newmail_notifier,hide_blockquote,attachment_reminder,vcard_attachments,libcalendaring,calendar,carddav
-      - ROUNDCUBEMAIL_COMPOSER_PLUGINS
-      - ROUNDCUBEMAIL_PLUGINS
-      # Suppress "could not detect root package version" warning from Composer
-      - COMPOSER_ROOT_VERSION=1.6.13
+      - COMPOSER_ALLOW_SUPERUSER=1
 volumes:
   maildata:
   mailstate:
   maillogs:
+  composer-cache:

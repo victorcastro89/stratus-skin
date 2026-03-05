@@ -229,15 +229,11 @@ class conversation_mode_grouper
                     $subject = $h->subject;
                 }
 
-                if (!empty($h->flags) && empty($h->flags['SEEN'])) {
+                // Canonical unread check: Roundcube stores flags as associative array
+                // e.g. ['SEEN' => true, 'FLAGGED' => true]. A message is unread when
+                // the SEEN flag is absent or falsy.
+                if (empty($h->flags['SEEN'])) {
                     $unread++;
-                } elseif (isset($h->flags) && is_array($h->flags) && !in_array('SEEN', $h->flags)) {
-                    // some IMAP implementations use different flag formats
-                }
-
-                // Check unread via the is_read property  
-                if (isset($h->is_read) && !$h->is_read) {
-                    // already counted above in most cases
                 }
 
                 if (!empty($h->flags['FLAGGED'])) {
@@ -370,16 +366,61 @@ class conversation_mode_grouper
     }
 
     /**
-     * Extract a short snippet from a message header.
+     * Extract a short snippet from a message.
+     *
+     * Fetches the first 200 characters of the plain-text body part via IMAP
+     * BODY.PEEK to generate a preview snippet for the conversation list.
      */
     private function extract_snippet($header): string
     {
-        // Use the body structure preview if available
+        // Try cached/preloaded body text first (rarely available)
         if (!empty($header->body_structure_text)) {
-            return mb_substr(strip_tags($header->body_structure_text), 0, 120);
+            return $this->clean_snippet($header->body_structure_text);
         }
-        // Fall back to subject
-        return '';
+
+        // Fetch the plain-text body part from IMAP
+        try {
+            $storage = $this->rcmail->get_storage();
+            $uid = $header->uid ?? null;
+            $folder = $header->folder ?? ($storage->get_folder() ?: 'INBOX');
+
+            if (!$uid) {
+                return '';
+            }
+
+            // Use rcube_message to get the text part efficiently
+            $message = new rcube_message($uid, $folder);
+
+            // Get the first text/plain part
+            $text = '';
+            if ($message->first_text_part()) {
+                $text = $message->first_text_part();
+            }
+
+            if (empty($text)) {
+                return '';
+            }
+
+            return $this->clean_snippet($text);
+        } catch (\Exception $e) {
+            // Fail silently — snippet is non-critical
+            return '';
+        }
+    }
+
+    /**
+     * Clean and truncate text for use as a snippet.
+     */
+    private function clean_snippet(string $text): string
+    {
+        // Strip HTML tags
+        $text = strip_tags($text);
+        // Collapse whitespace
+        $text = preg_replace('/\s+/', ' ', $text);
+        // Trim
+        $text = trim($text);
+        // Truncate to 120 chars
+        return mb_substr($text, 0, 120);
     }
 
     /**

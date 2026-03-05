@@ -19,7 +19,7 @@
 /* ── Stratus section header icon (reuse elastic pattern) ── */
 #sections-table tr.stratus td.icon::before {
     content: "\f53f"; /* palette icon */
-    font-family: "Font Awesome 5 Free";
+    font-family: 'Icons';
     font-weight: 900;
 }
 

@@ -15,11 +15,23 @@
 //    Without this order, elastic's @color-main:#37beff overrides our #5c6bc0.
 @import "_variables";
 
-// 3. Our additional styles layered on top (order matters)
+// 4. Reusable mixins (after variables so they can reference @mp-* vars and @color-*).
+//    Must come before any component files so all partials can use them.
+@import "_mixins";
+
+// 5. Our additional styles layered on top (order matters)
 @import "_typography";       // Font system, text hierarchy
 @import "_animations";       // Transitions, keyframes, motion system
 @import "_layout";           // Taskmenu, header, toolbar, panels
-@import "_components";       // Buttons, lists, forms, dialogs, scrollbars
+@import "widgets/common";     // Scrollbars, selection, quota, mass-action bar
+@import "widgets/buttons";    // Button variants, toolbar icons, FAB
+@import "widgets/forms";      // Form controls, inputs, switches, recipient chips
+@import "widgets/lists";      // Message list, folder list, badges, conv toggle
+@import "widgets/menu";       // Navigation tabs
+@import "widgets/messages";   // Message view, attachment chips, toast messages
+@import "widgets/dialogs";    // Dialogs, overlay, popovers
+@import "widgets/editor";     // TinyMCE editor
+@import "widgets/jqueryui";   // jQuery UI widget overrides
 @import "_calendar";         // Calendar ghost grid, events, decluttered UI
 @import "_dark";             // Dark mode comprehensive overrides
 @import "_login";            // Login page (glassmorphic)

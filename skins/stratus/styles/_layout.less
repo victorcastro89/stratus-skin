@@ -155,9 +155,7 @@
 // LAYOUT HEADER — frosted glass toolbar
 // ═══════════════════════════════════════════════════════════════════════════════
 #layout > div > .header {
-    background: @mp-glass-bg-strong;
-    backdrop-filter: blur(@mp-glass-blur);
-    -webkit-backdrop-filter: blur(@mp-glass-blur);
+    .mp-frosted-glass(@mp-glass-bg-strong);
     border-bottom: 1px solid fadeout(@color-layout-border, 30%);
     box-shadow: @mp-shadow-xs;
 
@@ -240,7 +238,7 @@
     &:focus-within {
         background: #fff;
         border-color: fadeout(@color-main, 60%);
-        box-shadow: 0 0 0 3px fadeout(@color-main, 88%);
+        .mp-focus-ring(@color-main, 88%);
     }
 
     input[type="text"],
@@ -323,6 +321,149 @@
     &:hover {
         opacity: 1;
         background: fadeout(@color-main, 70%);
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    // ── TASK MENU ────────────────────────────────────────────────────────────────────
+    #layout-menu {
+        background: @mp-taskmenu-dark-gradient;
+
+        // Top accent line — more subtle in dark
+        &::before {
+            opacity: 0.7;
+        }
+
+        .popover-header {
+            border-bottom-color: rgba(255, 255, 255, 0.04);
+        }
+    }
+
+    #taskmenu {
+        background: @mp-taskmenu-dark-gradient;
+        box-shadow: @mp-shadow-dark-lg;
+
+        a:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        // Selected — indigo glow, more visible in dark
+        a.selected {
+            background: fadeout(@color-dark-main, 80%);
+            box-shadow: 0 0 20px fadeout(@color-dark-main, 75%),
+                        inset 0 0 0 1px fadeout(@color-dark-main, 65%);
+        }
+
+        // Compose — dark-mode gradient with explicit white text/icon
+        // IMPORTANT: Elastic dark.less sets color:@color-dark-font on all #taskmenu a,
+        // which washes out the compose button. We must restore #fff explicitly.
+        a.compose,
+        a.task-compose {
+            background: @color-dark-main-gradient;
+            color: #fff;
+            box-shadow: 0 4px 16px fadeout(@color-dark-main, 45%);
+
+            &:before {
+                color: #fff;
+            }
+
+            &:hover {
+                background: @color-dark-main-gradient-hover;
+                color: #fff;
+                box-shadow: 0 6px 24px fadeout(@color-dark-main, 35%);
+
+                &:before {
+                    color: #fff;
+                }
+            }
+
+            &:active {
+                color: #fff;
+
+                &:before {
+                    color: #fff;
+                }
+            }
+        }
+
+        a.logout,
+        a[href*="logout"] {
+            &:hover {
+                background: fadeout(@color-taskmenu-button-logout, 88%);
+            }
+        }
+    }
+
+    // ── HEADERS ────────────────────────────────────────────────────────────────────────
+    #layout > div > .header {
+        .mp-frosted-glass-dark(@mp-glass-dark-bg-strong);
+        border-bottom-color: @color-dark-border;
+        box-shadow: @mp-shadow-dark-sm;
+
+        .header-title {
+            color: @color-dark-font;
+        }
+
+        a.button {
+            color: @color-dark-font;
+
+            &:hover {
+                background: fadeout(@color-dark-main, 88%);
+                color: @color-dark-main;
+            }
+        }
+    }
+
+    #layout > div > .footer {
+        background: @color-dark-surface;
+        border-top-color: @color-dark-border;
+    }
+
+    // ── PANELS ──────────────────────────────────────────────────────────────────────────
+    #sidebar,
+    #layout-sidebar {
+        background: @color-dark-surface;
+        border-right-color: @color-dark-border;
+    }
+
+    #layout-list {
+        background: @color-dark-surface;
+        border-right-color: @color-dark-border;
+    }
+
+    #layout-content {
+        background: @color-dark-background;
+    }
+
+    // Content frames — dark cards
+    .frame-content fieldset,
+    .content fieldset {
+        background: @color-dark-surface;
+        border-color: @color-dark-border;
+    }
+
+    .frame-content legend,
+    .content legend {
+        color: @color-dark-font;
+    }
+
+    // ── MOBILE ─────────────────────────────────────────────────────────────────────────
+    @media screen and (max-width: 768px) {
+        #layout > div > .header {
+            background: darken(@color-dark-main, 25%);
+            backdrop-filter: none;
+
+            .header-title { color: #fff; }
+
+            a.button {
+                color: rgba(255, 255, 255, 0.85);
+                &:hover { background: rgba(255, 255, 255, 0.10); color: #fff; }
+            }
+        }
     }
 }
 

@@ -30,6 +30,7 @@
 	<roundcube:endif />
 	<!-- stratus skin: load our compiled overrides on top of elastic's CSS -->
 	<link rel="stylesheet" href="/styles/styles.min.css">
+	<script defer src="/js/calendar-formats.js"></script>
 	<script defer src="/js/calendar-overflow.js"></script>
 	<roundcube:if condition="env:action != 'print' && !config:devel_mode && config:dark_mode_support" />
 		<script>

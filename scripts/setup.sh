@@ -25,35 +25,14 @@ fi
 # ── 2. Create host directories for Docker volumes ───────────────────────────
 echo ""
 echo "📁 Ensuring host volume directories exist..."
-mkdir -p "$DOCKER_DIR/www" "$DOCKER_DIR/db/sqlite"
-echo "✅ Volume directories ready (docker/www, docker/db/sqlite)"
+mkdir -p "$DOCKER_DIR/db/sqlite" "$DOCKER_DIR/logs"
+echo "✅ Volume directories ready (docker/db/sqlite, docker/logs)"
 
-# ── 3. Pull official Roundcube image ────────────────────────────────────────
+# ── 3. Clone Roundcube + create symlinks ────────────────────────────────────
 echo ""
-echo "🐳 Pulling official Roundcube Docker image..."
-docker pull roundcube/roundcubemail:latest-apache
-echo "✅ Roundcube image ready"
+"$REPO_ROOT/scripts/clone-roundcube.sh"
 
-# ── 4. Extract elastic skin sources for host-side LESS compilation ──────────
-# Our styles.less imports elastic's LESS (for variable/mixin inheritance).
-# We extract just the elastic skin from the image so `npm run less:build`
-# works on the host without needing the full Roundcube source tree.
-# echo ""
-# ELASTIC_DIR="$REPO_ROOT/roundcubemail/skins/elastic"
-# if [ ! -f "$ELASTIC_DIR/styles/styles.less" ]; then
-#     echo "📦 Extracting elastic skin sources from Docker image..."
-#     mkdir -p "$REPO_ROOT/roundcubemail/skins"
-
-#     # Create a temporary container (don't start it) to copy files out
-#     TEMP_CONTAINER=$(docker create roundcube/roundcubemail:latest-apache /bin/true)
-#     docker cp "$TEMP_CONTAINER:/usr/src/roundcubemail/skins/elastic" "$ELASTIC_DIR"
-#     docker rm "$TEMP_CONTAINER" > /dev/null
-#     echo "✅ Elastic skin sources extracted for host LESS compilation"
-# else
-#     echo "✅ Elastic skin sources already present"
-# fi
-
-# ── 5. Install Node.js dev dependencies (for LESS compilation) ──────────────
+# ── 4. Install Node.js dev dependencies (for LESS compilation) ──────────────
 echo ""
 if [ ! -d "$REPO_ROOT/node_modules" ]; then
     echo "📦 Installing Node.js dependencies..."
@@ -62,6 +41,12 @@ if [ ! -d "$REPO_ROOT/node_modules" ]; then
 else
     echo "✅ Node.js dependencies already installed"
 fi
+
+# ── 5. Build Docker image (if not already built) ───────────────────────────
+echo ""
+echo "🐳 Building Roundcube Docker image..."
+cd "$DOCKER_DIR" && docker compose build
+echo "✅ Docker image ready"
 
 # ── Done ─────────────────────────────────────────────────────────────────────
 echo ""

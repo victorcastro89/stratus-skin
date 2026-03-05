@@ -1,0 +1,151 @@
+// stratus skin — Reusable LESS Mixins
+// All mixins are prefixed with `.mp-` per coding rules.
+// Import early in styles.less (after _variables, before component files).
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TEXT TRUNCATION
+// Single-line ellipsis truncation.
+// Usage: .mp-truncate(); — no parameters needed.
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-truncate() {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FLEX CENTER
+// Flex display with both-axis centering.
+// Usage: .mp-flex-center();
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-flex-center() {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FLEX ROW
+// Flex row with vertical centering (most common flex pattern).
+// Usage: .mp-flex-row(); — optionally .mp-flex-row(space-between);
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-flex-row(@justify: flex-start) {
+    display: flex;
+    align-items: center;
+    justify-content: @justify;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FOCUS RING
+// Consistent indigo focus ring for accessibility.
+// Usage: .mp-focus-ring();  — light mode
+//        .mp-focus-ring(@color-dark-main, 82%);  — dark mode
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-focus-ring(@color: @color-main; @fade: 85%) {
+    outline: none;
+    box-shadow: 0 0 0 3px fadeout(@color, @fade);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FROSTED GLASS
+// Backdrop-filter blur + translucent background.
+// Usage: .mp-frosted-glass();           — standard toolbar glass
+//        .mp-frosted-glass(@mp-glass-bg-strong, @mp-glass-blur-strong);  — login card
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-frosted-glass(@bg: @mp-glass-bg; @blur: @mp-glass-blur) {
+    background: @bg;
+    backdrop-filter: blur(@blur);
+    -webkit-backdrop-filter: blur(@blur);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FROSTED GLASS — DARK MODE VARIANT
+// Usage: .mp-frosted-glass-dark();
+//        .mp-frosted-glass-dark(@mp-glass-dark-bg-strong, @mp-glass-blur-strong);
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-frosted-glass-dark(@bg: @mp-glass-dark-bg; @blur: @mp-glass-blur) {
+    background: @bg;
+    backdrop-filter: blur(@blur);
+    -webkit-backdrop-filter: blur(@blur);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PILL SHAPE
+// Rounded pill badge / tag shape with standard padding.
+// Usage: .mp-pill-shape();               — default (12px radius)
+//        .mp-pill-shape(@mp-radius-2xl); — extra round
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-pill-shape(@radius: @mp-radius-pill) {
+    border-radius: @radius;
+    padding: 0.15em 0.55em;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TRANSITION
+// Standard ease transition over one or more CSS properties.
+// Usage: .mp-transition(background);
+//        .mp-transition(background @mp-transition-base, color @mp-transition-base);
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-transition(@props) {
+    transition: @props;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCROLLBAR
+// Ultra-thin 5px capsule scrollbar (light mode).
+// Usage: applied globally in widgets/common.less — or per-element override.
+//        .mp-scrollbar();
+//        .mp-scrollbar(@color-dark-scrollbar-thumb, @color-dark-scrollbar-track);
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-scrollbar(@thumb: @color-scrollbar-thumb; @track: @color-scrollbar-track) {
+    scrollbar-width: thin;
+    scrollbar-color: @thumb @track;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: @thumb;
+        border-radius: @mp-radius-pill;
+
+        &:hover {
+            background: fadeout(#6b7399, 30%);
+        }
+    }
+
+    &::-webkit-scrollbar-track {
+        background: @track;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CARD HOVER
+// Hover elevation — subtle shadow + translateY lift.
+// Used by: message list rows, calendar events, login button.
+// Usage: &:hover { .mp-card-hover(); }
+//        &:hover { .mp-card-hover(0 4px 14px rgba(0,0,0,.22), -1px); }
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-card-hover(
+    @shadow: 0 4px 16px rgba(26, 31, 54, 0.14);
+    @lift: -1px
+) {
+    box-shadow: @shadow;
+    transform: translateY(@lift);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CARD HOVER — DARK MODE VARIANT
+// Usage: html.dark-mode & { &:hover { .mp-card-hover-dark(); } }
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-card-hover-dark(
+    @shadow: 0 4px 14px rgba(0, 0, 0, 0.40);
+    @lift: -1px
+) {
+    box-shadow: @shadow;
+    transform: translateY(@lift);
+}

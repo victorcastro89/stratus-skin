@@ -1,0 +1,149 @@
+// stratus widgets — Editor
+// TinyMCE 5+ and legacy TinyMCE 4.x overrides
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TINYMCE EDITOR — proper content margin and styling
+// ═══════════════════════════════════════════════════════════════════════════════
+.tox.tox-tinymce {
+    border-radius: @mp-radius-lg;
+    border: 1px solid @color-input-border;
+    
+    &.focused,
+    &:focus-within {
+        border-color: @color-main;
+        .mp-focus-ring();
+    }
+}
+
+// Legacy TinyMCE 4.x
+.mce-tinymce {
+    border-radius: @mp-radius-lg;
+    border: 1px solid @color-input-border;
+    
+    &.mce-focused {
+        border-color: @color-main;
+        .mp-focus-ring();
+    }
+}
+
+// TinyMCE 5+ toolbar styling
+.tox-toolbar-overlord,
+.tox-toolbar__primary {
+    background: @color-layout-header-background;
+    border-bottom: 1px solid @color-layout-border;
+}
+
+// TinyMCE 5+ buttons
+.tox-tbtn {
+    border-radius: @mp-radius-sm;
+    transition: background @mp-transition-fast;
+    
+    &:hover:not(.tox-tbtn--disabled) {
+        background: fadeout(@color-main, 92%) !important;
+    }
+}
+
+// TinyMCE 5+ edit area needs padding via parent container
+.tox-edit-area {
+    padding: @mp-space-md;
+}
+
+// Legacy TinyMCE 4.x
+.mce-toolbar-grp {
+    background: @color-layout-header-background;
+    border-bottom: 1px solid @color-layout-border;
+    padding: @mp-space-xs;
+}
+
+.mce-btn {
+    border-radius: @mp-radius-sm;
+    transition: background @mp-transition-fast;
+    
+    &:hover {
+        background: fadeout(@color-main, 92%);
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DARK MODE — TinyMCE outer chrome
+// The editor content area (iframe) is handled by initTinyMCEDarkMode() in
+// stratus_helper.js which injects a stylesheet directly into the iframe document.
+// ═══════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    .tox.tox-tinymce {
+        border-color: @color-dark-border;
+
+        // Toolbar area
+        .tox-toolbar-overlord,
+        .tox-toolbar__primary {
+            background-color: @color-dark-surface-raised;
+            border-bottom-color: @color-dark-border;
+        }
+
+        // Separator lines between toolbar button groups
+        .tox-toolbar__group {
+            border-right-color: @color-dark-border;
+        }
+
+        // Toolbar icon buttons
+        .tox-tbtn {
+            color: @color-dark-font;
+
+            svg {
+                fill: @color-dark-font;
+            }
+
+            &:hover:not(.tox-tbtn--disabled) {
+                background: fadeout(@color-dark-main, 85%) !important;
+            }
+
+            &.tox-tbtn--enabled,
+            &.tox-tbtn--enabled:hover {
+                background: fadeout(@color-dark-main, 75%) !important;
+            }
+        }
+
+        // Menu-style toolbar buttons (e.g. Format, Insert dropdowns)
+        .tox-mbtn {
+            color: @color-dark-font;
+        }
+
+        // Status bar (word count / resize handle)
+        .tox-statusbar {
+            background-color: @color-dark-surface-raised;
+            border-top-color: @color-dark-border;
+            color: @color-dark-font-secondary;
+        }
+
+        .tox-statusbar__path-item,
+        .tox-statusbar__wordcount {
+            color: @color-dark-font-secondary;
+        }
+
+        // Ensure the edit-area iframe wrapper has the dark bg so there is no
+        // white flash while the injected stylesheet loads
+        .tox-edit-area {
+            background: @color-dark-surface;
+        }
+    }
+
+    // Legacy TinyMCE 4.x outer chrome
+    .mce-tinymce {
+        border-color: @color-dark-border;
+    }
+
+    .mce-toolbar-grp {
+        background: @color-dark-surface-raised;
+        border-bottom-color: @color-dark-border;
+    }
+
+    .mce-btn {
+        color: @color-dark-font;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 85%);
+        }
+    }
+}

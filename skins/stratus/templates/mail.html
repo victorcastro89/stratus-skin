@@ -44,6 +44,7 @@
 			<roundcube:endif />
 			<roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
 			<roundcube:container name="listcontrols" id="listcontrols" />
+			<roundcube:container name="toolbar" id="convtoolbar" />
 		</div>
 		<roundcube:button command="checkmail" type="link" class="button icon toolbar-button refresh"
 			label="refresh" title="checkmail" innerclass="inner" />
@@ -123,8 +124,13 @@
 			<tbody></tbody>
 		</table>
 		<div id="conv-empty" class="conv-empty">
-			<span class="conv-empty-icon"><i class="fa fa-comments" aria-hidden="true"></i></span>
+			<span class="conv-empty-icon"><span class="conv-icon conv-icon-comments" aria-hidden="true"></span></span>
 			<span class="conv-empty-text"><roundcube:label name="conversation_mode.no_conversations" /></span>
+		</div>
+		<div id="conv-pagination" class="conv-pagination" style="display:none">
+			<a id="conv-prev-btn" class="conv-page-btn conv-prev" href="#">&lsaquo; <roundcube:label name="previouspage" /></a>
+			<span id="conv-page-info" class="conv-page-info"></span>
+			<a id="conv-next-btn" class="conv-page-btn conv-next" href="#"><roundcube:label name="nextpage" /> &rsaquo;</a>
 		</div>
 	</div>
 	<roundcube:endif />
@@ -156,7 +162,7 @@
 	<div id="conv-detail" class="conv-detail-wrapper" style="display:none">
 		<div class="conv-detail-header">
 			<a id="conv-back-btn" class="conv-back-btn button" href="#">
-				<i class="fa fa-arrow-left" aria-hidden="true"></i>
+
 				<span class="inner"><roundcube:label name="conversation_mode.back_to_list" /></span>
 			</a>
 			<h2 id="conv-detail-subject" class="conv-detail-subject"></h2>

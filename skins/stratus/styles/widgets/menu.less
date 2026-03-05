@@ -1,0 +1,57 @@
+// stratus widgets — Menu
+// Navigation tabs
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TABS — clean underline style
+// ═══════════════════════════════════════════════════════════════════════════════
+.nav-tabs {
+    border-bottom: @mp-tabs-border-width solid @color-layout-border;
+
+    .nav-item .nav-link {
+        border: none;
+        border-bottom: @mp-tabs-border-width solid transparent;
+        margin-bottom: @mp-tabs-link-margin-compensation;
+        padding: @mp-space-sm @mp-space-lg;
+        font-weight: @mp-font-weight-medium;
+        color: @color-font-secondary;
+        transition: color @mp-transition-base, border-color @mp-transition-base;
+        border-radius: @mp-tabs-link-border-radius;
+
+        &:hover {
+            color: @color-main;
+            border-bottom-color: fadeout(@color-main, @mp-tabs-hover-underline-fade);
+        }
+
+        &.active {
+            color: @color-main;
+            border-bottom-color: @color-main;
+            background: transparent;
+            font-weight: @mp-font-weight-semibold;
+        }
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    // ── TABS ──────────────────────────────────────────────────────────────────────────
+    .nav-tabs {
+        border-bottom-color: @color-dark-border;
+
+        .nav-item .nav-link {
+            color: @color-dark-font-secondary;
+
+            &:hover {
+                color: @color-dark-main;
+                border-bottom-color: fadeout(@color-dark-main, @mp-tabs-hover-underline-fade);
+            }
+
+            &.active {
+                color: @color-dark-main-light;
+                border-bottom-color: @color-dark-main;
+            }
+        }
+    }
+}

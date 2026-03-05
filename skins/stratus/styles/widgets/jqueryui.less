@@ -1,0 +1,66 @@
+// stratus widgets — jQuery UI
+// jQuery UI widget overrides (autocomplete, datepicker chrome, etc.)
+// Note: datepicker header form-element overrides live in widgets/forms.less
+//       since they are about input appearance, not jQuery UI structure.
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+// Root cause: jQuery UI theme CSS sets .ui-widget-header .ui-state-default
+// { background: #f6f6f6; color: #454545 }. The prev/next arrow buttons carry
+// .ui-state-default so they get a light-gray bg. Elastic's dark.less fixes
+// `color` but never resets `background`, leaving light icons on a light box.
+// Fix: reset background + border to transparent so arrows show on dark header.
+html.dark-mode {
+
+    .ui-datepicker {
+        background-color: @color-dark-surface;
+        border-color: @color-dark-border;
+
+        .ui-datepicker-header {
+            background-color: @color-dark-surface-raised;
+            border-bottom-color: @color-dark-border;
+            color: @color-dark-font;
+        }
+
+        .ui-datepicker-title {
+            color: @color-dark-font;
+
+            select {
+                @color-arrow: escape(~"@{color-dark-input}");
+                background: @color-dark-surface url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+                color: @color-dark-font;
+                border-color: @color-dark-input-border;
+                transition: none; // prevent white→dark flash when dark-mode class is applied
+            }
+        }
+
+        // Arrows: strip jQuery UI's #f6f6f6 bg so the icon is visible on dark header
+        .ui-datepicker-prev,
+        .ui-datepicker-next {
+            background: transparent;
+            border-color: transparent;
+            color: @color-dark-font;
+            transition: none; // prevent 150ms background-color transition flash on re-render
+
+            &:hover {
+                background: fadeout(@color-dark-main, 85%);
+                border-color: transparent;
+                color: @color-dark-font;
+            }
+        }
+
+        // Day number cells
+        .ui-state-default,
+        &.ui-widget-content .ui-state-default {
+            background: transparent;
+            border-color: transparent;
+            color: @color-dark-font;
+        }
+
+        // Week day headers
+        th {
+            color: @color-dark-font-secondary;
+        }
+    }
+}

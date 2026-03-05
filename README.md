@@ -74,6 +74,33 @@ Stratus extends elastic via `"extends": "elastic"` in `meta.json`. This means:
 2. **Styles** — Our `styles.less` imports elastic's full stylesheet first, then layers our variable overrides and custom partials on top.
 3. **Dark mode** — Uses elastic's native `html.dark-mode` class + `@color-dark-*` variables. Our `_dark.less` adds supplemental rules.
 
+## Plugin Dependency Map
+
+- **`stratus_helper` → `stratus` skin (hard dependency)**
+	- The plugin exits early unless active skin is `stratus`.
+	- It injects runtime CSS variables (`--stratus-primary`, `--stratus-font-family`) used by Stratus styles.
+- **`conversation_mode` ↔ `stratus` skin (integration dependency in this repo)**
+	- Plugin logic is skin-agnostic (ships default + elastic CSS).
+	- In this workspace, the Stratus `mail.html` override provides conversation containers (`#conv-list-content`, `#conv-detail`) used by `conversation_mode.js`.
+	- Without this template integration, full Stratus conversation UI is not available.
+- **`stratus_helper` ↔ `conversation_mode`**
+	- No direct dependency. They can run independently.
+
+## Database Support (Plugin Level)
+
+- **`stratus_helper`**
+	- No plugin-specific tables.
+	- Stores user preferences through Roundcube preference storage.
+- **`conversation_mode`**
+	- No plugin-specific tables.
+	- Builds conversation data from IMAP headers and caches in PHP session (`$_SESSION`).
+
+### Supported DB Engines
+
+Both plugins rely on Roundcube core APIs and do not require their own schema, so they work with any DB backend supported by Roundcube (SQLite, MySQL/MariaDB, PostgreSQL).
+
+Dev environment default in this repo: **SQLite** (`db_dsnw = sqlite:////var/roundcube/db/sqlite.db`).
+
 
 ## AI-Assisted Development
 

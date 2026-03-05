@@ -35,11 +35,25 @@ class conversation_mode extends rcube_plugin
     {
         $this->rcmail = rcmail::get_instance();
 
+        $skin = (string) $this->rcmail->config->get('skin', 'elastic');
+        if (!$this->is_supported_skin($skin)) {
+            rcmail::write_log('errors', sprintf(
+                'conversation_mode: plugin disabled on unsupported skin "%s" (supported: stratus, elastic)',
+                $skin
+            ));
+            return;
+        }
+
         $this->load_config('config.inc.php.dist');  // defaults
         $this->load_config();                        // user overrides (if file exists)
         $this->add_texts('localization/', true);
 
         $this->require_files();
+
+        // Ensure threading headers are fetched from IMAP so the grouper
+        // can link messages into conversations (MESSAGE-ID, IN-REPLY-TO,
+        // REFERENCES are not in Roundcube's default fetch set).
+        $this->add_hook('storage_init', [$this, 'hook_storage_init']);
 
         if ($this->rcmail->task === 'mail') {
             $this->init_mail();
@@ -92,17 +106,17 @@ class conversation_mode extends rcube_plugin
         $this->add_hook('messages_list', [$this, 'hook_messages_list']);
         $this->add_hook('template_object_mailboxlist', [$this, 'hook_inject_toggle']);
 
-        // Register toolbar button for mode toggle
-        // $this->add_button([
-        //     'type'       => 'link',
-        //     'label'      => 'conversation_mode.toggle_conversations',
-        //     'command'    => 'plugin.conv.toggle',
-        //     'class'      => 'button conv-toggle',
-        //     'classact'   => 'button conv-toggle active',
-        //     'innerclass' => 'inner',
-        //     'title'      => 'conversation_mode.toggle_conversations',
-        //     'domain'     => $this->ID,
-        // ], 'toolbar');
+        // Register toolbar button for mode toggle (works across skins)
+        $this->add_button([
+            'type'       => 'link',
+            'label'      => 'conversation_mode.toggle_conversations',
+            'command'    => 'plugin.conv.toggle',
+            'class'      => 'button conv-toggle',
+            'classact'   => 'button conv-toggle active',
+            'innerclass' => 'inner',
+            'title'      => 'conversation_mode.toggle_conversations',
+            'domain'     => $this->ID,
+        ], 'toolbar');
     }
 
     // ──────────────────────────────────────────────
@@ -269,6 +283,23 @@ class conversation_mode extends rcube_plugin
     }
 
     // ──────────────────────────────────────────────
+    //  Hook: storage_init
+    // ──────────────────────────────────────────────
+
+    /**
+     * Add MESSAGE-ID, IN-REPLY-TO and REFERENCES to the IMAP FETCH
+     * header list so the conversation grouper can link messages.
+     */
+    public function hook_storage_init($args)
+    {
+        $extra = 'MESSAGE-ID IN-REPLY-TO REFERENCES';
+        $current = $args['fetch_headers'] ?? '';
+        $args['fetch_headers'] = trim($current . ' ' . $extra);
+
+        return $args;
+    }
+
+    // ──────────────────────────────────────────────
     //  Helpers
     // ──────────────────────────────────────────────
 
@@ -293,5 +324,13 @@ class conversation_mode extends rcube_plugin
             $this->service = new conversation_mode_service($this->rcmail);
         }
         return $this->service;
+    }
+
+    /**
+     * Allow only skins that are known compatible with this plugin.
+     */
+    private function is_supported_skin(string $skin): bool
+    {
+        return in_array($skin, ['stratus', 'elastic'], true);
     }
 }

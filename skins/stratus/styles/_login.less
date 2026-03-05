@@ -69,9 +69,7 @@
     #login-form {
         position: static;   // reset elastic's position:relative + top:20vh
         top: auto;
-        background: @mp-glass-bg;
-        backdrop-filter: blur(@mp-glass-blur-strong);
-        -webkit-backdrop-filter: blur(@mp-glass-blur-strong);
+        .mp-frosted-glass(@mp-glass-bg, @mp-glass-blur-strong);
         border: 1px solid @mp-glass-border;
         border-radius: @mp-radius-2xl;
         box-shadow: @mp-shadow-2xl,
@@ -215,9 +213,7 @@
         text-align: center;
 
         & > div {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            .mp-frosted-glass(rgba(255,255,255,0.06), 8px);
             border-radius: @mp-radius-lg;
             padding: @mp-space-md @mp-space-lg;
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -236,9 +232,7 @@
 
     // ─── Login addon area ────────────────────────────────────────────────────
     #login-addon {
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        background: rgba(255, 255, 255, 0.06);
+        .mp-frosted-glass(rgba(255,255,255,0.06), 8px);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: @mp-radius-lg;
         color: rgba(255, 255, 255, 0.7);
@@ -262,9 +256,7 @@ html.dark-mode .task-login {
     }
 
     #login-form {
-        background: @mp-glass-dark-bg;
-        backdrop-filter: blur(@mp-glass-blur-strong);
-        -webkit-backdrop-filter: blur(@mp-glass-blur-strong);
+        .mp-frosted-glass-dark(@mp-glass-dark-bg, @mp-glass-blur-strong);
         border-color: @mp-glass-dark-border;
         box-shadow: @mp-shadow-dark-xl,
                     inset 0 1px 0 rgba(255, 255, 255, 0.05);

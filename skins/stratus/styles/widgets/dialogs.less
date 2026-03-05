@@ -1,0 +1,137 @@
+// stratus widgets — Dialogs
+// Modals, overlay backdrop, popovers, popup menus
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DIALOGS & POPOVERS — glassmorphic elevated cards
+// ═══════════════════════════════════════════════════════════════════════════════
+.ui-dialog {
+    border-radius: @mp-radius-xl;
+    box-shadow: @mp-shadow-2xl;
+    border: 1px solid fadeout(@color-layout-border, 30%);
+    // NOTE: Do NOT add overflow:hidden — it clips resize handles.
+    // Do NOT add padding — .ui-dialog uses box-sizing:content-box (elastic override).
+
+    .ui-dialog-titlebar {
+        border-radius: @mp-radius-xl @mp-radius-xl 0 0;
+        // NOTE: No custom padding — titlebar has fixed height:58px with border-box.
+        // Extra padding squishes content (line-height:58px title overflows).
+        font-weight: @mp-font-weight-semibold;
+        background: @color-layout-header-background;
+        border-bottom: 1px solid @color-layout-border;
+
+        .ui-dialog-title {
+            font-size: @mp-font-size-md;
+        }
+
+        // Close button
+        .ui-dialog-titlebar-close {
+            border-radius: @mp-radius-circle;
+            transition: background @mp-transition-base;
+
+            &:hover {
+                background: fadeout(@color-font, 90%);
+            }
+        }
+    }
+
+    // NOTE: No custom padding on .ui-dialog-content — it has box-sizing:content-box
+    // (elastic override) and jQuery UI calculates height based on non-content area.
+    // Extra padding breaks height calculations and mispositions inner flex layout.
+
+    .ui-dialog-buttonpane {
+        border-top: 1px solid @color-layout-border;
+
+        .btn {
+            border-radius: @mp-radius-md;
+        }
+    }
+}
+
+// Backdrop overlay
+.ui-widget-overlay {
+    background: fadeout(@color-black, 50%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+// Popovers
+.popover {
+    border-radius: @mp-radius-lg;
+    box-shadow: @mp-shadow-xl;
+    border: 1px solid fadeout(@color-layout-border, 20%);
+
+    .popover-header {
+        border-radius: @mp-radius-lg @mp-radius-lg 0 0;
+        font-weight: @mp-font-weight-semibold;
+        background: @color-layout-header-background;
+        border-bottom: 1px solid @color-layout-border;
+    }
+
+    .popover-body {
+        padding: @mp-space-sm 0;
+    }
+}
+
+// Popup menus
+.popover .listing {
+    li {
+        border-bottom: none;
+
+        a {
+            border-radius: @mp-radius-sm;
+            margin: 1px @mp-space-xs;
+            padding: @mp-space-xs @mp-space-md;
+            transition: background @mp-transition-fast, color @mp-transition-fast;
+
+            &:hover {
+                background: fadeout(@color-main, 90%);
+                color: @color-main;
+            }
+        }
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    // ── DIALOGS ───────────────────────────────────────────────────────────────────────
+    .ui-dialog {
+        background: @color-dark-surface;
+        border-color: @color-dark-border;
+        box-shadow: @mp-shadow-dark-xl;
+
+        .ui-dialog-titlebar {
+            background: @color-dark-surface-raised;
+            border-bottom-color: @color-dark-border;
+            color: @color-dark-font;
+        }
+
+        .ui-dialog-buttonpane {
+            border-top-color: @color-dark-border;
+        }
+    }
+
+    .ui-widget-overlay {
+        background: fadeout(@color-dark-background, 35%);
+    }
+
+    // ── POPOVERS ──────────────────────────────────────────────────────────────────────
+    .popover {
+        background: @color-dark-popover-background;
+        border-color: @color-dark-popover-border;
+        box-shadow: @mp-shadow-dark-xl;
+
+        .popover-header {
+            background: @color-dark-surface-raised;
+            border-bottom-color: @color-dark-border;
+            color: @color-dark-font;
+        }
+    }
+
+    .popover .listing li a:hover {
+        background: fadeout(@color-dark-main, 88%);
+        color: @color-dark-main-light;
+    }
+}

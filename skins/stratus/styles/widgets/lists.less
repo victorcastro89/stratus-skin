@@ -1,0 +1,323 @@
+// stratus widgets — Lists
+// Message list, folder list, badges, unread counters, loading spinner, conversation toggle
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIL MESSAGE LIST — card-hover, indigo accents, generous spacing
+// ═══════════════════════════════════════════════════════════════════════════════
+.listing {
+    // Hair-thin row separators
+    tbody td,
+    li {
+        border-bottom: 1px solid fadeout(@color-list-border, 40%);
+        transition: background @mp-transition-fast, box-shadow @mp-transition-smooth;
+    }
+
+    // Hover — gentle elevation
+    tbody tr:hover > td,
+    li:hover {
+        background: fadeout(@color-main, 96%);
+    }
+
+    // Selected — soft indigo wash
+    li.selected,
+    tr.selected td {
+        background: @color-list-selected-background;
+    }
+
+    // Focus indicator — indigo bar
+    li > a,
+    tbody tr > td:first-child,
+    &:not(.withselection) tbody tr > td.selection + td {
+        border-left: 3px solid transparent;
+        transition: border-color @mp-transition-fast, background @mp-transition-fast;
+    }
+}
+
+// Non-touch focus
+html:not(.touch) {
+    .listing {
+        li > a:focus,
+        &.focus tbody tr.focused > td:first-child,
+        &.focus:not(.withselection) tbody tr.focused > td.selection + td {
+            border-left: 3px solid @color-main;
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MESSAGE LIST LOADING SPINNER
+// Shown while folder contents load: tbody is empty + .listing-info has 'hidden'
+// CSS :has() — Chrome 105+, Safari 15.4+, Firefox 121+
+// ═══════════════════════════════════════════════════════════════════════════════
+#messagelist-content {
+    position: relative;
+
+    &:has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid fadeout(@color-main, 80%);
+        border-top-color: @color-main;
+        animation: mp-spin 0.75s linear infinite;
+        z-index: 5;
+        pointer-events: none;
+    }
+}
+
+// Message list specifics
+#messagelist,
+.messagelist {
+    tr {
+        transition: background @mp-transition-fast, box-shadow @mp-transition-smooth;
+
+        // Hover — subtle card lift
+        &:hover {
+            background: fadeout(@color-main, 96%);
+            box-shadow: @mp-shadow-xs;
+        }
+
+        // Unread — bold + indigo left accent
+        &.unread td {
+            font-weight: @mp-font-weight-semibold;
+        }
+        &.unread td:first-child,
+        &.unread:not(.withselection) td.selection + td {
+            border-left: 3px solid @color-main;
+        }
+
+        // Selected
+        &.selected td {
+            background: @color-list-selected-background;
+            border-left-color: @color-main;
+        }
+
+        // Flagged — subtle warm indicator
+        &.flagged td.flag {
+            &:before {
+                color: @mp-color-amber;
+                text-shadow: 0 0 8px fadeout(@mp-color-amber, 60%);
+            }
+        }
+
+        // Date/size columns — secondary text
+        td.date,
+        td.size {
+            color: @color-font-secondary;
+            font-size: @mp-font-size-sm;
+        }
+
+        // Subject
+        td.subject {
+            font-size: @mp-font-size-base;
+
+            span.subject {
+                font-weight: @mp-font-weight-medium;
+            }
+
+            // Fix: always show date, never show size in list rows.
+            // Elastic's default swaps date→size on hover — confusing in stratus layout.
+            span.size {
+                display: none !important;
+            }
+
+            // Keep date visible on hover.
+            // Elastic's .messagelist tr:hover span.date { display: none } hides it —
+            // override with !important so the date is always shown.
+            span.date {
+                display: block !important;
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONVERSATION MODE TOGGLE — icon + text toolbar button
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Add FA fa-comments icon to the Conversations toggle (it has no icon by default).
+// The elastic toolbar icon pattern uses ::before + font-family: 'Icons'.
+.toolbar a.button.conv-toggle::before,
+.menu.toolbar a.button.conv-toggle::before {
+    content: "\f086"; // fa-comments
+    font-family: 'Icons';
+    font-weight: 900;
+    font-style: normal;
+    display: inline-block;
+    margin-right: 0.25rem;
+}
+
+// Conversations toggle in the content/reading-pane toolbar is a duplicate —
+// it belongs only in the list toolbar. Hide it in the message content pane.
+#layout-content .toolbar a.button.conv-toggle,
+#layout-content #toolbar-menu a.button.conv-toggle {
+    display: none !important;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FOLDER LIST — pill selections, clean hierarchy
+// ═══════════════════════════════════════════════════════════════════════════════
+.listing.folderlist,
+#mailboxlist {
+    li {
+        border-bottom: none;
+    }
+
+    li > a {
+        border-radius: 0 @mp-radius-pill @mp-radius-pill 0;
+        margin-right: @mp-space-sm;
+        padding: @mp-space-xs @mp-space-md;
+        transition: background @mp-transition-base, color @mp-transition-base;
+    }
+
+    // Selected folder — pill shape (Gmail-style, rounded right)
+    li.selected > a {
+        background: fadeout(@color-main, 88%);
+        color: @color-main;
+        font-weight: @mp-font-weight-medium;
+    }
+
+    // Hover
+    li > a:hover {
+        background: fadeout(@color-main, 94%);
+    }
+
+    // Nested depth styling
+    ul {
+        li > a {
+            padding-left: @mp-space-xl;
+        }
+
+        ul li > a {
+            padding-left: @mp-space-2xl;
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BADGES / UNREAD COUNTERS — capsule pills
+// ═══════════════════════════════════════════════════════════════════════════════
+.unreadcount,
+.badge {
+    background: @color-list-badge-background;
+    color: @color-list-badge;
+    border-radius: @mp-radius-pill;
+    font-size: @mp-font-size-xs;
+    font-weight: @mp-font-weight-semibold;
+    padding: 1px 8px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.4;
+    box-shadow: 0 1px 3px fadeout(@color-main, 65%);
+}
+
+// Fix: elastic's .folderlist li.mailbox .unreadcount has higher specificity (3 classes)
+// and sets border-radius: 0.4em (~4px) — override it with our pill shape.
+.folderlist li.mailbox .unreadcount {
+    border-radius: @mp-radius-pill;
+}
+
+// Recent/active badges — glow
+.recent .unreadcount {
+    box-shadow: 0 0 8px fadeout(@color-main, 55%);
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    // ── LISTINGS ──────────────────────────────────────────────────────────────────────
+    .listing {
+        tbody td,
+        li {
+            border-bottom-color: fadeout(@color-dark-list-border, 50%);
+        }
+
+        tbody tr:hover > td,
+        li:hover {
+            background: fadeout(@color-dark-main, 94%);
+        }
+
+        li.selected,
+        tr.selected td {
+            background: @color-dark-list-selected-background;
+        }
+    }
+
+    #messagelist,
+    .messagelist {
+        tr:hover {
+            background: fadeout(@color-dark-main, 94%);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        tr.unread td:first-child,
+        tr.unread:not(.withselection) td.selection + td {
+            border-left-color: @color-dark-main;
+        }
+
+        tr.selected td {
+            background: @color-dark-list-selected-background;
+        }
+
+        tr.flagged td.flag:before {
+            color: @mp-color-amber;
+            text-shadow: 0 0 8px fadeout(@mp-color-amber, 50%);
+        }
+
+        td.date,
+        td.size {
+            color: @color-dark-font-secondary;
+        }
+    }
+
+    // Message list loading spinner — dark variant
+    #messagelist-content:has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
+        border-color: fadeout(@color-dark-main, 80%);
+        border-top-color: @color-dark-main;
+    }
+
+    // ── FOLDER LIST ───────────────────────────────────────────────────────────────────
+    .listing.folderlist li.selected > a,
+    #mailboxlist li.selected > a {
+        background: fadeout(@color-dark-main, 82%);
+        color: @color-dark-main-light;
+    }
+
+    .listing.folderlist li > a:hover,
+    #mailboxlist li > a:hover {
+        background: fadeout(@color-dark-main, 92%);
+    }
+
+    // ── BADGES ─────────────────────────────────────────────────────────────────────────
+    .unreadcount,
+    .badge {
+        background: @color-dark-list-badge-background;
+        color: @color-dark-list-badge;
+        box-shadow: 0 0 8px fadeout(@color-dark-main, 60%);
+    }
+
+    // Fix: elastic's .folderlist li.mailbox .unreadcount has higher specificity
+    // and its background/border-radius rules apply in dark mode too.
+    .folderlist li.mailbox .unreadcount {
+        border-radius: @mp-radius-pill;
+        background: @color-dark-list-badge-background;
+        color: @color-dark-list-badge;
+    }
+
+    // ── HOVER MENU ───────────────────────────────────────────────────────────────────
+    .listing-hover-menu {
+        .mp-frosted-glass-dark(@mp-glass-dark-bg-strong);
+        box-shadow: @mp-shadow-dark-md;
+        border: 1px solid @mp-glass-dark-border;
+
+        a:hover {
+            background: fadeout(@color-dark-main, 85%);
+        }
+    }
+}

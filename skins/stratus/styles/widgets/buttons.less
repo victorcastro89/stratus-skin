@@ -1,0 +1,128 @@
+// stratus widgets — Buttons
+// Gradient primary, ghost secondary, danger, toolbar icons, FAB
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BUTTONS — rounded with gradient primary & ghost secondary
+// ═══════════════════════════════════════════════════════════════════════════════
+.btn-primary, 
+a.btn-primary,
+button.btn-primary {
+    background: @color-main-gradient;
+    border: none;
+    color: @color-btn-primary;
+    border-radius: @mp-radius-md;
+    font-weight: @mp-font-weight-medium;
+    letter-spacing: @mp-letter-spacing-wide;
+    padding: 0.5rem 1.25rem;
+    box-shadow: 0 2px 8px fadeout(@color-main, 70%);
+
+    &:hover,
+    &:focus {
+        background: @color-main-gradient-hover;
+        box-shadow: 0 4px 16px fadeout(@color-main, 55%);
+        transform: translateY(-1px);
+        color: @color-btn-primary;
+    }
+
+    &:active { 
+        transform: translateY(0);
+        box-shadow: 0 1px 4px fadeout(@color-main, 65%);
+    }
+}
+
+.btn-secondary,
+a.btn-secondary,
+button.btn-secondary {
+    background: transparent;
+    border: 1px solid @color-border;
+    color: @color-font;
+    border-radius: @mp-radius-md;
+    font-weight: @mp-font-weight-medium;
+
+    &:hover,
+    &:focus {
+        background: fadeout(@color-main, 94%);
+        border-color: fadeout(@color-main, 60%);
+        color: @color-main;
+    }
+}
+
+.btn-danger,
+a.btn-danger {
+    border-radius: @mp-radius-md;
+
+    &:hover {
+        box-shadow: 0 2px 8px fadeout(#ff5552, 60%);
+    }
+}
+
+// Icon-only buttons in toolbars → circular
+.toolbar a.button,
+a.button.icon:not(.btn) {
+    border-radius: @mp-radius-md;
+
+    &.disabled {
+        opacity: 0.35;
+    }
+}
+
+// Floating action button — elevated circle
+.floating-action-buttons {
+    a.button {
+        box-shadow: @mp-shadow-lg, @mp-shadow-glow-sm;
+        border-radius: @mp-radius-circle;
+        transition: box-shadow @mp-transition-smooth, transform @mp-transition-fast;
+
+        &:hover {
+            box-shadow: @mp-shadow-xl, @mp-shadow-glow;
+            transform: scale(1.05);
+        }
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    // ── TOOLBAR BUTTONS ──────────────────────────────────────────────────────────────
+    .toolbar a.button,
+    #toolbar a.button {
+        color: @color-dark-font;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 88%);
+            color: @color-dark-main;
+        }
+
+        &:active,
+        &.active {
+            background: fadeout(@color-dark-main, 82%);
+            color: @color-dark-main;
+        }
+
+        &:hover:before {
+            color: @color-dark-main;
+        }
+    }
+
+    // ── BUTTONS ──────────────────────────────────────────────────────────────────────
+    .btn-primary {
+        box-shadow: 0 2px 8px fadeout(@color-dark-main, 60%);
+
+        &:hover {
+            box-shadow: 0 4px 16px fadeout(@color-dark-main, 45%);
+        }
+    }
+
+    .btn-secondary {
+        border-color: @color-dark-border;
+        color: @color-dark-font;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 90%);
+            border-color: fadeout(@color-dark-main, 55%);
+            color: @color-dark-main-light;
+        }
+    }
+}

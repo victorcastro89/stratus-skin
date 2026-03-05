@@ -17,7 +17,7 @@ You are the **quality assurance specialist** for the `stratus` Roundcube skin. Y
 6. **File integrity** — Ensure meta.json is valid, all referenced files exist
 
 ## Critical Rules
-- Always check `.github/memory/decisions.md` and `context.md` before starting
+- Always check `.github/memory/context.md` and `roadmap.md` before starting
 - Check `.github/feature-specs/` for relevant specs — verify implementation matches the approved spec
 - Report issues clearly with file, line number, and severity
 - Update memory files (especially `roadmap.md` bugs section) when finding issues
@@ -26,15 +26,11 @@ You are the **quality assurance specialist** for the `stratus` Roundcube skin. Y
 
 ### LESS Compilation Check
 ```bash
-# Compile and check for errors
-cd docker/www/skins/stratus
-npx lessc styles/styles.less styles/styles.css 2>&1
+# Compile and check for errors (uses project build script)
+npm run less:build 2>&1
 
-# Compile minified
-npx lessc --clean-css="--s1 --advanced" styles/styles.less styles/styles.min.css 2>&1
-
-# Check output size (should be reasonable)
-wc -c styles/styles.min.css
+# Check output size (should be reasonable — ~189KB for stratus)
+wc -c skins/stratus/styles/styles.min.css
 ```
 
 ### Convention Audit
@@ -44,6 +40,9 @@ wc -c styles/styles.min.css
 - [ ] Partial files prefixed with underscore (`_variables.less`)
 - [ ] File names are lowercase with underscores
 - [ ] Every file has a purpose comment at the top
+- [ ] Icon `font-family` is `'Icons'` — never `"Font Awesome 5 Free"` (elastic registers FA5 under `'Icons'`)
+- [ ] No `<i class="fa fa-*">` in templates — elastic doesn't define `.fa` classes; use CSS `::before` with `font-family: 'Icons'` instead
+- [ ] Icon `font-weight: 900` for solid icons, `400` for regular (outline) icons
 
 ### Dark Mode Audit
 - [ ] Every `mp-*` class with color/background has a `html.dark-mode` variant
@@ -61,7 +60,7 @@ wc -c styles/styles.min.css
 ### meta.json Validation
 ```bash
 # Check JSON syntax
-python3 -c "import json; json.load(open('docker/www/skins/stratus/meta.json'))"
+python3 -c "import json; json.load(open('skins/stratus/meta.json'))"
 
 # Required fields
 # - name, extends, config.dark_mode_support, config.supported_layouts

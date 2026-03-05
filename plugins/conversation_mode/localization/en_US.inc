@@ -36,6 +36,10 @@ $labels['page_of']               = 'Page $current of $total';
 $labels['loading_conversations'] = 'Loading conversations…';
 $labels['refreshing']            = 'Refreshing…';
 
+// Expand/Collapse
+$labels['expand_conversation']   = 'Expand conversation';
+$labels['collapse_conversation'] = 'Collapse conversation';
+
 // Actions
 $labels['archive']               = 'Archive';
 $labels['nosubject']             = '(no subject)';

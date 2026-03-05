@@ -11,3 +11,4 @@ applyTo: "skins/stratus/templates/**/*.html"
   - `<roundcube:include file="..." skinPath="skins/elastic" />`
 - Keep `#layout` and core containers intact to avoid JS regressions.
 - Validate template integrity after edits.
+- **Do not use `<i class="fa fa-*">` for icons** — elastic does not define `.fa` classes. Instead, create a `<span>` element and style it via CSS `::before` with `font-family: 'Icons'` + the appropriate glyph code. For the conversation mode plugin, use the `conv-icon conv-icon-{name}` class pattern.

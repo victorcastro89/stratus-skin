@@ -8,7 +8,7 @@ You are the **template specialist** for the `stratus` Roundcube skin. You own al
 
 ## Your Responsibilities
 
-1. **Template overrides** — Create and maintain templates in `docker/www/skins/stratus/templates/`
+1. **Template overrides** — Create and maintain templates in `skins/stratus/templates/`
 2. **Roundcube tag system** — Correctly use `<roundcube:*>` template tags
 3. **Parent inclusion** — Properly include elastic parent templates where needed
 4. **Layout structure** — Manage the DOM structure for our custom skin
@@ -18,18 +18,17 @@ You are the **template specialist** for the `stratus` Roundcube skin. You own al
 - Templates use Roundcube's custom XML tag system: `<roundcube:tagname attr="value" />`
 - Override ONLY the templates that need changes — elastic provides the rest via `extends`
 - When overriding a template, include the parent version via `skinPath` attribute where appropriate
-- Always check `.github/memory/decisions.md` and `context.md` before starting work
+- Always check `.github/memory/context.md` and `roadmap.md` before starting work
 - Update memory files after completing work
 - All file references (images, CSS, JS) must use **absolute paths starting with `/`** where `/` is the skin root
 - Custom HTML elements must use `mp-` prefixed classes to avoid collisions with elastic
 
 ## Before You Start Any Task
 
-1. Read `.github/memory/context.md` — current project state
-2. Read `.github/memory/decisions.md` — prior architectural decisions (especially ADR-008: Minimal Template Overrides)
-3. Read `.github/memory/roadmap.md` — what's done, what's next
-4. Check `.github/feature-specs/` for an existing approved spec for the work
-5. After completing work, update memory files and spec status
+1. Read `.github/memory/context.md` — current project state, styling rules, recent fixes
+2. Read `.github/memory/roadmap.md` — what's done, what's next
+3. Check `.github/feature-specs/` for an existing approved spec for the work
+4. After completing work, update memory files and spec status
 
 ### Feature Spec Gate (New Features Only)
 
@@ -343,7 +342,7 @@ This is a partial — it outputs the `<html><head>` opening and the start of `<b
 Since layout.html is a partial (not a full HTML page), our override MUST maintain the same structure. The correct approach:
 
 ```html
-<!-- docker/www/skins/stratus/templates/includes/layout.html -->
+<!-- skins/stratus/templates/includes/layout.html -->
 <!-- stratus skin — Layout override: injects our CSS after elastic's -->
 <roundcube:include file="includes/layout.html" skinPath="skins/elastic" />
 <link rel="stylesheet" href="/styles/styles.min.css" />
@@ -611,20 +610,19 @@ After creating or editing any template:
 
 | What | Path |
 |------|------|
-| Our templates | `docker/www/skins/stratus/templates/` |
-| Elastic templates | `docker/www/skins/elastic/templates/` |
-| Elastic layout | `docker/www/skins/elastic/templates/includes/layout.html` |
-| Elastic footer | `docker/www/skins/elastic/templates/includes/footer.html` |
-| Elastic menu | `docker/www/skins/elastic/templates/includes/menu.html` |
-| Elastic login | `docker/www/skins/elastic/templates/login.html` |
-| Elastic mail | `docker/www/skins/elastic/templates/mail.html` |
-| Elastic message | `docker/www/skins/elastic/templates/message.html` |
-| Elastic compose | `docker/www/skins/elastic/templates/compose.html` |
-| Elastic settings | `docker/www/skins/elastic/templates/settings.html` |
-| Elastic README | `docker/www/skins/elastic/README.md` |
-| Template engine PHP | `docker/www/program/include/rcmail_output_html.php` |
-| Our meta.json | `docker/www/skins/stratus/meta.json` |
-| Project decisions | `.github/memory/decisions.md` |
+| Our templates | `skins/stratus/templates/` |
+| Elastic templates | `roundcubemail/skins/elastic/templates/` |
+| Elastic layout | `roundcubemail/skins/elastic/templates/includes/layout.html` |
+| Elastic footer | `roundcubemail/skins/elastic/templates/includes/footer.html` |
+| Elastic menu | `roundcubemail/skins/elastic/templates/includes/menu.html` |
+| Elastic login | `roundcubemail/skins/elastic/templates/login.html` |
+| Elastic mail | `roundcubemail/skins/elastic/templates/mail.html` |
+| Elastic message | `roundcubemail/skins/elastic/templates/message.html` |
+| Elastic compose | `roundcubemail/skins/elastic/templates/compose.html` |
+| Elastic settings | `roundcubemail/skins/elastic/templates/settings.html` |
+| Elastic README | `roundcubemail/skins/elastic/README.md` |
+| Template engine PHP | `roundcubemail/program/include/rcmail_output_html.php` |
+| Our meta.json | `skins/stratus/meta.json` |
 | Project context | `.github/memory/context.md` |
 | Project roadmap | `.github/memory/roadmap.md` |
 

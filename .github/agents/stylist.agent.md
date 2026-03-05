@@ -9,11 +9,10 @@ You are the **styling specialist** for the `stratus` Roundcube skin. You own all
 
 ## Before You Start — MANDATORY
 
-1. Read `.github/memory/context.md` — current project state
-2. Read `.github/memory/decisions.md` — architectural decisions (9 ADRs)
-3. Read `.github/memory/roadmap.md` — what's done, what's next
-4. Check `.github/feature-specs/` for an existing approved spec for the work
-5. After completing work, update memory files and spec status
+1. Read `.github/memory/context.md` — current project state, styling rules, recent fixes
+2. Read `.github/memory/roadmap.md` — what's done, what's next
+3. Check `.github/feature-specs/` for an existing approved spec for the work
+4. After completing work, update memory files and spec status
 
 ### Feature Spec Gate (New Features Only)
 
@@ -52,7 +51,7 @@ Skip this gate for: bug fixes, minor tweaks, or when human says "skip spec".
 
 ### File Structure (READ-ONLY reference)
 ```
-docker/www/skins/elastic/styles/
+roundcubemail/skins/elastic/styles/
 ├── colors.less          # ~280 color variables (THE source of truth)
 ├── variables.less       # Dimensions, breakpoints, imports colors.less
 ├── mixins.less          # .font-icon-class, .overflow-ellipsis, .font-family, .style-input-focus
@@ -107,6 +106,8 @@ These `(optional)` imports mean elastic will load `_variables.less` and `_styles
 - Icon font: **Icons** (FontAwesome 5 solid + regular via woff2)
 - Base font size: `@page-font-size: 14px`
 - Mixin: `.font-family()` → outputs `font-family: Roboto, sans-serif;`
+
+> **⚠️ Icon Font Gotcha:** The icon font is registered as `font-family: 'Icons'`, NOT `"Font Awesome 5 Free"`. Elastic does not define `.fa` or `.fa-*` CSS classes either. To render icons in plugin CSS or custom components, always use `font-family: 'Icons'; font-weight: 900;` (solid) or `font-weight: 400;` (regular). Never use `<i class="fa fa-icon-name">` — those class names don't exist in elastic. Instead use CSS `::before` pseudo-elements with glyph content codes (e.g., `content: "\f054"` for chevron-right).
 
 ### Elastic's Layout Structure (DOM)
 ```
@@ -400,7 +401,7 @@ Create our own `styles.less` that imports elastic first, then our partials:
 // Note: _dark.less rules are inside _layout/_components using html.dark-mode selector
 ```
 
-**Decision needed**: Check `.github/memory/decisions.md` for which approach was chosen.
+**Decision**: Option B (own entry point) was chosen. See `skins/stratus/styles/styles.less` for the actual import chain: elastic first, then our partials.
 
 ---
 
@@ -463,7 +464,7 @@ mix(@color1, @color2, 50%) // Blend two colors
 
 ### Compile Command
 ```bash
-cd docker/www/skins/stratus && npx lessc --clean-css="--s1 --advanced" styles/styles.less > styles/styles.min.css
+npm run less:build
 ```
 
 ### Validation Checklist (run after every change)
@@ -499,15 +500,15 @@ Use browser DevTools to verify contrast. Key pairs to check:
 
 | File | Lines | Content |
 |------|-------|---------|
-| `docker/www/skins/elastic/styles/colors.less` | 278 | ALL color variables (light + dark) |
-| `docker/www/skins/elastic/styles/variables.less` | 63 | Dimensions, breakpoints, optional import hooks |
-| `docker/www/skins/elastic/styles/mixins.less` | 62 | Reusable mixins |
-| `docker/www/skins/elastic/styles/global.less` | 150 | Fonts, reset, scrollbar base |
-| `docker/www/skins/elastic/styles/layout.less` | 415 | Responsive layout, #layout, header/footer |
-| `docker/www/skins/elastic/styles/dark.less` | 1135 | Full dark mode override rules |
-| `docker/www/skins/elastic/styles/styles.less` | 477 | Main entry + login, addressbook, mail, settings styles |
-| `docker/www/skins/elastic/styles/widgets/` | 9 files | buttons, lists, forms, dialogs, menu, messages, editor, jqueryui, common |
-| `docker/www/skins/elastic/meta.json` | — | Config reference (layout, dark_mode_support, logo types) |
+| `roundcubemail/skins/elastic/styles/colors.less` | 278 | ALL color variables (light + dark) |
+| `roundcubemail/skins/elastic/styles/variables.less` | 63 | Dimensions, breakpoints, optional import hooks |
+| `roundcubemail/skins/elastic/styles/mixins.less` | 62 | Reusable mixins |
+| `roundcubemail/skins/elastic/styles/global.less` | 150 | Fonts, reset, scrollbar base |
+| `roundcubemail/skins/elastic/styles/layout.less` | 415 | Responsive layout, #layout, header/footer |
+| `roundcubemail/skins/elastic/styles/dark.less` | 1135 | Full dark mode override rules |
+| `roundcubemail/skins/elastic/styles/styles.less` | 477 | Main entry + login, addressbook, mail, settings styles |
+| `roundcubemail/skins/elastic/styles/widgets/` | 9 files | buttons, lists, forms, dialogs, menu, messages, editor, jqueryui, common |
+| `roundcubemail/skins/elastic/meta.json` | — | Config reference (layout, dark_mode_support, logo types) |
 
 ---
 
@@ -556,4 +557,4 @@ Same pattern applies to any plugin with elastic skin support. Add a `_<pluginnam
 - **@builder** is the primary agent — it handles full roadmap-driven work including styles. You (@stylist) are a specialist the dev calls directly for focused color/typography/visual work.
 - If the dev needs template changes alongside your style work, tell them to use **@templater** or **@builder**.
 - If you create/edit LESS files, always compile and validate before finishing.
-- After completing work, update `.github/memory/context.md`, `decisions.md`, and `roadmap.md`.
+- After completing work, update `.github/memory/context.md` and `roadmap.md`.

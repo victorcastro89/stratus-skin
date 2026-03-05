@@ -9,7 +9,8 @@
 @mp-cal-grid-color:          fadeout(@color-border, 60%);        // very faint grid lines
 @mp-cal-grid-color-subtle:   fadeout(@color-border, 80%);        // near-invisible for verticals
 @mp-cal-header-bg:           @color-layout-header-background;
-@mp-cal-today-bg:            fadeout(@color-main, 92%);          // soft indigo wash
+@mp-cal-today-bg:            fadeout(@color-main, 92%);          // soft indigo wash for column
+@mp-cal-today-header-bg:     fadeout(@color-main, 85%);          // slightly stronger for day header
 @mp-cal-today-number:        @color-main;
 @mp-cal-today-indicator:     @color-main;
 @mp-cal-event-radius:        @mp-radius-sm;
@@ -20,6 +21,7 @@
 @mp-cal-dark-grid-color-subtle:  fadeout(@color-dark-border, 85%);
 @mp-cal-dark-header-bg:          @color-dark-surface;
 @mp-cal-dark-today-bg:           fadeout(@color-dark-main, 88%);
+@mp-cal-dark-today-header-bg:    fadeout(@color-dark-main, 80%);   // stronger for day header
 
 // Event card elevation — floating, airy look
 @mp-cal-event-shadow:            0 2px 8px rgba(26, 31, 54, 0.12);
@@ -140,8 +142,20 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     .fc-day.fc-today {
-        background: @mp-cal-today-bg;
-        border-style: solid;      // override FullCalendar's double border
+        background: @mp-cal-today-bg !important; // soft purple wash — beats libkolab !important
+        border-style: solid;                      // override FullCalendar's double border
+    }
+
+    // Also override fc-unthemed selector from fullcalendar.less
+    &.fc-unthemed td.fc-today {
+        background: @mp-cal-today-bg !important;
+    }
+
+    // Today's day-header — accent text + slightly darker purple bg
+    .fc-day-header.fc-today {
+        color: @mp-cal-today-number;
+        font-weight: @mp-font-weight-semibold;
+        background: @mp-cal-today-header-bg;
     }
 
     .fc-day-number {
@@ -399,6 +413,20 @@
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// TIMEZONE DISPLAY — hidden (declutter header)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#timezone-display {
+    display: none !important;
+}
+
+// Mobile header timezone label
+.header-title .tz {
+    display: none !important;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // CALENDAR SIDEBAR — datepicker promoted to top
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -605,6 +633,13 @@ body.task-calendar {
         align-items: center;
     }
 
+    // Search form — horizontal margin mirrors #calendar.content padding so the
+    // search bar edges align with the calendar grid (uses same @mp-space-xl token).
+    #layout-content > .searchbar {
+        margin-left: @mp-space-xl;
+        margin-right: @mp-space-xl;
+    }
+
     // ── #mp-cal-actions — persistent inline Create button ─────────────────────
     // This element is NOT .toolbar.menu, so toolbar_init() ignores it.
     // It anchors the right side of the header flex layout permanently.
@@ -735,6 +770,15 @@ body.task-calendar {
     .popover-body #toolbar-menu > li.spacer {
         display: none !important;
     }
+
+    // The overflow UL may carry an inline style="display:none" from creation.
+    // .popover-body > .popupmenu { display: block !important } handles this
+    // when the element has the popupmenu class (see calendar-overflow.js).
+    // This ID rule is an extra safety net for any edge-case where the class
+    // is missing or stripped at runtime.
+    .popover-body > #toolbar-menu-calendar-overflow {
+        display: block !important;
+    }
 }
 
 
@@ -777,5 +821,297 @@ body.task-calendar {
 .fc {
     body.quickview-active & .fc-scroller {
         background-image: none !important;
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    // ── CALENDAR GRID ──────────────────────────────────────────────────────────────
+    .fc {
+        th,
+        td {
+            border-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-bg td,
+        .fc-day {
+            border-right-color: transparent;
+            border-left-color: transparent;
+        }
+
+        .fc-time-grid .fc-slats td {
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-top-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-time-grid .fc-slats .fc-minor td {
+            border-top: none;
+        }
+
+        .fc-time-grid > .fc-bg td {
+            border-right-color: transparent;
+            border-left-color: transparent;
+        }
+
+        &.fc-unthemed {
+            th,
+            td,
+            thead,
+            tbody,
+            .fc-divider,
+            .fc-row,
+            .fc-content,
+            .fc-popover,
+            .fc-list-view,
+            .fc-list-heading td {
+                border-color: @mp-cal-dark-grid-color;
+            }
+        }
+
+        .fc-day.fc-today {
+            background: @mp-cal-dark-today-bg !important; // soft purple wash
+        }
+
+        &.fc-unthemed td.fc-today {
+            background: @mp-cal-dark-today-bg !important;
+        }
+
+        .fc-day-header.fc-today {
+            color: @color-dark-main;
+            font-weight: @mp-font-weight-semibold;
+            background: @mp-cal-dark-today-header-bg;
+        }
+
+        .fc-day-top.fc-today .fc-day-number {
+            background: @color-dark-main;
+        }
+
+        .fc-header-toolbar {
+            background-color: @mp-cal-dark-header-bg;
+            border-bottom-color: transparent;
+        }
+
+        .fc-center h2 {
+            color: @color-dark-font;
+        }
+
+        .fc-day-header {
+            color: @color-dark-font-secondary;
+        }
+
+        .fc-axis {
+            color: @color-dark-font-secondary;
+        }
+
+        .fc-week-number {
+            color: @color-dark-font-secondary;
+        }
+
+        td.fc-head-container {
+            border-bottom-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-list-heading td {
+            background: fadeout(@color-dark-surface-raised, 40%);
+            color: @color-dark-font-secondary;
+        }
+
+        .fc-list-table td {
+            border-color: @mp-cal-dark-grid-color;
+        }
+
+        .fc-list-item:hover td {
+            background-color: fadeout(@color-dark-main, 90%);
+        }
+
+        .fc-popover {
+            background-color: @color-dark-surface-raised;
+            border-color: @mp-cal-dark-grid-color;
+            box-shadow: @mp-shadow-dark-lg;
+
+            .fc-header {
+                color: @color-dark-font;
+            }
+        }
+
+        .fc-now-indicator {
+            border-color: @color-dark-main;
+        }
+
+        .fc-now-indicator-line::before {
+            background: @color-dark-main;
+        }
+
+        .fc-event {
+            box-shadow: @mp-cal-dark-event-shadow;
+        }
+
+        .fc-event:hover {
+            box-shadow: @mp-cal-dark-event-shadow-hover;
+        }
+
+        // ── Header & Navigation dark overrides (Phase 1.6.2) ─────────────────
+
+        // View-switcher pill strip — dark bg
+        .fc-header-toolbar .fc-left .btn-group {
+            background: @mp-cal-dark-nav-bg;
+            border-color: @mp-cal-dark-nav-border;
+
+            .btn.btn-secondary {
+                color: @color-dark-font-secondary;
+
+                &:hover:not(.active) {
+                    background: fadeout(@color-dark-main, 85%);
+                    color: @color-dark-main;
+                }
+
+                &.active {
+                    background: @color-dark-main;
+                    color: #fff;
+                    box-shadow: 0 2px 6px fadeout(@color-dark-main, 55%);
+                }
+            }
+        }
+
+        // Nav buttons — prev/today/next dark styling
+        .fc-header-toolbar .fc-right .btn-group {
+            .btn.btn-secondary {
+                border-color: @color-dark-border;
+                color: @color-dark-font;
+
+                &:hover {
+                    background: fadeout(@color-dark-main, 88%);
+                    border-color: fadeout(@color-dark-main, 55%);
+                    color: @color-dark-main;
+                }
+
+                &.today {
+                    background: @color-dark-main;
+                    border-color: @color-dark-main;
+                    box-shadow: 0 2px 8px fadeout(@color-dark-main, 55%);
+
+                    &:hover,
+                    &:focus {
+                        background: lighten(@color-dark-main, 8%);
+                        border-color: lighten(@color-dark-main, 8%);
+                        box-shadow: 0 4px 12px fadeout(@color-dark-main, 45%);
+                    }
+                }
+            }
+        }
+    }
+
+    // ── CALENDAR TOOLBAR (create pill + overflow trigger) ──────────────────────
+    body.task-calendar {
+        #layout-sidebar .mp-sidebar-datepicker {
+            background: @color-dark-surface;
+            border-bottom-color: @color-dark-border;
+
+            .ui-datepicker {
+                background: transparent;
+            }
+
+            .ui-datepicker-header {
+                background: transparent;
+                border-color: transparent;
+            }
+
+            .ui-datepicker-title {
+                color: @color-dark-font;
+            }
+
+            .ui-datepicker-prev:hover,
+            .ui-datepicker-next:hover {
+                background: fadeout(@color-dark-main, 85%);
+            }
+
+            .ui-datepicker-calendar thead th {
+                color: @color-dark-font-secondary;
+            }
+        }
+
+        #datepicker .ui-datepicker td.ui-datepicker-today a,
+        #datepicker .ui-datepicker td.ui-datepicker-today .ui-state-default {
+            background: @color-dark-main;
+            color: @color-dark-font;
+            box-shadow: 0 2px 6px fadeout(@color-dark-main, 55%);
+        }
+
+        #datepicker .ui-datepicker td:not(.ui-datepicker-today) a:hover,
+        #datepicker .ui-datepicker td:not(.ui-datepicker-today) .ui-state-default:hover {
+            background: fadeout(@color-dark-main, 86%);
+            color: @color-dark-main;
+        }
+
+        // Create button — now in #mp-cal-actions (Tier B template)
+        #mp-cal-actions > a.button.create {
+            color: @color-dark-font;
+
+            &:not(.disabled):hover,
+            &:not(.disabled):focus {
+                background-color: @color-dark-border;
+                color: @color-dark-font;
+            }
+        }
+
+        // More button — popover trigger for secondary actions
+        #layout-content > .header > a.toolbar-menu-button {
+            color: @color-dark-font;
+
+            &[aria-expanded="true"] {
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            &:hover,
+            &:focus {
+                background-color: @color-dark-border;
+                color: @color-dark-font;
+            }
+        }
+    }
+
+    #agendaoptions {
+        background-color: @mp-cal-dark-header-bg;
+        border-bottom-color: @mp-cal-dark-grid-color;
+    }
+
+    // ── FullCalendar native buttons (.fc-button) ──────────────────────────────
+    // These appear in certain calendar views/plugins that use FullCalendar's own
+    // button API instead of Roundcube/Bootstrap wrappers. Without this block they
+    // render with light-gray browser defaults and are unreadable on the dark bg.
+    .fc-button {
+        background-color: @color-dark-surface-raised;
+        color: @color-dark-btn;
+        border-color: @color-dark-border;
+
+        &:hover:not(:disabled):not(.fc-button-active) {
+            background-color: fadeout(@color-dark-main, 85%);
+            color: @color-dark-main;
+            border-color: fadeout(@color-dark-main, 55%);
+        }
+
+        &:active,
+        &.fc-button-active {
+            background-color: @color-dark-btn-primary-background;
+            color: #fff;
+            border-color: @color-dark-main;
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 3px fadeout(@color-dark-main, 70%);
+        }
+    }
+
+    .fc-button-group .fc-button:not(:first-child) {
+        border-left-color: @color-dark-border;
+    }
+
+    body.task-calendar #layout-sidebar {
+        border-right-color: @mp-cal-dark-grid-color;
     }
 }

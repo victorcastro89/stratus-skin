@@ -13,7 +13,10 @@
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
-        "label": "LESS Watch"
+        "label": "LESS Watch",
+        "focus": false,
+        "showReuseMessage": false,
+        "close": false
       },
       "problemMatcher": {
         "owner": "lessc",
@@ -21,7 +24,7 @@
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".",
-          "endsPattern": "."
+          "endsPattern": "([Ww]atch|[Ww]atching|[Ww]aiting|[Cc]ompil(ed|ing)|[Ff]inished)"
         },
         "pattern": {
           "regexp": "^(.+) in (.+) on line (\\d+), column (\\d+):$",
@@ -42,7 +45,10 @@
       "group": "build",
       "presentation": {
         "reveal": "always",
-        "panel": "shared"
+        "panel": "shared",
+        "focus": false,
+        "showReuseMessage": false,
+        "close": true
       },
       "problemMatcher": {
         "owner": "lessc",
@@ -62,7 +68,10 @@
       "command": "npm run setup",
       "presentation": {
         "reveal": "always",
-        "panel": "shared"
+        "panel": "shared",
+        "focus": false,
+        "showReuseMessage": false,
+        "close": true
       },
       "problemMatcher": []
     },
@@ -74,7 +83,10 @@
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
-        "label": "Docker Dev"
+        "label": "Docker Dev",
+        "focus": false,
+        "showReuseMessage": false,
+        "close": false
       },
       "problemMatcher": []
     }

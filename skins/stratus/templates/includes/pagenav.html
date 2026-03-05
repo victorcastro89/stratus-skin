@@ -3,7 +3,7 @@
 <div class="pagenav menu footer small mp-mass-action-bar" role="toolbar" aria-label="<roundcube:label name="arialabellistnav" />">
 	<div class="mp-mass-action-left">
 		<!-- Checkbox trigger (always visible) — toggles select / deselect-all -->
-		<a href="#select" id="mp-mass-select-toggle" class="mp-mass-action-trigger select disabled" title="<roundcube:label name="select" />">
+		<a href="#select" id="mp-mass-select-toggle" class="mp-mass-action-trigger select" title="<roundcube:label name="select" />">
 			<span class="mp-mass-action-checkbox" aria-hidden="true"></span>
 			<span class="inner"><roundcube:label name="select" /></span>
 		</a>
@@ -13,22 +13,23 @@
 			<roundcube:button command="delete" type="link"
 				class="mp-action-btn delete disabled" classAct="mp-action-btn delete"
 				title="deletemessage" innerclass="inner" label="delete" />
-			<roundcube:button id="mp-action-archive" command="plugin.archive" type="link"
-				class="mp-action-btn archive" classAct="mp-action-btn archive"
-				title="buttontitle" label="buttontext" domain="archive" innerclass="inner" />
+			<a href="#archive" id="mp-action-archive" class="mp-action-btn archive"
+				title="<roundcube:label name="buttontitle" domain="archive" />"
+				><span class="inner"><roundcube:label name="buttontext" domain="archive" /></span></a>
 			<roundcube:button command="move" type="link"
 				class="mp-action-btn move disabled" classAct="mp-action-btn move"
 				title="moveto" innerclass="inner" label="moveto" />
-			<roundcube:button command="mark" prop="flagged" type="link"
-				class="mp-action-btn flag disabled" classAct="mp-action-btn flag"
-				title="markflagged" innerclass="inner" label="markflagged" />
-			<roundcube:button command="mark" prop="unread" type="link"
-				class="mp-action-btn unread disabled" classAct="mp-action-btn unread"
-				title="markunread" innerclass="inner" label="markunread" />
 			<span class="mp-mass-action-divider" aria-hidden="true"></span>
-			<roundcube:button command="checkmail" type="link"
+			<a href="#mark-toggle" id="mp-action-mark-toggle" class="mp-action-btn unread disabled" title="<roundcube:label name="markunread" />">
+				<span class="inner"><roundcube:label name="markunread" /></span>
+			</a>
+			<a href="#flag-toggle" id="mp-action-flag-toggle" class="mp-action-btn unflag disabled" title="<roundcube:label name="markunflagged" />">
+				<span class="inner"><roundcube:label name="markunflagged" /></span>
+			</a>
+			<span class="mp-mass-action-divider" aria-hidden="true"></span>
+			<!-- <roundcube:button command="checkmail" type="link"
 				class="mp-action-btn sync" classAct="mp-action-btn sync"
-				title="checkmail" innerclass="inner" label="refresh" />
+				title="checkmail" innerclass="inner" label="refresh" /> -->
 			<a href="#more" class="mp-action-btn more" data-popup="mp-massaction-menu"
 				title="<roundcube:label name="moreactions" />">
 				<span class="inner"><roundcube:label name="more" /></span>
@@ -56,9 +57,124 @@
 		var bar = document.querySelector('.mp-mass-action-bar');
 		var chip = document.getElementById('mp-selected-count');
 		var toggle = document.getElementById('mp-mass-select-toggle');
+			var markToggleBtn = document.getElementById('mp-action-mark-toggle');
+			var flagToggleBtn = document.getElementById('mp-action-flag-toggle');
 		if (!bar) return;
 		var archiveBtn = document.getElementById('mp-action-archive') || bar.querySelector('.mp-action-btn.archive');
+		var deleteBtn = bar.querySelector('.mp-action-btn.delete');
 		var archiveActionPending = false;
+			var convSelectionState = {
+				count: 0,
+				anyUnread: false,
+				anyUnflagged: false
+			};
+
+			function isConversationMode() {
+				return !!(bar.parentNode && bar.parentNode.getAttribute('data-conv-mode') === 'conversations');
+			}
+
+			function updateToggleButtonEl(btn, modeClass, titleText, actionValue, disabled) {
+				if (!btn) return;
+				btn.classList.remove('read', 'unread', 'flag', 'unflag');
+				btn.classList.add(modeClass);
+				btn.setAttribute('title', titleText || '');
+				btn.setAttribute('aria-label', titleText || '');
+				btn.setAttribute('data-toggle-action', actionValue || '');
+				var inner = btn.querySelector('.inner');
+				if (inner) inner.textContent = titleText || '';
+				if (disabled) {
+					btn.classList.add('disabled');
+					btn.setAttribute('aria-disabled', 'true');
+				} else {
+					btn.classList.remove('disabled');
+					btn.removeAttribute('aria-disabled');
+				}
+			}
+
+			function getSelectedRows() {
+				var selected = list.get_selection ? list.get_selection() : [];
+				var rows = [];
+				for (var i = 0; i < selected.length; i++) {
+					var id = selected[i];
+					var row = null;
+					if (typeof id === 'string') {
+						row = document.getElementById(id) || document.getElementById('rcmrow' + id);
+					}
+					if (!row && list.rows && list.rows[id] && list.rows[id].obj) {
+						row = list.rows[id].obj;
+					}
+					if (row) rows.push(row);
+				}
+				return rows;
+			}
+
+			function isVisibleRow(row) {
+				if (!row) return false;
+				if (row.getClientRects && row.getClientRects().length > 0) return true;
+				return !!row.offsetParent;
+			}
+
+			function getStandardSelectionState() {
+				var rows = getSelectedRows();
+				var anyUnread = false;
+				var anyUnflagged = false;
+				var visibleCount = 0;
+				for (var i = 0; i < rows.length; i++) {
+					if (!isVisibleRow(rows[i])) continue;
+					visibleCount++;
+					if (rows[i].classList.contains('unread')) anyUnread = true;
+					if (!rows[i].classList.contains('flagged')) anyUnflagged = true;
+				}
+				return {
+					count: visibleCount,
+					anyUnread: anyUnread,
+					anyUnflagged: anyUnflagged
+				};
+			}
+
+			function updateMarkFlagToggleState(selectionState) {
+				var count = selectionState.count || 0;
+				var disable = count === 0;
+
+				var markAction = selectionState.anyUnread ? 'read' : 'unread';
+				var markClass = selectionState.anyUnread ? 'read' : 'unread';
+				var markLabel = selectionState.anyUnread
+					? (rcmail.get_label('markread') || 'Mark as read')
+					: (rcmail.get_label('markunread') || 'Mark as unread');
+				updateToggleButtonEl(markToggleBtn, markClass, markLabel, markAction, disable);
+
+				var flagAction = selectionState.anyUnflagged ? 'flagged' : 'unflagged';
+				var flagClass = selectionState.anyUnflagged ? 'flag' : 'unflag';
+				var flagLabel = selectionState.anyUnflagged
+					? (rcmail.get_label('markflagged') || 'Flag')
+					: (rcmail.get_label('markunflagged') || 'Unflag');
+				updateToggleButtonEl(flagToggleBtn, flagClass, flagLabel, flagAction, disable);
+			}
+
+		/**
+		 * Suppress the "archivedreload" toast from the archive plugin.
+		 *
+		 * When the plugin creates new IMAP folders it sends:
+		 *   show_message(gettext('archivedreload'), 'confirmation')
+		 * which tells the user to reload the page.  Because our
+		 * responseaftermove handler inserts missing folders dynamically,
+		 * the reload is unnecessary — replace it with the normal
+		 * "archived" confirmation instead.
+		 */
+		var _origDisplayMessage = rcmail.display_message;
+		rcmail.display_message = function(msg, type, timeout, key) {
+			if (archiveActionPending && type === 'confirmation') {
+				var reloadLabel = rcmail.get_label('archivedreload', 'archive');
+				if (reloadLabel && reloadLabel !== 'archivedreload' && msg === reloadLabel) {
+					var archivedLabel = rcmail.get_label('archived', 'archive');
+					if (archivedLabel && archivedLabel !== 'archived') {
+						msg = archivedLabel;
+					}
+					logArchive('suppressed-archivedreload', { original: reloadLabel, replacement: msg });
+				}
+			}
+			return _origDisplayMessage.call(this, msg, type, timeout, key);
+		};
 
 		function logArchive(eventName, extra) {
 			if (!window.console || typeof console.log !== 'function') return;
@@ -86,37 +202,225 @@
 		// 	return _origTrigger.apply(this, arguments);
 		// };
 
-		var archiveTarget = detectArchiveFolder();
+		// updateFolderButtons: show/hide context-sensitive action buttons based on the
+		// current mailbox.  Uses only raw IMAP folder paths and server-supplied env vars —
+		// never localised display names — so it works regardless of the user's locale.
+		function updateFolderButtons() {
+			var currentMailbox = rcmail.env.mailbox;
+			var delim = rcmail.env.delimiter || '/';
 
-		// Hide archive button when no archive folder can be resolved
-		if (archiveBtn && !archiveTarget) {
-			archiveBtn.style.setProperty('display', 'none', 'important');
-			logArchive('archive-btn-hidden-no-target');
-		}
+			// Trash: rcmail.env.trash_mailbox is the raw IMAP path from server config
+			var trashFolder = rcmail.env.trash_mailbox;
+			var isInTrash = !!(trashFolder && currentMailbox === trashFolder);
 
-		function updateSelection() {
-			var sel = list.get_selection();
-			var count = sel.length;
-			if (count > 0) {
-				bar.classList.add('mp-has-selection');
-				if (toggle) toggle.classList.remove('disabled');
-				if (chip) chip.textContent = count + ' selected';
-			} else {
-				bar.classList.remove('mp-has-selection');
-				if (toggle) toggle.classList.add('disabled');
-				if (chip) chip.textContent = '';
+			// Archive: detectArchiveFolder() reads env.archive_folder / folder classes —
+			// both are IMAP paths, never translated labels
+			var archiveFolder = detectArchiveFolder();
+			var isInArchive = !!(archiveFolder && (
+				currentMailbox === archiveFolder ||
+				(currentMailbox || '').indexOf(archiveFolder + delim) === 0
+			));
+
+			// Disable delete button when already in trash.
+			// Use data attribute as stable flag (immune to Roundcube's
+			// class/classAct replacement) and re-apply the CSS class.
+			if (deleteBtn) {
+				if (isInTrash) {
+					deleteBtn.setAttribute('data-mp-folder-disabled', 'true');
+					deleteBtn.classList.add('mp-folder-disabled');
+					deleteBtn.setAttribute('aria-disabled', 'true');
+				} else {
+					deleteBtn.removeAttribute('data-mp-folder-disabled');
+					deleteBtn.classList.remove('mp-folder-disabled');
+					deleteBtn.removeAttribute('aria-disabled');
+				}
+			}
+
+			// Disable archive button when no archive target exists OR already in archive.
+			// Same data-attribute approach as delete button.
+			if (archiveBtn) {
+				var disableArchive = !archiveFolder || isInArchive;
+				if (disableArchive) {
+					archiveBtn.setAttribute('data-mp-folder-disabled', 'true');
+					archiveBtn.classList.add('mp-folder-disabled');
+					archiveBtn.setAttribute('aria-disabled', 'true');
+					if (!archiveFolder) logArchive('archive-btn-disabled-no-target');
+				} else {
+					archiveBtn.removeAttribute('data-mp-folder-disabled');
+					archiveBtn.classList.remove('mp-folder-disabled');
+					archiveBtn.removeAttribute('aria-disabled');
+				}
 			}
 		}
 
-		// Click handler: if selection exists → deselect all
+		// ── Multiselect mode ──────────────────────────────────────
+		// When the user clicks the checkbox with no selection, we enter
+		// "multiselect mode": every subsequent row click behaves like
+		// Ctrl+click (toggle individual rows) so the user can pick
+		// multiple messages without holding a modifier key.
+		var multiSelectMode = false;
+
+		// Monkey-patch select_row so we can inject CONTROL_KEY (1)
+		var _origSelectRow = list.select_row;
+		list.select_row = function(id, mod_key, with_mouse) {
+			if (multiSelectMode && with_mouse && !mod_key) {
+				mod_key = 1; // CONTROL_KEY — toggle individual row
+			}
+			return _origSelectRow.call(this, id, mod_key, with_mouse);
+		};
+
+		function setMultiSelectMode(on) {
+			multiSelectMode = !!on;
+			bar.classList.toggle('mp-multiselect-mode', multiSelectMode);
+		}
+
+		function updateSelection() {
+			var standardSelection = getStandardSelectionState();
+			var state = isConversationMode() ? convSelectionState : standardSelection;
+			var count = state.count;
+			// Activate mass-action bar only when the user is in multiselect mode
+			// (clicked the toggle) OR has selected more than one item (keyboard
+			// shortcuts: Shift+click, Ctrl+click, Ctrl+A, etc.).
+			// A plain single-row click to preview a message/conversation must NOT activate the bar.
+			var showActive = multiSelectMode || count > 1;
+
+			if (showActive) {
+				bar.classList.add('mp-has-selection');
+				if (chip) chip.textContent = count + ' selected';
+			} else {
+				bar.classList.remove('mp-has-selection');
+				if (chip) chip.textContent = '';
+			}
+
+			// Toggle is always clickable regardless of selection state
+			if (toggle) toggle.classList.remove('disabled');
+
+			updateMarkFlagToggleState(state);
+
+			if (count === 0) {
+				if (isConversationMode()) {
+					return;
+				}
+				// Auto-exit multiselect mode when selection is emptied
+				if (multiSelectMode) setMultiSelectMode(false);
+				// Reset multi_selecting flag so preview pane works again
+				list.multi_selecting = false;
+			}
+		}
+
+		/**
+		 * Force-clear every selection artefact on the list widget.
+		 *
+		 * list.clear_selection() handles the data model, but in rare
+		 * edge-cases the visual state (.selected class, checked
+		 * checkboxes) can get out of sync — especially after rapid
+		 * enter/exit of multiselect mode.  This helper catches those
+		 * strays with a direct DOM sweep.
+		 */
+		function forceDeselectAll() {
+			if (isConversationMode()) {
+				// Conversation mode: clear via event + DOM sweep on conv table
+				document.dispatchEvent(new CustomEvent('stratus:conv-clear-selection'));
+				var convTbl = document.getElementById('conv-messagelist');
+				if (convTbl) {
+					var cRows = convTbl.querySelectorAll('tr.selected, tr.focused');
+					for (var ci = 0; ci < cRows.length; ci++) {
+						cRows[ci].classList.remove('selected', 'focused');
+						cRows[ci].removeAttribute('aria-selected');
+					}
+				}
+				return;
+			}
+			// 1. Data-model clear (fires 'select' event internally)
+			list.clear_selection();
+
+			// 2. Reset flags that affect subsequent click handling
+			list.multi_selecting = false;
+			list.shift_start = null;
+			rcmail.select_all_mode = false;
+
+			// 3. Belt-and-suspenders DOM sweep
+			var tbl = list.list;
+			if (tbl) {
+				var rows = tbl.querySelectorAll('tr.selected, tr.focused');
+				for (var i = 0; i < rows.length; i++) {
+					rows[i].classList.remove('selected', 'focused');
+					rows[i].removeAttribute('aria-selected');
+				}
+				var boxes = tbl.querySelectorAll('.selection input:checked');
+				for (var j = 0; j < boxes.length; j++) {
+					boxes[j].checked = false;
+				}
+			}
+		}
+
+		// Click handler: toggle multiselect mode or deselect all
 		if (toggle) {
 			toggle.addEventListener('click', function(e) {
 				e.preventDefault();
 				e.stopPropagation();
-				if (bar.classList.contains('mp-has-selection')) {
-					list.clear_selection();
-					updateSelection();
+				if (isConversationMode()) {
+					if (bar.classList.contains('mp-has-selection')) {
+						// Has selection → deselect all & exit multiselect mode
+						document.dispatchEvent(new CustomEvent('stratus:conv-set-multiselect', { detail: { enabled: false } }));
+						setMultiSelectMode(false);
+						forceDeselectAll();
+						convSelectionState = { count: 0, anyUnread: false, anyUnflagged: false };
+						updateSelection();
+					} else {
+						// No selection → enter multiselect mode for conversations
+						document.dispatchEvent(new CustomEvent('stratus:conv-set-multiselect', { detail: { enabled: true } }));
+						setMultiSelectMode(true);
+					}
+					return;
 				}
+				if (bar.classList.contains('mp-has-selection')) {
+					// Has selection → deselect all & exit multiselect mode
+					setMultiSelectMode(false);
+					forceDeselectAll();
+					updateSelection();
+				} else {
+					// No selection → enter multiselect mode
+					setMultiSelectMode(true);
+				}
+			});
+		}
+
+		if (markToggleBtn) {
+			markToggleBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (markToggleBtn.classList.contains('disabled')) return;
+				var action = markToggleBtn.getAttribute('data-toggle-action') || 'read';
+				if (isConversationMode()) {
+					document.dispatchEvent(new CustomEvent('stratus:conv-massaction', {
+						detail: {
+							action: 'mark-toggle',
+							value: action
+						}
+					}));
+					return;
+				}
+				rcmail.command('mark', action);
+			});
+		}
+
+		if (flagToggleBtn) {
+			flagToggleBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (flagToggleBtn.classList.contains('disabled')) return;
+				var action = flagToggleBtn.getAttribute('data-toggle-action') || 'flagged';
+				if (isConversationMode()) {
+					document.dispatchEvent(new CustomEvent('stratus:conv-massaction', {
+						detail: {
+							action: 'flag-toggle',
+							value: action
+						}
+					}));
+					return;
+				}
+				rcmail.command('mark', action);
 			});
 		}
 
@@ -124,7 +428,7 @@
 			archiveBtn.addEventListener('click', function(e) {
 				e.preventDefault();
 				e.stopPropagation();
-				archiveActionPending = true;
+				if (archiveBtn.getAttribute('data-mp-folder-disabled') === 'true') return;
 				logArchive('archive-btn-click', {
 					mailbox: rcmail.env.mailbox,
 					archiveTarget: detectArchiveFolder(),
@@ -149,10 +453,42 @@
 			});
 		}
 
-		list.addEventListener('select', updateSelection);
+		list.addEventListener('select', function() {
+			if (!isConversationMode()) updateSelection();
+		});
+		document.addEventListener('stratus:conv-selection-state', function(e) {
+			var detail = e && e.detail ? e.detail : {};
+			convSelectionState = {
+				count: detail.count || 0,
+				anyUnread: !!detail.anyUnread,
+				anyUnflagged: !!detail.anyUnflagged
+			};
+			updateSelection();
+		});
+		document.dispatchEvent(new CustomEvent('stratus:conv-request-selection-state'));
+		// Re-apply mp-folder-disabled class from data attribute after Roundcube
+		// replaces button classNames via class/classAct toggling (Bug 12).
+		function reapplyFolderDisabledClasses() {
+			[deleteBtn, archiveBtn].forEach(function(btn) {
+				if (btn && btn.getAttribute('data-mp-folder-disabled') === 'true') {
+					btn.classList.add('mp-folder-disabled');
+					btn.setAttribute('aria-disabled', 'true');
+				}
+			});
+		}
+
 		// Also update when list is cleared/reloaded
-		rcmail.addEventListener('listupdate', updateSelection);
+		rcmail.addEventListener('listupdate', function() {
+			updateSelection();
+			updateFolderButtons();
+			// Run after a microtask to catch Roundcube's class replacement
+			Promise.resolve().then(reapplyFolderDisabledClasses);
+		});
 		rcmail.addEventListener('afterexpunge', updateSelection);
+		rcmail.addEventListener('responseaftermark', function() {
+			updateSelection();
+			Promise.resolve().then(reapplyFolderDisabledClasses);
+		});
 
 		/**
 		 * After archive move completes, ensure any newly-created archive
@@ -211,7 +547,60 @@
 			// Refresh all folder unread counts via native check-recent
 			rcmail.refresh();
 		});
+		// ── Bug 8: Intercept prev/next page buttons for conversation mode ──
+		var prevPageBtn = bar.querySelector('.prevpage');
+		var nextPageBtn = bar.querySelector('.nextpage');
+
+		if (prevPageBtn) {
+			prevPageBtn.addEventListener('click', function(e) {
+				if (isConversationMode()) {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+					document.dispatchEvent(new CustomEvent('stratus:conv-page', { detail: { direction: 'prev' } }));
+				}
+			}, true);
+		}
+		if (nextPageBtn) {
+			nextPageBtn.addEventListener('click', function(e) {
+				if (isConversationMode()) {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+					document.dispatchEvent(new CustomEvent('stratus:conv-page', { detail: { direction: 'next' } }));
+				}
+			}, true);
+		}
+
+		// ── Bug 11: Update message count display for conversation mode ──
+		var countDisplay = bar.querySelector('.mp-mass-action-count');
+		document.addEventListener('stratus:conv-count-update', function(e) {
+			if (!countDisplay) return;
+			if (!isConversationMode()) return;
+			var detail = e && e.detail ? e.detail : {};
+			var total = detail.total || 0;
+			var page = detail.page || 1;
+			var pages = detail.pages || 1;
+			countDisplay.textContent = total + ' conversation' + (total !== 1 ? 's' : '');
+			// Also update prev/next button disabled state for conversation paging
+			if (prevPageBtn) {
+				if (page <= 1) {
+					prevPageBtn.classList.add('disabled');
+				} else {
+					prevPageBtn.classList.remove('disabled');
+					prevPageBtn.classList.add('prevpage'); // ensure classAct state
+				}
+			}
+			if (nextPageBtn) {
+				if (page >= pages) {
+					nextPageBtn.classList.add('disabled');
+				} else {
+					nextPageBtn.classList.remove('disabled');
+					nextPageBtn.classList.add('nextpage');
+				}
+			}
+		});
+
 		updateSelection();
+		updateFolderButtons();
 	});
 })();
 </script>

@@ -40,6 +40,15 @@
         if (rcmail.env.task === 'settings') {
             initSettingsPreview();
         }
+
+        // ──────────────────────────────────────────
+        //  4. Dark Mode — iframe propagation
+        // ──────────────────────────────────────────
+
+        if (document.documentElement.classList.contains('dark-mode')) {
+            initDarkModeFramePropagation();
+            initTinyMCEDarkMode();
+        }
     });
 
     // ══════════════════════════════════════════════
@@ -128,6 +137,121 @@
                 var key = this.value;
                 rcmail.http_post('plugin.stratus.set_font', { _font: key });
             });
+        }
+    }
+
+    // ══════════════════════════════════════════════
+    //  Dark Mode — iframe propagation
+    // ══════════════════════════════════════════════
+
+    /**
+     * Inject the `dark-mode` class into every Roundcube content iframe so that
+     * framed pages (settings/preferences, message reading pane, compose) inherit
+     * the dark theme from the parent document.
+     *
+     * Roundcube loads preferences and messages inside iframes that have their own
+     * <html> element — the parent's class is NOT inherited automatically.
+     */
+    function initDarkModeFramePropagation() {
+        function injectDark(frame) {
+            try {
+                var doc = frame.contentDocument ||
+                    (frame.contentWindow && frame.contentWindow.document);
+                if (doc && doc.documentElement) {
+                    doc.documentElement.classList.add('dark-mode');
+                }
+            } catch (e) {
+                // Cross-origin frame — ignore silently
+            }
+        }
+
+        // Apply to frames that already exist in the DOM
+        var knownIds = ['preferences-frame', 'contentframe', 'messagecontframe'];
+        knownIds.forEach(function (id) {
+            var frame = document.getElementById(id);
+            if (frame) {
+                injectDark(frame);
+                frame.addEventListener('load', function () { injectDark(this); });
+            }
+        });
+
+        // Watch for frames added dynamically (Roundcube sometimes creates them lazily)
+        var observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                mutation.addedNodes.forEach(function (node) {
+                    if (node.nodeType !== 1) return;
+                    if (node.tagName === 'IFRAME') {
+                        node.addEventListener('load', function () { injectDark(this); });
+                    }
+                    // Frames nested inside the added node
+                    var nested = node.querySelectorAll && node.querySelectorAll('iframe');
+                    if (nested) {
+                        Array.prototype.forEach.call(nested, function (f) {
+                            f.addEventListener('load', function () { injectDark(this); });
+                        });
+                    }
+                });
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // ══════════════════════════════════════════════
+    //  Dark Mode — TinyMCE editor content area
+    // ══════════════════════════════════════════════
+
+    /**
+     * TinyMCE renders its editing area inside a sandboxed <iframe>.  CSS rules on
+     * the parent document don't reach it.  This function injects a minimal dark
+     * stylesheet into each editor's document when the page is in dark mode.
+     *
+     * The outer chrome (toolbar, statusbar) is handled by editor.less CSS rules.
+     */
+    function initTinyMCEDarkMode() {
+        // Resolved from @color-dark-surface / @color-dark-font / @color-dark-main
+        var darkCSS =
+            'html, body { background-color: #1a1f36 !important; color: #c8d0e8 !important; }' +
+            'a { color: #7986cb !important; }' +
+            'blockquote { border-left: 3px solid #7986cb; color: #7e8aad; }' +
+            'pre, code { background: #212845; color: #c8d0e8; border-color: #2a3050; }' +
+            'hr { border-color: #2a3050; }';
+
+        function applyDarkToEditor(editor) {
+            var doc = editor.getDoc ? editor.getDoc() : null;
+            if (!doc || !doc.head) return;
+            if (doc.getElementById('stratus-tinymce-dark')) return; // already applied
+            var style = doc.createElement('style');
+            style.id = 'stratus-tinymce-dark';
+            style.textContent = darkCSS;
+            doc.head.appendChild(style);
+        }
+
+        function hookTinyMCE() {
+            // Future editors
+            window.tinymce.on('AddEditor', function (e) {
+                e.editor.on('init', function () { applyDarkToEditor(this); });
+            });
+            // Already-initialised editors (e.g., page reload with compose open)
+            var editors = window.tinymce.editors || [];
+            for (var i = 0; i < editors.length; i++) {
+                applyDarkToEditor(editors[i]);
+            }
+        }
+
+        if (window.tinymce) {
+            hookTinyMCE();
+        } else {
+            // TinyMCE may load later (compose opened after init)
+            var attempts = 0;
+            var timer = setInterval(function () {
+                attempts++;
+                if (window.tinymce) {
+                    clearInterval(timer);
+                    hookTinyMCE();
+                } else if (attempts > 150) { // give up after ~30 s
+                    clearInterval(timer);
+                }
+            }, 200);
         }
     }
 

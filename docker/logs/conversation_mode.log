@@ -1,0 +1,272 @@
+[04-Mar-2026 04:33:25 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:41 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:41 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:41 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:44 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:44 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:44 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:48 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:51 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:52 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:52 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:52 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:52 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:52 +0000]: <c0beece8> [get_or_build] cache HIT mailbox=INBOX conversations=9
+[04-Mar-2026 04:33:53 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:53 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:53 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:53 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:33:53 +0000]: <c0beece8> [get_or_build] cache HIT mailbox=INBOX conversations=9
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [get_or_build] cache MISS mailbox=INBOX – building from IMAP
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] START mailbox=INBOX
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] total message count=18
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] will fetch fetch_count=18
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] index UIDs count=18 first_5=21,48,49,50,51
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] fetching batch offset=0 size=18
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] batch returned 18 headers
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] SAMPLE header uid=21 messageID=mid:1 in_reply_to=NULL references=NULL subject=Welcome to Roundcube Webmail
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] SAMPLE raw vars: Array
+(
+    [id] => 1
+    [uid] => 21
+    [subject] => Welcome to Roundcube Webmail
+    [from] => System Admin <admin@example.test>
+    [to] => alice@example.test
+    [cc] => 
+    [bcc] => 
+    [replyto] => 
+    [in_reply_to] => 
+    [date] => Tue, 03 Mar 2026 12:22:06 +0000
+    [messageID] => mid:1
+    [size] => 809
+    [encoding] => 
+    [charset] => UTF-8
+    [ctype] => text/plain
+    [timestamp] => 1772540526
+    [bodystructure] => 
+    [body] => 
+    [bodypart] => Array
+        (
+        )
+
+    [internaldate] => 03-Mar-2026 12:22:06 +0000
+    [references] => 
+    [priority] => 
+    [mdn_to] => 
+    [folder] => INBOX
+    [others] => Array
+        (
+        )
+
+    [flags] => Array
+        (
+            [SEEN] => 1
+        )
+
+    [annotations] => 
+    [list_flags] => Array
+        (
+        )
+
+    [list_cols] => Array
+        (
+        )
+
+    [structure] => 
+    [depth] => 
+    [has_children] => 
+    [flagged_children] => 
+    [unread_children] => 
+    [parent_uid] => 
+    [modseq] => 
+    [envelope] => 
+)
+
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] total headers fetched=18
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper::group] START total_headers=18
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=21 messageID=mid:1 in_reply_to=EMPTY references_count=0 subject=Welcome to Roundcube Webmail
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=21 → NEW root=mid:1
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=48 messageID=msg69a6d26e2463d428791438@example.test in_reply_to=EMPTY references_count=0 subject=Release Planning
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=48 → NEW root=msg69a6d26e2463d428791438@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=49 messageID=msg69a6d26e24642084414366@example.test in_reply_to=msg69a6d26e2463d428791438@example.test references_count=1 subject=Re: Release Planning
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=49 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e2463d428791438@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=50 messageID=msg69a6d26e24649287194437@example.test in_reply_to=msg69a6d26e24642084414366@example.test references_count=2 subject=Re: Release Planning
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=50 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24642084414366@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=51 messageID=msg69a6d26e24650030667401@example.test in_reply_to=msg69a6d26e24649287194437@example.test references_count=3 subject=Re: Release Planning
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=51 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24649287194437@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=52 messageID=msg69a6d26e24658448512966@example.test in_reply_to=msg69a6d26e24650030667401@example.test references_count=4 subject=Re: Release Planning
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=52 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24650030667401@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=53 messageID=msg69a6d26e24663798629333@example.test in_reply_to=msg69a6d26e24658448512966@example.test references_count=5 subject=Re: Release Planning
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=53 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24658448512966@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=54 messageID=msg69a6d26e24672554433419@example.test in_reply_to=msg69a6d26e24663798629333@example.test references_count=6 subject=Re: Release Planning
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=54 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24663798629333@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=55 messageID=msg69a6d26e24693114072898@example.test in_reply_to=msg69a6d26e24672554433419@example.test references_count=7 subject=Re: Release Planning
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=55 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24672554433419@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=30 messageID=msg69a6d26e245d7762533363@example.test in_reply_to=EMPTY references_count=0 subject=Project Discussion
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=30 → NEW root=msg69a6d26e245d7762533363@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=31 messageID=msg69a6d26e245ee112514735@example.test in_reply_to=msg69a6d26e245d7762533363@example.test references_count=1 subject=Re: Project Discussion
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=31 → found existing root=msg69a6d26e245d7762533363@example.test via rid=msg69a6d26e245d7762533363@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=32 messageID=msg69a6d26e24600407269722@example.test in_reply_to=msg69a6d26e245ee112514735@example.test references_count=2 subject=Re: Project Discussion
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=32 → found existing root=msg69a6d26e245d7762533363@example.test via rid=msg69a6d26e245ee112514735@example.test
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=47 messageID=mid:10 in_reply_to=EMPTY references_count=0 subject=Recent message: Let's catch up
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=47 → NEW root=mid:10
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=22 messageID=mid:2 in_reply_to=EMPTY references_count=0 subject=Meeting Invitation: Team Standup
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=22 → NEW root=mid:2
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=26 messageID=mid:4 in_reply_to=EMPTY references_count=0 subject=📎 Q4 Report (with attachment)
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=26 → NEW root=mid:4
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=46 messageID=mid:9 in_reply_to=EMPTY references_count=0 subject=📰 Weekly Tech Digest - Edition #42
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=46 → NEW root=mid:9
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=25 messageID=mid:3 in_reply_to=EMPTY references_count=0 subject=Quick question about the API
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=25 → NEW root=mid:3
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=28 messageID=mid:5 in_reply_to=EMPTY references_count=0 subject=Old archived message from last year
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] uid=28 → NEW root=mid:5
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] Phase1 done: convs_after_rfc=9 isolated=0 linked=18 merges=0
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] Phase2 subject-fallback: before=9 after=9
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] Phase3 summaries=9
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=da92029cf3c64cf4acd5053a81fa2276 message_count=1 subject="Welcome to Roundcube Webmail" uids=21
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=fc7279a1cd81d62d011e032d18dad010 message_count=8 subject="Release Planning" uids=55,54,53,52,51,50,49,48
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=d9276fb6e400a61431f18dc4e49879ef message_count=3 subject="Project Discussion" uids=32,31,30
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=26bfde5197f15bd42935a6f46c4284e4 message_count=1 subject="Recent message: Let's catch up" uids=47
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=55c6065a184b43e0877beec1c3408678 message_count=1 subject="Meeting Invitation: Team Standup" uids=22
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=5ca5d1bfe3871295288e29cbd9c3cb47 message_count=1 subject="📎 Q4 Report (with attachment)" uids=26
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=e6044955f918f12ba54e0e54143a5179 message_count=1 subject="📰 Weekly Tech Digest - Edition #42" uids=46
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=030c70bf4bde62be97c1a90a04e6593d message_count=1 subject="Quick question about the API" uids=25
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [grouper] conv conv_id=bfcbb090560bdef1fdfd53fc453e5525 message_count=1 subject="Old archived message from last year" uids=28
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [build_from_imap] grouper produced 9 conversations
+[04-Mar-2026 04:34:11 +0000]: <c0beece8> [get_or_build] built 9 conversations, storing in cache
+[04-Mar-2026 04:34:19 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:19 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:19 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:19 +0000]: <c0beece8> [get_or_build] cache HIT mailbox=INBOX conversations=9
+[04-Mar-2026 04:34:19 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:19 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:47 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:48 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:48 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:34:48 +0000]: <c0beece8> [get_or_build] cache HIT mailbox=INBOX conversations=9
+[04-Mar-2026 04:34:48 +0000]: <c0beece8> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [get_or_build] cache MISS mailbox=INBOX – building from IMAP
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] START mailbox=INBOX
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] total message count=18
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] will fetch fetch_count=18
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] index UIDs count=18 first_5=21,48,49,50,51
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] fetching batch offset=0 size=18
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] batch returned 18 headers
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] SAMPLE header uid=21 messageID=mid:1 in_reply_to=NULL references=NULL subject=Welcome to Roundcube Webmail
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] SAMPLE raw vars: Array
+(
+    [id] => 1
+    [uid] => 21
+    [subject] => Welcome to Roundcube Webmail
+    [from] => System Admin <admin@example.test>
+    [to] => alice@example.test
+    [cc] => 
+    [bcc] => 
+    [replyto] => 
+    [in_reply_to] => 
+    [date] => Tue, 03 Mar 2026 12:22:06 +0000
+    [messageID] => mid:1
+    [size] => 809
+    [encoding] => 
+    [charset] => UTF-8
+    [ctype] => text/plain
+    [timestamp] => 1772540526
+    [bodystructure] => 
+    [body] => 
+    [bodypart] => Array
+        (
+        )
+
+    [internaldate] => 03-Mar-2026 12:22:06 +0000
+    [references] => 
+    [priority] => 
+    [mdn_to] => 
+    [folder] => INBOX
+    [others] => Array
+        (
+        )
+
+    [flags] => Array
+        (
+            [SEEN] => 1
+        )
+
+    [annotations] => 
+    [list_flags] => Array
+        (
+        )
+
+    [list_cols] => Array
+        (
+        )
+
+    [structure] => 
+    [depth] => 
+    [has_children] => 
+    [flagged_children] => 
+    [unread_children] => 
+    [parent_uid] => 
+    [modseq] => 
+    [envelope] => 
+)
+
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [build_from_imap] total headers fetched=18
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper::group] START total_headers=18
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=21 messageID=mid:1 in_reply_to=EMPTY references_count=0 subject=Welcome to Roundcube Webmail
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=21 → NEW root=mid:1
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=48 messageID=msg69a6d26e2463d428791438@example.test in_reply_to=EMPTY references_count=0 subject=Release Planning
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=48 → NEW root=msg69a6d26e2463d428791438@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=49 messageID=msg69a6d26e24642084414366@example.test in_reply_to=msg69a6d26e2463d428791438@example.test references_count=1 subject=Re: Release Planning
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=49 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e2463d428791438@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=50 messageID=msg69a6d26e24649287194437@example.test in_reply_to=msg69a6d26e24642084414366@example.test references_count=2 subject=Re: Release Planning
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=50 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24642084414366@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=51 messageID=msg69a6d26e24650030667401@example.test in_reply_to=msg69a6d26e24649287194437@example.test references_count=3 subject=Re: Release Planning
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=51 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24649287194437@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=52 messageID=msg69a6d26e24658448512966@example.test in_reply_to=msg69a6d26e24650030667401@example.test references_count=4 subject=Re: Release Planning
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=52 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24650030667401@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=53 messageID=msg69a6d26e24663798629333@example.test in_reply_to=msg69a6d26e24658448512966@example.test references_count=5 subject=Re: Release Planning
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=53 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24658448512966@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=54 messageID=msg69a6d26e24672554433419@example.test in_reply_to=msg69a6d26e24663798629333@example.test references_count=6 subject=Re: Release Planning
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=54 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24663798629333@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=55 messageID=msg69a6d26e24693114072898@example.test in_reply_to=msg69a6d26e24672554433419@example.test references_count=7 subject=Re: Release Planning
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=55 → found existing root=msg69a6d26e2463d428791438@example.test via rid=msg69a6d26e24672554433419@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=30 messageID=msg69a6d26e245d7762533363@example.test in_reply_to=EMPTY references_count=0 subject=Project Discussion
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=30 → NEW root=msg69a6d26e245d7762533363@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=31 messageID=msg69a6d26e245ee112514735@example.test in_reply_to=msg69a6d26e245d7762533363@example.test references_count=1 subject=Re: Project Discussion
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=31 → found existing root=msg69a6d26e245d7762533363@example.test via rid=msg69a6d26e245d7762533363@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=32 messageID=msg69a6d26e24600407269722@example.test in_reply_to=msg69a6d26e245ee112514735@example.test references_count=2 subject=Re: Project Discussion
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=32 → found existing root=msg69a6d26e245d7762533363@example.test via rid=msg69a6d26e245ee112514735@example.test
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=47 messageID=mid:10 in_reply_to=EMPTY references_count=0 subject=Recent message: Let's catch up
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=47 → NEW root=mid:10
+[04-Mar-2026 04:35:34 +0000]: <b6bc9090> [grouper] uid=22 messageID=mid:2 in_reply_to=EMPTY references_count=0 subject=Meeting Invitation: Team Standup
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=22 → NEW root=mid:2
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=26 messageID=mid:4 in_reply_to=EMPTY references_count=0 subject=📎 Q4 Report (with attachment)
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=26 → NEW root=mid:4
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=46 messageID=mid:9 in_reply_to=EMPTY references_count=0 subject=📰 Weekly Tech Digest - Edition #42
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=46 → NEW root=mid:9
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=25 messageID=mid:3 in_reply_to=EMPTY references_count=0 subject=Quick question about the API
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=25 → NEW root=mid:3
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=28 messageID=mid:5 in_reply_to=EMPTY references_count=0 subject=Old archived message from last year
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] uid=28 → NEW root=mid:5
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] Phase1 done: convs_after_rfc=9 isolated=0 linked=18 merges=0
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] Phase2 subject-fallback: before=9 after=9
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] Phase3 summaries=9
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=da92029cf3c64cf4acd5053a81fa2276 message_count=1 subject="Welcome to Roundcube Webmail" uids=21
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=fc7279a1cd81d62d011e032d18dad010 message_count=8 subject="Release Planning" uids=55,54,53,52,51,50,49,48
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=d9276fb6e400a61431f18dc4e49879ef message_count=3 subject="Project Discussion" uids=32,31,30
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=26bfde5197f15bd42935a6f46c4284e4 message_count=1 subject="Recent message: Let's catch up" uids=47
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=55c6065a184b43e0877beec1c3408678 message_count=1 subject="Meeting Invitation: Team Standup" uids=22
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=5ca5d1bfe3871295288e29cbd9c3cb47 message_count=1 subject="📎 Q4 Report (with attachment)" uids=26
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=e6044955f918f12ba54e0e54143a5179 message_count=1 subject="📰 Weekly Tech Digest - Edition #42" uids=46
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=030c70bf4bde62be97c1a90a04e6593d message_count=1 subject="Quick question about the API" uids=25
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [grouper] conv conv_id=bfcbb090560bdef1fdfd53fc453e5525 message_count=1 subject="Old archived message from last year" uids=28
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [build_from_imap] grouper produced 9 conversations
+[04-Mar-2026 04:35:35 +0000]: <b6bc9090> [get_or_build] built 9 conversations, storing in cache
+[04-Mar-2026 04:36:34 +0000]: <b6bc9090> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[04-Mar-2026 04:37:34 +0000]: <b6bc9090> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"

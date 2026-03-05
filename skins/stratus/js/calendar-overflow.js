@@ -20,14 +20,16 @@
       return;
     }
 
-    var menuClass = menu.getAttribute('class') || 'menu toolbar popupmenu listing iconized';
     var overflowId = 'toolbar-menu-calendar-overflow';
     var overflow = document.getElementById(overflowId);
 
     if (!overflow) {
       overflow = document.createElement('ul');
       overflow.id = overflowId;
-      overflow.className = menuClass + ' hidden';
+      // Always use a fixed class list — never copy #toolbar-menu's runtime class.
+      // The 'popupmenu' class is required for the
+      // '.popover-body > .popupmenu { display: block !important }' CSS rule.
+      overflow.className = 'menu toolbar popupmenu listing iconized hidden';
       overflow.setAttribute('aria-hidden', 'true');
       overflow.style.display = 'none';
       overflow.dataset.popupParent = 'layout-content-header';
@@ -52,12 +54,19 @@
     button.setAttribute('aria-owns', overflowId);
     button.dataset.mpCalendarOverflowReady = '1';
 
-    // Re-bind popover if it was already initialized with old popup id
+    // Re-bind popover if it was already initialized with old popup id.
+    // IMPORTANT: button.setAttribute() only updates the DOM attribute.
+    // elastic's popup_init() reads via $(item).data('popup') which hits
+    // jQuery's internal data cache — not the DOM attribute — once cached.
+    // We must update the jQuery cache explicitly, otherwise popup_init()
+    // still wires the popover to the old '#toolbar-menu' element.
     if (window.jQuery) {
       var $button = window.jQuery(button);
       if ($button.data('bs.popover')) {
         $button.popover('dispose');
       }
+      // Sync jQuery data cache with the new popup id we set via setAttribute.
+      $button.data('popup', overflowId);
       if (window.UI && typeof window.UI.popup_init === 'function') {
         window.UI.popup_init(button);
       }

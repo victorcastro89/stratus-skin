@@ -22,6 +22,47 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Reserve space for footer pagenav so it is not covered by absolute list layer */
+#layout-list[data-conv-mode="conversations"] #conv-list-content {
+  bottom: 35px;
+}
+
+/* Stratus mass-action footer is taller than Elastic default pagenav */
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content {
+  bottom: 40px;
+}
+
+/* Keep footer controls above conversation list layer */
+#layout-list[data-conv-mode="conversations"] > .footer.pagenav {
+  position: relative;
+  z-index: 2;
+}
+
+/*
+ * Stratus mass-action bar integration
+ *
+ * In Stratus, the pagenav is visually a top mass-action bar (below search).
+ * Keep conversation list in flow and let flex order place the bar above it.
+ */
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  order: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) > .footer.pagenav.mp-mass-action-bar {
+  position: relative;
+  top: auto;
+  bottom: auto;
+  order: 1;
+  z-index: 3;
+}
+
 /* When in conversations mode, hide the standard scroller completely */
 #layout-list[data-conv-mode="conversations"] .conv-standard-list {
   display: none !important;
@@ -35,16 +76,44 @@
 /* ── List rows ───────────────────────────────── */
 
 .conv-list.conv-outlook tbody tr.message {
-  border-bottom: 1px solid var(--list-border-color, #e5e5e5);
+  border-bottom: 1px solid var(--mp-conv-row-border, #e5e5e5);
+  border-left: 3px solid transparent;
+}
+
+/* Stratus listing styles add per-cell separators; use row separators here for straight lines */
+.conv-list.conv-outlook tbody tr > td {
+  border-bottom: 0;
 }
 
 .conv-list.conv-outlook tbody tr.message:hover {
-  background-color: var(--list-hover-bg, #f5f7fa);
+  background-color: var(--mp-conv-row-hover-bg, rgba(92, 107, 192, 0.04));
 }
 
-.conv-list.conv-outlook tbody tr.message.selected,
-.conv-list.conv-outlook tbody tr.message.focused {
-  background-color: var(--list-selected-bg, #e3ecf7);
+.conv-list.conv-outlook tbody tr.message.selected {
+  background-color: var(--mp-conv-row-selected-bg, rgba(92, 107, 192, 0.08));
+}
+
+/* ── Expand/Avatar spacing ─────────────────── */
+
+.conv-list.conv-outlook td.conv-expand-cell {
+  width: 22px;
+  padding: 10px 0 10px 2px;
+}
+
+.conv-list.conv-outlook td.conv-avatar {
+  padding: 10px 2px 10px 6px;
+}
+
+.conv-list.conv-outlook tr.conv-child-row td.conv-expand-cell {
+  padding: 6px 0 6px 2px;
+}
+
+.conv-list.conv-outlook tr.conv-child-row td.conv-avatar {
+  padding: 6px 2px 6px 2px;
+}
+
+.conv-list.conv-outlook tr.conv-child-divider-row > td {
+  padding-left: 44px;
 }
 
 /* ── Avatar ──────────────────────────────────── */
@@ -55,160 +124,445 @@
 
 /* ── Subject cell ────────────────────────────── */
 
-.conv-sender {
-  color: var(--color-font, #333);
+/* Elastic sets .messagelist td.subject span { line-height: 2em } for all spans.
+   Reset our structured lines to their own values so row height stays compact. */
+.conv-list.conv-outlook td.subject .conv-line1,
+.conv-list.conv-outlook td.subject .conv-line2,
+.conv-list.conv-outlook td.subject .conv-line3 {
+  line-height: inherit;
 }
 
-.conv-list.conv-outlook tr.unread .conv-sender {
-  color: var(--color-font, #111);
+.conv-sender {
+  color: var(--mp-conv-text, #333);
+}
+
+.conv-list.conv-outlook tr.unread .conv-sender,
+.conv-list.conv-outlook tr.unread .conv-subject-text {
+  color: var(--mp-conv-text-strong, #111);
 }
 
 .conv-count {
-  background: var(--color-list-badge-bg, #e8e8e8);
-  color: var(--color-font, #666);
+  background: var(--mp-conv-count-bg, #e8e8e8);
+  color: var(--mp-conv-count-text, #666);
 }
 
 .conv-date {
-  color: var(--color-list-secondary, #888);
+  color: var(--mp-conv-text-secondary, #888);
 }
 
 .conv-subject-text {
-  color: var(--color-font, #333);
+  color: var(--mp-conv-text, #333);
 }
 
 .conv-unread-dot {
-  background-color: var(--color-main, #1a73e8);
+  background-color: var(--mp-conv-main, #1a73e8);
 }
 
 .conv-status-icons {
-  color: var(--color-list-secondary, #888);
+  color: var(--mp-conv-text-secondary, #888);
 }
 
 .conv-line3 {
-  color: var(--color-list-secondary, #999);
+  color: var(--mp-conv-text-muted, #999);
 }
 
 /* ── Flagged row ─────────────────────────────── */
 
 .conv-list.conv-outlook tr.flagged {
-  border-left-color: var(--color-warning, #f9a825);
+  border-left-color: var(--mp-conv-warning, #f9a825);
+}
+
+/* Flag status icon — dedicated class, immune to elastic's tr.flagged td colour inheritance */
+.conv-status-flag-icon,
+.conv-status-flag-icon::before {
+  color: #ff5552 !important;
+}
+
+/* ── Persistent flag indicator ────────────────── */
+
+.conv-list.conv-outlook .conv-flag-indicator {
+  color: var(--mp-conv-danger, #e53935);
+}
+
+/* ── Date in flags cell ─────────────────────── */
+
+.conv-row-date {
+  color: var(--mp-conv-text-secondary, #888);
 }
 
 /* ── Hover actions ───────────────────────────── */
 
 .conv-hover-actions {
-  background: var(--color-layout-list-bg, rgba(255, 255, 255, 0.95));
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+  background: var(--mp-conv-hover-actions-bg, rgba(255, 255, 255, 0.97));
+  box-shadow: var(--mp-conv-hover-actions-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
 }
 
 .conv-action-btn {
-  color: var(--color-list-secondary, #666);
+  color: var(--mp-conv-hover-actions-btn-text, #666);
 }
 
 .conv-action-btn:hover {
-  background-color: var(--color-list-hover-bg, #e8e8e8);
-  color: var(--color-font, #333);
+  background-color: var(--mp-conv-row-selected-bg, rgba(92, 107, 192, 0.08));
+  color: var(--mp-conv-hover-actions-btn-hover-text, #333);
 }
 
 /* ── Empty state ─────────────────────────────── */
 
 .conv-empty {
-  color: var(--color-list-secondary, #999);
+  color: var(--mp-conv-text-muted, #999);
 }
 
 /* ── Detail header ───────────────────────────── */
 
 .conv-detail-wrapper {
-  background: var(--color-layout-content-bg, #fff);
+  background: var(--mp-conv-surface, #fff);
 }
 
 .conv-detail-header {
-  background: var(--color-layout-header, #fafbfc);
-  border-bottom-color: var(--list-border-color, #e5e5e5);
+  background: var(--mp-conv-surface-alt, #fafbfc);
+  border-bottom-color: var(--mp-conv-row-border, #e5e5e5);
 }
 
 .conv-back-btn {
-  color: var(--color-main, #1a73e8);
+  color: var(--mp-conv-main, #1a73e8);
 }
 
 .conv-detail-subject {
-  color: var(--color-font, #333);
+  color: var(--mp-conv-text, #333);
 }
 
 .conv-detail-meta {
-  color: var(--color-list-secondary, #666);
+  color: var(--mp-conv-text-secondary, #666);
 }
 
 /* ── Message cards ───────────────────────────── */
 
 .conv-message-card {
-  border-color: var(--list-border-color, #e5e5e5);
+  border-color: var(--mp-conv-row-border, #e5e5e5);
   border-radius: 8px;
-  background: var(--color-layout-content-bg, #fff);
+  background: var(--mp-conv-surface-raised, #fff);
 }
 
 .conv-message-card.unread {
-  border-left-color: var(--color-main, #1a73e8);
+  border-left-color: var(--mp-conv-main, #1a73e8);
 }
 
 .conv-msg-from {
-  color: var(--color-font, #333);
+  color: var(--mp-conv-text, #333);
 }
 
 .conv-msg-date {
-  color: var(--color-list-secondary, #888);
+  color: var(--mp-conv-text-secondary, #888);
 }
 
 .conv-msg-subject {
-  color: var(--color-font, #444);
+  color: var(--mp-conv-text, #444);
 }
 
 .conv-msg-open {
-  color: var(--color-main, #1a73e8);
-  border-color: var(--color-main, #1a73e8);
+  color: var(--mp-conv-main, #1a73e8);
+  border-color: var(--mp-conv-main, #1a73e8);
 }
 
 .conv-msg-open:hover {
-  background: var(--color-main, #1a73e8);
+  background: var(--mp-conv-main, #1a73e8);
   color: #fff;
 }
 
 /* ── Pagination ──────────────────────────────── */
 
 .conv-pagination {
-  border-top-color: var(--list-border-color, #e5e5e5);
-  background: var(--color-layout-list-bg, #fff);
+  border-top-color: var(--mp-conv-row-border, #e5e5e5);
+  background: var(--mp-conv-list-surface, #fff);
 }
 
 .conv-page-btn {
-  color: var(--color-main, #1a73e8);
+  color: var(--mp-conv-main, #1a73e8);
 }
 
 .conv-page-btn:hover {
-  background: var(--color-main-light, #e3ecf7);
+  background: var(--mp-conv-main-light, #e3ecf7);
 }
 
 .conv-page-info {
-  color: var(--color-list-secondary, #666);
+  color: var(--mp-conv-text-secondary, #666);
 }
 
 /* ── Toggle button active ────────────────────── */
 
 .conv-toggle.conv-active .inner,
 .conv-toggle.conv-active {
-  color: var(--color-main, #1a73e8);
+  color: var(--mp-conv-main, #1a73e8);
 }
 
 /* ═══════════════════════════════════════════════
    Dark Mode
    ═══════════════════════════════════════════════ */
 
+/* ── Row separators ──────────────────────────── */
+/* @color-dark-list-border: #1e2340 */
+html.dark-mode .conv-list.conv-outlook tbody tr.message {
+  border-bottom-color: var(--mp-conv-row-border, #1e2340);
+}
+
+/* ── Row hover / selected ─────────────────────── */
+/* fadeout(@color-dark-main, 94%) / fadeout(@color-dark-main, 85%) */
+html.dark-mode .conv-list.conv-outlook tbody tr.message:hover {
+  background-color: var(--mp-conv-row-hover-bg, rgba(121, 134, 203, 0.06));
+}
+
+html.dark-mode .conv-list.conv-outlook tbody tr.message.selected {
+  background-color: var(--mp-conv-row-selected-bg, rgba(121, 134, 203, 0.15));
+}
+
+/* ── Text colours ─────────────────────────────── */
+/* @color-dark-font: #c8d0e8 */
+html.dark-mode .conv-sender,
+html.dark-mode .conv-list.conv-outlook tr.unread .conv-sender,
+html.dark-mode .conv-subject-text,
+html.dark-mode .conv-detail-subject,
+html.dark-mode .conv-msg-from,
+html.dark-mode .conv-msg-subject {
+  color: var(--mp-conv-text-strong, #c8d0e8);
+}
+
+/* @color-dark-font-secondary: #7e8aad */
+html.dark-mode .conv-date,
+html.dark-mode .conv-row-date,
+html.dark-mode .conv-line3,
+html.dark-mode .conv-status-icons,
+html.dark-mode .conv-detail-meta,
+html.dark-mode .conv-msg-date,
+html.dark-mode .conv-page-info,
+html.dark-mode .conv-empty {
+  color: var(--mp-conv-text-secondary, #7e8aad);
+}
+
+/* Flag icon stays red in dark mode */
+html.dark-mode .conv-status-flag-icon,
+html.dark-mode .conv-status-flag-icon::before {
+  color: #ff5552 !important;
+}
+
+/* ── Count badge ─────────────────────────────── */
+/* @color-dark-main: #7986cb at 20% opacity */
+html.dark-mode .conv-count {
+  background: var(--mp-conv-count-bg, rgba(121, 134, 203, 0.2));
+  color: var(--mp-conv-count-text, #c8d0e8);
+}
+
+html.dark-mode .conv-child-divider-line {
+  background: var(--mp-conv-row-border, #3a3f4b);
+  opacity: 0.5;
+}
+
+/* ── Hover action strip ──────────────────────── */
 html.dark-mode .conv-hover-actions {
-  background: var(--color-layout-list-bg, rgba(40, 40, 40, 0.95));
+  background: var(--mp-conv-hover-actions-bg, rgba(26, 31, 54, 0.97));
+  box-shadow: var(--mp-conv-hover-actions-shadow, 0 1px 6px rgba(0, 0, 0, 0.4));
+}
+
+html.dark-mode .conv-action-btn {
+  color: var(--mp-conv-hover-actions-btn-text, #7e8aad);
+}
+
+html.dark-mode .conv-action-btn:hover {
+  background: var(--mp-conv-row-selected-bg, rgba(121, 134, 203, 0.12));
+  color: var(--mp-conv-hover-actions-btn-hover-text, #c8d0e8);
+}
+
+/* ── Detail panel ────────────────────────────── */
+/* @color-dark-surface: #1a1f36  @color-dark-border: #2a3050 */
+html.dark-mode .conv-detail-wrapper {
+  background: var(--mp-conv-surface, #1a1f36);
+}
+
+html.dark-mode .conv-detail-header {
+  background: var(--mp-conv-surface-alt, #1a1f36);
+  border-bottom-color: var(--mp-conv-row-border, #2a3050);
+}
+
+html.dark-mode .conv-back-btn {
+  color: var(--mp-conv-main, #7986cb);
+}
+
+/* ── Message cards ───────────────────────────── */
+html.dark-mode .conv-message-card {
+  background: var(--mp-conv-surface-raised, #212845);
+  border-color: var(--mp-conv-row-border, #2a3050);
 }
 
 html.dark-mode .conv-message-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--mp-conv-card-hover-shadow, 0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+html.dark-mode .conv-message-card.unread {
+  border-left-color: var(--mp-conv-main, #7986cb);
+}
+
+html.dark-mode .conv-msg-open {
+  color: var(--mp-conv-main, #7986cb);
+  border-color: var(--mp-conv-main, #7986cb);
+}
+
+html.dark-mode .conv-msg-open:hover {
+  background: var(--mp-conv-main, #7986cb);
+  color: #fff;
+}
+
+/* ── Pagination bar ──────────────────────────── */
+html.dark-mode .conv-pagination {
+  background: var(--mp-conv-list-surface, #1a1f36);
+  border-top-color: var(--mp-conv-row-border, #2a3050);
+}
+
+html.dark-mode .conv-page-btn {
+  color: var(--mp-conv-main, #7986cb);
+}
+
+html.dark-mode .conv-page-btn:hover {
+  background: var(--mp-conv-row-selected-bg, rgba(121, 134, 203, 0.15));
+}
+
+/* ═══════════════════════════════════════════════
+   Expand Arrow & Child Rows (elastic overrides)
+   ═══════════════════════════════════════════════ */
+
+.conv-expand-arrow {
+  color: var(--mp-conv-text-muted, #999);
+}
+
+.conv-expand-arrow:hover {
+  background-color: var(--mp-conv-row-selected-bg, rgba(92, 107, 192, 0.08));
+  color: var(--mp-conv-main, #5c6bc0);
+}
+
+.conv-list.conv-outlook tbody tr.message.conv-expanded {
+  border-left-color: var(--mp-conv-main, #1a73e8);
+  background-color: var(--mp-conv-expanded-bg, var(--mp-conv-main-light, #f5f8fd));
+}
+
+tr.conv-child-row {
+  background-color: var(--mp-conv-child-bg, var(--mp-conv-child-row-bg, #fafbfc));
+  border-left-color: var(--mp-conv-child-row-border, #d0d7de);
+  border-bottom: 1px solid var(--mp-conv-child-divider, var(--mp-conv-row-border, #e8e8e8));
+}
+
+/* Keep child row cells transparent so row background is visually uniform */
+.conv-list.conv-outlook tbody tr.conv-child-row > td,
+.conv-list.conv-outlook tbody tr.conv-child-row:hover > td,
+.conv-list.conv-outlook tbody tr.conv-child-row.selected > td {
+  background-color: transparent;
+}
+
+tr.conv-child-row:hover {
+  background-color: var(--mp-conv-child-hover-bg, var(--mp-conv-row-hover-bg, rgba(92, 107, 192, 0.04)));
+}
+
+tr.conv-child-row.selected {
+  background-color: var(--mp-conv-child-selected-bg, var(--mp-conv-row-selected-bg, rgba(92, 107, 192, 0.08)));
+}
+
+tr.conv-child-row .conv-subject-text {
+  color: var(--mp-conv-child-text-muted, var(--mp-conv-text-secondary, #666));
+}
+
+tr.conv-child-row .conv-sender {
+  color: var(--mp-conv-child-text, var(--mp-conv-text, #333));
+}
+
+/* ── Child row unread accent ─────────────────── */
+
+tr.conv-child-row.unread {
+  border-left-color: var(--mp-conv-child-unread-accent, var(--mp-conv-main, #1a73e8));
+}
+
+tr.conv-child-row.unread .conv-sender {
+  color: var(--mp-conv-text-strong, #111);
+}
+
+tr.conv-child-row.unread .conv-line3 {
+  color: var(--mp-conv-text, #444);
+}
+
+/* ── Child hover actions ─────────────────────── */
+
+tr.conv-child-row .conv-hover-actions {
+  background: var(--mp-conv-hover-actions-bg, rgba(255, 255, 255, 0.97));
+  box-shadow: var(--mp-conv-hover-actions-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
+}
+
+tr.conv-child-row .conv-action-btn {
+  color: var(--mp-conv-hover-actions-btn-text, #666);
+}
+
+tr.conv-child-row .conv-action-btn:hover {
+  background-color: var(--mp-conv-row-selected-bg, rgba(92, 107, 192, 0.08));
+  color: var(--mp-conv-hover-actions-btn-hover-text, #333);
+}
+
+/* ── Direction indicator (elastic theme) ──────── */
+
+.conv-dir-sent::before {
+  color: var(--mp-conv-dir-sent-color, #43a047);
+}
+
+.conv-dir-received::before {
+  color: var(--mp-conv-dir-received-color, #1e88e5);
+}
+
+html.dark-mode .conv-expand-arrow {
+  color: var(--mp-conv-text-secondary, #888);
+}
+
+html.dark-mode tr.conv-child-row {
+  background-color: var(--mp-conv-child-bg, var(--mp-conv-child-row-bg, rgba(255, 255, 255, 0.03)));
+  border-left-color: var(--mp-conv-child-row-border, rgba(255, 255, 255, 0.1));
+}
+
+html.dark-mode tr.conv-child-row:hover {
+  background-color: var(--mp-conv-child-hover-bg, var(--mp-conv-row-hover-bg, rgba(121, 134, 203, 0.06)));
+}
+
+html.dark-mode tr.conv-child-row.selected {
+  background-color: var(--mp-conv-child-selected-bg, var(--mp-conv-row-selected-bg, rgba(121, 134, 203, 0.15)));
+}
+
+/* Dark mode: child row unread accent */
+html.dark-mode tr.conv-child-row.unread {
+  border-left-color: var(--mp-conv-child-unread-accent, var(--mp-conv-main, #7986cb));
+}
+
+html.dark-mode tr.conv-child-row.unread .conv-sender {
+  color: var(--mp-conv-text-strong, #c8d0e8);
+}
+
+/* Dark mode: child hover actions */
+html.dark-mode tr.conv-child-row .conv-hover-actions {
+  background: var(--mp-conv-hover-actions-bg, rgba(26, 31, 54, 0.97));
+  box-shadow: var(--mp-conv-hover-actions-shadow, 0 1px 6px rgba(0, 0, 0, 0.4));
+}
+
+html.dark-mode tr.conv-child-row .conv-action-btn {
+  color: var(--mp-conv-hover-actions-btn-text, #7e8aad);
+}
+
+html.dark-mode tr.conv-child-row .conv-action-btn:hover {
+  background: var(--mp-conv-row-selected-bg, rgba(121, 134, 203, 0.12));
+  color: var(--mp-conv-hover-actions-btn-hover-text, #c8d0e8);
+}
+
+/* Dark mode: direction indicator */
+html.dark-mode .conv-dir-sent::before {
+  color: var(--mp-conv-dir-sent-color, #66bb6a);
+}
+
+html.dark-mode .conv-dir-received::before {
+  color: var(--mp-conv-dir-received-color, #42a5f5);
+}
+
+html.dark-mode .conv-list.conv-outlook tbody tr.message.conv-expanded {
+  background-color: var(--mp-conv-expanded-bg, rgba(255, 255, 255, 0.05));
 }
 
 /* ═══════════════════════════════════════════════
@@ -216,6 +570,11 @@ html.dark-mode .conv-message-card:hover {
    ═══════════════════════════════════════════════ */
 
 @media screen and (max-width: 768px) {
+  .conv-expand-cell {
+    width: 24px;
+    padding: 8px 0 8px 4px;
+  }
+
   .conv-list.conv-outlook td.conv-avatar {
     width: 40px;
     padding: 8px 2px 8px 8px;

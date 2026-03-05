@@ -1,0 +1,205 @@
+// stratus widgets — Forms
+// Form controls, inputs, switches, checkboxes, recipient chips
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FORMS — rounded inputs with animated focus
+// ═══════════════════════════════════════════════════════════════════════════════
+.form-control,
+.custom-select {
+    border-radius: @mp-radius-md;
+    border: 1px solid @color-input-border;
+    // Bootstrap sets height:calc(1.5em + .75rem + 2px) ~38px; our 0.55rem padding
+    // needs ~44px — reset to auto so the taller padding isn't clipped.
+    height: auto;
+    padding: 0.55rem 0.75rem;
+    font-size: @mp-font-size-base;
+    transition: border-color @mp-transition-base, box-shadow @mp-transition-smooth,
+                background @mp-transition-base;
+
+    &:focus {
+        border-color: @color-main;
+        .mp-focus-ring();
+    }
+}
+
+textarea.form-control {
+    border-radius: @mp-radius-lg;
+}
+
+// Datepicker header selects — pre-styled to prevent FOUC
+// The calendar plugin adds .form-control/.custom-select via setTimeout(25ms),
+// causing the native OS select (gray/white chrome) to flash before JS runs.
+// Pre-applying appearance:none + background here kills that 25ms flash entirely.
+.ui-datepicker .ui-datepicker-header {
+    select {
+        // Anti-FOUC: match the final computed styles that will apply once JS
+        // adds .form-control/.custom-select 25 ms later.  Every property that
+        // changes on class-addition must be pre-set here so nothing shifts.
+        height: auto;
+        padding: 0.25rem 1.75rem 0.25rem 0.75rem; // top right bottom left — matches final
+        font-size: @mp-font-size-base;
+        line-height: 1.5;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: @color-layout-list-background url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+        border: 1px solid @color-input-border;
+        border-radius: @mp-radius-md;
+        color: @color-font;
+    }
+}
+
+// Input groups — clean rounded ends
+.input-group {
+    .input-group-prepend .input-group-text,
+    .input-group-prepend .btn {
+        border-radius: @mp-radius-md 0 0 @mp-radius-md;
+    }
+
+    .input-group-append .input-group-text,
+    .input-group-append .btn {
+        border-radius: 0 @mp-radius-md @mp-radius-md 0;
+    }
+
+    .form-control {
+        &:first-child { border-radius: @mp-radius-md 0 0 @mp-radius-md; }
+        &:last-child  { border-radius: 0 @mp-radius-md @mp-radius-md 0; }
+    }
+}
+
+// Custom switches — indigo when checked
+.custom-switch {
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: @color-main;
+        border-color: @color-main;
+    }
+}
+
+// Custom checkboxes — rounded, indigo
+.custom-checkbox {
+    .custom-control-label::before {
+        border-radius: @mp-radius-xs;
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: @color-main;
+        border-color: @color-main;
+    }
+}
+
+// Recipient chips (compose)
+.recipient-input {
+    .recipient {
+        .mp-pill-shape();
+        padding: 2px 10px;
+        font-size: @mp-font-size-sm;
+        background: fadeout(@color-main, 92%);
+        border: 1px solid fadeout(@color-main, 75%);
+        .mp-transition(background @mp-transition-base);
+
+        &:hover {
+            background: fadeout(@color-main, 85%);
+        }
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    // ── SEARCH BAR ───────────────────────────────────────────────────────────────────
+    .searchbar,
+    #searchbar {
+        background: fadeout(@color-dark-surface-raised, 50%);
+        border-color: transparent;
+
+        &:focus-within {
+            background: @color-dark-surface-raised;
+            border-color: fadeout(@color-dark-main, 60%);
+            .mp-focus-ring(@color-dark-main, 85%);
+        }
+    }
+
+    // ── FORM CONTROLS ──────────────────────────────────────────────────────────────
+    .form-control {
+        border-color: @color-dark-input-border;
+        color: @color-dark-input;
+
+        &:focus {
+            border-color: @color-dark-main;
+            .mp-focus-ring(@color-dark-main, 82%);
+            background: @color-dark-input-background-focus;
+        }
+    }
+
+    // Use background-color (not background shorthand) so we don't overwrite
+    // the SVG dropdown-arrow image that elastic's dark.less injects via
+    // `background: url(svg) no-repeat …`. The image layer survives; we only
+    // change the fill color beneath it.
+    .custom-select {
+        background-color: @color-dark-input-background;
+        border-color: @color-dark-input-border;
+        color: @color-dark-input;
+
+        &:focus {
+            border-color: @color-dark-main;
+            .mp-focus-ring(@color-dark-main, 82%);
+            background-color: @color-dark-input-background-focus;
+        }
+    }
+
+    // Datepicker month/year selects live inside the header — give them the
+    // header surface colour so they blend in instead of looking like a field.
+    .ui-datepicker .ui-datepicker-title {
+        select.ui-datepicker-month,
+        select.ui-datepicker-year {
+            @color-arrow: escape(~"@{color-dark-input}");
+            background: @color-dark-surface-raised url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+            border-color: @color-dark-border;
+            color: @color-dark-font;
+
+            &:focus {
+                background: @color-dark-surface-raised url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+                border-color: @color-dark-main;
+                box-shadow: 0 0 0 2px fadeout(@color-dark-main, 82%);
+            }
+        }
+    }
+
+    label,
+    .form-label {
+        color: @color-dark-font-secondary;
+    }
+
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: @color-dark-main;
+        border-color: @color-dark-main;
+    }
+
+    .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: @color-dark-main;
+        border-color: @color-dark-main;
+    }
+
+    .recipient-input .recipient {
+        background: fadeout(@color-dark-main, 88%);
+        border-color: fadeout(@color-dark-main, 65%);
+        color: @color-dark-main-light;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 80%);
+        }
+    }
+
+    // ── FILE UPLOAD ───────────────────────────────────────────────────────────────────
+    .file-upload {
+        border-color: fadeout(@color-dark-main, 60%);
+
+        &:hover,
+        &.hover {
+            border-color: @color-dark-main;
+            background: fadeout(@color-dark-main, 94%);
+        }
+    }
+}

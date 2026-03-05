@@ -1,0 +1,72 @@
+# docker/Dockerfile.roundcube
+# Lightweight PHP+Apache image with every extension Roundcube needs.
+# The actual Roundcube source is bind-mounted from the host (./roundcubemail/).
+
+FROM php:8.2-apache
+
+# ── System libraries required by PHP extensions ─────────────────────────────
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+        libicu-dev \
+        libldap2-dev \
+        libzip-dev \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        libexif-dev \
+        libonig-dev \
+        libxml2-dev \
+        libsqlite3-dev \
+        libpspell-dev \
+        aspell \
+        aspell-en \
+        node-less \
+        unzip \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── PHP extensions (install only what php:8.2-apache doesn't ship) ───────────
+# Already included: dom, xml, mbstring, pdo, pdo_sqlite (varies by build).
+# We install everything Roundcube needs; docker-php-ext-install is a no-op
+# for extensions that are already present.
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure ldap \
+    && docker-php-ext-install -j"$(nproc)" \
+        intl \
+        pdo_sqlite \
+        zip \
+        exif \
+        ldap \
+        gd \
+        opcache \
+        pspell
+
+# ── Enable Apache mod_rewrite (Roundcube needs it) ─────────────────────────
+RUN a2enmod rewrite expires deflate headers
+
+# ── Composer (for installing plugins inside the container) ──────────────────
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# ── Custom entrypoint (composer install + DB init + Apache) ─────────────────
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# ── PHP tuning ──────────────────────────────────────────────────────────────
+# The host mounts roundcube.ini for detailed settings; these are safe defaults.
+RUN echo "date.timezone = UTC" > /usr/local/etc/php/conf.d/zzz-defaults.ini
+
+# ── Apache: serve from public_html/ (Roundcube 1.6+ public entry point) ────
+RUN sed -i 's|/var/www/html|/var/www/html/public_html|g' \
+        /etc/apache2/sites-available/000-default.conf
+
+# Allow .htaccess overrides inside the web root
+RUN { \
+    echo '<Directory /var/www/html/public_html>'; \
+    echo '    AllowOverride All'; \
+    echo '    Require all granted'; \
+    echo '</Directory>'; \
+    } >> /etc/apache2/conf-available/roundcube.conf \
+    && a2enconf roundcube
+
+WORKDIR /var/www/html
+EXPOSE 80

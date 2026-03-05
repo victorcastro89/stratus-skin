@@ -21,9 +21,9 @@ There are 5 types of files in `.github/`. Each loads differently:
 | File | Trigger | What happens |
 |------|---------|-------------|
 | `copilot-instructions.md` | **Every single chat message** | Copilot always knows the project rules, constraints, and file map. You never need to explain the project. |
-| `instructions/skin-styles.instructions.md` | **You open/edit a file in `docker/www/skins/stratus/styles/`** | Copilot auto-loads LESS coding rules (use `@` not `$`, `mp-` prefix, dark mode patterns). Triggered by the `applyTo` glob in the file's frontmatter. |
-| `instructions/skin-templates.instructions.md` | **You open/edit a file in `docker/www/skins/stratus/templates/`** | Copilot auto-loads Roundcube template tag rules. |
-| `instructions/plugin-php.instructions.md` | **You open/edit a file in `docker/www/plugins/stratus_helper/`** | Copilot auto-loads PHP plugin API rules. |
+| `instructions/skin-styles.instructions.md` | **You open/edit a file in `skins/stratus/styles/`** | Copilot auto-loads LESS coding rules (use `@` not `$`, `mp-` prefix, dark mode patterns). Triggered by the `applyTo` glob in the file's frontmatter. |
+| `instructions/skin-templates.instructions.md` | **You open/edit a file in `skins/stratus/templates/`** | Copilot auto-loads Roundcube template tag rules. |
+| `instructions/plugin-php.instructions.md` | **You open/edit a file in `plugins/stratus_helper/`** | Copilot auto-loads PHP plugin API rules. |
 | `instructions/feature-specs.instructions.md` | **You open/edit a file in `.github/feature-specs/`** | Copilot auto-loads feature spec format rules and required sections. |
 | `instructions/memory-format.instructions.md` | **You open/edit a file in `.github/memory/`** | Copilot auto-loads memory formatting rules. |
 
@@ -42,23 +42,11 @@ There are 5 types of files in `.github/`. Each loads differently:
 | `prompts/add-color-variant.prompt.md` | Type **`/add-color-variant`** in chat | Guided flow to add a new color scheme. |
 | `prompts/override-template.prompt.md` | Type **`/override-template`** in chat | Guided flow to override a specific elastic template. |
 
-### 🔵 PASSIVE — Copilot pulls these in when relevant
-
-| File | How it works |
-|------|-------------|
-| `skills/elastic-skin-system/SKILL.md` | Copilot reads this when your question relates to elastic's architecture. |
-| `skills/roundcube-template-api/SKILL.md` | Copilot reads this when you ask about template tags. |
-| `skills/color-dark-mode-system/SKILL.md` | Copilot reads this when you ask about colors or dark mode. |
-| `skills/less-build-workflow/SKILL.md` | Copilot reads this when you ask about building or LESS compilation. |
-
-**Skills are reference docs.** You don't invoke them. Copilot decides when it needs deeper knowledge and pulls them in. Think of them as a library the AI consults.
-
-### 📋 MANUAL — Agents read/write these, you can too
+###  MANUAL — Agents read/write these, you can too
 
 | File | What it is |
 |------|-----------|
-| `memory/context.md` | Current project state. Agents read before work, update after. |
-| `memory/decisions.md` | Architecture Decision Records. Agents check before proposing changes. |
+| `memory/context.md` | Current project state, styling rules, architectural decisions. Agents read before work, update after. |
 | `memory/roadmap.md` | Task backlog with ✅/🔲 status. Agents update progress here. |
 | `feature-specs/*.md` | Feature spec documents. Agents create before implementing new features, human approves before code is written. |
 
@@ -150,6 +138,7 @@ Type `/` in Copilot chat to see these prompt templates:
 | `/compile-and-validate` | Just compile and run QA checks (no building) |
 | `/add-color-variant` | Guided flow to add a new color scheme |
 | `/override-template` | Step-by-step template override |
+| `/update-docs-after-bugfix` | After fixing bugs — update memory, roadmap, enrich agent docs and instruction files with learnings |
 
 **`/build-next` is equivalent to `@builder continue`.** Use whichever you prefer.
 
@@ -161,8 +150,7 @@ Agents share state across sessions via three files:
 
 | File | Purpose | You should |
 |------|---------|-----------|
-| `.github/memory/context.md` | What exists, what was just done, what's next | Read if resuming after a break |
-| `.github/memory/decisions.md` | Why things are the way they are (ADRs) | Read before proposing structural changes |
+| `.github/memory/context.md` | What exists, what was just done, styling rules, what's next | Read if resuming after a break |
 | `.github/memory/roadmap.md` | Full task backlog with status | Check what's done and what's remaining |
 | `.github/feature-specs/*.md` | Detailed feature plans with approval status | Check before implementing any new feature |
 
@@ -175,21 +163,20 @@ Agents update these automatically after each task. If you notice they're stale, 
 ## Key Commands
 
 ```bash
-# Compile LESS → CSS (dev)
-cd docker/www/skins/stratus
-npx lessc styles/styles.less styles/styles.css
+# Compile LESS → minified CSS (one-shot)
+npm run less:build
 
-# Compile LESS → minified CSS (production)
-npx lessc --clean-css="--s1 --advanced" styles/styles.less styles/styles.min.css
+# Compile LESS in watch mode (auto-recompiles on save)
+npm run less:watch
 
 # Check JSON validity
-python3 -c "import json; json.load(open('docker/www/skins/stratus/meta.json'))"
+python3 -c "import json; json.load(open('skins/stratus/meta.json'))"
 
 # Search for our custom classes in compiled output
-grep "mp-" docker/www/skins/stratus/styles/styles.min.css
+grep "mp-" skins/stratus/styles/styles.min.css
 
 # Check CSS file size
-wc -c docker/www/skins/stratus/styles/styles.min.css
+wc -c skins/stratus/styles/styles.min.css
 ```
 
 ---
@@ -204,26 +191,46 @@ wc -c docker/www/skins/stratus/styles/styles.min.css
 
 ---
 
-## File Structure (Target)
+## File Structure (Current)
 
 ```
-docker/www/skins/stratus/
+skins/stratus/
 ├── meta.json                ← skin config (extends elastic)
 ├── composer.json            ← package info
 ├── thumbnail.png            ← preview for skin selector
-├── watermark.html           ← branding page
+├── watermark.html           ← branding page (reading pane empty state)
 ├── styles/
-│   ├── styles.less          ← main entry (only @imports)
-│   ├── _variables.less      ← color + dimension overrides
-│   ├── _layout.less         ← layout structure tweaks
-│   ├── _components.less     ← buttons, inputs, lists
-│   ├── _dark.less           ← dark mode extras
+│   ├── styles.less          ← main entry (only @imports — elastic FIRST)
+│   ├── _variables.less      ← color + dimension overrides (~180+ vars)
+│   ├── _typography.less     ← font stack, heading hierarchy
+│   ├── _animations.less     ← transitions, keyframes, reduced-motion
+│   ├── _layout.less         ← taskmenu, headers, panels
+│   ├── widgets/             ← component files (mirrors Elastic structure)
+│   │   ├── common.less      ← quota, scrollbars, mass-action bar
+│   │   ├── buttons.less     ← button variants, toolbar icons, FAB
+│   │   ├── forms.less       ← form controls, switches, recipient chips
+│   │   ├── lists.less       ← message list, folder list, badges
+│   │   ├── menu.less        ← navigation tabs
+│   │   ├── messages.less    ← message view, attachments, toasts
+│   │   ├── dialogs.less     ← dialogs, overlay, popovers
+│   │   ├── editor.less      ← TinyMCE editor
+│   │   └── jqueryui.less    ← jQuery UI overrides
+│   ├── _components.less     ← barrel file (no rules — see widgets/)
+│   ├── _calendar.less       ← calendar/FullCalendar overrides
+│   ├── _dark.less           ← dark mode extras (html.dark-mode rules)
 │   ├── _login.less          ← login page styles
-│   └── styles.min.css       ← compiled output (don't edit)
+│   ├── _runtime.less        ← CSS custom properties bridge (for JS theming)
+│   └── styles.min.css       ← compiled output (don't edit manually)
 ├── templates/
-│   └── includes/
-│       └── layout.html      ← CSS injection point
-└── assets/
-    ├── images/              ← logos, icons
-    └── js/                  ← optional scripts
+│   ├── includes/
+│   │   └── layout.html      ← CSS injection point
+│   ├── login.html           ← login page override
+│   └── mail.html            ← mail layout + conversation mode containers
+└── plugins/
+    └── calendar/
+        └── templates/
+            └── calendar.html  ← Tier B calendar toolbar override
+
+plugins/stratus_helper/      ← companion plugin (appearance prefs, folder refresh)
+plugins/conversation_mode/   ← conversation mode plugin (grouping, Outlook-style rows)
 ```

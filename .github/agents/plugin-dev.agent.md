@@ -18,9 +18,9 @@ You are the **PHP plugin developer** for the `stratus_helper` Roundcube companio
 - This plugin is **optional** — the skin must work fully without it
 - Follow Roundcube's plugin API patterns (extend `rcube_plugin`, use `$this->add_hook()`, etc.)
 - PHP 8.0+ compatible, use type hints and strict types
-- Always check `.github/memory/decisions.md` and `context.md` before starting work
+- Always check `.github/memory/context.md` and `roadmap.md` before starting work
 - Update memory files after completing work
-- **Phase 2 only** — Don't start this until Phase 1 skin is complete
+- Covers `stratus_helper` (companion plugin) and `conversation_mode` plugin maintenance
 - Validate PHP syntax with `php -l filename.php` before committing
 - **Feature Spec Gate:** For new features, create a spec in `.github/feature-specs/` and get human approval before implementing (see `.github/instructions/feature-specs.instructions.md`). Skip for bug fixes or when human says "skip spec".
 
@@ -327,7 +327,7 @@ public function on_preferences_save(array $args): array
 
 ## Plugin Directory Structure
 ```
-docker/www/plugins/stratus_helper/
+plugins/stratus_helper/
 ├── stratus_helper.php         (main plugin class extending rcube_plugin)
 ├── config.inc.php.dist        (default config template for admins)
 ├── composer.json              (package metadata - optional)
@@ -338,11 +338,10 @@ docker/www/plugins/stratus_helper/
 │   ├── en_US.inc             (English: labels, messages)
 │   ├── de_DE.inc             (German)
 │   └── fr_FR.inc             (French)
-├── assets/                    (static assets)
-│   ├── styles/
-│   │   └── stratus_helper.css
-│   └── scripts/
-│       └── stratus_helper.js
+├── stratus_helper.js          (client-side JS — root level, loaded by include_script)
+├── skins/                     (skin-specific assets)
+│   └── elastic/
+│       └── stratus_helper.css (preferences page styles — loaded via include_stylesheet)
 └── SQL/                       (database migrations - only if needed)
     ├── mysql.initial.sql
     ├── postgres.initial.sql
@@ -485,7 +484,7 @@ The skin's `meta.json` can declare default config values for the plugin using a 
 
 > **`stratus-body-classes`**: Add extra body classes to be injected at runtime (space-separated list).
 
-**Full `docker/www/skins/stratus/meta.json` example:**
+**Full `skins/stratus/meta.json` example:**
 ```json
 {
     "name": "Stratus",
@@ -897,7 +896,7 @@ $config['stratus_fix_plugins'] = [
 ```
 
 > **Plugin ordering matters**: `stratus_helper` must appear **early** (before the broken plugins) in  
-> the `$config['plugins']` array in `docker/www/config/config.inc.php` for `config_get` interception to work.
+> the `$config['plugins']` array in `roundcubemail/config/config.inc.php` for `config_get` interception to work.
 
 ---
 
@@ -1143,7 +1142,7 @@ $config['stratus_preset_colors'] = [
 
 ## Relationship to Other Agents
 
-- **@builder** is the primary agent for skin work. You (@plugin-dev) own only the `docker/www/plugins/stratus_helper/` directory.
+- **@builder** is the primary agent for skin work. You (@plugin-dev) own only the `plugins/stratus_helper/` directory.
 - If the plugin needs to inject CSS, write the CSS yourself or tell the dev to use **@stylist** for complex style work.
 - If the plugin modifies templates, tell the dev to use **@templater** for template expertise.
 - Always validate your PHP: check syntax with `php -l stratus_helper.php`.

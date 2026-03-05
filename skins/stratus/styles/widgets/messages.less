@@ -1,0 +1,149 @@
+// stratus widgets — Messages
+// Message view/reading pane, attachment chips, toast messages
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MESSAGE VIEW / READING PANE
+// ═══════════════════════════════════════════════════════════════════════════════
+#message-header {
+    border-bottom: 1px solid @color-layout-border;
+    padding: @mp-space-lg;
+}
+
+// Message toolbar buttons → ghost style
+.message-header-toolbar {
+    a.button {
+        border-radius: @mp-radius-md;
+        padding: @mp-space-xs @mp-space-sm;
+    }
+}
+ 
+// Attachment chips / minimal chrome
+.message-part {
+    a {
+        border-radius: @mp-radius-pill;
+        padding: @mp-space-xs @mp-space-md;
+        background: fadeout(@color-main, 94%);
+        border: 1px solid fadeout(@color-main, 80%);
+        transition: background @mp-transition-base, border-color @mp-transition-base;
+        display: inline-flex;
+        align-items: center;
+        font-size: @mp-font-size-sm;
+
+        &:hover {
+            background: fadeout(@color-main, 88%);
+            border-color: fadeout(@color-main, 60%);
+            text-decoration: none;
+        }
+    }
+}
+
+#attachment-list li {
+    a {
+        border: 0;
+        background: transparent;
+        border-radius: @mp-radius-md;
+        transition: background @mp-transition-base, color @mp-transition-base, box-shadow @mp-transition-base;
+
+        &:hover {
+            background: fadeout(@color-main, 92%);
+            text-decoration: none;
+        }
+
+        &:focus-visible {
+            outline: 0;
+            box-shadow: 0 0 0 2px fadeout(@color-main, 72%);
+            background: fadeout(@color-main, 92%);
+        }
+    }
+
+    a.filename {
+        padding: 0 @mp-space-sm;
+    }
+
+    a.dropdown,
+    a.cancelupload,
+    a.delete {
+        color: @color-font-secondary;
+        padding: 0 @mp-space-sm;
+
+        &:hover,
+        &:focus-visible {
+            color: @color-font;
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TOAST MESSAGES — rounded, elevated
+// ═══════════════════════════════════════════════════════════════════════════════
+#messagestack {
+    div {
+        border-radius: @mp-radius-lg;
+        box-shadow: @mp-shadow-lg;
+        padding: @mp-space-md @mp-space-lg;
+        font-size: @mp-font-size-sm;
+        font-weight: @mp-font-weight-medium;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// DARK MODE
+// ═════════════════════════════════════════════════════════════════════════════════
+html.dark-mode {
+
+    // ── MESSAGE VIEW ─────────────────────────────────────────────────────────────────
+    #message-header {
+        border-bottom-color: @color-dark-border;
+    }
+
+    .message-part a {
+        background: fadeout(@color-dark-main, 90%);
+        border-color: fadeout(@color-dark-main, 70%);
+        color: @color-dark-main-light;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 82%);
+            border-color: fadeout(@color-dark-main, 50%);
+        }
+    }
+
+    #attachment-list li {
+        a {
+            background: transparent;
+            border-color: transparent;
+            color: @color-dark-font;
+
+            &:hover {
+                background: fadeout(@color-dark-main, 90%);
+            }
+
+            &:focus-visible {
+                box-shadow: 0 0 0 2px fadeout(@color-dark-main, 65%);
+                background: fadeout(@color-dark-main, 90%);
+            }
+        }
+
+        a.dropdown,
+        a.cancelupload,
+        a.delete {
+            color: @color-dark-font-secondary;
+
+            &:hover,
+            &:focus-visible {
+                color: @color-dark-font;
+            }
+        }
+    }
+
+    // ── TOAST MESSAGES ─────────────────────────────────────────────────────────────
+    #messagestack div {
+        box-shadow: @mp-shadow-dark-lg;
+    }
+
+    // ── CONTACT PHOTO ────────────────────────────────────────────────────────────────
+    .contact-head .contactphoto {
+        box-shadow: @mp-shadow-dark-md;
+    }
+}
