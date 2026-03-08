@@ -477,6 +477,13 @@
 			});
 		}
 
+		// Clear any stale toast from the previous mailbox as soon as the user
+		// switches folders. New mailbox-specific messages can still be shown by
+		// the following request lifecycle.
+		rcmail.addEventListener('selectfolder', function() {
+			rcmail.clear_messages();
+		});
+
 		// Also update when list is cleared/reloaded
 		rcmail.addEventListener('listupdate', function() {
 			updateSelection();

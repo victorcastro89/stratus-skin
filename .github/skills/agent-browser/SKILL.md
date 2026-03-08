@@ -1,7 +1,7 @@
 ---
 name: agent-browser
 description: Browser automation CLI for AI agents. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, or automating any browser task. Triggers include requests to "open a website", "fill out a form", "click a button", "take a screenshot", "scrape data from a page", "test this web app", "login to a site", "automate browser actions", or any task requiring programmatic web interaction.
-allowed-tools: Bash(npx agent-browser:*), Bash(agent-browser:*)
+agent: Agent
 ---
 
 # Browser Automation with agent-browser
@@ -479,13 +479,13 @@ Priority (lowest to highest): `~/.agent-browser/config.json` < `./agent-browser.
 
 | Reference | When to Use |
 |-----------|-------------|
-| [./.github/agents/references/commands.md](./.github/agents/references/commands.md) | Full command reference with all options |
-| [./.github/agents/references/snapshot-refs.md](./.github/agents/references/snapshot-refs.md) | Ref lifecycle, invalidation rules, troubleshooting |
-| [./.github/agents/references/session-management.md](./.github/agents/references/session-management.md) | Parallel sessions, state persistence, concurrent scraping |
-| [./.github/agents/references/authentication.md](./.github/agents/references/authentication.md) | Login flows, OAuth, 2FA handling, state reuse |
-| [./.github/agents/references/video-recording.md](./.github/agents/references/video-recording.md) | Recording workflows for debugging and documentation |
-| [./.github/agents/references/profiling.md](./.github/agents/references/profiling.md) | Chrome DevTools profiling for performance analysis |
-| [./.github/agents/references/proxy-support.md](./.github/agents/references/proxy-support.md) | Proxy configuration, geo-testing, rotating proxies |
+| [references/commands.md](references/commands.md) | Full command reference with all options |
+| [references/snapshot-refs.md](references/snapshot-refs.md) | Ref lifecycle, invalidation rules, troubleshooting |
+| [references/session-management.md](references/session-management.md) | Parallel sessions, state persistence, concurrent scraping |
+| [references/authentication.md](references/authentication.md) | Login flows, OAuth, 2FA handling, state reuse |
+| [references/video-recording.md](references/video-recording.md) | Recording workflows for debugging and documentation |
+| [references/profiling.md](references/profiling.md) | Chrome DevTools profiling for performance analysis |
+| [references/proxy-support.md](references/proxy-support.md) | Proxy configuration, geo-testing, rotating proxies |
 
 ## Experimental: Native Mode
 
@@ -506,12 +506,12 @@ The native daemon supports Chromium and Safari (via WebDriver). Firefox and WebK
 
 | Template | Description |
 |----------|-------------|
-| [./.github/agents/templates/form-automation.sh](./.github/agents/templates/form-automation.sh) | Form filling with validation |
-| [./.github/agents/templates/authenticated-session.sh](./.github/agents/templates/authenticated-session.sh) | Login once, reuse state |
-| [./.github/agents/templates/capture-workflow.sh](./.github/agents/templates/capture-workflow.sh) | Content extraction with screenshots |
+| [templates/form-automation.sh](templates/form-automation.sh) | Form filling with validation |
+| [templates/authenticated-session.sh](templates/authenticated-session.sh) | Login once, reuse state |
+| [templates/capture-workflow.sh](templates/capture-workflow.sh) | Content extraction with screenshots |
 
 ```bash
-././.github/agents/templates/form-automation.sh https://example.com/form
-././.github/agents/templates/authenticated-session.sh https://app.example.com/login
-././.github/agents/templates/capture-workflow.sh https://example.com ./output
+./templates/form-automation.sh https://example.com/form
+./templates/authenticated-session.sh https://app.example.com/login
+./templates/capture-workflow.sh https://example.com ./output
 ```

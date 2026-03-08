@@ -47,6 +47,7 @@ services:
       dockerfile: Dockerfile.roundcube
     container_name: roundcube-dev
     restart: unless-stopped
+    stop_grace_period: 10s
     ports:
       - "8000:80"
     volumes:
@@ -57,8 +58,10 @@ services:
       # Resolve Roundcube symlinks like ../../plugins/* and ../../skins/* from /var/www/html
       - ../plugins:/var/www/plugins:delegated
       - ../skins:/var/www/skins:delegated
-      # Persist SQLite database on host
-      - ./db/sqlite:/var/roundcube/db
+      # Persist SQLite database in a named volume (native ext4 inside the Docker VM).
+      # IMPORTANT: bind-mounting to macOS breaks SQLite's fcntl file locking,
+      # which causes "file is not a database" corruption under concurrent writes.
+      - roundcube-db:/var/roundcube/db
       # Logs
       - ./logs:/var/roundcube/logs
       # Custom PHP settings (upload limits, timezone, etc.)
@@ -76,3 +79,4 @@ volumes:
   mailstate:
   maillogs:
   composer-cache:
+  roundcube-db:

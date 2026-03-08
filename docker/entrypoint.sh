@@ -120,6 +120,13 @@ fi
 mkdir -p /var/roundcube/db /var/roundcube/logs /tmp/roundcube-temp
 chown -R www-data:www-data /var/roundcube /tmp/roundcube-temp 2>/dev/null || true
 
+# Enable WAL journal mode for crash resilience (survives ungraceful shutdowns
+# much better than the default "delete" journal mode).
+if [ -f "$SQLITE_DB" ]; then
+    sqlite3 "$SQLITE_DB" "PRAGMA journal_mode=WAL;" 2>/dev/null || true
+    echo "[entrypoint] SQLite journal_mode set to WAL."
+fi
+
 chown -R www-data:www-data "$RC_ROOT/temp" "$RC_ROOT/logs" 2>/dev/null || true
 
 echo "[entrypoint] ✅ Ready — starting Apache …"

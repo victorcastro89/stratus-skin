@@ -59,3 +59,13 @@
 [05-Mar-2026 03:08:05 +0000]: <5a04b6cd> Successful login for victor@example.test (ID: 2) from 172.67.153.189 in session 5a04b6cd29b4866e
 [05-Mar-2026 03:08:32 +0000]: <aa35b61f> Successful login for victor@example.test (ID: 2) from 172.67.153.189 in session aa35b61f5451d4ad
 [05-Mar-2026 03:42:15 +0000]: <6b9ca7c2> Successful login for alice@example.test (ID: 1) from 172.67.153.189 in session 6b9ca7c25fe5c12c
+[05-Mar-2026 17:44:22 +0000]: <6b9ca7c2> Failed login for alice@example.test from 172.67.153.189 in session 6b9ca7c25fe5c12c (error: 1)
+[08-Mar-2026 19:24:54 +0000]: <4b0a74f2> Failed login for alice@example.test from 192.168.65.1 in session 4b0a74f22a17d8b8 (error: 1)
+[08-Mar-2026 19:25:05 +0000]: <4b0a74f2> Failed login for alice@example.test from 192.168.65.1 in session 4b0a74f22a17d8b8 (error: 0)
+[08-Mar-2026 19:25:35 +0000]: <4b0a74f2> Failed login for alice@example.test from 192.168.65.1 in session 4b0a74f22a17d8b8 (error: 1)
+[08-Mar-2026 19:25:37 +0000]: <4b0a74f2> Failed login for alice@example.test from 192.168.65.1 in session 4b0a74f22a17d8b8 (error: 1)
+[08-Mar-2026 19:25:39 +0000]: <4bb052fc> Successful login for alice@example.test (ID: 1) from 192.168.65.1 in session 4bb052fca65bcfe2
+[08-Mar-2026 19:42:18 +0000]: <ee33d6d3> Successful login for alice@example.test (ID: 1) from 192.168.65.1 in session ee33d6d35d601a58
+[08-Mar-2026 20:06:31 +0000]: <e183b04a> Successful login for alice@example.test (ID: 1) from 192.168.65.1 in session e183b04a5305f93f
+[08-Mar-2026 20:06:56 +0000]: <52b2eb80> Successful login for alice@example.test (ID: 1) from 192.168.65.1 in session 52b2eb807f214ebb
+[08-Mar-2026 21:09:23 +0000]: <61f99c6c> Successful login for victor@example.test (ID: 2) from 192.168.65.1 in session 61f99c6c5768792d

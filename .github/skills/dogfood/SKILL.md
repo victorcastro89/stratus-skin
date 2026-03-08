@@ -1,7 +1,6 @@
 ---
-name: dogfood
+name: "dogfood"
 description: Systematically explore and test a web application to find bugs, UX issues, and other problems. Use when asked to "dogfood", "QA", "exploratory test", "find issues", "bug hunt", "test this app/site/platform", or review the quality of a web application. Produces a structured report with full reproduction evidence -- step-by-step screenshots, repro videos, and detailed repro steps for every issue -- so findings can be handed directly to the responsible teams.
-allowed-tools: Bash(agent-browser:*), Bash(npx agent-browser:*)
 ---
 
 # Dogfood
@@ -44,7 +43,7 @@ mkdir -p {OUTPUT_DIR}/screenshots {OUTPUT_DIR}/videos
 Copy the report template into the output directory and fill in the header fields:
 
 ```bash
-cp {SKILL_DIR}/./.github/agents/templates/dogfood-report-template.md {OUTPUT_DIR}/report.md
+cp {SKILL_DIR}/templates/dogfood-report-template.md {OUTPUT_DIR}/report.md
 ```
 
 Start a named session:
@@ -88,7 +87,7 @@ Identify the main navigation elements and map out the sections to visit.
 
 ### 4. Explore
 
-Read [./.github/agents/references/issue-taxonomy.md](./.github/agents/references/issue-taxonomy.md) for the full list of what to look for and the exploration checklist.
+Read [references/issue-taxonomy.md](references/issue-taxonomy.md) for the full list of what to look for and the exploration checklist.
 
 **Strategy -- work through the app systematically:**
 
@@ -207,10 +206,10 @@ agent-browser --session {SESSION} close
 
 | Reference | When to Read |
 |-----------|--------------|
-| [./.github/agents/references/issue-taxonomy.md](./.github/agents/references/issue-taxonomy.md) | Start of session -- calibrate what to look for, severity levels, exploration checklist |
+| [references/issue-taxonomy.md](references/issue-taxonomy.md) | Start of session -- calibrate what to look for, severity levels, exploration checklist |
 
 ## Templates
 
 | Template | Purpose |
 |----------|---------|
-| [./.github/agents/templates/dogfood-report-template.md](./.github/agents/templates/dogfood-report-template.md) | Copy into output directory as the report file |
+| [templates/dogfood-report-template.md](templates/dogfood-report-template.md) | Copy into output directory as the report file |
