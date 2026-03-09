@@ -29,7 +29,7 @@
 /* Conversation mode: conversation visible, standard hidden */
 #layout-list[data-conv-mode="conversations"] #messagelist-content { display: none; }
 #layout-list[data-conv-mode="conversations"] #conv-list-content   { display: block; }
-#layout-list[data-conv-mode="conversations"] .pagenav:not(.conv-pagination):not(.mp-mass-action-bar) { display: none; }
+#layout-list[data-conv-mode="conversations"] .pagenav:not(.conv-pagination):not(.mp-mass-action-bar):not(.mp-smart-bar) { display: none; }
 
 /* Keep room for footer nav bars when conversation list layer uses absolute scroller rules */
 #layout-list[data-conv-mode="conversations"] #conv-list-content {
@@ -43,7 +43,7 @@
 }
 
 /* Standard pagenav: hide in conversation mode, show in list mode */
-#layout-list[data-conv-mode="conversations"] > .footer.pagenav:last-child:not(.mp-mass-action-bar) { display: none; }
+#layout-list[data-conv-mode="conversations"] > .footer.pagenav:last-child:not(.mp-mass-action-bar):not(.mp-smart-bar) { display: none; }
 
 /*
  * Stratus mass-action bar integration
@@ -53,7 +53,13 @@
  * Keep the conversation list in normal flow so flex order can place:
  *   header -> search -> mass-action-bar -> conversation list
  */
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content {
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar),
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) {
+  /* Shared: let conv list flow naturally when mass-action/smart bar is present */
+}
+
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content,
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) #conv-list-content {
   position: relative;
   top: auto;
   left: auto;
@@ -64,7 +70,8 @@
   min-height: 0;
 }
 
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) > .footer.pagenav.mp-mass-action-bar {
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) > .footer.pagenav.mp-mass-action-bar,
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) > .footer.pagenav.mp-smart-bar {
   position: relative;
   top: auto;
   bottom: auto;
@@ -126,7 +133,7 @@
 /* ── Subject Column (3-line flex) ────────────── */
 
 .conv-list.conv-outlook td.subject {
-  padding: 8px 8px 8px 4px;
+  padding: 6px 8px 6px 4px;
   vertical-align: top;
   overflow: hidden;
   position: relative;
@@ -143,7 +150,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   line-height: 1.4;
   padding-right: 30px;
   width: 100%;
@@ -203,7 +210,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-bottom: 2px;
+  margin-bottom: 0;
   line-height: 1.35;
   width: 100%;
   min-width: 0;
@@ -312,13 +319,15 @@
 
 /* Line 3: Snippet */
 .conv-line3 {
-  display: block;
+  display: -webkit-box;
   font-size: 0.8rem;
   color: #999;
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.35;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 /* ── Flags / Actions Column ──────────────────── */
@@ -923,13 +932,26 @@ tr.conv-child-row td.flags.conv-flags-cell {
 /* ── Responsive: touch-friendly sizing ───────── */
 
 @media screen and (max-width: 768px) {
-  .conv-expand-cell {
+  /*
+   * Elastic sets display:flex on .messagelist tr, so table-layout:fixed
+   * does NOT control cell widths — flex properties do.
+   */
+
+  /* Expand toggle — fixed 24px */
+  .conv-list.conv-outlook td.conv-expand-cell {
+    flex: 0 0 24px;
     width: 24px;
+    min-width: 24px;
+    max-width: 24px;
     padding: 8px 0 8px 4px;
   }
 
+  /* Avatar — keep visible in default skin, compact size */
   .conv-list.conv-outlook td.conv-avatar {
+    flex: 0 0 40px;
     width: 40px;
+    min-width: 40px;
+    max-width: 40px;
     padding: 8px 2px 8px 8px;
   }
 
@@ -939,12 +961,20 @@ tr.conv-child-row td.flags.conv-flags-cell {
     font-size: 0.75rem;
   }
 
+  /* Subject — fill remaining space */
   .conv-list.conv-outlook td.subject {
+    flex: 1 1 0px;
+    min-width: 0;
     padding: 6px 4px;
+    overflow: hidden;
   }
 
+  /* Flags cell — fixed 60px, override base min-width:104px */
   .conv-list.conv-outlook td.flags.conv-flags-cell {
+    flex: 0 0 60px;
     width: 60px;
+    min-width: 60px;
+    max-width: 60px;
     padding: 8px 6px;
   }
 

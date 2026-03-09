@@ -49,6 +49,22 @@
             initDarkModeFramePropagation();
             initTinyMCEDarkMode();
         }
+
+        // ──────────────────────────────────────────
+        //  5. Unified Hover Actions (mail task)
+        // ──────────────────────────────────────────
+
+        if (rcmail.env.task === 'mail') {
+            initUnifiedHoverActions();
+        }
+
+        // ──────────────────────────────────────────
+        //  6. Smart Bar Controller (mail task)
+        // ──────────────────────────────────────────
+
+        if (rcmail.env.task === 'mail') {
+            initSmartBarController();
+        }
     });
 
     // ══════════════════════════════════════════════
@@ -252,6 +268,412 @@
                     clearInterval(timer);
                 }
             }, 200);
+        }
+    }
+
+    // ══════════════════════════════════════════════
+    //  Unified Hover Actions
+    // ══════════════════════════════════════════════
+
+    /**
+     * Inject archive / delete / flag hover action buttons on every message row.
+     * Works in both standard list mode and conversation mode.
+     * Sets window._stratus_hover_actions flag so conversation_mode.js skips
+     * its own hover action injection.
+     */
+    function initUnifiedHoverActions() {
+        // Signal to conversation_mode.js that stratus handles hover actions
+        window._stratus_hover_actions = true;
+
+        /**
+         * Create the hover action strip for a single table row.
+         */
+        function createHoverActions(row) {
+            if (!row || row.querySelector('.mp-hover-actions')) return;
+
+            var host = getHoverActionHost(row);
+            if (!host) return;
+
+            host.classList.add('mp-hover-action-host');
+
+            var strip = document.createElement('span');
+            strip.className = 'mp-hover-actions';
+
+            // Archive button
+            var archiveBtn = document.createElement('a');
+            archiveBtn.className = 'mp-hover-btn archive';
+            archiveBtn.href = '#archive';
+            archiveBtn.title = rcmail.get_label('archive.buttontitle') || 'Archive';
+            archiveBtn.setAttribute('aria-label', archiveBtn.title);
+
+            // Delete button
+            var deleteBtn = document.createElement('a');
+            deleteBtn.className = 'mp-hover-btn delete';
+            deleteBtn.href = '#delete';
+            deleteBtn.title = rcmail.get_label('deletemessage') || 'Delete';
+            deleteBtn.setAttribute('aria-label', deleteBtn.title);
+
+            // Flag button
+            var flagBtn = document.createElement('a');
+            flagBtn.className = 'mp-hover-btn flag';
+            flagBtn.href = '#flag';
+            flagBtn.title = rcmail.get_label('markflagged') || 'Flag';
+            flagBtn.setAttribute('aria-label', flagBtn.title);
+
+            strip.appendChild(archiveBtn);
+            strip.appendChild(deleteBtn);
+            strip.appendChild(flagBtn);
+
+            // Append to the right-side host cell — avoids invalid DOM inside <tr>
+            host.appendChild(strip);
+
+            // Wire click handlers
+            archiveBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var uid = getRowUid(row);
+                if (!uid) return;
+                selectSingleRow(uid);
+                if (typeof rcmail_archive === 'function') {
+                    rcmail_archive();
+                } else {
+                    rcmail.command('plugin.archive', '', row);
+                }
+            });
+
+            deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var uid = getRowUid(row);
+                if (!uid) return;
+                selectSingleRow(uid);
+                rcmail.command('delete', '');
+            });
+
+            flagBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var uid = getRowUid(row);
+                if (!uid) return;
+                var isFlagged = row.classList.contains('flagged');
+                var targetFlag = isFlagged ? 'unflagged' : 'flagged';
+
+                // Optimistic UI update so the user sees feedback immediately.
+                if (targetFlag === 'flagged') {
+                    row.classList.add('flagged');
+                    flagBtn.title = rcmail.get_label('markunflagged') || 'Unflag';
+                } else {
+                    row.classList.remove('flagged');
+                    flagBtn.title = rcmail.get_label('markflagged') || 'Flag';
+                }
+                flagBtn.setAttribute('aria-label', flagBtn.title);
+
+                // Use Roundcube's native uid-aware mark flow.
+                // This avoids selection races and builds valid post payloads.
+                if (typeof rcmail.mark_message === 'function') {
+                    rcmail.mark_message(targetFlag, uid);
+                    return;
+                }
+
+                // Fallback for older flows.
+                selectSingleRow(uid);
+                rcmail.command('mark', targetFlag);
+            });
+        }
+
+        /**
+         * Extract message UID from a table row.
+         */
+        function getRowUid(row) {
+            if (!row) return null;
+            // Standard Roundcube: row id is "rcmrowXXX"
+            var id = row.id || '';
+            if (id.indexOf('rcmrow') === 0) return id.replace('rcmrow', '');
+            // Conversation mode rows use data-uid
+            return row.getAttribute('data-uid') || row.getAttribute('data-conv-id') || null;
+        }
+
+        /**
+         * Find the cell that should host the absolute-positioned hover actions.
+         */
+        function getHoverActionHost(row) {
+            if (!row || !row.querySelector) return null;
+
+            return row.querySelector('td.flags')
+                || row.querySelector('td.flag')
+                || row.querySelector('td.date')
+                || row.querySelector('td.size')
+                || row.lastElementChild
+                || null;
+        }
+
+        /**
+         * Select a single row by UID (for hover action commands).
+         */
+        function selectSingleRow(uid) {
+            var list = rcmail.message_list;
+            if (!list) return;
+            if (list.selection && list.selection.length === 1 && list.selection[0] == uid) return;
+            list.select(uid);
+        }
+
+        /**
+         * Process all visible rows in a container, injecting hover actions.
+         */
+        function processRows(container) {
+            if (!container) return;
+            var rows = container.querySelectorAll('tr');
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].id || rows[i].getAttribute('data-uid') || rows[i].getAttribute('data-conv-id')) {
+                    createHoverActions(rows[i]);
+                }
+            }
+        }
+
+        // Process standard message list
+        var stdList = document.getElementById('messagelist');
+        if (stdList) {
+            processRows(stdList);
+        }
+
+        // Process conversation list
+        var convList = document.getElementById('conv-messagelist');
+        if (convList) {
+            processRows(convList);
+        }
+
+        // Watch for dynamically added rows via MutationObserver
+        var observeTarget = function(el) {
+            if (!el) return;
+            var observer = new MutationObserver(function(mutations) {
+                for (var i = 0; i < mutations.length; i++) {
+                    var added = mutations[i].addedNodes;
+                    for (var j = 0; j < added.length; j++) {
+                        var node = added[j];
+                        if (node.nodeType !== 1) continue;
+                        if (node.tagName === 'TR' && (node.id || node.getAttribute('data-uid') || node.getAttribute('data-conv-id'))) {
+                            createHoverActions(node);
+                        }
+                        // Check nested rows (e.g., tbody replacement)
+                        if (node.querySelectorAll) {
+                            var nested = node.querySelectorAll('tr');
+                            for (var k = 0; k < nested.length; k++) {
+                                if (nested[k].id || nested[k].getAttribute('data-uid') || nested[k].getAttribute('data-conv-id')) {
+                                    createHoverActions(nested[k]);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            observer.observe(el, { childList: true, subtree: true });
+        };
+
+        observeTarget(stdList);
+        observeTarget(convList);
+
+        // Re-process on list updates (Roundcube replaces tbody content)
+        rcmail.addEventListener('listupdate', function() {
+            if (stdList) processRows(stdList);
+        });
+    }
+
+    // ══════════════════════════════════════════════
+    //  Smart Bar Controller
+    // ══════════════════════════════════════════════
+
+    /**
+     * Initialize the smart bar: sort trigger, plugin button re-parenting,
+     * conversation toggle relocation to the options popup.
+     */
+    function initSmartBarController() {
+        var sortTrigger = document.getElementById('mp-sort-trigger');
+        var sortLabel   = sortTrigger ? sortTrigger.querySelector('.mp-sort-label') : null;
+        var sortMenu    = document.getElementById('listoptions-menu');
+
+        // Sort column label lookup — maps rcmail.env.sort_col to display text
+        // Labels exported via <roundcube:add_label> in pagenav.html
+        var defaultLabels = {
+            'date': 'Date', 'arrival': 'Arrival', 'from': 'From',
+            'to': 'To', 'fromto': 'From/To', 'subject': 'Subject',
+            'size': 'Size', 'cc': 'Cc'
+        };
+        var sortColumnLabels = {};
+        Object.keys(defaultLabels).forEach(function(key) {
+            var label = rcmail.get_label(key === 'date' ? 'sentdate' : key);
+            // If get_label returns the key itself, use our English fallback
+            sortColumnLabels[key] = (label && label !== (key === 'date' ? 'sentdate' : key))
+                ? label : defaultLabels[key];
+        });
+
+        // "Sort by" fallback — try translated label first
+        var sortByLabel = (function() {
+            var t = rcmail.get_label('listsorting');
+            return (t && t !== 'listsorting') ? t : 'Sort by';
+        }());
+
+        /**
+         * Update the sort trigger label and direction indicator.
+         * - No sort_col  → neutral arrow (mp-sort-none) + "Sort by" text
+         * - sort_col set → coloured arrow pointing the right way + column name
+         */
+        function updateSortDisplay() {
+            var col   = rcmail.env.sort_col || '';
+            var order = (rcmail.env.sort_order || 'DESC').toUpperCase();
+
+            // Label
+            if (sortLabel) {
+                sortLabel.textContent = col ? (sortColumnLabels[col] || col) : sortByLabel;
+            }
+
+            // Arrow direction
+            if (sortTrigger) {
+                sortTrigger.classList.remove('mp-sort-asc', 'mp-sort-desc', 'mp-sort-none');
+                if (col) {
+                    sortTrigger.classList.add(order === 'ASC' ? 'mp-sort-asc' : 'mp-sort-desc');
+                } else {
+                    sortTrigger.classList.add('mp-sort-none');
+                }
+            }
+        }
+
+        // Initial display
+        updateSortDisplay();
+
+        // Update on sort changes — Roundcube fires 'listupdate' after sort
+        rcmail.addEventListener('listupdate', updateSortDisplay);
+
+        // Wire sort trigger click — open list options dialog via elastic's messagelistmenu
+        // handler which pre-populates current sort values and saves via rcmail.set_list_options()
+        if (sortTrigger) {
+            sortTrigger.setAttribute('aria-haspopup', 'dialog');
+            sortTrigger.setAttribute('aria-expanded', 'false');
+            sortTrigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // 'messagelistmenu' routes through elastic's menu_toggle → menu_messagelist(),
+                // which clones #listoptions-menu, pre-populates sort selects, shows a
+                // proper Save dialog, and on save calls rcmail.set_list_options() so that
+                // listupdate fires and updateSortDisplay() refreshes the sort bar label/arrow.
+                rcmail.command('menu-open', 'messagelistmenu', sortTrigger, e);
+
+                sortTrigger.setAttribute('aria-expanded', 'true');
+            });
+
+            // Reset aria-expanded when the dialog closes (listupdate fires after save)
+            rcmail.addEventListener('listupdate', function() {
+                sortTrigger.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        // ── Re-parent plugin buttons from hidden containers ──
+
+        var pluginSlots = document.getElementById('mp-plugin-slots');
+        var smartBar = document.querySelector('.mp-smart-bar');
+        var defaultSection = smartBar ? smartBar.querySelector('.mp-smart-bar-default') : null;
+
+        if (pluginSlots && smartBar) {
+            // Find and handle the archive button (hide it — archive is now hover-only)
+            var archivePluginBtn = pluginSlots.querySelector('.archive, [data-command="plugin.archive"]');
+            if (archivePluginBtn) {
+                archivePluginBtn.style.display = 'none';
+            }
+
+            // Find and handle the conversation toggle button
+            var convToggle = pluginSlots.querySelector('.conv-toggle, [data-command="plugin.conv.toggle"]');
+            if (convToggle) {
+                relocateConvToggleToPopup(convToggle);
+            }
+
+            // Move any remaining plugin buttons into the default section
+            if (defaultSection) {
+                var remainingBtns = pluginSlots.querySelectorAll('a, button');
+                for (var i = 0; i < remainingBtns.length; i++) {
+                    var btn = remainingBtns[i];
+                    if (btn.style.display === 'none') continue; // skip hidden (archive)
+                    if (btn.classList.contains('conv-toggle')) continue; // skip conv toggle (relocated)
+                    defaultSection.appendChild(btn);
+                }
+            }
+        }
+
+        /**
+         * Relocate the conversation toggle into the listoptions-menu popup.
+         * Creates a new form-group row with a toggle switch.
+         */
+        function relocateConvToggleToPopup(convToggleBtn) {
+            var popup = document.getElementById('listoptions-menu');
+            if (!popup) return;
+
+            // Create a form group row for the conversation toggle
+            var formGroup = document.createElement('div');
+            formGroup.className = 'form-group row mp-conv-toggle-row';
+            formGroup.id = 'mp-listoptions-conv-toggle';
+
+            var label = document.createElement('label');
+            label.className = 'col-form-label col-sm-4';
+            label.textContent = rcmail.get_label('conversation_mode.conversations') || 'Conversations';
+
+            var colDiv = document.createElement('div');
+            colDiv.className = 'col-sm-8';
+
+            var toggleSwitch = document.createElement('label');
+            toggleSwitch.className = 'mp-toggle-switch';
+
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'mp-conv-toggle-checkbox';
+
+            // Sync initial state — check if conversation mode is currently active
+            var layoutList = document.getElementById('layout-list');
+            if (layoutList && layoutList.getAttribute('data-conv-mode') === 'conversations') {
+                checkbox.checked = true;
+            }
+
+            var slider = document.createElement('span');
+            slider.className = 'mp-toggle-slider';
+
+            toggleSwitch.appendChild(checkbox);
+            toggleSwitch.appendChild(slider);
+            colDiv.appendChild(toggleSwitch);
+            formGroup.appendChild(label);
+            formGroup.appendChild(colDiv);
+
+            // Insert before the container element (listoptions) or at end
+            var containerEl = popup.querySelector('[id="listoptionsmenu"]');
+            if (containerEl) {
+                popup.insertBefore(formGroup, containerEl);
+            } else {
+                popup.appendChild(formGroup);
+            }
+
+            // Wire toggle behavior
+            checkbox.addEventListener('change', function() {
+                rcmail.command('plugin.conv.toggle');
+            });
+
+            // Listen for conversation mode state changes to sync the checkbox
+            document.addEventListener('stratus:conv-mode-changed', function(e) {
+                var detail = e && e.detail ? e.detail : {};
+                checkbox.checked = detail.mode === 'conversations';
+            });
+
+            // Also sync when layout-list data attribute changes
+            var layoutObserver = new MutationObserver(function(mutations) {
+                for (var i = 0; i < mutations.length; i++) {
+                    if (mutations[i].attributeName === 'data-conv-mode') {
+                        var mode = layoutList.getAttribute('data-conv-mode');
+                        checkbox.checked = (mode === 'conversations');
+                    }
+                }
+            });
+            if (layoutList) {
+                layoutObserver.observe(layoutList, { attributes: true, attributeFilter: ['data-conv-mode'] });
+            }
+
+            // Hide the original button
+            convToggleBtn.style.display = 'none';
         }
     }
 

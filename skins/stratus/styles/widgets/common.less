@@ -1,6 +1,6 @@
 // stratus widgets — Common
 // Scrollbars, selection highlight, quota bar, contact cards,
-// file upload, hover menu, mass-action bar
+// file upload, hover menu, smart bar
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // QUOTA BAR — rounded with gradient fill
@@ -103,22 +103,58 @@
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MASS-ACTION BAR — replaces header select trigger, positioned below search
-// Uses flex order to sit between searchbar and message list in #layout-list
-// Only applies when .mp-mass-action-bar is present (mail template)
+// SMART BAR — adaptive context bar, replaces #messagelist-header + mass-action bar
+// Morphs between default state (sort, refresh, pagination) and selection state
+// (bulk actions + selected count). Positioned below search in #layout-list.
 // ═══════════════════════════════════════════════════════════════════════════════
+#layout-list > div.searchbar.menu {
+margin: 0;
+}
+// Search row + smart bar are visually merged into one subtle top shell.
+#layout-list > .searchbar {
+    order: 0;
+    margin: @mp-list-top-shell-gap @mp-list-top-shell-gutter 0;
+    padding: 0 @mp-space-sm;
+    height: @mp-list-top-row-height;
+    min-height: @mp-list-top-row-height;
+    background: @color-layout-list-top-background;
+    border: 1px solid @color-layout-list-top-border;
+    border-bottom: 0;
+    border-radius: @mp-list-top-shell-radius @mp-list-top-shell-radius 0 0;
+    box-shadow: @mp-shadow-xs;
+}
 
-// Hide the old header select trigger to avoid duplicate controls (mail only)
-#messagelist-header .toolbar a.select[data-popup="listselect-menu"] {
+// Conversation mode uses an absolute #conv-list-content layer.
+// Keep search controls above it so the search options panel stays visible.
+#layout-list[data-conv-mode="conversations"] > .searchbar,
+#layout-list[data-conv-mode="conversations"] > #searchmenu {
+    position: relative;
+    z-index: 4;
+}
+
+// Fallback: if JS leaves .hidden on #searchmenu in conversation mode,
+// show/hide it based on the .searchbar.open state.
+#layout-list[data-conv-mode="conversations"] > .searchbar + #searchmenu {
     display: none;
 }
 
+#layout-list[data-conv-mode="conversations"] > .searchbar.open + #searchmenu {
+    display: flex !important;
+    flex: 0 0 auto;       // take natural height — don't compete with conv-list scroller
+    overflow-y: auto;     // allow scroll if panel is tall on small screens
+}
+
+#layout-list[data-conv-mode="conversations"] #conv-list-content {
+    z-index: 1;
+}
+
+html.layout-phone #layout-list > .searchbar {
+    display: flex !important;
+    
+}
+
 // Flex order: reposition bar below search, push scroller after it
-// #layout-list is display:flex; flex-direction:column — DOM order:
-//   header(0) → searchbar(0) → searchmenu(0) → scroller(0) → pagenav(0)
-// We set bar=1, scroller=2 so visual order becomes:
-//   header → searchbar → searchmenu → mass-action-bar → scroller
-.mp-mass-action-bar {
+.mp-smart-bar {
     order: 1;
 }
 
@@ -126,20 +162,41 @@
     order: 2;
 }
 
-// Mass-action bar layout
-.mp-mass-action-bar {
+// Smart bar layout
+.mp-smart-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 @mp-space-sm !important;
-    height: 40px;
-    background: @color-layout-header-background;
-    border-bottom: 1px solid @color-layout-border;
+    margin: 0 @mp-list-top-shell-gutter @mp-space-xs;
+    height: @mp-list-top-row-height !important;
+    min-height: @mp-list-top-row-height !important;
+    background: @color-layout-list-top-background;
+    border: 1px solid @color-layout-list-top-border;
+    border-top-color: @color-layout-list-top-divider;
+    border-radius: 0 0 @mp-list-top-shell-radius @mp-list-top-shell-radius;
+    box-shadow: @mp-shadow-xs;
     gap: @mp-space-sm;
 }
 
-// Left group: checkbox trigger + action buttons
-.mp-mass-action-left {
+// Mobile nav buttons — hidden on desktop, shown on phone by elastic rules
+.mp-smart-bar > .task-menu-button,
+.mp-smart-bar > .back-sidebar-button {
+    display: none !important;
+    flex-shrink: 0;
+}
+
+html.layout-phone {
+    .mp-smart-bar > .task-menu-button,
+    .mp-smart-bar > .back-sidebar-button {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+// Left group: checkbox trigger + default/action sections
+.mp-smart-bar-left {
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -147,7 +204,7 @@
 
 // Override elastic's global `a.disabled { pointer-events: none }` on select trigger
 // Always keep clickable — enters multiselect mode or deselects all
-.mp-mass-action-bar .mp-mass-action-trigger {
+.mp-smart-bar .mp-mass-action-trigger {
     pointer-events: auto;
     cursor: pointer;
 }
@@ -233,10 +290,127 @@
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SMART BAR — Default state (sort indicator + refresh)
+// Visible when no messages are selected
+// ─────────────────────────────────────────────────────────────────────────────
+.mp-smart-bar-default {
+    display: flex;
+    align-items: center;
+    gap: @mp-space-xs;
+    transition: opacity @mp-transition-smooth, transform @mp-transition-smooth;
+}
 
+// Hide default section when selection is active
+.mp-smart-bar.mp-has-selection .mp-smart-bar-default {
+    display: none !important;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SORT TRIGGER  — arrow pill (no Elastic `options` class, no ::before conflicts)
+// Arrow direction is driven by .mp-sort-asc / .mp-sort-desc on the anchor.
+// When neither class is present the arrow is hidden (no sort selected).
+// ─────────────────────────────────────────────────────────────────────────────
+.mp-sort-trigger {
+    display: inline-flex !important;
+    align-items: center;
+    gap: @mp-space-xs;
+    padding: @mp-space-xs @mp-space-sm;
+    border-radius: @mp-radius-sm;
+    cursor: pointer;
+    transition: background @mp-transition-fast;
+    color: @color-font;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-grow: 0 !important;
+    min-width: 0 !important;
+    height: auto !important;
+    border: none;
+    background: transparent;
+    outline: none;
+
+    // Suppress any Elastic ::before that might bleed through
+    &::before { content: none !important; display: none !important; }
+
+    &:hover {
+        background: fadeout(@color-main, 92%);
+    }
+
+    &:focus-visible {
+        outline: 2px solid @color-main;
+        outline-offset: 2px;
+    }
+}
+
+// Arrow icon — rendered inside its own <span> to sidestep ::before fights
+.mp-sort-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    color: @color-font-secondary;
+
+    // Hidden by default (no sort active)
+    &::before {
+        font-family: 'Icons';
+        font-weight: 900;
+        font-style: normal;
+        font-size: 0.9rem;
+        line-height: 1;
+    }
+
+    // No sort selected — show neutral double-arrow
+    .mp-sort-trigger:not(.mp-sort-asc):not(.mp-sort-desc) &::before,
+    .mp-sort-trigger.mp-sort-none &::before {
+        content: '\f0dc'; // fa-sort  (up+down stacked)
+        opacity: 0.4;
+    }
+
+    // Ascending
+    .mp-sort-trigger.mp-sort-asc &::before {
+        content: '\f0de'; // fa-sort-up
+        opacity: 1;
+        color: @color-main;
+    }
+
+    // Descending
+    .mp-sort-trigger.mp-sort-desc &::before {
+        content: '\f0dd'; // fa-sort-down
+        opacity: 1;
+        color: @color-main;
+    }
+}
+
+// Sort text label
+.mp-sort-label {
+    font-size: @mp-font-size-sm;
+    color: @color-font-secondary;
+    font-weight: 500;
+}
+
+// When a sort is active, elevate the label colour slightly
+.mp-sort-trigger.mp-sort-asc .mp-sort-label,
+.mp-sort-trigger.mp-sort-desc .mp-sort-label {
+    color: @color-font;
+}
+
+// Phone: hide text label, show icon-only
+html.layout-phone .mp-sort-label {
+    display: none;
+}
+
+// Refresh button in default section
+.mp-smart-bar-default .mp-action-btn.refresh {
+    &:before {
+        content: "\f021"; // fa-sync / fa-arrows-rotate
+        font-weight: 900;
+    }
+}
 
 // Right group: message count + prev/next nav
-.mp-mass-action-right {
+.mp-smart-bar-right {
     display: flex;
     align-items: center;
     gap: @mp-space-xs;
@@ -253,8 +427,8 @@
 }
 
 // Prev/next buttons inside mass-action bar
-.mp-mass-action-bar .prevpage,
-.mp-mass-action-bar .nextpage {
+.mp-smart-bar .prevpage,
+.mp-smart-bar .nextpage {
     flex-grow: 0 !important;
     min-width: 28px !important;
     width: 28px;
@@ -290,31 +464,31 @@
 }
 
 // Hide first/last page buttons (not present in our template, but defensive)
-.mp-mass-action-bar .firstpage,
-.mp-mass-action-bar .lastpage {
+.mp-smart-bar .firstpage,
+.mp-smart-bar .lastpage {
     display: none;
 }
 
 // Hide the page number input from elastic
-.mp-mass-action-bar input[type="text"] {
+.mp-smart-bar input[type="text"] {
     display: none;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MASS-ACTION BAR — Active state (visible when messages are selected)
-// Controlled via #layout-list:has(.listing.withselection) — the .withselection
-// class lives on #messagelist and is toggled by Roundcube's selection logic
+// SMART BAR — Selection state (visible when messages are selected)
+// Controlled by .mp-has-selection class toggled via JS selection logic
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Action buttons container — hidden by default, shown when selection active
+// Action buttons container — hidden by default, shown when selection active (ISSUE-007)
+// !important prevents elastic .menu.footer or .pagenav rules from leaking in
 .mp-mass-action-actions {
-    display: none;
+    display: none !important;
     align-items: center;
     gap: 2px;
 }
 
-.mp-mass-action-bar.mp-has-selection .mp-mass-action-actions {
-    display: flex;
+.mp-smart-bar.mp-has-selection .mp-mass-action-actions {
+    display: flex !important;
 }
 
 // Vertical divider between action groups
@@ -332,7 +506,9 @@
     align-items: center;
     justify-content: center;
     width: 32px;
-    height: 32px;
+    height: 32px !important;
+    min-height: 32px !important;
+    line-height: 32px !important;
     border-radius: @mp-radius-sm;
     color: @color-font;
     text-decoration: none;
@@ -344,8 +520,9 @@
 
     &:before {
         margin: 0 !important;
+        display: block;
         font-size: 1rem;
-        line-height: 32px !important;
+        line-height: 1 !important;
         font-weight: 400; // fa-regular-400 outline icons
     }
 
@@ -395,12 +572,62 @@
 }
 
 // Active state toggles: show chip + hide count when messages selected
-.mp-mass-action-bar.mp-has-selection .mp-mass-action-chip {
+.mp-smart-bar.mp-has-selection .mp-mass-action-chip {
     display: flex;
 }
 
-.mp-mass-action-bar.mp-has-selection .mp-mass-action-count {
+.mp-smart-bar.mp-has-selection .mp-mass-action-count {
     display: none;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TOGGLE SWITCH — used for conversation mode toggle in options popup
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-toggle-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+    height: 24px;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+    }
+}
+
+.mp-toggle-slider {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    background: @color-layout-border;
+    border-radius: @mp-radius-pill;
+    transition: background @mp-transition-fast;
+
+    &::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 3px;
+        top: 3px;
+        background: #fff;
+        border-radius: @mp-radius-circle;
+        transition: transform @mp-transition-smooth;
+        box-shadow: @mp-shadow-xs;
+    }
+
+    input:checked + & {
+        background: @color-main;
+    }
+
+    input:checked + &::before {
+        transform: translateX(18px);
+    }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════════
@@ -418,10 +645,44 @@ html.dark-mode {
         background: fadeout(@color-dark-main, 65%);
     }
 
-    // ── MASS-ACTION BAR ───────────────────────────────────────────────────────────
-    .mp-mass-action-bar {
-        background: @color-dark-layout-header-background;
-        border-bottom-color: @color-dark-border;
+    // ── SMART BAR ───────────────────────────────────────────────────────────
+    #layout-list > .searchbar {
+        background: @color-dark-layout-list-top-background;
+        border-color: @color-dark-layout-list-top-border;
+        box-shadow: @mp-shadow-dark-sm;
+    }
+
+    .mp-smart-bar {
+        background: @color-dark-layout-list-top-background;
+        border-color: @color-dark-layout-list-top-border;
+        border-top-color: @color-dark-layout-list-top-divider;
+        box-shadow: @mp-shadow-dark-sm;
+    }
+
+    .mp-sort-trigger {
+        color: @color-dark-font;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 88%);
+        }
+    }
+
+    .mp-sort-arrow {
+        color: @color-dark-font-secondary;
+    }
+
+    .mp-sort-trigger.mp-sort-asc .mp-sort-arrow::before,
+    .mp-sort-trigger.mp-sort-desc .mp-sort-arrow::before {
+        color: @color-dark-main;
+    }
+
+    .mp-sort-label {
+        color: @color-dark-font-secondary;
+    }
+
+    .mp-sort-trigger.mp-sort-asc .mp-sort-label,
+    .mp-sort-trigger.mp-sort-desc .mp-sort-label {
+        color: @color-dark-font;
     }
 
     .mp-mass-action-trigger {
@@ -458,8 +719,8 @@ html.dark-mode {
         color: @color-dark-font-secondary;
     }
 
-    .mp-mass-action-bar .prevpage,
-    .mp-mass-action-bar .nextpage {
+    .mp-smart-bar .prevpage,
+    .mp-smart-bar .nextpage {
         color: @color-dark-font;
 
         &:hover:not(.disabled) {
@@ -483,5 +744,14 @@ html.dark-mode {
 
     .mp-mass-action-chip {
         background: @color-dark-main;
+    }
+
+    // ── TOGGLE SWITCH ───────────────────────────────────────────────────────────
+    .mp-toggle-slider {
+        background: @color-dark-border;
+
+        input:checked + & {
+            background: @color-dark-main;
+        }
     }
 }

@@ -18,7 +18,7 @@ body {
     --mp-conv-main-rgb: var(--stratus-primary-rgb, 92, 107, 192);
     --mp-conv-main-light: fadeout(@color-main, 94%);
 
-    --mp-conv-row-border: fadeout(@color-list-border, 40%);
+    --mp-conv-row-border: @color-list-border;               // no extra fadeout — variable is already subtle (ISSUE-002)
     --mp-conv-row-hover-bg: fadeout(@color-main, 96%);
     --mp-conv-row-selected-bg: @color-list-selected-background;
 
@@ -59,6 +59,13 @@ body {
     --mp-conv-child-unread-accent: @color-main;
     --mp-conv-dir-sent-color: #43a047;
     --mp-conv-dir-received-color: @color-main;
+
+    // HOVER ACTIONS — plugin CSS bridge for unified row hover actions
+    --mp-hover-actions-bg: @mp-glass-bg-strong;
+    --mp-hover-actions-shadow: @mp-shadow-md;
+    --mp-hover-actions-icon-color: @color-font-secondary;
+    --mp-hover-actions-icon-hover-bg: fadeout(@color-main, 90%);
+    --mp-hover-actions-icon-hover-color: @color-main;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

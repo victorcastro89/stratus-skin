@@ -28,6 +28,8 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // SPACING & SIZING
 // ═══════════════════════════════════════════════════════════════════════════════
+
+@mp-space-xxs:      0.1rem;
 @mp-space-xs:       0.25rem;
 @mp-space-sm:       0.5rem;
 @mp-space-md:       0.75rem;
@@ -35,6 +37,11 @@
 @mp-space-xl:       1.5rem;
 @mp-space-2xl:      2rem;
 @mp-space-3xl:      3rem;
+
+@mp-hover-actions-btn-size:   35px;
+@mp-hover-actions-icon-size:  1rem;
+@mp-hover-actions-padding:    1px;
+@mp-hover-actions-height:     (@mp-hover-actions-btn-size + (2 * @mp-hover-actions-padding));
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BORDER-RADIUS — generous, modern roundness
@@ -45,7 +52,7 @@
 @mp-radius-lg:      12px;
 @mp-radius-xl:      16px;
 @mp-radius-2xl:     24px;
-@mp-radius-pill:    12px;
+@mp-radius-pill:    10px;
 @mp-radius-circle:  50%;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -130,6 +137,15 @@
 @color-layout-border:               #e8ebf4;
 @color-layout-header:               @color-font;
 
+// ─── List Top Shell (search + smart bar subtle merge) ───────────────────────
+@mp-list-top-shell-gutter:          @mp-space-sm;
+@mp-list-top-shell-gap:             0;
+@mp-list-top-shell-radius:          @mp-radius-md;
+@mp-list-top-row-height:            40px;
+@color-layout-list-top-background:  @color-layout-header-background;
+@color-layout-list-top-border:      fadeout(@color-layout-border, 25%);
+@color-layout-list-top-divider:     fadeout(@color-layout-border, 45%);
+
 @color-layout-mobile-header-background: @color-main;
 @color-layout-mobile-footer-background: @color-layout-header-background;
 
@@ -164,9 +180,9 @@
 // ─── Lists ───────────────────────────────────────────────────────────────────
 @color-list:                        @color-font;
 @color-list-selected:               @color-font;
-@color-list-selected-background:    fadeout(@color-main, 92%);
+@color-list-selected-background:    fadeout(@color-main, 87%);   // 13% opacity — was 92% (8%); stronger selected state (ISSUE-003)
 @color-list-focus-indicator:        @color-main;
-@color-list-border:                 #f0f2f8;
+@color-list-border:                 #e4e7f2;                     // was #f0f2f8; slightly more visible separator (ISSUE-002)
 @color-list-badge:                  #fff;
 @color-list-badge-background:       @color-main;
 @color-list-recent:                 darken(@color-main, 15%);
@@ -214,6 +230,9 @@
 // Dark layout
 @color-dark-layout-header-background:   @color-dark-surface;
 @color-dark-layout-sidebar-background:  @color-dark-surface;
+@color-dark-layout-list-top-background: @color-dark-layout-header-background;
+@color-dark-layout-list-top-border:     fadeout(@color-dark-border, 20%);
+@color-dark-layout-list-top-divider:    fadeout(@color-dark-border, 35%);
 
 // Dark taskmenu
 @mp-taskmenu-dark-gradient:         linear-gradient(180deg, #10132a 0%, #0c0e1e 100%);
@@ -222,7 +241,7 @@
 
 // Dark list
 @color-dark-list-selected:              @color-dark-font;
-@color-dark-list-selected-background:   fadeout(@color-dark-main, 85%);
+@color-dark-list-selected-background:   fadeout(@color-dark-main, 82%);  // was 85%; slightly stronger (ISSUE-003 dark)
 @color-dark-list-badge:                 #fff;
 @color-dark-list-badge-background:      @color-dark-main;
 @color-dark-list-deleted:               darken(@color-dark-hint, 10%);
@@ -264,8 +283,8 @@
 
 // Dark blockquotes
 @color-dark-blockquote-0:               lighten(@color-main, 15%);
-@color-dark-blockquote-1:               lighten(#41b849, 10%);
-@color-dark-blockquote-2:               lighten(#ff5552, 10%);
+@color-dark-blockquote-1:               lighten(@color-main, 25%);
+@color-dark-blockquote-2:               lighten(@color-main, 35%);
 @color-dark-blockquote-0-border:        @color-dark-blockquote-0;
 @color-dark-blockquote-1-border:        @color-dark-blockquote-1;
 @color-dark-blockquote-2-border:        @color-dark-blockquote-2;

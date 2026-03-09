@@ -38,8 +38,8 @@ $config['plugins'] = [
 	'archive',
 	'stratus_helper',
 	'calendar',
-    'conversation_mode'
-
+    'conversation_mode',
+    'undo_send',
 ];
 
 // ── Editor / Display ──────────────────────────────────────────────────────

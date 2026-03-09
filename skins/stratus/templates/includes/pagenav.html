@@ -1,12 +1,41 @@
-<!-- Stratus pagenav override — mass-action bar with enabled + active states for mail -->
+<!-- Stratus pagenav override — smart bar with default + selection states for mail -->
+<!-- Export labels to JS so rcmail.get_label() returns translated strings -->
+<roundcube:add_label name="markread" />
+<roundcube:add_label name="markunread" />
+<roundcube:add_label name="markflagged" />
+<roundcube:add_label name="markunflagged" />
+<roundcube:add_label name="sentdate" />
+<roundcube:add_label name="arrival" />
+<roundcube:add_label name="from" />
+<roundcube:add_label name="to" />
+<roundcube:add_label name="fromto" />
+<roundcube:add_label name="subject" />
+<roundcube:add_label name="size" />
+<roundcube:add_label name="cc" />
+<roundcube:add_label name="listsorting" />
 <roundcube:if condition="template:name == 'mail'" />
-<div class="pagenav menu footer small mp-mass-action-bar" role="toolbar" aria-label="<roundcube:label name="arialabellistnav" />">
-	<div class="mp-mass-action-left">
-		<!-- Checkbox trigger (always visible) — toggles select / deselect-all -->
-		<a href="#select" id="mp-mass-select-toggle" class="mp-mass-action-trigger select" title="<roundcube:label name="select" />">
+<div class="pagenav menu footer small mp-smart-bar" role="toolbar" aria-label="<roundcube:label name="arialabellistnav" />">
+	<!-- Mobile nav buttons (display:none on desktop, shown on phone via elastic rules) -->
+	<a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
+	<a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="mailboxlist" /></span></a>
+	<div class="mp-smart-bar-left">
+		<!-- Checkbox trigger (always visible) — opens select-options popup -->
+		<a href="#select" id="mp-mass-select-toggle" class="mp-mass-action-trigger select" title="<roundcube:label name="select" />"
+			data-popup="listselect-menu">
 			<span class="mp-mass-action-checkbox" aria-hidden="true"></span>
 			<span class="inner"><roundcube:label name="select" /></span>
 		</a>
+		<!-- Default state: sort indicator + refresh (visible when no selection) -->
+		<div class="mp-smart-bar-default" aria-label="List controls" id="sort-bar-mail-list">
+			<a href="#sort" id="mp-sort-trigger" class="mp-sort-trigger"
+				aria-haspopup="dialog" aria-expanded="false"
+				title="<roundcube:label name="listsorting" />">
+				<span class="mp-sort-arrow" aria-hidden="true"></span>
+				<span class="mp-sort-label"></span>
+			</a>
+			<roundcube:button command="checkmail" type="link" class="mp-action-btn refresh"
+				label="refresh" title="checkmail" innerclass="inner" />
+		</div>
 		<!-- Action buttons (visible only when messages selected — active state) -->
 		<div class="mp-mass-action-actions" aria-label="Message actions">
 			<span class="mp-mass-action-divider" aria-hidden="true"></span>
@@ -14,8 +43,8 @@
 				class="mp-action-btn delete disabled" classAct="mp-action-btn delete"
 				title="deletemessage" innerclass="inner" label="delete" />
 			<a href="#archive" id="mp-action-archive" class="mp-action-btn archive"
-				title="<roundcube:label name="buttontitle" domain="archive" />"
-				><span class="inner"><roundcube:label name="buttontext" domain="archive" /></span></a>
+				title="<roundcube:label name="archive.buttontitle" />"
+				><span class="inner"><roundcube:label name="archive.buttontext" /></span></a>
 			<roundcube:button command="move" type="link"
 				class="mp-action-btn move disabled" classAct="mp-action-btn move"
 				title="moveto" innerclass="inner" label="moveto" />
@@ -27,16 +56,13 @@
 				<span class="inner"><roundcube:label name="markunflagged" /></span>
 			</a>
 			<span class="mp-mass-action-divider" aria-hidden="true"></span>
-			<!-- <roundcube:button command="checkmail" type="link"
-				class="mp-action-btn sync" classAct="mp-action-btn sync"
-				title="checkmail" innerclass="inner" label="refresh" /> -->
 			<a href="#more" class="mp-action-btn more" data-popup="mp-massaction-menu"
 				title="<roundcube:label name="moreactions" />">
 				<span class="inner"><roundcube:label name="more" /></span>
 			</a>
 		</div>
 	</div>
-	<div class="mp-mass-action-right">
+	<div class="mp-smart-bar-right">
 		<!-- Selected count chip (active state only) -->
 		<span id="mp-selected-count" class="mp-mass-action-chip" aria-live="polite"></span>
 		<!-- Message count (enabled state only, hidden when active) -->
@@ -54,7 +80,7 @@
 	rcmail.addEventListener('init', function() {
 		var list = rcmail.message_list;
 		if (!list) return;
-		var bar = document.querySelector('.mp-mass-action-bar');
+		var bar = document.querySelector('.mp-smart-bar');
 		var chip = document.getElementById('mp-selected-count');
 		var toggle = document.getElementById('mp-mass-select-toggle');
 			var markToggleBtn = document.getElementById('mp-action-mark-toggle');
@@ -354,36 +380,63 @@
 			}
 		}
 
-		// Click handler: toggle multiselect mode or deselect all
+		// Toggle button now opens the listselect-menu popup via data-popup attribute.
+		// Just prevent href navigation; elastic/Bootstrap handles popup opening.
 		if (toggle) {
 			toggle.addEventListener('click', function(e) {
 				e.preventDefault();
-				e.stopPropagation();
+			});
+		}
+
+		// Intercept listselect-menu item clicks to handle both standard and conversation mode.
+		// Uses capture phase so our handler fires before the item's own RC command handlers.
+		var selectMenu = document.getElementById('listselect-menu');
+		if (selectMenu) {
+			selectMenu.addEventListener('click', function(e) {
+				// Walk up from e.target to find the clicked <a> item
+				var item = e.target;
+				while (item && item !== selectMenu && item.tagName.toLowerCase() !== 'a') {
+					item = item.parentNode;
+				}
+				if (!item || item === selectMenu || item.tagName.toLowerCase() !== 'a') return;
+
+				var isNone = item.classList.contains('none');
+
 				if (isConversationMode()) {
-					if (bar.classList.contains('mp-has-selection')) {
-						// Has selection → deselect all & exit multiselect mode
+					// In conversation mode: prevent RC commands from running, use custom events
+					e.preventDefault();
+					e.stopPropagation();
+
+					if (isNone) {
+						// Deselect all and exit multiselect mode
 						document.dispatchEvent(new CustomEvent('stratus:conv-set-multiselect', { detail: { enabled: false } }));
 						setMultiSelectMode(false);
 						forceDeselectAll();
 						convSelectionState = { count: 0, anyUnread: false, anyUnflagged: false };
 						updateSelection();
 					} else {
-						// No selection → enter multiselect mode for conversations
-						document.dispatchEvent(new CustomEvent('stratus:conv-set-multiselect', { detail: { enabled: true } }));
+						// Enter multiselect mode if not already active
+						if (!multiSelectMode) {
+							document.dispatchEvent(new CustomEvent('stratus:conv-set-multiselect', { detail: { enabled: true } }));
+							setMultiSelectMode(true);
+						}
+						// Determine select action type from item classes
+						var actionType = 'all';
+						if (item.classList.contains('unread')) actionType = 'unread';
+						else if (item.classList.contains('flagged')) actionType = 'flagged';
+						else if (item.classList.contains('invert')) actionType = 'invert';
+						document.dispatchEvent(new CustomEvent('stratus:conv-select-action', { detail: { type: actionType } }));
+					}
+				} else {
+					// Standard mode: update multiselect mode flag before RC command runs
+					if (isNone) {
+						setMultiSelectMode(false);
+					} else {
 						setMultiSelectMode(true);
 					}
-					return;
+					// Do not preventDefault — let RC command (select-all / select-none) run normally
 				}
-				if (bar.classList.contains('mp-has-selection')) {
-					// Has selection → deselect all & exit multiselect mode
-					setMultiSelectMode(false);
-					forceDeselectAll();
-					updateSelection();
-				} else {
-					// No selection → enter multiselect mode
-					setMultiSelectMode(true);
-				}
-			});
+			}, true); // capture phase — runs before the item's own click/onclick handlers
 		}
 
 		if (markToggleBtn) {
@@ -601,13 +654,23 @@
 					nextPageBtn.classList.add('disabled');
 				} else {
 					nextPageBtn.classList.remove('disabled');
-					nextPageBtn.classList.add('nextpage');
+					nextPageBtn.classList.add('nextpage'); 
 				}
 			}
 		});
 
 		updateSelection();
 		updateFolderButtons();
+
+		// ISSUE-008: Add accessible label to the searchbar "show unread" filter button.
+		// Roundcube renders this as <a class="button unread"> with no text/tooltip.
+		// We use the exported 'showunread' label (declared via <roundcube:add_label>).
+		var unreadFilterBtn = document.querySelector('.searchbar .button.unread, #mailsearchform .button.unread');
+		if (unreadFilterBtn && !unreadFilterBtn.getAttribute('title')) {
+			var showUnreadLabel = rcmail.get_label('showunread') || 'Show unread messages';
+			unreadFilterBtn.setAttribute('title', showUnreadLabel);
+			unreadFilterBtn.setAttribute('aria-label', showUnreadLabel);
+		}
 	});
 })();
 </script>

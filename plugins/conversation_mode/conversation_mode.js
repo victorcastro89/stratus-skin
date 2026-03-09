@@ -52,6 +52,7 @@
     page: 1,                // current conversation page
     total: 0,
     pages: 0,
+    loaded_mailbox: null,   // mailbox for which conv list was last fetched
     open_conv_id: null,     // currently viewed conversation
     conversations: [],      // current page of conversation rows
     conv_map: {},           // conv_id → conversation data (for quick lookup)
@@ -237,6 +238,7 @@
     ensure_conv_structure();
 
     conv_state.mode = rcmail.env.conversation_mode || 'list';
+    conv_state.loaded_mailbox = rcmail.env.mailbox || 'INBOX';
 
     // Register commands
     rcmail.register_command('plugin.conv.toggle', cmd_toggle, true);
@@ -288,12 +290,26 @@
     }
 
     // Hook into mailbox switches
+    // NOTE: do not fetch conversation rows on `selectfolder` directly.
+    // `selectfolder` fires before the folder `list` command completes; fetching
+    // here sets `rcmail.busy` too early and can swallow the first folder click.
     rcmail.addEventListener('selectfolder', function () {
       if (conv_state.mode === 'conversations') {
         conv_state.page = 1;
         conv_state.open_conv_id = null;
-        request_conversation_list(1);
       }
+    });
+
+    // Fetch conversation rows after the standard list actually switched mailbox.
+    rcmail.addEventListener('listupdate', function () {
+      if (conv_state.mode !== 'conversations') return;
+
+      var mailbox = rcmail.env.mailbox || 'INBOX';
+      if (conv_state.loaded_mailbox === mailbox) return;
+
+      conv_state.page = 1;
+      conv_state.open_conv_id = null;
+      request_conversation_list(1);
     });
 
     // Hook into check-recent (auto-refresh)
@@ -635,6 +651,7 @@
   function on_render_list(data) {
     conv_state.loading = false;
     show_loading(false);
+    conv_state.loaded_mailbox = rcmail.env.mailbox || 'INBOX';
 
     if (!data || !data.conversations) return;
 
@@ -922,14 +939,17 @@
     td_flags.appendChild(date_el);
 
     // Hover action bar (visible on row hover only)
-    var actions = document.createElement('span');
-    actions.className = 'conv-hover-actions';
+    // Skipped when stratus skin provides unified hover actions via mp-hover-actions
+    if (!window._stratus_hover_actions) {
+      var actions = document.createElement('span');
+      actions.className = 'conv-hover-actions';
 
-    actions.appendChild(action_btn('archive', 'archive', label('archive')));
-    actions.appendChild(action_btn('delete', 'trash-alt', label('delete')));
-    actions.appendChild(action_btn('flag', is_flagged ? 'flag' : 'flag-regular', is_flagged ? label('markunflagged') : label('markflagged')));
+      actions.appendChild(action_btn('archive', 'archive', label('archive')));
+      actions.appendChild(action_btn('delete', 'trash-alt', label('delete')));
+      actions.appendChild(action_btn('flag', is_flagged ? 'flag' : 'flag-regular', is_flagged ? label('markunflagged') : label('markflagged')));
 
-    td_flags.appendChild(actions);
+      td_flags.appendChild(actions);
+    }
     tr.appendChild(td_flags);
 
     return tr;
@@ -1558,6 +1578,36 @@
   }
 
   /**
+   * Select conversation rows in the list widget that satisfy matchFn.
+   * Mirrors rcube_list_widget.select_all() but with a custom predicate.
+   *
+   * @param {Object}   widget  – rcube_list_widget instance
+   * @param {Function} matchFn – receives conv_id string, returns boolean
+   */
+  function conv_select_by_filter(widget, matchFn) {
+    if (!widget || !widget.rowcount) return;
+
+    var select_before = widget.selection.join(',');
+    widget.selection = [];
+
+    for (var uid in widget.rows) {
+      if (!widget.rows[uid]) continue;
+      var conv_id = uid.replace(/^conv-/, '');
+      if (matchFn(conv_id)) {
+        widget.last_selected = uid;
+        widget.highlight_row(uid, true, true); // multiple=true, norecur=true
+      } else {
+        $(widget.rows[uid].obj).removeClass('selected').removeAttr('aria-selected');
+      }
+    }
+
+    if (widget.selection.join(',') !== select_before) {
+      widget.triggerEvent('select');
+    }
+    if (widget.focus) widget.focus();
+  }
+
+  /**
    * Remove conversations from the local view after delete/archive/move.
    * Clears selection, removes rows, and refreshes the list if needed.
    */
@@ -1771,6 +1821,32 @@
       _conv_multiselect_mode = !!detail.enabled;
       // Monkey-patch the current conv list widget's select_row if active
       apply_conv_multiselect_patch();
+    });
+
+    // Listen for bulk selection actions from the mass-action bar's select popup.
+    // Handles: all, unread, flagged, invert — mirroring the standard listselect-menu items.
+    document.addEventListener('stratus:conv-select-action', function(e) {
+      if (conv_state.mode !== 'conversations') return;
+      var detail = e && e.detail ? e.detail : {};
+      var type = detail.type;
+      var widget = conv_state.list_widget;
+      if (!widget) return;
+
+      if (type === 'all') {
+        widget.select_all();
+      } else if (type === 'unread') {
+        conv_select_by_filter(widget, function(conv_id) {
+          var conv = conv_state.conv_map[conv_id];
+          return conv && conv.unread_count > 0;
+        });
+      } else if (type === 'flagged') {
+        conv_select_by_filter(widget, function(conv_id) {
+          var conv = conv_state.conv_map[conv_id];
+          return conv && conv.flagged_count > 0;
+        });
+      } else if (type === 'invert') {
+        widget.invert_selection();
+      }
     });
 
     // Bug 8: Listen for page navigation from the mass-action bar prev/next buttons

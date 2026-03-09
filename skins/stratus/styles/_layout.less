@@ -2,6 +2,9 @@
 // Overrides: elastic layout structure — taskmenu, header, toolbar, panels
 // Design: "Atmospheric Modern" — layered depth, fluid motion, generous spacing
 
+#messagelist-header > a {
+    display: none !important; // Hide redundant header actions (sort, refresh) — these are re-parented into the new .mp-smart-bar toolbar by stratus_helper.js
+}
 // ═══════════════════════════════════════════════════════════════════════════════
 // TASK MENU — Navy gradient sidebar with pill navigation
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -279,6 +282,17 @@
 #layout-list {
     border-right: 1px solid @color-layout-border;
     background: @color-layout-list-background;
+}
+
+// ISSUE-009: Elastic hides #layout-list .header-title at >=1201px (large desktop).
+// Show the current folder name for better context when the sidebar is visible.
+@media screen and (min-width: 1201px) {
+    #layout-list > .header > .header-title {
+        display: block !important;
+        font-weight: @mp-font-weight-semibold;
+        color: @color-font;
+        font-size: @mp-font-size-base;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

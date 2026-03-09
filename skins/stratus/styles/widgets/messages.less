@@ -9,6 +9,9 @@
     padding: @mp-space-lg;
 }
 
+// .message / selection {
+//     display: none !important;
+// }
 // Message toolbar buttons → ghost style
 .message-header-toolbar {
     a.button {
@@ -16,14 +19,24 @@
         padding: @mp-space-xs @mp-space-sm;
     }
 }
- 
+
+// Hide redundant actions from the message preview header toolbar.
+ #toolbar-menu > li {
+    > a.delete,
+    > a.archive,
+    > a.markmessage {
+        display: none !important;
+    }
+}
+
 // Attachment chips / minimal chrome
 .message-part {
+
     a {
-        border-radius: @mp-radius-pill;
-        padding: @mp-space-xs @mp-space-md;
-        background: fadeout(@color-main, 94%);
-        border: 1px solid fadeout(@color-main, 80%);
+        // border-radius: @mp-radius-pill;
+        // padding: @mp-space-xxs @mp-space-xxs;
+        // background: fadeout(@color-main, 94%);
+        // border: 1px solid fadeout(@color-main, 80%);
         transition: background @mp-transition-base, border-color @mp-transition-base;
         display: inline-flex;
         align-items: center;
@@ -31,11 +44,25 @@
 
         &:hover {
             background: fadeout(@color-main, 88%);
-            border-color: fadeout(@color-main, 60%);
+     
             text-decoration: none;
         }
     }
 }
+
+// Keep quote history readable: no per-level quote colors
+.message-part,
+.message-htmlpart {
+    blockquote,
+    blockquote blockquote,
+    blockquote blockquote blockquote {
+        color: inherit;
+        border-left-width: 1px;
+        border-left-color: @color-layout-border;
+        border-right: 0;
+    }
+}
+
 
 #attachment-list li {
     a {
@@ -106,6 +133,18 @@ html.dark-mode {
         &:hover {
             background: fadeout(@color-dark-main, 82%);
             border-color: fadeout(@color-dark-main, 50%);
+        }
+    }
+
+    .message-part,
+    .message-htmlpart {
+        blockquote,
+        blockquote blockquote,
+        blockquote blockquote blockquote {
+            color: inherit;
+            border-left-width: 1px;
+            border-left-color: @color-dark-border;
+            border-right: 0;
         }
     }
 

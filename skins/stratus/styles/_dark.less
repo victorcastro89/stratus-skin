@@ -69,7 +69,7 @@ html.dark-mode {
     --mp-conv-main-rgb: var(--stratus-primary-dark-rgb, 121, 134, 203);
     --mp-conv-main-light: @color-dark-main-light;
 
-    --mp-conv-row-border: fadeout(@color-dark-list-border, 50%);
+    --mp-conv-row-border: fadeout(@color-dark-main, 80%);   // ISSUE-010: visible light tint on dark (was dark-list-border at 50%)
     --mp-conv-row-hover-bg: fadeout(@color-dark-main, 94%);
     --mp-conv-row-selected-bg: @color-dark-list-selected-background;
 
@@ -109,5 +109,11 @@ html.dark-mode {
     --mp-conv-child-unread-accent: @color-dark-main;
     --mp-conv-dir-sent-color: #66bb6a;
     --mp-conv-dir-received-color: @color-dark-main;
-}
 
+    // HOVER ACTIONS — dark variant
+    --mp-hover-actions-bg: @mp-glass-dark-bg-strong;
+    --mp-hover-actions-shadow: @mp-shadow-dark-md;
+    --mp-hover-actions-icon-color: @color-dark-font-secondary;
+    --mp-hover-actions-icon-hover-bg: fadeout(@color-dark-main, 85%);
+    --mp-hover-actions-icon-hover-color: @color-dark-main;
+}

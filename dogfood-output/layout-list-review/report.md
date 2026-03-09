@@ -19,33 +19,6 @@
 
 ## Issues
 
----
-
-### ISSUE-001: Mass-action bar shows raw localization keys instead of labels
-
-| Field | Value |
-|-------|-------|
-| **Severity** | high |
-| **Category** | content |
-| **URL** | http://localhost:8000/?_task=mail&_mbox=INBOX |
-| **Repro Video** | N/A |
-
-**Description**
-
-Three buttons in the footer mass-action bar display raw Roundcube localization key names instead of human-readable labels:
-
-1. **Archive button** shows `[buttontext]` — the `<roundcube:label name="buttontext" domain="archive" />` tag is failing to resolve. The label key name `buttontext` in the `archive` plugin domain either doesn't exist or the archive plugin's localization is not loaded.
-2. **Mark unread button** shows `markunread` — the raw key is displayed (no brackets, suggesting partial resolution). Expected: "Mark as unread" or similar.
-3. **Flag button** shows `markflagged` — same issue. Expected: "Flag" or "Mark as flagged".
-
-**Repro Steps**
-
-1. Log in and navigate to Inbox
-   ![Footer mass action bar](screenshots/13-footer-mass-action.png)
-
-2. **Observe:** The footer bar at the bottom of `#layout-list` shows `[buttontext]`, `markunread`, `markflagged` as button labels instead of proper localized text.
-
----
 
 ### ISSUE-002: No visible row separators between messages — rows blend together
 

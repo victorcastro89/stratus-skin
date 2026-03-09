@@ -33,22 +33,13 @@
 
 <!-- messages list — data-conv-mode toggled by conversation_mode plugin JS -->
 <div id="layout-list" class="listbox selected" data-conv-mode="list">
+	<!-- Hidden plugin injection points — stratus_helper.js re-parents buttons into .mp-smart-bar -->
+	<div id="mp-plugin-slots" style="display:none">
+		<roundcube:container name="listcontrols" id="listcontrols" />
+		<roundcube:container name="toolbar" id="convtoolbar" />
+	</div>
 	<div id="messagelist-header" class="header">
-		<a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
-		<a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="mailboxlist" /></span></a>
 		<span class="header-title"></span>
-		<div class="toolbar menu" role="toolbar">
-			<a href="#select" class="select disabled" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="<roundcube:label name="select" />"><span class="inner"><roundcube:label name="select" /></span></a>
-			<roundcube:if condition="env:threads" />
-				<a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner"><roundcube:label name="threads" /></span></a>
-			<roundcube:endif />
-			<roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
-			<roundcube:container name="listcontrols" id="listcontrols" />
-			<roundcube:container name="toolbar" id="convtoolbar" />
-		</div>
-		<roundcube:button command="checkmail" type="link" class="button icon toolbar-button refresh"
-			label="refresh" title="checkmail" innerclass="inner" />
-		<a class="button icon toolbar-menu-button" href="#list-menu"><span class="inner"><roundcube:label name="menu" /></span></a>
 	</div>
 	<roundcube:add_label name="showunread" />
 	<roundcube:object name="searchform" id="mailsearchform" wrapper="searchbar menu"

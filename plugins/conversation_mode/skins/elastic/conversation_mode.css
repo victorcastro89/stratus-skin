@@ -27,8 +27,9 @@
   bottom: 35px;
 }
 
-/* Stratus mass-action footer is taller than Elastic default pagenav */
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content {
+/* Stratus mass-action/smart-bar footer is taller than Elastic default pagenav */
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content,
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) #conv-list-content {
   bottom: 40px;
 }
 
@@ -44,7 +45,8 @@
  * In Stratus, the pagenav is visually a top mass-action bar (below search).
  * Keep conversation list in flow and let flex order place the bar above it.
  */
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content {
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content,
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) #conv-list-content {
   position: relative;
   top: auto;
   left: auto;
@@ -55,7 +57,8 @@
   min-height: 0;
 }
 
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) > .footer.pagenav.mp-mass-action-bar {
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) > .footer.pagenav.mp-mass-action-bar,
+#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) > .footer.pagenav.mp-smart-bar {
   position: relative;
   top: auto;
   bottom: auto;
@@ -132,6 +135,10 @@
   line-height: inherit;
 }
 
+.conv-list.conv-outlook td.subject .conv-line3 {
+  line-height: 1.2;
+}
+
 .conv-sender {
   color: var(--mp-conv-text, #333);
 }
@@ -144,6 +151,22 @@
 .conv-count {
   background: var(--mp-conv-count-bg, #e8e8e8);
   color: var(--mp-conv-count-text, #666);
+}
+
+/* Keep conversation count pinned in the same corner regardless of flag state */
+#conv-list-content .conv-list.conv-outlook td.flags.conv-flags-cell > .conv-count {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  margin: 0;
+  float: none;
+  clear: none;
+  z-index: 2;
+}
+
+/* Reserve space for pinned count so date/flag do not overlap it */
+#conv-list-content .conv-list.conv-outlook td.flags.conv-flags-cell:has(> .conv-count) .conv-row-date {
+  padding-top: 18px;
 }
 
 .conv-date {
@@ -570,32 +593,64 @@ html.dark-mode .conv-list.conv-outlook tbody tr.message.conv-expanded {
    ═══════════════════════════════════════════════ */
 
 @media screen and (max-width: 768px) {
-  .conv-expand-cell {
+  /*
+   * Elastic sets display:flex on .messagelist tr, so table-layout:fixed
+   * does NOT control cell widths — flex properties do.
+   * Use flex shorthand on each cell for consistent column sizing.
+   */
+
+  /* Expand toggle — fixed 24px, never grow/shrink */
+  #conv-list-content .conv-list.conv-outlook td.conv-expand-cell {
+    flex: 0 0 24px;
     width: 24px;
+    min-width: 24px;
+    max-width: 24px;
     padding: 8px 0 8px 4px;
   }
 
-  .conv-list.conv-outlook td.conv-avatar {
-    width: 40px;
-    padding: 8px 2px 8px 8px;
+  /* Avatar — fully collapse, reclaim space for subject */
+  #conv-list-content .conv-list.conv-outlook td.conv-avatar {
+    display: none;
+    flex: 0 0 0px;
+    width: 0;
+    min-width: 0;
+    max-width: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
   }
 
-  .conv-avatar-circle {
-    width: 32px;
-    height: 32px;
-    font-size: 0.75rem;
-  }
-
-  .conv-list.conv-outlook td.subject {
+  /* Subject — fill all remaining space */
+  #conv-list-content .conv-list.conv-outlook td.subject {
+    flex: 1 1 0px;
+    min-width: 0;
+    max-width: none;
     padding: 6px 4px;
+    overflow: hidden;
+  }
+
+  /* Flags cell — fixed 60px, override base min-width:104px */
+  #conv-list-content .conv-list.conv-outlook td.flags.conv-flags-cell {
+    flex: 0 0 60px;
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    padding: 8px 4px;
   }
 
   .conv-sender {
     font-size: 0.85rem;
   }
 
-  .conv-date {
-    font-size: 0.75rem;
+  .conv-date,
+  .conv-row-date {
+    font-size: 0.72rem;
+  }
+
+  /* Touch devices: disable hover actions, rely on tap */
+  #conv-list-content .conv-hover-actions {
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
   .conv-message-card {

@@ -5,10 +5,10 @@
 // MAIL MESSAGE LIST — card-hover, indigo accents, generous spacing
 // ═══════════════════════════════════════════════════════════════════════════════
 .listing {
-    // Hair-thin row separators
+    // Subtle row separators — use variable directly (value tuned in _variables.less for ISSUE-002)
     tbody td,
     li {
-        border-bottom: 1px solid fadeout(@color-list-border, 40%);
+        border-bottom: 1px solid @color-list-border;
         transition: background @mp-transition-fast, box-shadow @mp-transition-smooth;
     }
 
@@ -136,6 +136,184 @@ html:not(.touch) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// UNIFIED HOVER ACTIONS — archive, delete, flag on every message row
+// Frosted glass pill overlapping the date column on hover
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-hover-actions {
+    position: absolute;
+    right: 0;
+    top: auto;
+    bottom: -2px;
+    transform: none;
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+    padding: @mp-hover-actions-padding;
+    height: @mp-hover-actions-height;
+    min-height: @mp-hover-actions-height;
+    line-height: 1;
+    box-sizing: border-box;
+    width: max-content;
+    min-width: max-content;
+    white-space: nowrap;
+    .mp-frosted-glass(@mp-glass-bg-strong);
+    border-radius: @mp-radius-md;
+    box-shadow: @mp-shadow-md;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity @mp-transition-fast;
+    z-index: 5;
+
+    // Show only on row hover
+    tr:hover & {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    // Keep visible/interactive when pointer moves from row into the floating pill
+    // (important now that the pill is taller and can extend outside row bounds)
+    .mp-hover-action-host:hover > &,
+    &:hover {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    // Hide when in multiselect mode (checkboxes shown instead)
+    .mp-multiselect-mode tr:hover & {
+        display: none;
+    }
+}
+
+.mp-hover-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: @mp-hover-actions-btn-size;
+    height: @mp-hover-actions-btn-size;
+    min-width: @mp-hover-actions-btn-size;
+    min-height: @mp-hover-actions-btn-size;
+    border-radius: @mp-radius-sm;
+    color: @color-font-secondary;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background @mp-transition-fast, color @mp-transition-fast;
+
+    &:before {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        font-family: 'Icons';
+        font-size: @mp-hover-actions-icon-size;
+        line-height: 1;
+        margin: 0;
+    }
+
+    &:hover {
+        background: fadeout(@color-main, 90%);
+        color: @color-main;
+    }
+
+    &.archive:before {
+        content: "\f187"; // fa-archive
+        font-weight: 900;
+    }
+
+    &.delete:before {
+        content: "\f2ed"; // fa-trash-alt
+        font-weight: 400;
+    }
+
+    &.flag:before {
+        content: "\f024"; // fa-flag
+        font-weight: 400; // outline
+    }
+
+    // When row is flagged, show solid flag
+    tr.flagged & .flag:before {
+        font-weight: 900; // solid
+        color: @mp-color-amber;
+    }
+}
+
+// Host cell for absolute hover actions
+.mp-hover-action-host {
+    position: relative;
+    overflow: visible;
+    vertical-align: top;
+}
+
+#messagelist td.flags.mp-hover-action-host,
+#conv-messagelist td.flags.mp-hover-action-host,
+#messagelist td.flag.mp-hover-action-host,
+#conv-messagelist td.flag.mp-hover-action-host {
+    overflow: visible !important;
+}
+
+#messagelist tr:hover td.flags.mp-hover-action-host,
+#conv-messagelist tr:hover td.flags.mp-hover-action-host {
+    z-index: 6;
+}
+
+// Standard list: remove Elastic's native single-flag indicator.
+// Keep only the unified mp-hover-actions strip.
+#messagelist td.flags > span.flag {
+    display: none !important;
+}
+
+#messagelist .mp-hover-action-host > .mp-hover-actions,
+#conv-messagelist .mp-hover-action-host > .mp-hover-actions {
+    display: flex !important;
+}
+
+// Hide elastic's default flag-only hover (we replace it with our 3-action strip)
+#messagelist .listing-hover-menu {
+    display: none !important;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// THREAD EXPAND / COLLAPSE — cursor fix (ISSUE-004)
+// ═══════════════════════════════════════════════════════════════════════════════
+.messagelist td.threads div {
+    cursor: pointer;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// EMPTY LIST STATE — icon + friendly message (ISSUE-005)
+// Elastic already centers .listing-info absolutely within the scroller.
+// We add an icon and refine the typography.
+// ═══════════════════════════════════════════════════════════════════════════════
+#messagelist-content .listing-info {
+    font-weight: @mp-font-weight-normal;
+    font-size: @mp-font-size-md;
+    color: @color-font-secondary;
+    opacity: 0.8;
+
+    &::before {
+        content: "\f0e0"; // fa-envelope
+        font-family: 'Icons';
+        font-weight: 400;
+        font-size: 2.5rem;
+        display: block;
+        margin-bottom: @mp-space-md;
+        opacity: 0.45;
+    }
+}
+
+// ISSUE-006: Unread subject should be bolder than read subject.
+// Elastic sets font-weight:bold on .messagelist tr.unread td.subject span.subject,
+// but our #messagelist rule has higher id-specificity (1,2,1 vs elastic 0,4,1)
+// and resets it to 500. Re-assert with a specific unread rule.
+#messagelist tr.unread td.subject span.subject,
+.messagelist tr.unread td.subject span.subject {
+    font-weight: @mp-font-weight-semibold; // 600 — clearly bolder than read (500)
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // CONVERSATION MODE TOGGLE — icon + text toolbar button
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -235,7 +413,8 @@ html.dark-mode {
     .listing {
         tbody td,
         li {
-            border-bottom-color: fadeout(@color-dark-list-border, 50%);
+            // ISSUE-010: use a light indigo tint instead of near-invisible dark-list-border
+            border-bottom-color: fadeout(@color-dark-main, 80%);
         }
 
         tbody tr:hover > td,
@@ -282,6 +461,17 @@ html.dark-mode {
         border-top-color: @color-dark-main;
     }
 
+    // ── EMPTY STATE ───────────────────────────────────────────────────────────────────
+    #messagelist-content .listing-info {
+        color: @color-dark-font-secondary;
+    }
+
+    // ── UNREAD SUBJECT ────────────────────────────────────────────────────────────────
+    #messagelist tr.unread td.subject span.subject,
+    .messagelist tr.unread td.subject span.subject {
+        font-weight: @mp-font-weight-semibold;
+    }
+
     // ── FOLDER LIST ───────────────────────────────────────────────────────────────────
     .listing.folderlist li.selected > a,
     #mailboxlist li.selected > a {
@@ -318,6 +508,22 @@ html.dark-mode {
 
         a:hover {
             background: fadeout(@color-dark-main, 85%);
+        }
+    }
+
+    // ── UNIFIED HOVER ACTIONS (dark) ──────────────────────────────────────────────
+    .mp-hover-actions {
+        .mp-frosted-glass-dark(@mp-glass-dark-bg-strong);
+        box-shadow: @mp-shadow-dark-md;
+        border: 1px solid @mp-glass-dark-border;
+    }
+
+    .mp-hover-btn {
+        color: @color-dark-font-secondary;
+
+        &:hover {
+            background: fadeout(@color-dark-main, 85%);
+            color: @color-dark-main;
         }
     }
 }
