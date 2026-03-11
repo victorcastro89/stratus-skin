@@ -1,8 +1,6 @@
 <!--
   Stratus skin — mail.html template override
-  Based on elastic/templates/mail.html with conversation mode containers added.
-  The conversation_mode plugin's JS toggles [data-conv-mode] on #layout-list;
-  CSS handles show/hide of the standard vs conversation panels.
+  Based on elastic/templates/mail.html with Stratus smart bar additions.
 -->
 <roundcube:include file="includes/layout.html" />
 <roundcube:include file="includes/menu.html" />
@@ -31,8 +29,8 @@
 	</div>
 </div>
 
-<!-- messages list — data-conv-mode toggled by conversation_mode plugin JS -->
-<div id="layout-list" class="listbox selected" data-conv-mode="list">
+<!-- messages list -->
+<div id="layout-list" class="listbox selected">
 	<!-- Hidden plugin injection points — stratus_helper.js re-parents buttons into .mp-smart-bar -->
 	<div id="mp-plugin-slots" style="display:none">
 		<roundcube:container name="listcontrols" id="listcontrols" />
@@ -98,33 +96,13 @@
 		</div>
 	</div>
 
-	<!-- Standard message list (visible when data-conv-mode="list") -->
-	<div id="messagelist-content" class="scroller conv-standard-list" tabindex="-1">
+	<!-- Standard message list -->
+	<div id="messagelist-content" class="scroller" tabindex="-1">
 		<h2 id="aria-label-messagelist" class="voice"><roundcube:label name="arialabelmessagelist" /></h2>
 		<roundcube:object name="messages" id="messagelist" class="listing messagelist sortheader fixedheader"
 			aria-labelledby="aria-label-messagelist" data-list="message_list" data-label-msg="listempty"
 		/>
 	</div>
-
-	<!-- Conversation list (visible when data-conv-mode="conversations") -->
-	<roundcube:if condition="in_array('conversation_mode', (array)config:plugins)" />
-	<div id="conv-list-content" class="scroller conv-conversation-list" tabindex="-1">
-		<h2 id="aria-label-convlist" class="voice">Conversations</h2>
-		<table id="conv-messagelist" class="listing messagelist conv-list conv-outlook"
-			role="listbox" aria-labelledby="aria-label-convlist">
-			<tbody></tbody>
-		</table>
-		<div id="conv-empty" class="conv-empty">
-			<span class="conv-empty-icon"><span class="conv-icon conv-icon-comments" aria-hidden="true"></span></span>
-			<span class="conv-empty-text"><roundcube:label name="conversation_mode.no_conversations" /></span>
-		</div>
-		<div id="conv-pagination" class="conv-pagination" style="display:none">
-			<a id="conv-prev-btn" class="conv-page-btn conv-prev" href="#">&lsaquo; <roundcube:label name="previouspage" /></a>
-			<span id="conv-page-info" class="conv-page-info"></span>
-			<a id="conv-next-btn" class="conv-page-btn conv-next" href="#"><roundcube:label name="nextpage" /> &rsaquo;</a>
-		</div>
-	</div>
-	<roundcube:endif />
 
 	<!-- Standard pagination -->
 	<roundcube:include file="includes/pagenav.html" />
@@ -139,7 +117,7 @@
 		<roundcube:include file="includes/mail-menu.html" />
 	</div>
 	<h2 id="aria-label-mailpreviewframe" class="voice"><roundcube:label name="arialabelmailpreviewframe" /></h2>
-	<div class="iframe-wrapper conv-standard-preview">
+	<div class="iframe-wrapper">
 		<roundcube:object name="contentframe"
 			id="messagecontframe"
 			aria-labelledby="aria-label-mailpreviewframe"
@@ -148,20 +126,6 @@
 		/>
 	</div>
 
-	<!-- Conversation detail panel (shown when a conversation is opened) -->
-	<roundcube:if condition="in_array('conversation_mode', (array)config:plugins)" />
-	<div id="conv-detail" class="conv-detail-wrapper" style="display:none">
-		<div class="conv-detail-header">
-			<a id="conv-back-btn" class="conv-back-btn button" href="#">
-
-				<span class="inner"><roundcube:label name="conversation_mode.back_to_list" /></span>
-			</a>
-			<h2 id="conv-detail-subject" class="conv-detail-subject"></h2>
-			<div id="conv-detail-meta" class="conv-detail-meta"></div>
-		</div>
-		<div id="conv-messages" class="conv-messages scroller"></div>
-	</div>
-	<roundcube:endif />
 </div>
 
 <!-- popup menus -->
@@ -203,7 +167,7 @@
 <div id="listselect-menu" class="popupmenu">
 	<h3 id="aria-label-listselect-menu" class="voice"><roundcube:label name="arialabellistselectmenu" /></h3>
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-listselect-menu">
-		<roundcube:button type="link-menuitem" label="selection" class="selection disabled" classAct="selection active"
+		<roundcube:button type="link-menuitem" label="selection" class="selection" classAct="selection active"
 			name="list-toggle-button" id="list-toggle-button" onclick="UI.toggle_list_selection(this, 'messagelist')" />
 		<roundcube:button command="select-all" type="link-menuitem" label="all" class="select all disabled" classAct="select all active" />
 		<roundcube:button command="select-all" type="link-menuitem" prop="page" label="currpage" class="select page disabled" classAct="select page active" />

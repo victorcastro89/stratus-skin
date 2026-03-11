@@ -20,11 +20,13 @@ $config['imap_host']    = 'mailserver:143';
 $config['smtp_host']    = 'mailserver:587';
 $config['smtp_user']    = '%u';
 $config['smtp_pass']    = '%p';
+$config['messages_cache'] = false;
+$config['imap_cache'] = null;
 
 // ── General ────────────────────────────────────────────────────────────────
 $config['product_name']    = 'Stratus Webmail (Dev)';
 $config['des_key']         = 'Gd+4gJ8h29ex932cJI5M9whl';
-$config['skin']            = 'stratus';
+// $config['skin']            = 'stratus';
 $config['support_url']     = '';
 $config['username_domain']  = '';
 $config['request_path']    = '/';
@@ -32,13 +34,13 @@ $config['temp_dir']        = '/tmp/roundcube-temp';
 $config['log_driver']      = 'file';
 $config['log_dir']         = '/var/roundcube/logs/';
 $config['log_logins']      = true;
-
+$config['prettydate'] = true;
+$config['imap_debug'] = true;
 // ── Plugins ────────────────────────────────────────────────────────────────
 $config['plugins'] = [
 	'archive',
 	'stratus_helper',
 	'calendar',
-    'conversation_mode',
     'undo_send',
 ];
 

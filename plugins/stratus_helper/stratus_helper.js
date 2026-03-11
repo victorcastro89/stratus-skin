@@ -1,680 +1,762 @@
 /**
- * Stratus Helper – Client-side JS
+ * Stratus Helper – Client-side JS (DEBUG BUILD)
  *
- * Handles:
- * 1. Live color scheme switching
- * 2. Live font family switching
- * 3. Settings page live preview
- *
- * @version 0.1.0
+ * @version 0.1.0-debug
  */
 (function () {
-    'use strict';
+  'use strict';
 
-    if (!window.rcmail) return;
+  if (!window.rcmail) return;
 
-    rcmail.addEventListener('init', function () {
+  // ──────────────────────────────────────────
+  // DEBUG CONTROLS (toggle in console if needed)
+  // ──────────────────────────────────────────
+  // window.STRATUS_HOVER_DEBUG = true/false
+  // window.STRATUS_HOVER_DEBUG_LEVEL = 0..3
+  if (typeof window.STRATUS_HOVER_DEBUG === 'undefined') window.STRATUS_HOVER_DEBUG = true;
+  if (typeof window.STRATUS_HOVER_DEBUG_LEVEL === 'undefined') window.STRATUS_HOVER_DEBUG_LEVEL = 3;
 
-        // ──────────────────────────────────────────
-        //  1. Color Scheme Switching
-        // ──────────────────────────────────────────
+  function dbgEnabled() { return !!window.STRATUS_HOVER_DEBUG; }
+  function dbgLevel() { return +window.STRATUS_HOVER_DEBUG_LEVEL || 0; }
 
-        rcmail.addEventListener('plugin.stratus.scheme_applied', function (data) {
-            if (!data) return;
-            applyScheme(data.primary, data.primary_dark);
-        });
+  function dbg() {
+    if (!dbgEnabled()) return;
+    if (dbgLevel() < 1) return;
+    try { console.log.apply(console, arguments); } catch (e) {}
+  }
+  function dbg2() {
+    if (!dbgEnabled()) return;
+    if (dbgLevel() < 2) return;
+    try { console.log.apply(console, arguments); } catch (e) {}
+  }
+  function dbg3() {
+    if (!dbgEnabled()) return;
+    if (dbgLevel() < 3) return;
+    try { console.log.apply(console, arguments); } catch (e) {}
+  }
+  function group(label) {
+    if (!dbgEnabled() || dbgLevel() < 1) return;
+    try { console.group(label); } catch (e) {}
+  }
+  function groupEnd() {
+    if (!dbgEnabled() || dbgLevel() < 1) return;
+    try { console.groupEnd(); } catch (e) {}
+  }
 
-        // ──────────────────────────────────────────
-        //  2. Font Switching
-        // ──────────────────────────────────────────
+  // ──────────────────────────────────────────
+  // Hook debug wrappers once
+  // ──────────────────────────────────────────
+  function installDebugHooksOnce() {
+    if (!dbgEnabled()) return;
+    if (window.__STRATUS_DEBUG_HOOKS_INSTALLED) return;
+    window.__STRATUS_DEBUG_HOOKS_INSTALLED = true;
 
-        rcmail.addEventListener('plugin.stratus.font_applied', function (data) {
-            if (!data) return;
-            applyFont(data.family, data.url);
-        });
-
-        // ──────────────────────────────────────────
-        //  3. Settings Page Live Preview
-        // ──────────────────────────────────────────
-
-        if (rcmail.env.task === 'settings') {
-            initSettingsPreview();
+    // Wrap rcmail.command
+    if (rcmail && typeof rcmail.command === 'function' && !rcmail.command.__stratusWrapped) {
+      var _cmd = rcmail.command;
+      var wrapped = function (cmd, prop, obj, evt) {
+        try {
+          dbg2('%c[STRATUS][COMMAND] →', 'color:#9b59b6', cmd, { prop: prop, obj: obj, evt: evt });
+        } catch (e) {}
+        var ret;
+        try {
+          ret = _cmd.apply(rcmail, arguments);
+        } catch (err) {
+          dbg('%c[STRATUS][COMMAND][ERROR]', 'color:#e74c3c', cmd, err);
+          throw err;
         }
+        dbg2('%c[STRATUS][COMMAND] ← return', 'color:#9b59b6', cmd, ret);
+        return ret;
+      };
+      wrapped.__stratusWrapped = true;
+      rcmail.command = wrapped;
+      dbg('%c[STRATUS] Wrapped rcmail.command for debug', 'color:#2ecc71');
+    }
 
-        // ──────────────────────────────────────────
-        //  4. Dark Mode — iframe propagation
-        // ──────────────────────────────────────────
-
-        if (document.documentElement.classList.contains('dark-mode')) {
-            initDarkModeFramePropagation();
-            initTinyMCEDarkMode();
+    // Wrap rcmail.http_post (Roundcube AJAX)
+    if (rcmail && typeof rcmail.http_post === 'function' && !rcmail.http_post.__stratusWrapped) {
+      var _post = rcmail.http_post;
+      var wrappedPost = function (action, data, lock) {
+        dbg2('%c[STRATUS][HTTP_POST] →', 'color:#3498db', action, data, { lock: lock });
+        var ret;
+        try {
+          ret = _post.apply(rcmail, arguments);
+        } catch (err) {
+          dbg('%c[STRATUS][HTTP_POST][ERROR]', 'color:#e74c3c', action, err);
+          throw err;
         }
+        dbg2('%c[STRATUS][HTTP_POST] ← return', 'color:#3498db', action, ret);
+        return ret;
+      };
+      wrappedPost.__stratusWrapped = true;
+      rcmail.http_post = wrappedPost;
+      dbg('%c[STRATUS] Wrapped rcmail.http_post for debug', 'color:#2ecc71');
+    }
 
-        // ──────────────────────────────────────────
-        //  5. Unified Hover Actions (mail task)
-        // ──────────────────────────────────────────
+    // jQuery global AJAX sniffing (Roundcube uses jQuery)
+    var $ = window.jQuery || window.$;
+    if ($ && $.fn && $.ajax && !window.__STRATUS_JQ_AJAX_HOOKED) {
+      window.__STRATUS_JQ_AJAX_HOOKED = true;
 
-        if (rcmail.env.task === 'mail') {
-            initUnifiedHoverActions();
-        }
+      $(document).on('ajaxSend.stratusHoverDebug', function (_e, xhr, settings) {
+        try {
+          var url = settings && settings.url;
+          var data = settings && settings.data;
+          // Log everything at max debug, but highlight possible flag-related calls
+          var interesting = /flag|mark|_uid|toggle_flag/i.test(String(url)) || /flag|mark|_uid|toggle_flag/i.test(String(data));
+          if (dbgLevel() >= 3 || interesting) {
+            dbg3('%c[STRATUS][AJAX SEND]', 'color:#f39c12', { url: url, type: settings.type, data: data });
+          }
+        } catch (e) {}
+      });
 
-        // ──────────────────────────────────────────
-        //  6. Smart Bar Controller (mail task)
-        // ──────────────────────────────────────────
+      $(document).on('ajaxComplete.stratusHoverDebug', function (_e, xhr, settings) {
+        try {
+          var url = settings && settings.url;
+          var status = xhr && xhr.status;
+          var interesting = /flag|mark|_uid|toggle_flag/i.test(String(url));
+          if (dbgLevel() >= 3 || interesting) {
+            dbg3('%c[STRATUS][AJAX DONE]', 'color:#f39c12', { url: url, status: status, response: (xhr && xhr.responseText ? String(xhr.responseText).slice(0, 200) : null) });
+          }
+        } catch (e) {}
+      });
 
-        if (rcmail.env.task === 'mail') {
-            initSmartBarController();
-        }
+      dbg('%c[STRATUS] Hooked jQuery ajaxSend/ajaxComplete for debug', 'color:#2ecc71');
+    }
+  }
+
+  rcmail.addEventListener('init', function () {
+
+    installDebugHooksOnce();
+
+    // ──────────────────────────────────────────
+    //  1. Color Scheme Switching
+    // ──────────────────────────────────────────
+
+    rcmail.addEventListener('plugin.stratus.scheme_applied', function (data) {
+      if (!data) return;
+      applyScheme(data.primary, data.primary_dark);
     });
 
-    // ══════════════════════════════════════════════
-    //  Color Scheme Helpers
-    // ══════════════════════════════════════════════
+    // ──────────────────────────────────────────
+    //  2. Font Switching
+    // ──────────────────────────────────────────
 
-    /**
-     * Apply color scheme CSS custom properties to the document root.
-     */
-    function applyScheme(primary, primaryDark) {
-        var root = document.documentElement;
-        root.style.setProperty('--stratus-primary', primary);
-        root.style.setProperty('--stratus-primary-dark', primaryDark);
-        root.style.setProperty('--stratus-primary-rgb', hexToRgb(primary));
-        root.style.setProperty('--stratus-primary-dark-rgb', hexToRgb(primaryDark));
+    rcmail.addEventListener('plugin.stratus.font_applied', function (data) {
+      if (!data) return;
+      applyFont(data.family, data.url);
+    });
+
+    // ──────────────────────────────────────────
+    //  3. Settings Page Live Preview
+    // ──────────────────────────────────────────
+
+    if (rcmail.env.task === 'settings') {
+      initSettingsPreview();
     }
 
-    /**
-     * Convert hex color to comma-separated RGB string.
-     */
-    function hexToRgb(hex) {
-        hex = hex.replace(/^#/, '');
-        if (hex.length === 3) {
-            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    // ──────────────────────────────────────────
+    //  4. Dark Mode — iframe propagation
+    // ──────────────────────────────────────────
+
+    if (document.documentElement.classList.contains('dark-mode')) {
+      initDarkModeFramePropagation();
+      initTinyMCEDarkMode();
+    }
+
+    // ──────────────────────────────────────────
+    //  5. Unified Hover Actions (mail task)
+    // ──────────────────────────────────────────
+
+    if (rcmail.env.task === 'mail') {
+      initUnifiedHoverActions();
+    }
+
+    // ──────────────────────────────────────────
+    //  6. Smart Bar Controller (mail task)
+    // ──────────────────────────────────────────
+
+    if (rcmail.env.task === 'mail') {
+      initSmartBarController();
+    }
+
+    // ──────────────────────────────────────────
+    //  7. Search empty-state spinner fix
+    // ──────────────────────────────────────────
+
+    if (rcmail.env.task === 'mail') {
+      initSearchEmptyState();
+    }
+  });
+
+  // ══════════════════════════════════════════════
+  //  Color Scheme Helpers
+  // ══════════════════════════════════════════════
+
+  function applyScheme(primary, primaryDark) {
+    var root = document.documentElement;
+    root.style.setProperty('--stratus-primary', primary);
+    root.style.setProperty('--stratus-primary-dark', primaryDark);
+    root.style.setProperty('--stratus-primary-rgb', hexToRgb(primary));
+    root.style.setProperty('--stratus-primary-dark-rgb', hexToRgb(primaryDark));
+  }
+
+  function hexToRgb(hex) {
+    hex = hex.replace(/^#/, '');
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    var r = parseInt(hex.substring(0, 2), 16);
+    var g = parseInt(hex.substring(2, 4), 16);
+    var b = parseInt(hex.substring(4, 6), 16);
+    return r + ', ' + g + ', ' + b;
+  }
+
+  // ══════════════════════════════════════════════
+  //  Font Helpers
+  // ══════════════════════════════════════════════
+
+  function applyFont(family, url) {
+    document.documentElement.style.setProperty('--stratus-font-family', family);
+    var existingLink = document.getElementById('stratus-helper-font');
+
+    if (url) {
+      if (existingLink) {
+        existingLink.href = url;
+      } else {
+        var link = document.createElement('link');
+        link.id = 'stratus-helper-font';
+        link.rel = 'stylesheet';
+        link.href = url;
+        document.head.appendChild(link);
+      }
+    } else if (existingLink) {
+      existingLink.parentNode.removeChild(existingLink);
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  //  Settings Page Preview
+  // ══════════════════════════════════════════════
+
+  function initSettingsPreview() {
+    var schemeSelect = document.getElementById('ff_stratus_color_scheme');
+    if (schemeSelect) {
+      schemeSelect.addEventListener('change', function () {
+        rcmail.http_post('plugin.stratus.set_scheme', { _scheme: this.value });
+      });
+    }
+
+    var fontSelect = document.getElementById('ff_stratus_font_family');
+    if (fontSelect) {
+      fontSelect.addEventListener('change', function () {
+        rcmail.http_post('plugin.stratus.set_font', { _font: this.value });
+      });
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  //  Dark Mode — iframe propagation
+  // ══════════════════════════════════════════════
+
+  function initDarkModeFramePropagation() {
+    function injectDark(frame) {
+      try {
+        var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+        if (doc && doc.documentElement) doc.documentElement.classList.add('dark-mode');
+      } catch (e) {}
+    }
+
+    ['preferences-frame', 'contentframe', 'messagecontframe'].forEach(function (id) {
+      var frame = document.getElementById(id);
+      if (!frame) return;
+      injectDark(frame);
+      frame.addEventListener('load', function () { injectDark(this); });
+    });
+
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        mutation.addedNodes.forEach(function (node) {
+          if (node.nodeType !== 1) return;
+          if (node.tagName === 'IFRAME') node.addEventListener('load', function () { injectDark(this); });
+
+          var nested = node.querySelectorAll && node.querySelectorAll('iframe');
+          if (nested) Array.prototype.forEach.call(nested, function (f) {
+            f.addEventListener('load', function () { injectDark(this); });
+          });
+        });
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // ══════════════════════════════════════════════
+  //  Dark Mode — TinyMCE
+  // ══════════════════════════════════════════════
+
+  function initTinyMCEDarkMode() {
+    var darkCSS =
+      'html, body { background-color: #1a1f36 !important; color: #c8d0e8 !important; }' +
+      'a { color: #7986cb !important; }' +
+      'blockquote { border-left: 3px solid #7986cb; color: #7e8aad; }' +
+      'pre, code { background: #212845; color: #c8d0e8; border-color: #2a3050; }' +
+      'hr { border-color: #2a3050; }';
+
+    function applyDarkToEditor(editor) {
+      var doc = editor.getDoc ? editor.getDoc() : null;
+      if (!doc || !doc.head) return;
+      if (doc.getElementById('stratus-tinymce-dark')) return;
+      var style = doc.createElement('style');
+      style.id = 'stratus-tinymce-dark';
+      style.textContent = darkCSS;
+      doc.head.appendChild(style);
+    }
+
+    function hookTinyMCE() {
+      window.tinymce.on('AddEditor', function (e) {
+        e.editor.on('init', function () { applyDarkToEditor(this); });
+      });
+      var editors = window.tinymce.editors || [];
+      for (var i = 0; i < editors.length; i++) applyDarkToEditor(editors[i]);
+    }
+
+    if (window.tinymce) hookTinyMCE();
+    else {
+      var attempts = 0;
+      var timer = setInterval(function () {
+        attempts++;
+        if (window.tinymce) { clearInterval(timer); hookTinyMCE(); }
+        else if (attempts > 150) clearInterval(timer);
+      }, 200);
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  //  Search Empty-State Spinner Fix
+  // ══════════════════════════════════════════════
+
+  function initSearchEmptyState() {
+    var container = document.getElementById('messagelist-content');
+    if (!container) return;
+
+    var emptyEl = document.createElement('div');
+    emptyEl.id = 'mp-search-empty-state';
+    emptyEl.style.display = 'none';
+    container.appendChild(emptyEl);
+
+    function isSearchActive() {
+      return !!(rcmail.env.search_request || rcmail.env.qsearch);
+    }
+    function getLabel() {
+      var txt = rcmail.gettext('stratus_helper.search_no_messages');
+      return (!txt || txt === 'stratus_helper.search_no_messages')
+        ? 'No messages found for your search.'
+        : txt;
+    }
+
+    function showEmpty() {
+      emptyEl.textContent = getLabel();
+      emptyEl.style.display = '';
+      container.classList.add('mp-search-empty');
+    }
+    function hideEmpty() {
+      emptyEl.style.display = 'none';
+      container.classList.remove('mp-search-empty');
+    }
+
+    rcmail.addEventListener('listupdate', function (evt) {
+      if (!container) return;
+      if (evt && evt.rowcount === 0 && isSearchActive()) showEmpty();
+      else hideEmpty();
+    });
+
+    rcmail.addEventListener('beforesearch', hideEmpty);
+    rcmail.addEventListener('beforelist', hideEmpty);
+  }
+
+  // ══════════════════════════════════════════════
+  //  Unified Hover Actions (MAX DEBUG)
+  // ══════════════════════════════════════════════
+
+  function initUnifiedHoverActions() {
+    dbg('%c[STRATUS] initUnifiedHoverActions()', 'color:#2ecc71');
+
+    // Resolve UID in your environment
+    var rowIdToUid = Object.create(null);
+
+    function rebuildRowIdUidIndex() {
+      rowIdToUid = Object.create(null);
+      var list = rcmail.message_list;
+      var rows = list && list.rows;
+
+      dbg2('[STRATUS][UID INDEX] rebuildRowIdUidIndex() list=', !!list, 'rows=', rows ? Object.keys(rows).length : null);
+
+      if (!rows) return;
+      for (var key in rows) {
+        if (!Object.prototype.hasOwnProperty.call(rows, key)) continue;
+        var r = rows[key];
+        if (!r || !r.id) continue;
+        rowIdToUid[r.id] = r.uid || key;
+      }
+
+      dbg3('[STRATUS][UID INDEX] sample map:', Object.keys(rowIdToUid).slice(0, 5).reduce(function (acc, k) {
+        acc[k] = rowIdToUid[k];
+        return acc;
+      }, {}));
+    }
+
+    function getUidById(rows, id) {
+      for (var key in rows) {
+        if (!Object.prototype.hasOwnProperty.call(rows, key)) continue;
+        if (rows[key] && rows[key].id === id) return rows[key].uid || key;
+      }
+      return null;
+    }
+
+    function getRowUid(row) {
+      if (!row) return null;
+
+      var dataUid = row.getAttribute('data-uid');
+      if (dataUid) return dataUid;
+
+      var rowId = row.id || '';
+      if (!rowId) return null;
+
+      if (rowIdToUid[rowId]) return rowIdToUid[rowId];
+
+      var list = rcmail.message_list;
+      var rows = list && list.rows;
+      if (rows) {
+        var uid = getUidById(rows, rowId);
+        if (uid) {
+          rowIdToUid[rowId] = uid;
+          return uid;
         }
-        var r = parseInt(hex.substring(0, 2), 16);
-        var g = parseInt(hex.substring(2, 4), 16);
-        var b = parseInt(hex.substring(4, 6), 16);
-        return r + ', ' + g + ', ' + b;
+      }
+      return null;
     }
 
-    // ══════════════════════════════════════════════
-    //  Font Helpers
-    // ══════════════════════════════════════════════
+    // ──────────────────────────────────────────
+    // Row activation / selection (the real issue)
+    // ──────────────────────────────────────────
+
+    function snapshotState(tag) {
+      var list = rcmail.message_list;
+      var sel = list && list.selection ? list.selection.slice() : null;
+      dbg2('[STRATUS][STATE]', tag, {
+        env_uid: rcmail.env && rcmail.env.uid,
+        selection: sel,
+        last_selected: list && list.last_selected,
+        focused: (document.activeElement && document.activeElement.id) || document.activeElement
+      });
+    }
+
+    function focusMessageList() {
+      var list = rcmail.message_list;
+      if (!list) return;
+      if (typeof list.focus === 'function') {
+        try { list.focus(); } catch (e) {}
+      }
+      // also focus DOM table if needed
+      var tbl = document.getElementById('messagelist');
+      if (tbl && typeof tbl.focus === 'function') {
+        try { tbl.focus(); } catch (e) {}
+      }
+    }
+
+    function selectSingle(uid, row) {
+      var list = rcmail.message_list;
+      if (!list || !uid) return false;
+
+      // Clear existing selection (removes CSS highlights only, no callback fired)
+      if (typeof list.clear_selection === 'function') {
+        try { list.clear_selection(); } catch (e) {}
+      }
+
+      // Set selection state directly WITHOUT calling list.select().
+      // list.select() fires the onselect callback → show_message(), which would
+      // load the flagged message into the preview and corrupt env.uid — causing
+      // subsequent row clicks to not refresh the preview panel.
+      try {
+        list.selection = [uid];
+        list.last_selected = uid;
+      } catch (e) {}
+
+      // If the list stores rows by row-id rather than uid, also expose the row-id form
+      if (row && row.id && row.id !== String(uid)) {
+        try { list.selection = [row.id]; list.last_selected = row.id; } catch (e) {}
+      }
+
+      // Update env.uid used by command handlers (toggle_flag, delete, etc.)
+      try {
+        if (rcmail.env) rcmail.env.uid = uid;
+      } catch (e) {}
+
+      return true;
+    }
 
     /**
-     * Apply font family to document and manage Google Font stylesheet.
+     * Activate row like a real click (without opening message)
+     * - focus list
+     * - select row (robust)
+     * - set env.uid + last_selected
      */
-    function applyFont(family, url) {
-        // Update CSS custom property
-        document.documentElement.style.setProperty('--stratus-font-family', family);
+    function activateRowForCommand(row, uid) {
+      group('%c[STRATUS][ACTIVATE ROW]', 'color:#16a085');
+      dbg('row.id=', row && row.id, 'uid=', uid, 'row=', row);
+      snapshotState('before');
 
-        // Manage the Google Font <link> element
-        var existingLink = document.getElementById('stratus-helper-font');
+      focusMessageList();
 
-        if (url) {
-            if (existingLink) {
-                existingLink.href = url;
+      // Important: do NOT trigger a native click (that may open message)
+      // We only replicate the minimum state needed for commands to work.
+      selectSingle(uid, row);
+
+      snapshotState('after selectSingle()');
+      groupEnd();
+    }
+
+    /**
+     * Execute a command after activation, with fallback variants.
+     * For toggle_flag, try (1) selection-based call, (2) uid-prop call if needed.
+     */
+    function runAfterActivate(cmd, row, uid, evt) {
+      // Save selection state before we touch anything, so we can restore it after
+      // the command. This ensures toggle_flag (and others) don't leave env.uid /
+      // list.last_selected pointing at the actioned row, which would prevent the
+      // next user click from refreshing the preview panel.
+      var list0 = rcmail.message_list;
+      var savedUid          = (rcmail.env && rcmail.env.uid) || null;
+      var savedLastSelected = (list0 && list0.last_selected) || null;
+      var savedSelection    = (list0 && list0.selection) ? list0.selection.slice() : [];
+
+      activateRowForCommand(row, uid);
+
+      window.setTimeout(function () {
+        group('%c[STRATUS][RUN COMMAND]', 'color:#8e44ad');
+        snapshotState('pre-command');
+
+        var ret1, ret2;
+        try {
+          if (cmd === 'toggle_flag') {
+            dbg2('[STRATUS][FLAG] calling selection-based:', "rcmail.command('toggle_flag')");
+            ret1 = rcmail.command('toggle_flag', '', row, evt);
+
+            // If Roundcube command() returns false/undefined in your build,
+            // try the UID-as-prop fallback *only if ret1 is explicitly false*.
+            if (ret1 === false) {
+              dbg2('[STRATUS][FLAG] selection-based returned false; trying uid-prop fallback');
+              ret2 = rcmail.command('toggle_flag', uid, row, evt);
             } else {
-                var link = document.createElement('link');
-                link.id = 'stratus-helper-font';
-                link.rel = 'stylesheet';
-                link.href = url;
-                document.head.appendChild(link);
+              dbg2('[STRATUS][FLAG] selection-based return:', ret1, '(not attempting fallback)');
             }
-        } else if (existingLink) {
-            existingLink.parentNode.removeChild(existingLink);
+          } else {
+            ret1 = rcmail.command(cmd, '', row, evt);
+          }
+        } catch (err) {
+          dbg('%c[STRATUS][RUN COMMAND][ERROR]', 'color:#e74c3c', cmd, err);
         }
+
+        snapshotState('post-command');
+        dbg2('[STRATUS][RUN COMMAND] returns:', { primary: ret1, fallback: ret2 });
+        groupEnd();
+
+        // Restore the selection state that was active before the hover action.
+        // Without this, env.uid stays on the actioned row and clicking another
+        // message may not trigger a preview refresh in some Roundcube builds.
+        window.setTimeout(function () {
+          try {
+            var list2 = rcmail.message_list;
+            if (list2) {
+              list2.selection    = savedSelection;
+              list2.last_selected = savedLastSelected;
+            }
+            if (rcmail.env) rcmail.env.uid = savedUid;
+            dbg2('[STRATUS][RESTORE STATE] uid=', savedUid, 'last_selected=', savedLastSelected);
+          } catch (e) {}
+        }, 0);
+      }, 0);
     }
 
-    // ══════════════════════════════════════════════
-    //  Settings Page Preview
-    // ══════════════════════════════════════════════
+    // ──────────────────────────────────────────
+    // Hover action injection
+    // ──────────────────────────────────────────
 
-    /**
-     * Initialize live preview on the Stratus settings page.
-     * When user changes the select, immediately apply the visual change
-     * (scheme/font) without waiting for form submit.
-     */
-    function initSettingsPreview() {
-        // Color scheme select
-        var schemeSelect = document.getElementById('ff_stratus_color_scheme');
-        if (schemeSelect) {
-            schemeSelect.addEventListener('change', function () {
-                var key = this.value;
-                // Look up the scheme colors from the options data attributes
-                // or do an AJAX call for live preview
-                rcmail.http_post('plugin.stratus.set_scheme', { _scheme: key });
-            });
-        }
-
-        // Font family select
-        var fontSelect = document.getElementById('ff_stratus_font_family');
-        if (fontSelect) {
-            fontSelect.addEventListener('change', function () {
-                var key = this.value;
-                rcmail.http_post('plugin.stratus.set_font', { _font: key });
-            });
-        }
+    function getHoverActionHost(row) {
+      if (!row || !row.querySelector) return null;
+      return row.querySelector('td.flags')
+        || row.querySelector('td.flag')
+        || row.querySelector('td.date')
+        || row.querySelector('td.size')
+        || row.lastElementChild
+        || null;
     }
 
-    // ══════════════════════════════════════════════
-    //  Dark Mode — iframe propagation
-    // ══════════════════════════════════════════════
+    function createHoverActions(row) {
+      if (!row || row.querySelector('.mp-hover-actions')) return;
 
-    /**
-     * Inject the `dark-mode` class into every Roundcube content iframe so that
-     * framed pages (settings/preferences, message reading pane, compose) inherit
-     * the dark theme from the parent document.
-     *
-     * Roundcube loads preferences and messages inside iframes that have their own
-     * <html> element — the parent's class is NOT inherited automatically.
-     */
-    function initDarkModeFramePropagation() {
-        function injectDark(frame) {
-            try {
-                var doc = frame.contentDocument ||
-                    (frame.contentWindow && frame.contentWindow.document);
-                if (doc && doc.documentElement) {
-                    doc.documentElement.classList.add('dark-mode');
-                }
-            } catch (e) {
-                // Cross-origin frame — ignore silently
-            }
-        }
+      var host = getHoverActionHost(row);
+      if (!host) return;
 
-        // Apply to frames that already exist in the DOM
-        var knownIds = ['preferences-frame', 'contentframe', 'messagecontframe'];
-        knownIds.forEach(function (id) {
-            var frame = document.getElementById(id);
-            if (frame) {
-                injectDark(frame);
-                frame.addEventListener('load', function () { injectDark(this); });
-            }
-        });
+      host.classList.add('mp-hover-action-host');
 
-        // Watch for frames added dynamically (Roundcube sometimes creates them lazily)
-        var observer = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-                mutation.addedNodes.forEach(function (node) {
-                    if (node.nodeType !== 1) return;
-                    if (node.tagName === 'IFRAME') {
-                        node.addEventListener('load', function () { injectDark(this); });
-                    }
-                    // Frames nested inside the added node
-                    var nested = node.querySelectorAll && node.querySelectorAll('iframe');
-                    if (nested) {
-                        Array.prototype.forEach.call(nested, function (f) {
-                            f.addEventListener('load', function () { injectDark(this); });
-                        });
-                    }
-                });
-            });
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-    }
+      var strip = document.createElement('span');
+      strip.className = 'mp-hover-actions';
 
-    // ══════════════════════════════════════════════
-    //  Dark Mode — TinyMCE editor content area
-    // ══════════════════════════════════════════════
+      var archiveBtn = document.createElement('a');
+      archiveBtn.className = 'mp-hover-btn archive';
+      archiveBtn.href = '#archive';
+      archiveBtn.title = rcmail.get_label('archive.buttontitle') || 'Archive';
+      archiveBtn.setAttribute('aria-label', archiveBtn.title);
 
-    /**
-     * TinyMCE renders its editing area inside a sandboxed <iframe>.  CSS rules on
-     * the parent document don't reach it.  This function injects a minimal dark
-     * stylesheet into each editor's document when the page is in dark mode.
-     *
-     * The outer chrome (toolbar, statusbar) is handled by editor.less CSS rules.
-     */
-    function initTinyMCEDarkMode() {
-        // Resolved from @color-dark-surface / @color-dark-font / @color-dark-main
-        var darkCSS =
-            'html, body { background-color: #1a1f36 !important; color: #c8d0e8 !important; }' +
-            'a { color: #7986cb !important; }' +
-            'blockquote { border-left: 3px solid #7986cb; color: #7e8aad; }' +
-            'pre, code { background: #212845; color: #c8d0e8; border-color: #2a3050; }' +
-            'hr { border-color: #2a3050; }';
+      var deleteBtn = document.createElement('a');
+      deleteBtn.className = 'mp-hover-btn delete';
+      deleteBtn.href = '#delete';
+      deleteBtn.title = rcmail.get_label('deletemessage') || 'Delete';
+      deleteBtn.setAttribute('aria-label', deleteBtn.title);
 
-        function applyDarkToEditor(editor) {
-            var doc = editor.getDoc ? editor.getDoc() : null;
-            if (!doc || !doc.head) return;
-            if (doc.getElementById('stratus-tinymce-dark')) return; // already applied
-            var style = doc.createElement('style');
-            style.id = 'stratus-tinymce-dark';
-            style.textContent = darkCSS;
-            doc.head.appendChild(style);
-        }
+      var flagBtn = document.createElement('a');
+      flagBtn.className = 'mp-hover-btn flag';
+      flagBtn.href = '#flag';
+      flagBtn.title = 'Flag';
+      flagBtn.setAttribute('aria-label', flagBtn.title);
 
-        function hookTinyMCE() {
-            // Future editors
-            window.tinymce.on('AddEditor', function (e) {
-                e.editor.on('init', function () { applyDarkToEditor(this); });
-            });
-            // Already-initialised editors (e.g., page reload with compose open)
-            var editors = window.tinymce.editors || [];
-            for (var i = 0; i < editors.length; i++) {
-                applyDarkToEditor(editors[i]);
-            }
-        }
+      strip.appendChild(archiveBtn);
+      strip.appendChild(deleteBtn);
+      strip.appendChild(flagBtn);
+      host.appendChild(strip);
 
-        if (window.tinymce) {
-            hookTinyMCE();
+      archiveBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        group('%c[STRATUS][ARCHIVE CLICK]', 'color:#2980b9');
+        dbg('row.id=', row.id);
+        groupEnd();
+
+        var uid = getRowUid(row);
+        dbg2('[STRATUS][ARCHIVE] resolved uid=', uid, 'from row.id=', row.id);
+        if (!uid) return;
+
+        if (typeof rcmail_archive === 'function') {
+          activateRowForCommand(row, uid);
+          window.setTimeout(function () { rcmail_archive(); }, 0);
         } else {
-            // TinyMCE may load later (compose opened after init)
-            var attempts = 0;
-            var timer = setInterval(function () {
-                attempts++;
-                if (window.tinymce) {
-                    clearInterval(timer);
-                    hookTinyMCE();
-                } else if (attempts > 150) { // give up after ~30 s
-                    clearInterval(timer);
-                }
-            }, 200);
+          runAfterActivate('plugin.archive', row, uid, e);
         }
+      });
+
+      deleteBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        group('%c[STRATUS][DELETE CLICK]', 'color:#c0392b');
+        dbg('row.id=', row.id);
+        groupEnd();
+
+        var uid = getRowUid(row);
+        dbg2('[STRATUS][DELETE] resolved uid=', uid, 'from row.id=', row.id);
+        if (!uid) return;
+
+        runAfterActivate('delete', row, uid, e);
+      });
+
+      flagBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        group('%c[STRATUS][FLAG CLICK]', 'color:#f1c40f');
+        dbg('row.id=', row.id);
+        dbg('toggle_flag enabled?', (rcmail.command_enabled && rcmail.command_enabled('toggle_flag')));
+        groupEnd();
+
+        var uid = getRowUid(row);
+        dbg2('[STRATUS][FLAG] resolved uid=', uid, 'from row.id=', row.id);
+        if (!uid) return;
+
+        // This is the key: activate row fully, then call toggle_flag.
+        runAfterActivate('toggle_flag', row, uid, e);
+      });
     }
 
-    // ══════════════════════════════════════════════
-    //  Unified Hover Actions
-    // ══════════════════════════════════════════════
-
-    /**
-     * Inject archive / delete / flag hover action buttons on every message row.
-     * Works in both standard list mode and conversation mode.
-     * Sets window._stratus_hover_actions flag so conversation_mode.js skips
-     * its own hover action injection.
-     */
-    function initUnifiedHoverActions() {
-        // Signal to conversation_mode.js that stratus handles hover actions
-        window._stratus_hover_actions = true;
-
-        /**
-         * Create the hover action strip for a single table row.
-         */
-        function createHoverActions(row) {
-            if (!row || row.querySelector('.mp-hover-actions')) return;
-
-            var host = getHoverActionHost(row);
-            if (!host) return;
-
-            host.classList.add('mp-hover-action-host');
-
-            var strip = document.createElement('span');
-            strip.className = 'mp-hover-actions';
-
-            // Archive button
-            var archiveBtn = document.createElement('a');
-            archiveBtn.className = 'mp-hover-btn archive';
-            archiveBtn.href = '#archive';
-            archiveBtn.title = rcmail.get_label('archive.buttontitle') || 'Archive';
-            archiveBtn.setAttribute('aria-label', archiveBtn.title);
-
-            // Delete button
-            var deleteBtn = document.createElement('a');
-            deleteBtn.className = 'mp-hover-btn delete';
-            deleteBtn.href = '#delete';
-            deleteBtn.title = rcmail.get_label('deletemessage') || 'Delete';
-            deleteBtn.setAttribute('aria-label', deleteBtn.title);
-
-            // Flag button
-            var flagBtn = document.createElement('a');
-            flagBtn.className = 'mp-hover-btn flag';
-            flagBtn.href = '#flag';
-            flagBtn.title = rcmail.get_label('markflagged') || 'Flag';
-            flagBtn.setAttribute('aria-label', flagBtn.title);
-
-            strip.appendChild(archiveBtn);
-            strip.appendChild(deleteBtn);
-            strip.appendChild(flagBtn);
-
-            // Append to the right-side host cell — avoids invalid DOM inside <tr>
-            host.appendChild(strip);
-
-            // Wire click handlers
-            archiveBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var uid = getRowUid(row);
-                if (!uid) return;
-                selectSingleRow(uid);
-                if (typeof rcmail_archive === 'function') {
-                    rcmail_archive();
-                } else {
-                    rcmail.command('plugin.archive', '', row);
-                }
-            });
-
-            deleteBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var uid = getRowUid(row);
-                if (!uid) return;
-                selectSingleRow(uid);
-                rcmail.command('delete', '');
-            });
-
-            flagBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var uid = getRowUid(row);
-                if (!uid) return;
-                var isFlagged = row.classList.contains('flagged');
-                var targetFlag = isFlagged ? 'unflagged' : 'flagged';
-
-                // Optimistic UI update so the user sees feedback immediately.
-                if (targetFlag === 'flagged') {
-                    row.classList.add('flagged');
-                    flagBtn.title = rcmail.get_label('markunflagged') || 'Unflag';
-                } else {
-                    row.classList.remove('flagged');
-                    flagBtn.title = rcmail.get_label('markflagged') || 'Flag';
-                }
-                flagBtn.setAttribute('aria-label', flagBtn.title);
-
-                // Use Roundcube's native uid-aware mark flow.
-                // This avoids selection races and builds valid post payloads.
-                if (typeof rcmail.mark_message === 'function') {
-                    rcmail.mark_message(targetFlag, uid);
-                    return;
-                }
-
-                // Fallback for older flows.
-                selectSingleRow(uid);
-                rcmail.command('mark', targetFlag);
-            });
+    function processRows(container) {
+      if (!container) return;
+      var rows = container.querySelectorAll('tr');
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].id || rows[i].getAttribute('data-uid')) {
+          createHoverActions(rows[i]);
         }
-
-        /**
-         * Extract message UID from a table row.
-         */
-        function getRowUid(row) {
-            if (!row) return null;
-            // Standard Roundcube: row id is "rcmrowXXX"
-            var id = row.id || '';
-            if (id.indexOf('rcmrow') === 0) return id.replace('rcmrow', '');
-            // Conversation mode rows use data-uid
-            return row.getAttribute('data-uid') || row.getAttribute('data-conv-id') || null;
-        }
-
-        /**
-         * Find the cell that should host the absolute-positioned hover actions.
-         */
-        function getHoverActionHost(row) {
-            if (!row || !row.querySelector) return null;
-
-            return row.querySelector('td.flags')
-                || row.querySelector('td.flag')
-                || row.querySelector('td.date')
-                || row.querySelector('td.size')
-                || row.lastElementChild
-                || null;
-        }
-
-        /**
-         * Select a single row by UID (for hover action commands).
-         */
-        function selectSingleRow(uid) {
-            var list = rcmail.message_list;
-            if (!list) return;
-            if (list.selection && list.selection.length === 1 && list.selection[0] == uid) return;
-            list.select(uid);
-        }
-
-        /**
-         * Process all visible rows in a container, injecting hover actions.
-         */
-        function processRows(container) {
-            if (!container) return;
-            var rows = container.querySelectorAll('tr');
-            for (var i = 0; i < rows.length; i++) {
-                if (rows[i].id || rows[i].getAttribute('data-uid') || rows[i].getAttribute('data-conv-id')) {
-                    createHoverActions(rows[i]);
-                }
-            }
-        }
-
-        // Process standard message list
-        var stdList = document.getElementById('messagelist');
-        if (stdList) {
-            processRows(stdList);
-        }
-
-        // Process conversation list
-        var convList = document.getElementById('conv-messagelist');
-        if (convList) {
-            processRows(convList);
-        }
-
-        // Watch for dynamically added rows via MutationObserver
-        var observeTarget = function(el) {
-            if (!el) return;
-            var observer = new MutationObserver(function(mutations) {
-                for (var i = 0; i < mutations.length; i++) {
-                    var added = mutations[i].addedNodes;
-                    for (var j = 0; j < added.length; j++) {
-                        var node = added[j];
-                        if (node.nodeType !== 1) continue;
-                        if (node.tagName === 'TR' && (node.id || node.getAttribute('data-uid') || node.getAttribute('data-conv-id'))) {
-                            createHoverActions(node);
-                        }
-                        // Check nested rows (e.g., tbody replacement)
-                        if (node.querySelectorAll) {
-                            var nested = node.querySelectorAll('tr');
-                            for (var k = 0; k < nested.length; k++) {
-                                if (nested[k].id || nested[k].getAttribute('data-uid') || nested[k].getAttribute('data-conv-id')) {
-                                    createHoverActions(nested[k]);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            observer.observe(el, { childList: true, subtree: true });
-        };
-
-        observeTarget(stdList);
-        observeTarget(convList);
-
-        // Re-process on list updates (Roundcube replaces tbody content)
-        rcmail.addEventListener('listupdate', function() {
-            if (stdList) processRows(stdList);
-        });
+      }
     }
 
-    // ══════════════════════════════════════════════
-    //  Smart Bar Controller
-    // ══════════════════════════════════════════════
+    // Init
+    rebuildRowIdUidIndex();
 
-    /**
-     * Initialize the smart bar: sort trigger, plugin button re-parenting,
-     * conversation toggle relocation to the options popup.
-     */
-    function initSmartBarController() {
-        var sortTrigger = document.getElementById('mp-sort-trigger');
-        var sortLabel   = sortTrigger ? sortTrigger.querySelector('.mp-sort-label') : null;
-        var sortMenu    = document.getElementById('listoptions-menu');
+    var stdList = document.getElementById('messagelist');
 
-        // Sort column label lookup — maps rcmail.env.sort_col to display text
-        // Labels exported via <roundcube:add_label> in pagenav.html
-        var defaultLabels = {
-            'date': 'Date', 'arrival': 'Arrival', 'from': 'From',
-            'to': 'To', 'fromto': 'From/To', 'subject': 'Subject',
-            'size': 'Size', 'cc': 'Cc'
-        };
-        var sortColumnLabels = {};
-        Object.keys(defaultLabels).forEach(function(key) {
-            var label = rcmail.get_label(key === 'date' ? 'sentdate' : key);
-            // If get_label returns the key itself, use our English fallback
-            sortColumnLabels[key] = (label && label !== (key === 'date' ? 'sentdate' : key))
-                ? label : defaultLabels[key];
-        });
+    if (stdList) processRows(stdList);
 
-        // "Sort by" fallback — try translated label first
-        var sortByLabel = (function() {
-            var t = rcmail.get_label('listsorting');
-            return (t && t !== 'listsorting') ? t : 'Sort by';
-        }());
+    // Refresh on list updates (RC replaces tbody)
+    rcmail.addEventListener('listupdate', function () {
+      dbg2('[STRATUS] listupdate → rebuild index + process rows');
+      rebuildRowIdUidIndex();
+      if (stdList) processRows(stdList);
+    });
 
-        /**
-         * Update the sort trigger label and direction indicator.
-         * - No sort_col  → neutral arrow (mp-sort-none) + "Sort by" text
-         * - sort_col set → coloured arrow pointing the right way + column name
-         */
-        function updateSortDisplay() {
-            var col   = rcmail.env.sort_col || '';
-            var order = (rcmail.env.sort_order || 'DESC').toUpperCase();
+    // Observe dynamic row insertions
+    function observeTarget(el) {
+      if (!el) return;
+      var observer = new MutationObserver(function (mutations) {
+        for (var i = 0; i < mutations.length; i++) {
+          var added = mutations[i].addedNodes;
+          for (var j = 0; j < added.length; j++) {
+            var node = added[j];
+            if (node.nodeType !== 1) continue;
 
-            // Label
-            if (sortLabel) {
-                sortLabel.textContent = col ? (sortColumnLabels[col] || col) : sortByLabel;
+            if (node.tagName === 'TR' && (node.id || node.getAttribute('data-uid'))) {
+              createHoverActions(node);
             }
 
-            // Arrow direction
-            if (sortTrigger) {
-                sortTrigger.classList.remove('mp-sort-asc', 'mp-sort-desc', 'mp-sort-none');
-                if (col) {
-                    sortTrigger.classList.add(order === 'ASC' ? 'mp-sort-asc' : 'mp-sort-desc');
-                } else {
-                    sortTrigger.classList.add('mp-sort-none');
+            if (node.querySelectorAll) {
+              var nested = node.querySelectorAll('tr');
+              for (var k = 0; k < nested.length; k++) {
+                if (nested[k].id || nested[k].getAttribute('data-uid')) {
+                  createHoverActions(nested[k]);
                 }
+              }
             }
+          }
         }
-
-        // Initial display
-        updateSortDisplay();
-
-        // Update on sort changes — Roundcube fires 'listupdate' after sort
-        rcmail.addEventListener('listupdate', updateSortDisplay);
-
-        // Wire sort trigger click — open list options dialog via elastic's messagelistmenu
-        // handler which pre-populates current sort values and saves via rcmail.set_list_options()
-        if (sortTrigger) {
-            sortTrigger.setAttribute('aria-haspopup', 'dialog');
-            sortTrigger.setAttribute('aria-expanded', 'false');
-            sortTrigger.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                // 'messagelistmenu' routes through elastic's menu_toggle → menu_messagelist(),
-                // which clones #listoptions-menu, pre-populates sort selects, shows a
-                // proper Save dialog, and on save calls rcmail.set_list_options() so that
-                // listupdate fires and updateSortDisplay() refreshes the sort bar label/arrow.
-                rcmail.command('menu-open', 'messagelistmenu', sortTrigger, e);
-
-                sortTrigger.setAttribute('aria-expanded', 'true');
-            });
-
-            // Reset aria-expanded when the dialog closes (listupdate fires after save)
-            rcmail.addEventListener('listupdate', function() {
-                sortTrigger.setAttribute('aria-expanded', 'false');
-            });
-        }
-
-        // ── Re-parent plugin buttons from hidden containers ──
-
-        var pluginSlots = document.getElementById('mp-plugin-slots');
-        var smartBar = document.querySelector('.mp-smart-bar');
-        var defaultSection = smartBar ? smartBar.querySelector('.mp-smart-bar-default') : null;
-
-        if (pluginSlots && smartBar) {
-            // Find and handle the archive button (hide it — archive is now hover-only)
-            var archivePluginBtn = pluginSlots.querySelector('.archive, [data-command="plugin.archive"]');
-            if (archivePluginBtn) {
-                archivePluginBtn.style.display = 'none';
-            }
-
-            // Find and handle the conversation toggle button
-            var convToggle = pluginSlots.querySelector('.conv-toggle, [data-command="plugin.conv.toggle"]');
-            if (convToggle) {
-                relocateConvToggleToPopup(convToggle);
-            }
-
-            // Move any remaining plugin buttons into the default section
-            if (defaultSection) {
-                var remainingBtns = pluginSlots.querySelectorAll('a, button');
-                for (var i = 0; i < remainingBtns.length; i++) {
-                    var btn = remainingBtns[i];
-                    if (btn.style.display === 'none') continue; // skip hidden (archive)
-                    if (btn.classList.contains('conv-toggle')) continue; // skip conv toggle (relocated)
-                    defaultSection.appendChild(btn);
-                }
-            }
-        }
-
-        /**
-         * Relocate the conversation toggle into the listoptions-menu popup.
-         * Creates a new form-group row with a toggle switch.
-         */
-        function relocateConvToggleToPopup(convToggleBtn) {
-            var popup = document.getElementById('listoptions-menu');
-            if (!popup) return;
-
-            // Create a form group row for the conversation toggle
-            var formGroup = document.createElement('div');
-            formGroup.className = 'form-group row mp-conv-toggle-row';
-            formGroup.id = 'mp-listoptions-conv-toggle';
-
-            var label = document.createElement('label');
-            label.className = 'col-form-label col-sm-4';
-            label.textContent = rcmail.get_label('conversation_mode.conversations') || 'Conversations';
-
-            var colDiv = document.createElement('div');
-            colDiv.className = 'col-sm-8';
-
-            var toggleSwitch = document.createElement('label');
-            toggleSwitch.className = 'mp-toggle-switch';
-
-            var checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = 'mp-conv-toggle-checkbox';
-
-            // Sync initial state — check if conversation mode is currently active
-            var layoutList = document.getElementById('layout-list');
-            if (layoutList && layoutList.getAttribute('data-conv-mode') === 'conversations') {
-                checkbox.checked = true;
-            }
-
-            var slider = document.createElement('span');
-            slider.className = 'mp-toggle-slider';
-
-            toggleSwitch.appendChild(checkbox);
-            toggleSwitch.appendChild(slider);
-            colDiv.appendChild(toggleSwitch);
-            formGroup.appendChild(label);
-            formGroup.appendChild(colDiv);
-
-            // Insert before the container element (listoptions) or at end
-            var containerEl = popup.querySelector('[id="listoptionsmenu"]');
-            if (containerEl) {
-                popup.insertBefore(formGroup, containerEl);
-            } else {
-                popup.appendChild(formGroup);
-            }
-
-            // Wire toggle behavior
-            checkbox.addEventListener('change', function() {
-                rcmail.command('plugin.conv.toggle');
-            });
-
-            // Listen for conversation mode state changes to sync the checkbox
-            document.addEventListener('stratus:conv-mode-changed', function(e) {
-                var detail = e && e.detail ? e.detail : {};
-                checkbox.checked = detail.mode === 'conversations';
-            });
-
-            // Also sync when layout-list data attribute changes
-            var layoutObserver = new MutationObserver(function(mutations) {
-                for (var i = 0; i < mutations.length; i++) {
-                    if (mutations[i].attributeName === 'data-conv-mode') {
-                        var mode = layoutList.getAttribute('data-conv-mode');
-                        checkbox.checked = (mode === 'conversations');
-                    }
-                }
-            });
-            if (layoutList) {
-                layoutObserver.observe(layoutList, { attributes: true, attributeFilter: ['data-conv-mode'] });
-            }
-
-            // Hide the original button
-            convToggleBtn.style.display = 'none';
-        }
+      });
+      observer.observe(el, { childList: true, subtree: true });
     }
+
+    observeTarget(stdList);
+  }
+
+  // ══════════════════════════════════════════════
+  //  Smart Bar Controller (unchanged)
+  // ══════════════════════════════════════════════
+
+  function initSmartBarController() {
+    var pluginSlots = document.getElementById('mp-plugin-slots');
+    var smartBar = document.querySelector('.mp-smart-bar');
+    var defaultSection = smartBar ? smartBar.querySelector('.mp-smart-bar-default') : null;
+
+    if (pluginSlots && smartBar) {
+      var archivePluginBtn = pluginSlots.querySelector('.archive, [data-command="plugin.archive"]');
+      if (archivePluginBtn) archivePluginBtn.style.display = 'none';
+
+      if (defaultSection) {
+        var remainingBtns = pluginSlots.querySelectorAll('a, button');
+        for (var i = 0; i < remainingBtns.length; i++) {
+          var btn = remainingBtns[i];
+          if (btn.style.display === 'none') continue;
+          defaultSection.appendChild(btn);
+        }
+      }
+    }
+  }
 
 })();
