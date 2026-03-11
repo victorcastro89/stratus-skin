@@ -246,6 +246,16 @@
     rcmail.register_command('plugin.conv.delete', cmd_delete, false);
     rcmail.register_command('plugin.conv.flag', cmd_flag, false);
 
+    // Expose minimal API for stratus_helper.js hover action dispatch
+    rcmail.conv_api = {
+      select_conv: function(conv_id) {
+        if (!conv_state.list_widget) return;
+        _conv_opening = true;
+        conv_state.list_widget.select('rcmrowconv-' + conv_id);
+        _conv_opening = false;
+      }
+    };
+
     // Register response handlers
     rcmail.addEventListener('plugin.conv.render_list', on_render_list);
     rcmail.addEventListener('plugin.conv.render_open', on_render_open);
@@ -300,16 +310,50 @@
       }
     });
 
-    // Fetch conversation rows after the standard list actually switched mailbox.
+    // Fetch conversation rows after the standard list actually switched mailbox
+    // OR when a search response arrives (mailbox unchanged but results filtered).
     rcmail.addEventListener('listupdate', function () {
       if (conv_state.mode !== 'conversations') return;
 
-      var mailbox = rcmail.env.mailbox || 'INBOX';
-      if (conv_state.loaded_mailbox === mailbox) return;
+      var mailbox  = rcmail.env.mailbox || 'INBOX';
+      var isSearch = !!(rcmail.env.search_request || rcmail.env.qsearch);
 
-      conv_state.page = 1;
-      conv_state.open_conv_id = null;
-      request_conversation_list(1);
+      if (isSearch) {
+        conv_state._was_searching = true;
+        // Collect matching UIDs from the standard message list (populated by
+        // Roundcube's own search response, even though the list is hidden).
+        var matchUids = [];
+        if (rcmail.message_list && rcmail.message_list.rows) {
+          for (var uid in rcmail.message_list.rows) {
+            // In multi-folder view UIDs carry a '-mailbox' suffix; strip it.
+            var n = parseInt(String(uid).split('-')[0], 10);
+            if (n) matchUids.push(n);
+          }
+        }
+
+        conv_state.page = 1;
+        conv_state.open_conv_id = null;
+
+        if (matchUids.length === 0) {
+          // Zero matches – render empty list immediately, no round-trip needed.
+          render_conversation_list([]);
+          render_pagination();
+          update_conv_empty_label();
+          emit_conv_selection_state();
+          emit_conv_count_update();
+        } else {
+          request_conversation_list(1, matchUids);
+        }
+        return;
+      }
+
+      // Not in a search – refresh when mailbox changed or after search was reset.
+      if (conv_state.loaded_mailbox !== mailbox || conv_state._was_searching) {
+        conv_state._was_searching = false;
+        conv_state.page = 1;
+        conv_state.open_conv_id = null;
+        request_conversation_list(1);
+      }
     });
 
     // Hook into check-recent (auto-refresh)
@@ -318,7 +362,109 @@
         request_refresh();
       }
     });
+
+    // Integrate conversation mode into the list-options dialog mode select
+    init_conv_in_list_options();
   });
+
+  // ──────────────────────────────────────────────
+  //  List-Options Dialog Integration
+  // ──────────────────────────────────────────────
+
+  /**
+   * Integrate conversation mode into the "List mode" select inside the list
+   * options dialog.
+   *
+   * Responsibilities:
+   *  1. Ensure a 'conversations' <option> is present in #listoptions-threads
+   *     (fallback for when the template already provides it, this is a no-op).
+   *  2. When the list-options dialog opens, pre-select 'conversations' in the
+   *     cloned mode <select> if that is the current active mode.
+   *  3. Monkey-patch rcmail.set_list_options once so that picking 'conversations'
+   *     from the dialog fires plugin.conv.setmode instead of being silently
+   *     treated as 'list' (threading=0).  Switching away from conversations
+   *     while in that mode also fires setmode to deactivate it.
+   */
+  function init_conv_in_list_options() {
+    // Only integrate if we're in the mail task
+    if (rcmail.env.task !== 'mail') return;
+
+    // ── 1. Ensure 'conversations' option exists in the source select ──
+    // The template adds it inside env:threads; if threads is disabled we
+    // inject it here so the dialog always shows the option.
+    var modeSelect = document.getElementById('listoptions-threads')
+                  || document.getElementById('mp-listoptions-mode');
+    if (!modeSelect) {
+      var popup = document.getElementById('listoptions-menu');
+      if (popup) {
+        var row = document.createElement('div');
+        row.className = 'form-group row';
+        row.id = 'mp-listoptions-mode-row';
+        var lmodeLabel = rcmail.get_label('lmode') || 'List mode';
+        var listLabel  = rcmail.get_label('list') || 'List';
+        var convLabel  = label('mode_conversations') || 'Conversations';
+        row.innerHTML =
+          '<label for="mp-listoptions-mode" class="col-form-label col-sm-4">' + lmodeLabel + '</label>' +
+          '<div class="col-sm-8">' +
+            '<select id="mp-listoptions-mode" name="mode">' +
+              '<option value="list">' + listLabel + '</option>' +
+              '<option value="conversations">' + convLabel + '</option>' +
+            '</select>' +
+          '</div>';
+        var containerEl = popup.querySelector('#listoptionsmenu');
+        if (containerEl) {
+          popup.insertBefore(row, containerEl);
+        } else {
+          popup.appendChild(row);
+        }
+        modeSelect = row.querySelector('select');
+      }
+    } else if (!modeSelect.querySelector('option[value="conversations"]')) {
+      // Template select exists but missing the conversations option — inject it
+      var convOpt = document.createElement('option');
+      convOpt.value = 'conversations';
+      convOpt.textContent = label('mode_conversations') || 'Conversations';
+      modeSelect.appendChild(convOpt);
+    }
+
+    // ── 2. Sync dialog mode select when the list-options dialog opens ──
+    // elastic's menu_messagelist() sets the cloned select to 'threads' or
+    // 'list'; we override to 'conversations' when that is the active mode.
+    $(document).on('dialogopen', function(e) {
+      var dlg = $(e.target);
+      var modeSel = dlg.find('select[name="mode"]');
+      if (!modeSel.length || !modeSel.find('option[value="conversations"]').length) return;
+
+      if (dom.layout_list && dom.layout_list.getAttribute('data-conv-mode') === 'conversations') {
+        modeSel.val('conversations');
+      }
+    });
+
+    // ── 3. Monkey-patch set_list_options (once) ──
+    if (rcmail._stratus_conv_slo_patched) return;
+    rcmail._stratus_conv_slo_patched = true;
+
+    var _origSLO = rcmail.set_list_options;
+    rcmail.set_list_options = function(list, col, ord, threading, page) {
+      // Read the currently-open dialog's mode select value (if any)
+      var modeEl = document.querySelector('.ui-dialog-content select[name="mode"]');
+      var selectedMode = modeEl ? modeEl.value : null;
+      var currentMode  = dom.layout_list ? dom.layout_list.getAttribute('data-conv-mode') : 'list';
+
+      if (selectedMode === 'conversations') {
+        // Activate conversation mode and let set_list_options keep threading=0
+        if (currentMode !== 'conversations') {
+          rcmail.http_post('plugin.conv.setmode', { _mode: 'conversations' });
+        }
+        threading = 0;
+      } else if (selectedMode !== null && currentMode === 'conversations') {
+        // Leaving conversation mode — deactivate it server-side
+        rcmail.http_post('plugin.conv.setmode', { _mode: 'list' });
+      }
+
+      return _origSLO.call(rcmail, list, col, ord, threading, page);
+    };
+  }
 
   // ──────────────────────────────────────────────
   //  Mode Toggling (data-conv-mode attribute)
@@ -350,7 +496,8 @@
 
   function cmd_archive() {
     var sel = get_selected_conv_ids();
-    if (!sel.length) return;
+    var has_child_sel = get_selected_child_uids().length > 0;
+    if (!sel.length && !has_child_sel) return;
 
     var archive_folder = rcmail.env.archive_folder;
     if (!archive_folder) {
@@ -368,39 +515,32 @@
       return;
     }
 
-    var uids = collect_uids_from_conversations(sel);
+    var uids = get_all_selected_uids();
     if (!uids.length) return;
 
-    // Use the archive plugin if available (handles subfolder routing + mark-as-read)
-    if (typeof rcmail_archive === 'function') {
-      // Temporarily inject UIDs into the standard list selection so archive plugin
-      // can pick them up, then restore.  This is the least-invasive bridge.
-      var mbox = rcmail.env.mailbox || 'INBOX';
-      rcmail.http_post('move', {
-        _uid: uids.join(','),
-        _target_mbox: archive_folder,
-        _mbox: mbox,
-        _from: 'list'
-      });
-    } else {
-      // Fallback: plain move
-      rcmail.http_post('move', {
-        _uid: uids.join(','),
-        _target_mbox: archive_folder,
-        _mbox: rcmail.env.mailbox || 'INBOX',
-        _from: 'list'
-      });
-    }
+    var mbox = rcmail.env.mailbox || 'INBOX';
+    rcmail.http_post('move', {
+      _uid: uids.join(','),
+      _target_mbox: archive_folder,
+      _mbox: mbox,
+      _from: 'list'
+    });
 
-    // Remove archived conversations from the local view
-    remove_conversations_from_view(sel);
+    // Remove fully-selected conversations from view
+    if (sel.length) remove_conversations_from_view(sel);
+    clear_child_selections();
+    // If individual children were selected, refresh to sync partial changes
+    if (has_child_sel) {
+      setTimeout(function() { request_conversation_list(conv_state.page); }, 500);
+    }
   }
 
   function cmd_delete() {
     var sel = get_selected_conv_ids();
-    if (!sel.length) return;
+    var has_child_sel = get_selected_child_uids().length > 0;
+    if (!sel.length && !has_child_sel) return;
 
-    var uids = collect_uids_from_conversations(sel);
+    var uids = get_all_selected_uids();
     if (!uids.length) return;
 
     var trash_folder = rcmail.env.trash_mailbox;
@@ -430,28 +570,83 @@
       });
     }
 
-    // Remove deleted conversations from the local view
-    remove_conversations_from_view(sel);
+    // Remove fully-selected conversations from view
+    if (sel.length) remove_conversations_from_view(sel);
+    clear_child_selections();
+    // If individual children were selected, refresh to sync partial changes
+    if (has_child_sel) {
+      setTimeout(function() { request_conversation_list(conv_state.page); }, 500);
+    }
   }
 
   function cmd_flag() {
     var sel = get_selected_conv_ids();
-    if (!sel.length) return;
+    var child_uids = get_selected_child_uids();
+    if (!sel.length && !child_uids.length) return;
 
     var state = get_conversation_selection_state();
     var target_flag = state.anyUnflagged ? 'flagged' : 'unflagged';
 
-    apply_flag_to_selected_conversations(target_flag);
+    // Parent selections: use optimistic per-conv logic
+    if (sel.length) apply_flag_to_selected_conversations(target_flag);
+
+    // Handle child-only selections (not covered by parent convs)
+    if (child_uids.length) {
+      var parent_uids = {};
+      for (var i = 0; i < sel.length; i++) {
+        var c = conv_state.conv_map[sel[i]];
+        if (c && c._messages) {
+          for (var j = 0; j < c._messages.length; j++) parent_uids[String(c._messages[j].uid)] = true;
+        }
+        if (c && c.latest_uid) parent_uids[String(c.latest_uid)] = true;
+      }
+      var orphan_uids = child_uids.filter(function(u) { return !parent_uids[u]; });
+      if (orphan_uids.length) {
+        rcmail.http_post('mark', {
+          _uid: orphan_uids.join(','),
+          _flag: target_flag,
+          _mbox: rcmail.env.mailbox || 'INBOX',
+          _from: 'list'
+        });
+      }
+      clear_child_selections();
+      setTimeout(function() { request_conversation_list(conv_state.page); }, 500);
+    }
   }
 
   function cmd_mark_read() {
     var sel = get_selected_conv_ids();
-    if (!sel.length) return;
+    var child_uids = get_selected_child_uids();
+    if (!sel.length && !child_uids.length) return;
 
     var state = get_conversation_selection_state();
     var target_flag = state.anyUnread ? 'read' : 'unread';
 
-    apply_read_state_to_selected_conversations(target_flag);
+    // Parent selections: use optimistic per-conv logic
+    if (sel.length) apply_read_state_to_selected_conversations(target_flag);
+
+    // Handle child-only selections (not covered by parent convs)
+    if (child_uids.length) {
+      var parent_uids = {};
+      for (var i = 0; i < sel.length; i++) {
+        var c = conv_state.conv_map[sel[i]];
+        if (c && c._messages) {
+          for (var j = 0; j < c._messages.length; j++) parent_uids[String(c._messages[j].uid)] = true;
+        }
+        if (c && c.latest_uid) parent_uids[String(c.latest_uid)] = true;
+      }
+      var orphan_uids = child_uids.filter(function(u) { return !parent_uids[u]; });
+      if (orphan_uids.length) {
+        rcmail.http_post('mark', {
+          _uid: orphan_uids.join(','),
+          _flag: target_flag,
+          _mbox: rcmail.env.mailbox || 'INBOX',
+          _from: 'list'
+        });
+      }
+      clear_child_selections();
+      setTimeout(function() { request_conversation_list(conv_state.page); }, 500);
+    }
   }
 
   function apply_read_state_to_selected_conversations(target_flag) {
@@ -620,15 +815,21 @@
   //  AJAX Requests
   // ──────────────────────────────────────────────
 
-  function request_conversation_list(page) {
+  function request_conversation_list(page, matchUids) {
     if (conv_state.loading) return;
     conv_state.loading = true;
     show_loading(true);
 
-    rcmail.http_request('plugin.conv.list', {
+    var params = {
       _mbox: rcmail.env.mailbox || 'INBOX',
       _page: page || 1
-    });
+    };
+
+    if (matchUids && matchUids.length) {
+      params._match_uids = matchUids.join(',');
+    }
+
+    rcmail.http_request('plugin.conv.list', params);
   }
 
   function request_open_conversation(conv_id) {
@@ -670,6 +871,7 @@
 
     render_conversation_list(data.conversations);
     render_pagination();
+    update_conv_empty_label();
     emit_conv_selection_state();
     emit_conv_count_update();
   }
@@ -704,8 +906,9 @@
     if (data.mode === 'conversations') {
       request_conversation_list(1);
     } else {
-      // Reset multiselect mode when leaving conversation mode
+      // Reset multiselect mode and child selections when leaving conversation mode
       _conv_multiselect_mode = false;
+      clear_child_selections();
       restore_standard_list();
     }
 
@@ -735,9 +938,12 @@
     }
     tbody.innerHTML = '';
 
-    // Show/hide empty state
+    // Show/hide empty state.
+    // Use 'flex' (not '') when showing: the CSS default is #conv-empty{display:none}
+    // (ID selector beats .conv-empty{display:flex}), so clearing the inline style
+    // leaves it hidden.  We must set an explicit value to win the cascade.
     if (dom.conv_empty) {
-      dom.conv_empty.style.display = conversations.length ? 'none' : '';
+      dom.conv_empty.style.display = conversations.length ? 'none' : 'flex';
     }
 
     if (!conversations.length) return;
@@ -861,7 +1067,7 @@
     var td_subject = document.createElement('td');
     td_subject.className = 'subject';
 
-    // Line 1: sender(s)
+    // Line 1: sender(s) + count + date (all in one flex row)
     var line1 = document.createElement('span');
     line1.className = 'conv-line1 skip-on-drag';
 
@@ -870,12 +1076,18 @@
     sender_el.textContent = format_participants(conv.participants || []);
     line1.appendChild(sender_el);
 
-    var count_el = null;
     if (is_multi) {
-      count_el = document.createElement('span');
+      var count_el = document.createElement('span');
       count_el.className = 'conv-count';
       count_el.textContent = conv.message_count;
+      line1.appendChild(count_el);
     }
+
+    // Date in line1 — right-aligned via flex
+    var date_el = document.createElement('span');
+    date_el.className = 'conv-date skip-on-drag';
+    date_el.textContent = format_date(conv.latest_timestamp);
+    line1.appendChild(date_el);
 
     td_subject.appendChild(line1);
 
@@ -917,14 +1129,11 @@
 
     tr.appendChild(td_subject);
 
-    // ─── Column 4: Flag indicator + Date + hover action bar ───
+    // ─── Column 4: Flag indicator + hover action bar ───
+    // Narrow cell (~2.5em) matching Elastic's native td.flags width.
+    // Date and count are now in td.subject .conv-line1.
     var td_flags = document.createElement('td');
     td_flags.className = 'flags conv-flags-cell';
-
-    // Message count badge (aligned above flag indicator)
-    if (count_el) {
-      td_flags.appendChild(count_el);
-    }
 
     // Persistent flag indicator (visible only when row has .flagged class)
     var flag_ind = document.createElement('span');
@@ -932,24 +1141,8 @@
     flag_ind.setAttribute('aria-label', label('flagged'));
     td_flags.appendChild(flag_ind);
 
-    // Date label (always visible, hidden when row is hovered)
-    var date_el = document.createElement('span');
-    date_el.className = 'conv-row-date skip-on-drag';
-    date_el.textContent = format_date(conv.latest_timestamp);
-    td_flags.appendChild(date_el);
-
-    // Hover action bar (visible on row hover only)
-    // Skipped when stratus skin provides unified hover actions via mp-hover-actions
-    if (!window._stratus_hover_actions) {
-      var actions = document.createElement('span');
-      actions.className = 'conv-hover-actions';
-
-      actions.appendChild(action_btn('archive', 'archive', label('archive')));
-      actions.appendChild(action_btn('delete', 'trash-alt', label('delete')));
-      actions.appendChild(action_btn('flag', is_flagged ? 'flag' : 'flag-regular', is_flagged ? label('markunflagged') : label('markflagged')));
-
-      td_flags.appendChild(actions);
-    }
+    // Hover action bar for parent rows is injected by stratus_helper.js
+    // via initUnifiedHoverActions() / MutationObserver (mp-hover-actions).
     tr.appendChild(td_flags);
 
     return tr;
@@ -960,12 +1153,10 @@
   // ──────────────────────────────────────────────
 
   function on_conv_select(o) {
-    // Clear any highlighted child rows when a parent row is selected
-    if (dom.conv_table) {
-      var sel_children = dom.conv_table.querySelectorAll('tr.conv-child-row.selected');
-      for (var k = 0; k < sel_children.length; k++) {
-        sel_children[k].classList.remove('selected');
-      }
+    // In single-select mode, clear child selections when parent changes.
+    // In multiselect mode, preserve child selections for combined actions.
+    if (!_conv_multiselect_mode) {
+      clear_child_selections();
     }
 
     var sel = get_selected_conv_ids();
@@ -1257,29 +1448,6 @@
     return span;
   }
 
-  /**
-   * Create a hover-action button for parent conversation rows.
-   */
-  function action_btn(action, icon_name, title) {
-    var btn = document.createElement('a');
-    btn.className = 'conv-action-btn conv-action-' + action;
-    btn.href = '#';
-    btn.setAttribute('title', title || '');
-    btn.setAttribute('role', 'button');
-    btn.appendChild(fa_icon(icon_name, title));
-
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation(); // Don't trigger row select
-      if (action === 'archive') cmd_archive();
-      else if (action === 'delete') cmd_delete();
-      else if (action === 'flag') cmd_flag();
-      else if (action === 'mark_read') cmd_mark_read();
-    });
-
-    return btn;
-  }
-
   function update_parent_action_icons(conv_id) {
     var row = document.getElementById('rcmrowconv-' + conv_id);
     if (!row) return;
@@ -1299,7 +1467,7 @@
       }
     }
 
-    var flag_btn = row.querySelector('.conv-action-flag');
+    var flag_btn = row.querySelector('.conv-action-flag, .mp-hover-btn.flag');
     if (flag_btn) {
       flag_btn.setAttribute('title', is_flagged ? label('markunflagged') : label('markflagged'));
       var flag_icon = flag_btn.querySelector('.conv-icon');
@@ -1688,6 +1856,120 @@
   // Reference to the external multiselect mode flag (set by stratus:conv-set-multiselect event)
   var _conv_multiselect_mode = false;
 
+  // Track individually selected child message UIDs (outside list widget)
+  var _conv_selected_children = {}; // uid_string → true
+
+  /**
+   * Get UIDs of individually selected child rows.
+   */
+  function get_selected_child_uids() {
+    var uids = [];
+    for (var uid in _conv_selected_children) {
+      if (_conv_selected_children[uid]) uids.push(uid);
+    }
+    return uids;
+  }
+
+  /**
+   * Clear all child row selections (visual + state).
+   */
+  function clear_child_selections() {
+    _conv_selected_children = {};
+    if (dom.conv_table) {
+      var selected = dom.conv_table.querySelectorAll('tr.conv-child-row.selected');
+      for (var i = 0; i < selected.length; i++) {
+        selected[i].classList.remove('selected');
+        selected[i].removeAttribute('aria-selected');
+      }
+    }
+  }
+
+  /**
+   * Toggle selection state of an individual child row.
+   */
+  function toggle_child_selection(tr, uid) {
+    var uidStr = String(uid);
+    if (_conv_selected_children[uidStr]) {
+      delete _conv_selected_children[uidStr];
+      tr.classList.remove('selected');
+      tr.removeAttribute('aria-selected');
+    } else {
+      _conv_selected_children[uidStr] = true;
+      tr.classList.add('selected');
+      tr.setAttribute('aria-selected', 'true');
+    }
+    emit_conv_selection_state();
+  }
+
+  /**
+   * Select all visible child rows in the conversation list.
+   */
+  function select_all_visible_children() {
+    if (!dom.conv_table) return;
+    var children = dom.conv_table.querySelectorAll('tr.conv-child-row');
+    for (var i = 0; i < children.length; i++) {
+      var uid = children[i].getAttribute('data-uid');
+      if (uid) {
+        _conv_selected_children[String(uid)] = true;
+        children[i].classList.add('selected');
+        children[i].setAttribute('aria-selected', 'true');
+      }
+    }
+  }
+
+  /**
+   * Select child rows matching a filter function.
+   * @param {Function} matchFn - receives (child_tr) → boolean
+   */
+  function select_children_by_filter(matchFn) {
+    if (!dom.conv_table) return;
+    _conv_selected_children = {};
+    var children = dom.conv_table.querySelectorAll('tr.conv-child-row');
+    for (var i = 0; i < children.length; i++) {
+      var uid = children[i].getAttribute('data-uid');
+      if (!uid) continue;
+      if (matchFn(children[i])) {
+        _conv_selected_children[String(uid)] = true;
+        children[i].classList.add('selected');
+        children[i].setAttribute('aria-selected', 'true');
+      } else {
+        children[i].classList.remove('selected');
+        children[i].removeAttribute('aria-selected');
+      }
+    }
+  }
+
+  /**
+   * Collect ALL selected UIDs — from selected parent conversations
+   * plus individually selected child message rows, deduplicated.
+   */
+  function get_all_selected_uids() {
+    var uid_set = {};
+    // 1. All UIDs from selected parent conversations
+    var sel_convs = get_selected_conv_ids();
+    for (var i = 0; i < sel_convs.length; i++) {
+      var conv = conv_state.conv_map[sel_convs[i]];
+      if (!conv) continue;
+      if (conv._messages && conv._messages.length) {
+        for (var j = 0; j < conv._messages.length; j++) {
+          if (conv._messages[j].uid) uid_set[String(conv._messages[j].uid)] = true;
+        }
+      } else if (conv.latest_uid) {
+        uid_set[String(conv.latest_uid)] = true;
+      }
+    }
+    // 2. Individually selected child UIDs
+    for (var uid in _conv_selected_children) {
+      if (_conv_selected_children[uid]) uid_set[uid] = true;
+    }
+    // 3. Return deduplicated array
+    var result = [];
+    for (var k in uid_set) {
+      if (uid_set[k]) result.push(k);
+    }
+    return result;
+  }
+
   // ──────────────────────────────────────────────
   //  DOM Helpers
   // ──────────────────────────────────────────────
@@ -1752,16 +2034,39 @@
     var sel = get_selected_conv_ids();
     var any_unread = false;
     var any_unflagged = false;
+    var total_count = sel.length;
 
+    // Build set of UIDs covered by parent selections
+    var parent_covered = {};
     for (var i = 0; i < sel.length; i++) {
       var conv = conv_state.conv_map[sel[i]];
       if (!conv) continue;
       if ((conv.unread_count || 0) > 0) any_unread = true;
       if ((conv.flagged_count || 0) === 0) any_unflagged = true;
+      if (conv._messages) {
+        for (var j = 0; j < conv._messages.length; j++) {
+          parent_covered[String(conv._messages[j].uid)] = true;
+        }
+      }
+      if (conv.latest_uid) parent_covered[String(conv.latest_uid)] = true;
+    }
+
+    // Count individually selected children not covered by parents
+    for (var uid in _conv_selected_children) {
+      if (_conv_selected_children[uid] && !parent_covered[uid]) {
+        total_count++;
+        if (dom.conv_table) {
+          var row = dom.conv_table.querySelector('tr.conv-child-row[data-uid="' + uid + '"]');
+          if (row) {
+            if (row.classList.contains('unread')) any_unread = true;
+            if (!row.classList.contains('flagged')) any_unflagged = true;
+          }
+        }
+      }
     }
 
     return {
-      count: sel.length,
+      count: total_count,
       anyUnread: any_unread,
       anyUnflagged: any_unflagged
     };
@@ -1782,6 +2087,7 @@
     document.addEventListener('stratus:conv-clear-selection', function() {
       if (!conv_state.list_widget || conv_state.mode !== 'conversations') return;
       conv_state.list_widget.clear_selection && conv_state.list_widget.clear_selection();
+      clear_child_selections();
       emit_conv_selection_state();
     });
 
@@ -1824,7 +2130,7 @@
     });
 
     // Listen for bulk selection actions from the mass-action bar's select popup.
-    // Handles: all, unread, flagged, invert — mirroring the standard listselect-menu items.
+    // Handles: all, unread, flagged, invert — for both parents AND visible children.
     document.addEventListener('stratus:conv-select-action', function(e) {
       if (conv_state.mode !== 'conversations') return;
       var detail = e && e.detail ? e.detail : {};
@@ -1834,19 +2140,44 @@
 
       if (type === 'all') {
         widget.select_all();
+        select_all_visible_children();
       } else if (type === 'unread') {
         conv_select_by_filter(widget, function(conv_id) {
           var conv = conv_state.conv_map[conv_id];
           return conv && conv.unread_count > 0;
+        });
+        select_children_by_filter(function(tr) {
+          return tr.classList.contains('unread');
         });
       } else if (type === 'flagged') {
         conv_select_by_filter(widget, function(conv_id) {
           var conv = conv_state.conv_map[conv_id];
           return conv && conv.flagged_count > 0;
         });
+        select_children_by_filter(function(tr) {
+          return tr.classList.contains('flagged');
+        });
       } else if (type === 'invert') {
         widget.invert_selection();
+        // Invert child selections too
+        if (dom.conv_table) {
+          var children = dom.conv_table.querySelectorAll('tr.conv-child-row');
+          for (var ci = 0; ci < children.length; ci++) {
+            var cuid = children[ci].getAttribute('data-uid');
+            if (!cuid) continue;
+            if (_conv_selected_children[String(cuid)]) {
+              delete _conv_selected_children[String(cuid)];
+              children[ci].classList.remove('selected');
+              children[ci].removeAttribute('aria-selected');
+            } else {
+              _conv_selected_children[String(cuid)] = true;
+              children[ci].classList.add('selected');
+              children[ci].setAttribute('aria-selected', 'true');
+            }
+          }
+        }
       }
+      emit_conv_selection_state();
     });
 
     // Bug 8: Listen for page navigation from the mass-action bar prev/next buttons
@@ -1933,8 +2264,25 @@
     return fallback[key] || key;
   }
 
-  // ──────────────────────────────────────────────
-  //  Utility
+  /**
+   * Update #conv-empty text to be contextual: search message vs folder-empty.
+   * Called after render_conversation_list() so the element already exists.
+   */
+  function update_conv_empty_label() {
+    if (!dom.conv_empty) return;
+    var isSearch = !!(rcmail.env.search_request || rcmail.env.qsearch);
+    var textEl = dom.conv_empty.querySelector('.conv-empty-text');
+    if (!textEl) return;
+    if (isSearch) {
+      var txt = rcmail.gettext('stratus_helper.search_no_conversations');
+      if (!txt || txt === 'stratus_helper.search_no_conversations') {
+        txt = 'No conversations found for your search.';
+      }
+      textEl.textContent = txt;
+    } else {
+      textEl.textContent = label('no_conversations');
+    }
+  }
   // ──────────────────────────────────────────────
 
   function format_date(timestamp) {
@@ -2119,14 +2467,18 @@
     tr.setAttribute('data-parent-conv', conv_id);
     tr.setAttribute('data-uid', msg.uid);
 
-    // Click: load this specific message in the preview iframe
-    (function (uid) {
-      tr.addEventListener('click', function (e) {
+    // Click: in multiselect mode, toggle selection; otherwise preview
+    (function (uid, row) {
+      row.addEventListener('click', function (e) {
         e.stopPropagation();
-        load_message_preview(uid);
-        highlight_child_row(tr);
+        if (_conv_multiselect_mode) {
+          toggle_child_selection(row, uid);
+        } else {
+          load_message_preview(uid);
+          highlight_child_row(row);
+        }
       });
-    })(msg.uid);
+    })(msg.uid, tr);
 
     // ─── Column 1: Empty expand cell (alignment / thread connector) ───
     var td_expand = document.createElement('td');
@@ -2166,6 +2518,12 @@
     }
     line1.appendChild(icons_el);
 
+    // Date in line1 — right-aligned via flex
+    var child_date_el = document.createElement('span');
+    child_date_el.className = 'conv-date skip-on-drag';
+    child_date_el.textContent = format_date(msg.timestamp);
+    line1.appendChild(child_date_el);
+
     td_subject.appendChild(line1);
 
     // Line 2: snippet preview (replaces redundant subject)
@@ -2187,7 +2545,8 @@
     td_subject.appendChild(line2);
     tr.appendChild(td_subject);
 
-    // ─── Column 4: Date + hover action bar ───
+    // ─── Column 4: Flag indicator + hover action bar ───
+    // Narrow cell (~2.5em) — date is now in td.subject .conv-line1.
     var td_flags = document.createElement('td');
     td_flags.className = 'flags conv-flags-cell';
 
@@ -2196,12 +2555,6 @@
     flag_ind.className = 'conv-flag-indicator conv-icon conv-icon-flag';
     flag_ind.setAttribute('aria-label', label('flagged'));
     td_flags.appendChild(flag_ind);
-
-    // Date label (always visible, hidden when row is hovered)
-    var date_el = document.createElement('span');
-    date_el.className = 'conv-row-date skip-on-drag';
-    date_el.textContent = format_date(msg.timestamp);
-    td_flags.appendChild(date_el);
 
     // Hover action bar — actions apply to THIS message, not the whole conversation
     var actions = document.createElement('span');
@@ -2243,20 +2596,14 @@
   }
 
   /**
-   * Highlight a clicked child row and remove previous selection.
-   * Also clears the parent row's selection from the list widget so:
-   *  1. The parent row no longer appears with its "selected" darker background.
-   *  2. The next click on the parent row correctly re-fires the select event
-   *     (widget won't skip it as "already selected").
+   * Highlight a clicked child row for preview (single-select mode only).
+   * Clears previous selections and deselects parents.
    */
   function highlight_child_row(tr) {
     if (!dom.conv_table) return;
 
-    // Remove selected state from any previously highlighted child rows
-    var prev = dom.conv_table.querySelectorAll('tr.conv-child-row.selected');
-    for (var i = 0; i < prev.length; i++) {
-      prev[i].classList.remove('selected');
-    }
+    // Clear all child highlights and selection state
+    clear_child_selections();
 
     // Deselect parent rows: clear the list widget's selection state (and its
     // visual "selected" class) while suppressing the on_conv_select callback.

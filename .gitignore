@@ -25,6 +25,7 @@ roundcubemail/
 # ── Docker host-mounted volumes (Roundcube web root + SQLite DB) ───────
 docker/www/
 docker/db/
+docker/logs/
 
 # ── OS / editor junk ──────────────────────────────────────────────────
 .DS_Store

@@ -124,16 +124,8 @@ margin: 0;
     box-shadow: @mp-shadow-xs;
 }
 
-// Conversation mode uses an absolute #conv-list-content layer.
-// Keep search controls above it so the search options panel stays visible.
-#layout-list[data-conv-mode="conversations"] > .searchbar,
-#layout-list[data-conv-mode="conversations"] > #searchmenu {
-    position: relative;
-    z-index: 4;
-}
-
-// Fallback: if JS leaves .hidden on #searchmenu in conversation mode,
-// show/hide it based on the .searchbar.open state.
+// Conversation mode: search options panel should sit above the conversation
+// scroller in the flex column and not be occluded by scrolling content.
 #layout-list[data-conv-mode="conversations"] > .searchbar + #searchmenu {
     display: none;
 }
@@ -142,10 +134,6 @@ margin: 0;
     display: flex !important;
     flex: 0 0 auto;       // take natural height — don't compete with conv-list scroller
     overflow-y: auto;     // allow scroll if panel is tall on small screens
-}
-
-#layout-list[data-conv-mode="conversations"] #conv-list-content {
-    z-index: 1;
 }
 
 html.layout-phone #layout-list > .searchbar {
@@ -199,7 +187,9 @@ html.layout-phone {
 .mp-smart-bar-left {
     display: flex;
     align-items: center;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 // Override elastic's global `a.disabled { pointer-events: none }` on select trigger
@@ -388,6 +378,9 @@ html.layout-phone {
     font-size: @mp-font-size-sm;
     color: @color-font-secondary;
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 // When a sort is active, elevate the label colour slightly

@@ -7,6 +7,7 @@ FROM php:8.2-apache
 # ── System libraries required by PHP extensions ─────────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    iproute2 \
         libicu-dev \
         libldap2-dev \
         libzip-dev \

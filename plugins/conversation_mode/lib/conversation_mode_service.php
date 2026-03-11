@@ -41,9 +41,23 @@ class conversation_mode_service
      * @param int    $page_size
      * @return array  { conversations: [...], total: int, page: int, pages: int }
      */
-    public function list_conversations(string $mailbox, int $page = 1, int $page_size = 50): array
+    public function list_conversations(string $mailbox, int $page = 1, int $page_size = 50, array $match_uids = []): array
     {
         $conversations = $this->get_or_build($mailbox);
+
+        // When a search UID set is provided, keep only conversations that
+        // contain at least one of the matched UIDs.
+        if (!empty($match_uids)) {
+            $uid_set = array_flip($match_uids);
+            $conversations = array_filter($conversations, function ($conv) use ($uid_set) {
+                foreach ($conv['uids'] as $uid) {
+                    if (isset($uid_set[$uid])) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
 
         $total = count($conversations);
         $pages = max(1, (int) ceil($total / $page_size));
@@ -176,13 +190,14 @@ class conversation_mode_service
      */
     private function get_or_build(string $mailbox): array
     {
-        $cached = $this->cache->get($mailbox);
-        if ($cached !== null) {
-            return $cached;
-        }
+        // Cache disabled: always rebuild from IMAP
+        // $cached = $this->cache->get($mailbox);
+        // if ($cached !== null) {
+        //     return $cached;
+        // }
 
         $conversations = $this->build_from_imap($mailbox);
-        $this->cache->set($mailbox, $conversations);
+        // $this->cache->set($mailbox, $conversations);
 
         return $conversations;
     }

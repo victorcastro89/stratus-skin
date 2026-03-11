@@ -87,10 +87,17 @@ class EmailSeeder
 
         $otherUsers = array_values(array_filter($this->users, fn($u) => $u['email'] !== $email));
 
+        // Calculate start dates dynamically
+        $now = time();
+        $startDates = [
+            $now, // today
+            strtotime('-1 day', $now), // yesterday
+            strtotime('-5 days', $now), // 5 days ago
+        ];
         $threadMessages = array_merge(
-            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 3, 'Project Discussion'),
-            $this->createConversationThread($email, $otherUsers[1]['email'] ?? 'bob@example.test', 5, 'Design Review'),
-            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 8, 'Release Planning')
+            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 3, 'Project Discussion', $startDates[0]),
+            $this->createConversationThread($email, $otherUsers[1]['email'] ?? 'bob@example.test', 5, 'Design Review', $startDates[1]),
+            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 8, 'Release Planning', $startDates[2])
         );
 
         $templates = [
@@ -212,10 +219,17 @@ class EmailSeeder
     {
         echo "  📥 INBOX...";
 
+        // Calculate start dates dynamically
+        $now = time();
+        $startDates = [
+            $now, // today
+            strtotime('-1 day', $now), // yesterday
+            strtotime('-5 days', $now), // 5 days ago
+        ];
         $threadMessages = array_merge(
-            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 3, 'Project Discussion'),
-            $this->createConversationThread($email, $otherUsers[1]['email'] ?? 'bob@example.test', 5, 'Design Review'),
-            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 8, 'Release Planning')
+            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 3, 'Project Discussion', $startDates[0]),
+            $this->createConversationThread($email, $otherUsers[1]['email'] ?? 'bob@example.test', 5, 'Design Review', $startDates[1]),
+            $this->createConversationThread($email, $otherUsers[0]['email'] ?? 'alice@example.test', 8, 'Release Planning', $startDates[2])
         );
         
         $templates = [
@@ -418,54 +432,140 @@ You're receiving this because you subscribed to our newsletter.<br>
 EMAIL;
     }
 
-    private function createConversationThread(string $to, string $from, int $length, string $subject): array
-    {
-        $length = max(3, min(8, $length));
-        $messages = [];
-        $messageIds = [];
-        $renderedBodies = [];
-        $messageMeta = [];
+    private function createConversationThread(
+    string $mailboxOwner,
+    string $counterparty,
+    int $length,
+    string $subject,
+    ?int $startTimestamp = null
+): array {
+    $length = max(3, min(8, $length));
+    $baseSubject = $this->normalizeThreadSubject($subject);
 
-        for ($i = 0; $i < $length; $i++) {
-            $fromAddress = $i % 2 === 0 ? $from : $to;
-            $toAddress = $i % 2 === 0 ? $to : $from;
-            $date = date('r', strtotime('-' . (10 - $i) . ' hours'));
-            $messageId = $this->generateMessageId();
-            $messageIds[] = $messageId;
+    $participants = [$mailboxOwner, $counterparty];
+    $messages = [];
+    $messageIds = [];
+    $renderedBodies = [];
+    $messageMeta = [];
 
-            $isReply = $i > 0;
-            $subjectLine = $isReply ? "Re: {$subject}" : $subject;
-            $inReplyTo = $isReply ? "\nIn-Reply-To: <{$messageIds[$i - 1]}>" : '';
-            $references = $isReply ? "\nReferences: <" . implode('> <', array_slice($messageIds, 0, $i)) . ">" : '';
+    $threadBodies = [
+        "Starting thread about {$baseSubject}.\nCan we align on approach and timeline?\n\nBest,\n" . $this->getFirstName($counterparty),
+        "Looks good to me.\nI think we can keep the scope small for the first pass.\n\nThanks,\n" . $this->getFirstName($mailboxOwner),
+        "Agreed.\nI'll prepare the initial draft and share it shortly.\n\nBest,\n" . $this->getFirstName($counterparty),
+        "Perfect.\nPlease include the rollout steps and any blockers.\n\nThanks,\n" . $this->getFirstName($mailboxOwner),
+        "Here is the latest update.\nI've attached the main points below for review.\n\nBest,\n" . $this->getFirstName($counterparty),
+        "Reviewed.\nA couple of minor tweaks, but overall this is ready.\n\nThanks,\n" . $this->getFirstName($mailboxOwner),
+        "Great, I'll finalize it today.\n\nBest,\n" . $this->getFirstName($counterparty),
+        "Sounds good.\nLet's close this out after the final confirmation.\n\nThanks,\n" . $this->getFirstName($mailboxOwner),
+    ];
 
-            $latestReplyText = $this->createThreadBody($i, $fromAddress, $subject);
-            $body = $latestReplyText;
+    $start = $startTimestamp ?? time();
+    $timestamps = [];
+    for ($i = 0; $i < $length; $i++) {
+        $timestamps[] = $start + ($i * 3600);
+    }
 
-            if ($isReply) {
-                $previousBody = $renderedBodies[$i - 1];
-                $previousFrom = $messageMeta[$i - 1]['from'];
-                $previousDate = $messageMeta[$i - 1]['date'];
-                $body .= "\n\nOn {$previousDate}, {$previousFrom} wrote:\n" . $this->quoteForReply($previousBody);
-            }
+    for ($i = 0; $i < $length; $i++) {
+        $isReply = $i > 0;
 
-            $renderedBodies[] = $body;
-            $messageMeta[] = ['from' => $fromAddress, 'date' => $date];
+        $fromAddress = $participants[$i % 2 === 0 ? 1 : 0];
+        $toAddress = $participants[$i % 2 === 0 ? 0 : 1];
 
-            $messages[] = <<<EMAIL
-From: $fromAddress
-To: $toAddress
-Subject: $subjectLine
-Date: $date
-Message-ID: <$messageId>$inReplyTo$references
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-
-$body
-EMAIL;
+        if ($i === 0) {
+            $fromAddress = $counterparty;
+            $toAddress = $mailboxOwner;
         }
 
-        return $messages;
+        $messageId = $this->generateMessageId();
+        $messageIds[] = $messageId;
+
+        $subjectLine = $isReply ? 'Re: ' . $baseSubject : $baseSubject;
+
+        $body = $threadBodies[$i] ?? $this->createThreadBody($i, $fromAddress, $baseSubject);
+
+        if ($isReply) {
+            $previousBody = $renderedBodies[$i - 1];
+            $previousFrom = $messageMeta[$i - 1]['from'];
+            $previousDate = $messageMeta[$i - 1]['date'];
+
+            $body .= "\n\nOn {$previousDate}, {$previousFrom} wrote:\n";
+            $body .= $this->quoteForReply($previousBody);
+        }
+
+        $date = date('r', $timestamps[$i]);
+
+        $renderedBodies[] = $body;
+        $messageMeta[] = [
+            'from' => $fromAddress,
+            'to' => $toAddress,
+            'date' => $date,
+            'message_id' => $messageId,
+            'subject' => $subjectLine,
+            'references' => $isReply ? array_slice($messageIds, 0, $i) : [],
+            'in_reply_to' => $isReply ? $messageIds[$i - 1] : null,
+        ];
+
+        $messages[] = $this->renderPlainTextMessage([
+            'from' => $fromAddress,
+            'to' => $toAddress,
+            'subject' => $subjectLine,
+            'date' => $date,
+            'message_id' => $messageId,
+            'in_reply_to' => $isReply ? $messageIds[$i - 1] : null,
+            'references' => $isReply ? array_slice($messageIds, 0, $i) : [],
+            'body' => $body,
+        ]);
     }
+
+    return $messages;
+}
+
+private function renderPlainTextMessage(array $message): string
+{
+    $headers = [
+        'From: ' . $message['from'],
+        'To: ' . $message['to'],
+        'Subject: ' . $message['subject'],
+        'Date: ' . $message['date'],
+        'Message-ID: ' . $this->formatMessageIdHeader($message['message_id']),
+    ];
+
+    if (!empty($message['in_reply_to'])) {
+        $headers[] = 'In-Reply-To: ' . $this->formatMessageIdHeader($message['in_reply_to']);
+    }
+
+    if (!empty($message['references'])) {
+        $headers[] = 'References: ' . implode(
+            ' ',
+            array_map([$this, 'formatMessageIdHeader'], $message['references'])
+        );
+    }
+
+    $headers[] = 'MIME-Version: 1.0';
+    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
+
+    return implode("\r\n", $headers) . "\r\n\r\n" . $message['body'];
+}
+
+private function formatMessageIdHeader(string $rawMessageId): string
+{
+    $trimmed = trim($rawMessageId);
+    if (preg_match('/^<.+>$/', $trimmed)) {
+        return $trimmed;
+    }
+
+    return '<' . $trimmed . '>';
+}
+
+private function normalizeThreadSubject(string $subject): string
+{
+    $normalized = trim($subject);
+    $normalized = preg_replace('/^(\s*(re|fwd?)\s*:\s*)+/i', '', $normalized) ?? $normalized;
+    $normalized = preg_replace('/\s+/', ' ', $normalized) ?? $normalized;
+
+    return $normalized !== '' ? $normalized : 'Conversation';
+}
+
 
     private function quoteForReply(string $text): string
     {

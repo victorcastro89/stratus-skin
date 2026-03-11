@@ -5,19 +5,20 @@
  *
  * Companion plugin for the Stratus skin. Provides runtime color scheme
  * switching, Google Fonts integration, folder list refresh after
- * move/archive, and a user preferences UI under Settings → Stratus.
+ * move/archive, user preferences UI under Settings → Stratus,
+ * and localized message-list date formatting.
  *
- * @version 0.1.0
+ * Date rules for mail list:
+ * - Today:     HH:MM (using user's time format preference when possible)
+ * - Yesterday: localized "Yesterday"
+ * - Older:     localized short date according to user preferences
+ *
+ * @version 0.2.0
  * @license GNU GPLv3+
  * @author  Stratus Team
  */
 class stratus_helper extends rcube_plugin
 {
-    /**
-     * Tasks this plugin is active in.
-    * - mail: folder refresh, inject appearance CSS/JS
-    * - settings: user preferences UI
-     */
     public $task = 'mail|settings';
 
     /**
@@ -26,36 +27,28 @@ class stratus_helper extends rcube_plugin
     private $rcmail;
 
     /**
-     * Resolved color scheme (cached for the request).
      * @var array|null
      */
     private $active_scheme;
 
     /**
-     * Resolved font config (cached for the request).
      * @var array|null
      */
     private $active_font;
-
-    // ──────────────────────────────────────────────
-    //  Initialization
-    // ──────────────────────────────────────────────
 
     public function init()
     {
         $this->rcmail = rcmail::get_instance();
 
-        $this->load_config('config.inc.php.dist');  // defaults
-        $this->load_config();                        // user overrides (if file exists)
+        $this->load_config('config.inc.php.dist');
+        $this->load_config();
         $this->add_texts('localization/', true);
 
-        // Only activate full features when the stratus skin is active
         $skin = $this->rcmail->config->get('skin', 'elastic');
         if ($skin !== 'stratus') {
             return;
         }
 
-        // Inject appearance (color scheme + font) on every page load
         $this->inject_appearance();
 
         if ($this->rcmail->task === 'mail') {
@@ -67,16 +60,17 @@ class stratus_helper extends rcube_plugin
         }
     }
 
-    // ──────────────────────────────────────────────
-    //  Mail task
-    // ──────────────────────────────────────────────
-
     private function init_mail()
     {
-        // Client JS for live scheme/font switching
         $this->include_script('stratus_helper.js');
 
-        // Push current appearance prefs to client env
+        $this->include_script('../../skins/stratus/js/smart-bar/selection-manager.js');
+        $this->include_script('../../skins/stratus/js/smart-bar/multi-select-controller.js');
+        $this->include_script('../../skins/stratus/js/smart-bar/mass-action-bar.js');
+        $this->include_script('../../skins/stratus/js/smart-bar/action-dispatcher.js');
+        $this->include_script('../../skins/stratus/js/smart-bar/sort-controller.js');
+        $this->include_script('../../skins/stratus/js/smart-bar.js');
+
         $scheme = $this->get_active_scheme();
         $font   = $this->get_active_font();
 
@@ -87,37 +81,24 @@ class stratus_helper extends rcube_plugin
         $this->rcmail->output->set_env('stratus_font_family', $font['family']);
         $this->rcmail->output->set_env('stratus_font_url', $font['url']);
 
-        // Register AJAX actions for live switching
         $this->register_action('plugin.stratus.set_scheme', [$this, 'action_set_scheme']);
         $this->register_action('plugin.stratus.set_font', [$this, 'action_set_font']);
-    }
 
-    // ──────────────────────────────────────────────
-    //  Settings task
-    // ──────────────────────────────────────────────
+        // Message-list date formatting
+        $this->add_hook('messages_list', [$this, 'messages_list']);
+    }
 
     private function init_settings()
     {
         $this->include_script('stratus_helper.js');
 
         $this->add_hook('preferences_sections_list', [$this, 'prefs_section']);
-        $this->add_hook('preferences_list',          [$this, 'prefs_list']);
-        $this->add_hook('preferences_save',          [$this, 'prefs_save']);
+        $this->add_hook('preferences_list', [$this, 'prefs_list']);
+        $this->add_hook('preferences_save', [$this, 'prefs_save']);
     }
 
-    // ──────────────────────────────────────────────
-    //  Appearance Injection
-    // ──────────────────────────────────────────────
-
-    /**
-     * Inject color scheme CSS custom properties and font stylesheet
-     * into <head> on every page load.
-     */
     private function inject_appearance()
     {
-        // JSON/plain responses (e.g. AJAX) use output classes that don't
-        // implement add_header(). Appearance injection is only meaningful
-        // for HTML page renders.
         if (!method_exists($this->rcmail->output, 'add_header')) {
             return;
         }
@@ -125,11 +106,9 @@ class stratus_helper extends rcube_plugin
         $scheme = $this->get_active_scheme();
         $font   = $this->get_active_font();
 
-        // ── Color scheme CSS custom properties ──
         $primary      = $this->sanitize_color($scheme['primary']);
         $primary_dark = $this->sanitize_color($scheme['primary_dark']);
 
-        // Derive additional colors from primary
         $css = ":root {\n";
         $css .= "  --stratus-primary: {$primary};\n";
         $css .= "  --stratus-primary-dark: {$primary_dark};\n";
@@ -137,7 +116,6 @@ class stratus_helper extends rcube_plugin
         $css .= "  --stratus-primary-dark-rgb: " . $this->hex_to_rgb($primary_dark) . ";\n";
         $css .= "}\n";
 
-        // Font family override
         if ($font['family']) {
             $css .= "body { --stratus-font-family: {$font['family']}; }\n";
         }
@@ -146,7 +124,6 @@ class stratus_helper extends rcube_plugin
             '<style id="stratus-helper-vars">' . $css . '</style>'
         );
 
-        // ── Google Font stylesheet (if applicable) ──
         if (!empty($font['url'])) {
             $url = htmlspecialchars($font['url'], ENT_QUOTES, 'UTF-8');
             $this->rcmail->output->add_header(
@@ -155,13 +132,6 @@ class stratus_helper extends rcube_plugin
         }
     }
 
-    // ──────────────────────────────────────────────
-    //  AJAX: Color Scheme
-    // ──────────────────────────────────────────────
-
-    /**
-     * Save color scheme preference via AJAX and return new CSS vars.
-     */
     public function action_set_scheme()
     {
         $key     = rcube_utils::get_input_string('_scheme', rcube_utils::INPUT_POST);
@@ -182,13 +152,6 @@ class stratus_helper extends rcube_plugin
         $this->rcmail->output->send();
     }
 
-    // ──────────────────────────────────────────────
-    //  AJAX: Font
-    // ──────────────────────────────────────────────
-
-    /**
-     * Save font preference via AJAX and return font info.
-     */
     public function action_set_font()
     {
         $key   = rcube_utils::get_input_string('_font', rcube_utils::INPUT_POST);
@@ -209,29 +172,16 @@ class stratus_helper extends rcube_plugin
         $this->rcmail->output->send();
     }
 
-    // ──────────────────────────────────────────────
-    //  Preferences: Section
-    // ──────────────────────────────────────────────
-
-    /**
-     * Add "Stratus Appearance" section to Settings nav.
-     */
     public function prefs_section($args)
     {
         $args['list']['stratus'] = [
             'id'      => 'stratus',
             'section' => rcube::Q($this->gettext('section_title')),
         ];
+
         return $args;
     }
 
-    // ──────────────────────────────────────────────
-    //  Preferences: List
-    // ──────────────────────────────────────────────
-
-    /**
-     * Render preference fields in the Stratus section.
-     */
     public function prefs_list($args)
     {
         if ($args['section'] !== 'stratus') {
@@ -239,13 +189,11 @@ class stratus_helper extends rcube_plugin
         }
 
         $dont_override = (array) $this->rcmail->config->get('dont_override', []);
-
         $blocks = [];
 
-        // ── Color Scheme ──
-        if (!in_array('stratus_color_scheme', $dont_override)) {
-            $schemes    = $this->rcmail->config->get('stratus_color_schemes', []);
-            $current    = $this->get_scheme_key();
+        if (!in_array('stratus_color_scheme', $dont_override, true)) {
+            $schemes = $this->rcmail->config->get('stratus_color_schemes', []);
+            $current = $this->get_scheme_key();
 
             $select = new html_select([
                 'name'  => '_stratus_color_scheme',
@@ -261,15 +209,17 @@ class stratus_helper extends rcube_plugin
                 'name'    => rcube::Q($this->gettext('color_scheme')),
                 'options' => [
                     'stratus_color_scheme' => [
-                        'title'   => html::label('ff_stratus_color_scheme', rcube::Q($this->gettext('color_scheme'))),
+                        'title'   => html::label(
+                            'ff_stratus_color_scheme',
+                            rcube::Q($this->gettext('color_scheme'))
+                        ),
                         'content' => $select->show($current),
                     ],
                 ],
             ];
         }
 
-        // ── Font Family ──
-        if (!in_array('stratus_font_family', $dont_override)) {
+        if (!in_array('stratus_font_family', $dont_override, true)) {
             $fonts   = $this->rcmail->config->get('stratus_fonts', []);
             $current = $this->get_font_key();
 
@@ -287,7 +237,10 @@ class stratus_helper extends rcube_plugin
                 'name'    => rcube::Q($this->gettext('font_family')),
                 'options' => [
                     'stratus_font_family' => [
-                        'title'   => html::label('ff_stratus_font_family', rcube::Q($this->gettext('font_family'))),
+                        'title'   => html::label(
+                            'ff_stratus_font_family',
+                            rcube::Q($this->gettext('font_family'))
+                        ),
                         'content' => $select->show($current),
                     ],
                 ],
@@ -295,16 +248,10 @@ class stratus_helper extends rcube_plugin
         }
 
         $args['blocks'] = array_merge($args['blocks'], $blocks);
+
         return $args;
     }
 
-    // ──────────────────────────────────────────────
-    //  Preferences: Save
-    // ──────────────────────────────────────────────
-
-    /**
-     * Persist Stratus preferences.
-     */
     public function prefs_save($args)
     {
         if ($args['section'] !== 'stratus') {
@@ -313,19 +260,19 @@ class stratus_helper extends rcube_plugin
 
         $dont_override = (array) $this->rcmail->config->get('dont_override', []);
 
-        // ── Color scheme ──
-        if (!in_array('stratus_color_scheme', $dont_override)) {
+        if (!in_array('stratus_color_scheme', $dont_override, true)) {
             $value   = rcube_utils::get_input_string('_stratus_color_scheme', rcube_utils::INPUT_POST);
             $schemes = $this->rcmail->config->get('stratus_color_schemes', []);
+
             if (isset($schemes[$value])) {
                 $args['prefs']['stratus_color_scheme'] = $value;
             }
         }
 
-        // ── Font family ──
-        if (!in_array('stratus_font_family', $dont_override)) {
+        if (!in_array('stratus_font_family', $dont_override, true)) {
             $value = rcube_utils::get_input_string('_stratus_font_family', rcube_utils::INPUT_POST);
             $fonts = $this->rcmail->config->get('stratus_fonts', []);
+
             if (isset($fonts[$value])) {
                 $args['prefs']['stratus_font_family'] = $value;
             }
@@ -334,13 +281,160 @@ class stratus_helper extends rcube_plugin
         return $args;
     }
 
-    // ──────────────────────────────────────────────
-    //  Helpers: Scheme
-    // ──────────────────────────────────────────────
+    /**
+     * Format message-list dates for Stratus.
+     *
+     * Rules:
+     * - Today: HH:MM or user time_format
+     * - Yesterday: localized label
+     * - Older: localized short date from user preferences
+     */
+    // TODO: Add localization
+public function messages_list($args)
+{
+    // rcube::write_log('errors', 'Stratus: messages_list hook fired');
+    // rcube::write_log('errors', $args['messages']);
+    if (empty($args['messages']) || !is_array($args['messages'])) {
+        return $args;
+    }
+
+    $tz = $this->get_user_timezone();
+    $now = new DateTime('now', $tz);
+    $today_start = (clone $now)->setTime(0, 0, 0);
+    $yesterday_start = (clone $today_start)->modify('-1 day');
+
+    foreach ($args['messages'] as $idx => $msg) {
+        $timestamp = null;
+
+        if (!empty($msg->timestamp) && is_numeric($msg->timestamp)) {
+            $timestamp = (int) $msg->timestamp;
+        }
+        elseif (!empty($msg->date)) {
+            $timestamp = $this->get_message_timestamp($msg->date);
+        }
+
+        if (!$timestamp) {
+            continue;
+        }
+
+        $msg_dt = new DateTime('@' . $timestamp);
+        $msg_dt->setTimezone($tz);
+        $msg_day = (clone $msg_dt)->setTime(0, 0, 0);
+
+        if ($msg_day == $today_start) {
+            $display = $this->format_today_time($timestamp);
+        }
+        elseif ($msg_day == $yesterday_start) {
+            $display = $this->gettext('yesterday');
+        }
+        else {
+            $display = $this->format_older_date($timestamp);
+        }
+
+        $msg->date = $display;
+
+        if (!is_array($msg->list_cols)) {
+            $msg->list_cols = [];
+        }
+
+        $msg->list_cols['date'] = rcube::Q($display);
+
+        // rcube::write_log('errors', sprintf(
+        //     'Stratus: uid=%s timestamp=%s final_date=%s',
+        //     $msg->uid ?? 'n/a',
+        //     $timestamp,
+        //     $display
+        // ));
+
+        $args['messages'][$idx] = $msg;
+    }
+
+    return $args;
+}
 
     /**
-     * Get the active color scheme key.
+     * Resolve current user's timezone.
      */
+    private function get_user_timezone(): DateTimeZone
+    {
+        $tz = $this->rcmail->config->get('timezone');
+
+        if (is_string($tz) && $tz !== '' && $tz !== 'auto') {
+            try {
+                return new DateTimeZone($tz);
+            }
+            catch (Exception $e) {
+            }
+        }
+
+        if (!empty($_SESSION['timezone']) && is_string($_SESSION['timezone'])) {
+            try {
+                return new DateTimeZone($_SESSION['timezone']);
+            }
+            catch (Exception $e) {
+            }
+        }
+
+        return new DateTimeZone(date_default_timezone_get());
+    }
+
+    /**
+     * Convert Roundcube's message date value into a Unix timestamp.
+     */
+    private function get_message_timestamp($value): ?int
+    {
+        if ($value instanceof DateTimeInterface) {
+            return $value->getTimestamp();
+        }
+
+        if (is_numeric($value)) {
+            return (int) $value;
+        }
+
+        if (is_string($value) && trim($value) !== '') {
+            $ts = rcube_utils::anytodatetime($value);
+            if ($ts instanceof DateTimeInterface) {
+                return $ts->getTimestamp();
+            }
+
+            $ts = strtotime($value);
+            if ($ts !== false) {
+                return (int) $ts;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Format today's messages using user's preferred time format.
+     * Falls back to HH:MM if preference is unavailable.
+     */
+    private function format_today_time(int $timestamp): string
+    {
+        $time_format = $this->rcmail->config->get('time_format');
+
+        if (!is_string($time_format) || $time_format === '') {
+            $time_format = 'H:i';
+        }
+
+        return $this->rcmail->format_date($timestamp, $time_format);
+    }
+
+    /**
+     * Format older messages using user's preferred localized short date.
+     */
+    private function format_older_date(int $timestamp): string
+    {
+        $date_format = $this->rcmail->config->get('date_format');
+
+        if (is_string($date_format) && $date_format !== '') {
+            return $this->rcmail->format_date($timestamp, $date_format);
+        }
+
+        return $this->rcmail->format_date($timestamp, 'd');
+    }
+
     private function get_scheme_key(): string
     {
         $key     = $this->rcmail->config->get('stratus_color_scheme');
@@ -353,9 +447,6 @@ class stratus_helper extends rcube_plugin
         return isset($schemes[$key]) ? $key : 'indigo';
     }
 
-    /**
-     * Get the active color scheme config array.
-     */
     private function get_active_scheme(): array
     {
         if ($this->active_scheme !== null) {
@@ -374,13 +465,6 @@ class stratus_helper extends rcube_plugin
         return $this->active_scheme;
     }
 
-    // ──────────────────────────────────────────────
-    //  Helpers: Font
-    // ──────────────────────────────────────────────
-
-    /**
-     * Get the active font key.
-     */
     private function get_font_key(): string
     {
         $key   = $this->rcmail->config->get('stratus_font_family');
@@ -393,9 +477,6 @@ class stratus_helper extends rcube_plugin
         return isset($fonts[$key]) ? $key : 'system';
     }
 
-    /**
-     * Get the active font config array.
-     */
     private function get_active_font(): array
     {
         if ($this->active_font !== null) {
@@ -414,35 +495,21 @@ class stratus_helper extends rcube_plugin
         return $this->active_font;
     }
 
-    // ──────────────────────────────────────────────
-    //  Helpers: Color Utilities
-    // ──────────────────────────────────────────────
-
-    /**
-     * Sanitize a hex color value.
-     */
     private function sanitize_color(string $color): string
     {
-        // Strip everything except hex chars and #
         $color = preg_replace('/[^#0-9a-fA-F]/', '', $color);
 
-        // Ensure it starts with #
         if (strpos($color, '#') !== 0) {
             $color = '#' . $color;
         }
 
-        // Validate 4 or 7 char hex
         if (!preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $color)) {
-            return '#5c6bc0'; // fallback to indigo
+            return '#5c6bc0';
         }
 
         return $color;
     }
 
-    /**
-     * Convert hex color to comma-separated RGB string.
-     * E.g. "#5c6bc0" → "92, 107, 192"
-     */
     private function hex_to_rgb(string $hex): string
     {
         $hex = ltrim($hex, '#');

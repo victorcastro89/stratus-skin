@@ -1,0 +1,34 @@
+/**
+ * Undo Send – Elastic / Stratus skin overrides
+ *
+ * Inherits baseline from skins/default/undo_send.css.
+ * Adds elastic-specific refinements and dark mode support.
+ *
+ * Stratus extends elastic, so local_skin_path() resolves here for both.
+ */
+
+/* ── Undo link refinements ───────────────────── */
+
+#messagestack .mp-undo-link {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    margin-left: 0.5em;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+#messagestack .mp-undo-link:hover {
+    opacity: 0.75;
+}
+
+#messagestack .mp-undo-link:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Dark mode: no extra rules needed — color:inherit picks up the correct
+   text color from #messagestack .notice / .confirmation / .error styling
+   which elastic and stratus already theme for dark mode. */

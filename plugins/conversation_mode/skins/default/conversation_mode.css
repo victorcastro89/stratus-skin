@@ -1,5 +1,5 @@
 /**
- * Conversation Mode – Default skin styles (v3: template-binding architecture)
+ * Conversation Mode – Default skin styles (v4: flex-aligned architecture)
  *
  * Panel visibility is driven by the [data-conv-mode] attribute on #layout-list.
  * JS sets data-conv-mode="list" or "conversations" and CSS handles show/hide.
@@ -7,6 +7,22 @@
  * Skin-agnostic baseline that works with any Roundcube skin.
  * Skins can override these by placing conversation_mode.css in their own
  * skin folder.
+ *
+ * LAYOUT MODEL:
+ *   #layout-list is a vertical flex column (set by Elastic's layout.less).
+ *   The conversation scroller uses flex:1 to fill remaining space — NO
+ *   position:absolute hacks — mirroring how Elastic's own .scroller works.
+ *
+ * CELL SIZING MODEL:
+ *   On desktop: table-layout:fixed, cell widths via `width`.
+ *   On touch (html.touch): Elastic sets display:flex on .messagelist tr.
+ *   Cell `width` values then serve as flex-basis.
+ *   Date and count badge live in td.subject .conv-line1 (not in td.flags),
+ *   keeping td.flags narrow (~2.5em) like Elastic's native flags cell.
+ *
+ * RESPONSIVE MODEL:
+ *   Uses html.layout-* / html.touch classes (set by Elastic JS) instead of
+ *   @media queries, for consistency with Elastic's breakpoint system.
  */
 
 /* ═══════════════════════════════════════════════
@@ -31,50 +47,34 @@
 #layout-list[data-conv-mode="conversations"] #conv-list-content   { display: block; }
 #layout-list[data-conv-mode="conversations"] .pagenav:not(.conv-pagination):not(.mp-mass-action-bar):not(.mp-smart-bar) { display: none; }
 
-/* Keep room for footer nav bars when conversation list layer uses absolute scroller rules */
-#layout-list[data-conv-mode="conversations"] #conv-list-content {
-  bottom: 40px !important;
-}
-
-/* Ensure footer controls sit above the conversation list layer */
-#layout-list[data-conv-mode="conversations"] > .footer.pagenav {
-  position: relative;
-  z-index: 3;
-}
-
-/* Standard pagenav: hide in conversation mode, show in list mode */
+/* Standard pagenav: hide in conversation mode */
 #layout-list[data-conv-mode="conversations"] > .footer.pagenav:last-child:not(.mp-mass-action-bar):not(.mp-smart-bar) { display: none; }
 
-/*
- * Stratus mass-action bar integration
- *
- * Stratus reuses the pagenav container as a top mass-action bar (below search).
- * When that bar is present, do not reserve footer space at the bottom.
- * Keep the conversation list in normal flow so flex order can place:
- *   header -> search -> mass-action-bar -> conversation list
- */
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar),
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) {
-  /* Shared: let conv list flow naturally when mass-action/smart bar is present */
-}
 
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content,
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) #conv-list-content {
-  position: relative;
-  top: auto;
-  left: auto;
-  right: auto;
-  bottom: auto !important;
-  order: 2;
+/* ═══════════════════════════════════════════════
+   Conversation List Scroller
+   ═══════════════════════════════════════════════
+   Uses flex:1 to fill remaining column space — same pattern as Elastic's
+   #layout > div > .scroller { flex: 1 }.
+   No position:absolute, no bottom:Npx hacks, no :has() workarounds.
+   ═══════════════════════════════════════════════ */
+
+.conv-conversation-list {
   flex: 1 1 auto;
-  min-height: 0;
+  min-height: 0;           /* allow flex child to shrink below content height */
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;      /* for .listing-info positioning */
+  -webkit-overflow-scrolling: touch;
 }
 
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) > .footer.pagenav.mp-mass-action-bar,
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) > .footer.pagenav.mp-smart-bar {
-  position: relative;
-  top: auto;
-  bottom: auto;
+/* Flex order: smart-bar before conversation list */
+#layout-list[data-conv-mode="conversations"] #conv-list-content {
+  order: 2;
+}
+
+#layout-list[data-conv-mode="conversations"] > .footer.pagenav.mp-mass-action-bar,
+#layout-list[data-conv-mode="conversations"] > .footer.pagenav.mp-smart-bar {
   order: 1;
   z-index: 3;
 }
@@ -106,6 +106,15 @@
   background-color: #e3ecf7;
 }
 
+/* ── Expand Column ───────────────────────────── */
+
+.conv-list.conv-outlook td.conv-expand-cell {
+  width: 28px;
+  padding: 10px 0 10px 6px;
+  vertical-align: middle;
+  text-align: center;
+}
+
 /* ── Avatar Column ───────────────────────────── */
 
 .conv-list.conv-outlook td.conv-avatar {
@@ -133,26 +142,25 @@
 /* ── Subject Column (3-line flex) ────────────── */
 
 .conv-list.conv-outlook td.subject {
+  width: 100%;             /* table-layout:fixed → takes remaining space */
   padding: 6px 8px 6px 4px;
   vertical-align: top;
   overflow: hidden;
   position: relative;
-  /* elastic styles td.subject as flex-wrap:wrap — force column so our lines
-     always stack vertically regardless of row width */
+  /* Override Elastic's flex-wrap:wrap on td.subject — force column stacking */
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
   justify-content: center;
 }
 
-/* Line 1: Sender + count + date */
+/* Line 1: Sender + count + date (all in one flex row) */
 .conv-line1 {
   display: flex;
   align-items: baseline;
   gap: 6px;
   margin-bottom: 1px;
   line-height: 1.4;
-  padding-right: 30px;
   width: 100%;
   min-width: 0;
   flex-shrink: 0;
@@ -166,6 +174,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;            /* allow flex child to shrink below content width */
 }
 
 .conv-list.conv-outlook tr.unread .conv-sender {
@@ -173,6 +182,7 @@
   color: #111;
 }
 
+/* Count badge — inline in line1, right of sender */
 .conv-count {
   flex-shrink: 0;
   display: inline-flex;
@@ -183,26 +193,20 @@
   padding: 0 3px;
   font-size: 0.65rem;
   font-weight: 700;
-  color: #666;
-  background: #e8e8e8;
+  color: #fff;
+  background: #1a73e8;
   border-radius: 50px;
   line-height: 1;
   box-sizing: border-box;
 }
 
-/* Conversation parent rows: keep count stacked above and aligned with flag */
-.conv-list.conv-outlook td.flags.conv-flags-cell > .conv-count {
-  display: inline-flex;
-  margin: 0 0 12px 0;
-  float: right;
-  clear: right;
-}
-
+/* Date — right-aligned in line1 via margin-left:auto */
 .conv-date {
   flex-shrink: 0;
   font-size: 0.8rem;
   color: #888;
   white-space: nowrap;
+  margin-left: auto;       /* push to the right edge of line1 */
 }
 
 /* Line 2: Subject + icons */
@@ -232,6 +236,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .conv-list.conv-outlook tr.unread .conv-subject-text {
@@ -246,6 +251,8 @@
   font-size: 0.8rem;
   color: #888;
 }
+
+/* ── Icons ───────────────────────────────────── */
 
 .conv-icon {
   display: inline-flex;
@@ -265,47 +272,16 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.conv-icon-archive::before {
-  content: "\f187";
-}
-
-.conv-icon-trash-alt::before {
-  content: "\f2ed";
-  font-weight: 400; /* regular/outline trash can, matches elastic's delete button */
-}
-
-.conv-icon-flag::before {
-  content: "\f024";
-}
-
-.conv-icon-flag-regular::before {
-  content: "\f024";
-  font-weight: 400;
-}
-
-.conv-icon-paperclip::before {
-  content: "\f0c6";
-}
-
-.conv-icon-external-link-square-alt::before {
-  content: "\f360";
-}
-
-.conv-icon-comments::before {
-  content: "\f086"; /* fa-comments */
-}
-
-.conv-icon-reply::before {
-  content: "\f3e5"; /* fa-reply */
-}
-
-.conv-icon-envelope-open::before {
-  content: "\f2b6"; /* fa-envelope-open */
-}
-
-.conv-icon-envelope::before {
-  content: "\f0e0"; /* fa-envelope */
-}
+.conv-icon-archive::before   { content: "\f187"; }
+.conv-icon-trash-alt::before { content: "\f2ed"; font-weight: 400; }
+.conv-icon-flag::before      { content: "\f024"; }
+.conv-icon-flag-regular::before { content: "\f024"; font-weight: 400; }
+.conv-icon-paperclip::before { content: "\f0c6"; }
+.conv-icon-external-link-square-alt::before { content: "\f360"; }
+.conv-icon-comments::before  { content: "\f086"; }
+.conv-icon-reply::before     { content: "\f3e5"; }
+.conv-icon-envelope-open::before { content: "\f2b6"; }
+.conv-icon-envelope::before  { content: "\f0e0"; }
 
 /* Flag status icon — dedicated class, immune to ancestor colour inheritance */
 .conv-status-flag-icon,
@@ -330,11 +306,14 @@
   -webkit-line-clamp: 2;
 }
 
-/* ── Flags / Actions Column ──────────────────── */
+/* ── Flags Column (~2.5em — matching Elastic) ── */
+/*
+ * Now contains only: flag indicator + hover actions.
+ * Date and count badge are in td.subject .conv-line1.
+ */
 
 .conv-list.conv-outlook td.flags.conv-flags-cell {
-  width: 104px;
-  min-width: 104px;
+  width: 2.5em;
   padding: 10px 8px;
   vertical-align: middle;
   text-align: right;
@@ -342,23 +321,7 @@
   overflow: visible;
 }
 
-/* Date label — right-aligned, visible by default, fades out on row hover */
-.conv-row-date {
-  display: block;
-  font-size: 0.8rem;
-  color: #888;
-  white-space: nowrap;
-  text-align: right;
-  transition: opacity 0.12s ease;
-  line-height: 1.4;
-}
-
-.conv-list.conv-outlook tr.message:hover .conv-row-date {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Hover action bar — hidden by default, fades in on row hover */
+/* ── Hover action bar ────────────────────────── */
 /*
  * Elastic sets `.messagelist td.flags > span { height: 1.7em; line-height: 1.7em; display: block; }`
  * .conv-hover-actions is a <span> direct child of td.flags, so we must override with
@@ -423,7 +386,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8125rem; /* ~13px — crisp on retina */
+  font-size: 0.8125rem;
   line-height: 1;
   width: 1em;
   height: 1em;
@@ -450,7 +413,7 @@
 
 /* Render fa-comments via elastic/stratus 'Icons' font */
 .conv-empty-icon i::before {
-  content: "\f086"; /* fa-comments */
+  content: "\f086";
   font-family: 'Icons';
   font-weight: 900;
   font-style: normal;
@@ -492,7 +455,7 @@
 }
 
 .conv-back-btn::before {
-  content: "\f053"; /* fa-chevron-left, matches elastic back buttons */
+  content: "\f053";
   font-family: 'Icons';
   font-style: normal;
   font-weight: 900;
@@ -652,8 +615,7 @@
   border-left: 3px solid #f9a825;
 }
 
-/* ── Persistent flag indicator (column 4) ────── */
-/* Specificity must beat skin's `.messagelist td.flags > span` (0,2,1) */
+/* ── Persistent flag indicator ───────────────── */
 
 .conv-list.conv-outlook .conv-flag-indicator {
   display: none;
@@ -661,41 +623,13 @@
   color: #e53935;
   text-align: right;
   line-height: 1;
-  clear: right;
 }
 
 .conv-list.conv-outlook tr.flagged .conv-flag-indicator {
   display: block;
 }
 
-/* Hide flag indicator on hover when action bar is visible */
-.conv-list.conv-outlook tr.message:hover .conv-flag-indicator {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Child rows: also hide flag indicator while hover actions are visible */
-.conv-list.conv-outlook tr.conv-child-row:hover .conv-flag-indicator {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ── Conversation list scroller (same as standard) ── */
-
-.conv-conversation-list {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  position: relative;
-}
-
 /* ── Expand Arrow (Outlook-style inline expand) ── */
-
-.conv-expand-cell {
-  width: 28px;
-  padding: 10px 0 10px 6px;
-  vertical-align: middle;
-  text-align: center;
-}
 
 .conv-expand-arrow {
   display: inline-flex;
@@ -711,7 +645,7 @@
 }
 
 .conv-expand-arrow::before {
-  content: "\f054"; /* fa-chevron-right */
+  content: "\f054";
   font-family: 'Icons';
   font-weight: 900;
   font-size: 0.6rem;
@@ -748,7 +682,6 @@ tr.conv-child-row > td {
   border-bottom: 1px solid var(--mp-conv-child-divider, var(--mp-conv-row-border, #e8e8e8));
 }
 
-/* Remove bottom border from the last child row — the divider replaces it */
 tr.conv-child-row:has(+ tr.conv-child-divider-row) > td {
   border-bottom: 0;
 }
@@ -815,12 +748,20 @@ tr.conv-child-row .conv-line3 {
   gap: 4px;
 }
 
-/* Child row snippet text */
 tr.conv-child-row .conv-snippet-text {
   flex: 1 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Child flags cell — same narrow width */
+tr.conv-child-row td.flags.conv-flags-cell {
+  position: relative;
+  width: 2.5em;
+  padding: 6px 8px;
+  vertical-align: middle;
+  text-align: right;
 }
 
 /* Divider shown after the final expanded child message */
@@ -866,12 +807,12 @@ tr.conv-child-divider-row > td {
 }
 
 .conv-dir-sent::before {
-  content: "\f064"; /* fa-share / arrow-right-from-bracket-like */
+  content: "\f064";
   color: #43a047;
 }
 
 .conv-dir-received::before {
-  content: "\f3e5"; /* fa-reply / arrow-left */
+  content: "\f3e5";
   color: #1e88e5;
 }
 
@@ -915,80 +856,54 @@ tr.conv-child-row:hover .conv-hover-actions {
   pointer-events: auto;
 }
 
-tr.conv-child-row:hover .conv-row-date {
-  opacity: 0;
-  pointer-events: none;
+/* ═══════════════════════════════════════════════
+   Responsive: html.touch + html.layout-* classes
+   ═══════════════════════════════════════════════
+   Elastic JS sets html.touch at ≤1024px and html.layout-phone at ≤480px.
+   When html.touch is active, Elastic sets display:flex on .messagelist tr,
+   so cell `width` values become flex-basis.
+   ═══════════════════════════════════════════════ */
+
+/* Touch (≤1024px): compact avatar */
+html.touch .conv-list.conv-outlook td.conv-avatar {
+  width: 40px;
+  padding: 8px 2px 8px 8px;
 }
 
-/* Ensure child flags cell is positioned for absolute actions */
-tr.conv-child-row td.flags.conv-flags-cell {
-  position: relative;
-  width: 90px;
-  padding: 6px 8px;
-  vertical-align: middle;
-  text-align: right;
+html.touch .conv-avatar-circle {
+  width: 32px;
+  height: 32px;
+  font-size: 0.75rem;
 }
 
-/* ── Responsive: touch-friendly sizing ───────── */
+html.touch .conv-sender {
+  font-size: 0.85rem;
+}
 
-@media screen and (max-width: 768px) {
-  /*
-   * Elastic sets display:flex on .messagelist tr, so table-layout:fixed
-   * does NOT control cell widths — flex properties do.
-   */
+html.touch .conv-date {
+  font-size: 0.72rem;
+}
 
-  /* Expand toggle — fixed 24px */
-  .conv-list.conv-outlook td.conv-expand-cell {
-    flex: 0 0 24px;
-    width: 24px;
-    min-width: 24px;
-    max-width: 24px;
-    padding: 8px 0 8px 4px;
-  }
+/* Touch: disable hover actions — rely on tap / long-press */
+html.touch .conv-hover-actions {
+  display: none;
+}
 
-  /* Avatar — keep visible in default skin, compact size */
-  .conv-list.conv-outlook td.conv-avatar {
-    flex: 0 0 40px;
-    width: 40px;
-    min-width: 40px;
-    max-width: 40px;
-    padding: 8px 2px 8px 8px;
-  }
+/* Phone (≤480px): hide avatar, compact everything */
+html.layout-phone .conv-list.conv-outlook td.conv-avatar {
+  display: none;
+  width: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+}
 
-  .conv-avatar-circle {
-    width: 32px;
-    height: 32px;
-    font-size: 0.75rem;
-  }
+html.layout-phone .conv-list.conv-outlook td.conv-expand-cell {
+  width: 24px;
+  padding: 8px 0 8px 4px;
+}
 
-  /* Subject — fill remaining space */
-  .conv-list.conv-outlook td.subject {
-    flex: 1 1 0px;
-    min-width: 0;
-    padding: 6px 4px;
-    overflow: hidden;
-  }
-
-  /* Flags cell — fixed 60px, override base min-width:104px */
-  .conv-list.conv-outlook td.flags.conv-flags-cell {
-    flex: 0 0 60px;
-    width: 60px;
-    min-width: 60px;
-    max-width: 60px;
-    padding: 8px 6px;
-  }
-
-  .conv-row-date {
-    font-size: 0.72rem;
-  }
-
-  .conv-hover-actions {
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-
-  .conv-message-card {
-    margin: 6px 8px;
-    padding: 10px 12px;
-  }
+html.layout-phone .conv-message-card {
+  margin: 6px 8px;
+  padding: 10px 12px;
 }

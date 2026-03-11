@@ -52,7 +52,7 @@ html:not(.touch) {
 #messagelist-content {
     position: relative;
 
-    &:has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
+    &:not(.mp-search-empty):has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -113,7 +113,7 @@ html:not(.touch) {
 
         // Subject
         td.subject {
-            font-size: @mp-font-size-base;
+            font-size: @mp-font-size-sm;
 
             span.subject {
                 font-weight: @mp-font-weight-medium;
@@ -130,6 +130,7 @@ html:not(.touch) {
             // override with !important so the date is always shown.
             span.date {
                 display: block !important;
+                font-size: @mp-font-size-xs;
             }
         }
     }
@@ -304,6 +305,43 @@ html:not(.touch) {
     }
 }
 
+// SEARCH EMPTY STATE — swap icon to magnifying glass
+#messagelist-content.mp-search-empty .listing-info::before {
+    content: "\f002"; // fa-search
+    font-weight: 900;
+}
+
+// SEARCH EMPTY STATE — standalone div (independent of Elastic, no timing conflicts)
+#mp-search-empty-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    text-align: center;
+    font-weight: @mp-font-weight-normal;
+    font-size: @mp-font-size-md;
+    color: @color-font-secondary;
+    opacity: 0.8;
+    z-index: 4;
+    pointer-events: none;
+    line-height: 1.5;
+
+    &::before {
+        content: "\f002"; // fa-search
+        font-family: 'Icons';
+        font-weight: 900;
+        font-size: 2.5rem;
+        display: block;
+        margin-bottom: @mp-space-md;
+        opacity: 0.45;
+    }
+}
+
+html.dark-mode #mp-search-empty-state {
+    color: @color-dark-font-secondary;
+}
+
 // ISSUE-006: Unread subject should be bolder than read subject.
 // Elastic sets font-weight:bold on .messagelist tr.unread td.subject span.subject,
 // but our #messagelist rule has higher id-specificity (1,2,1 vs elastic 0,4,1)
@@ -456,7 +494,7 @@ html.dark-mode {
     }
 
     // Message list loading spinner — dark variant
-    #messagelist-content:has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
+    #messagelist-content:not(.mp-search-empty):has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
         border-color: fadeout(@color-dark-main, 80%);
         border-top-color: @color-dark-main;
     }

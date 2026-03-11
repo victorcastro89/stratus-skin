@@ -81,3 +81,14 @@
 [09-Mar-2026 12:57:37 +0000]: <358fc849> Failed login for alice@example.com from 192.168.65.1 in session 358fc8497efc1732 (error: 0)
 [09-Mar-2026 12:57:50 +0000]: <397ffd16> Successful login for victor@example.test (ID: 2) from 192.168.65.1 in session 397ffd1694153ed1
 [09-Mar-2026 13:00:06 +0000]: <d38c40e9> Successful login for alice@example.test (ID: 1) from 192.168.65.1 in session d38c40e9c5430826
+[09-Mar-2026 22:26:50 +0000]: <d89a5305> Successful login for alice@example.test (ID: 1) from 192.168.65.1 in session d89a53053d08971d
+[10-Mar-2026 14:39:37 +0000]: <2d9d3b06> Successful login for victor@example.test (ID: 2) from 192.168.65.1 in session 2d9d3b06c099be36
+[10-Mar-2026 15:52:53 +0000]: <4b5b6df6> Successful login for alice@example.test (ID: 1) from 151.101.2.132 in session 4b5b6df6302113bc
+[10-Mar-2026 15:54:08 +0000]: <db5cc37e> Successful login for victor@example.test (ID: 2) from 151.101.2.132 in session db5cc37ec32c8d95
+[10-Mar-2026 22:02:28 +0000]: <0fd406d0> Successful login for alice@example.test (ID: 1) from 185.85.0.29 in session 0fd406d068fac4d0
+[10-Mar-2026 22:17:47 +0000]: <7ae9780e> Successful login for alice@example.test (ID: 1) from 185.85.0.29 in session 7ae9780ecd70681b
+[11-Mar-2026 15:18:34 +0000]: <da06be8d> Successful login for alice@example.test (ID: 1) from 151.101.2.132 in session da06be8d6c5fa144
+[11-Mar-2026 15:21:49 +0000]: <7f7a3951> Successful login for victor@example.test (ID: 2) from 151.101.2.132 in session 7f7a3951a72f7b88
+[11-Mar-2026 15:27:34 +0000]: <07260049> Successful login for victor@example.test (ID: 2) from 151.101.2.132 in session 0726004992870f08
+[11-Mar-2026 15:31:09 +0000]: <bb0647a9> Successful login for victor@example.test (ID: 1) from 151.101.2.132 in session bb0647a93c95b189
+[11-Mar-2026 15:31:51 +0000]: <5c99daf6> Successful login for alice@example.test (ID: 2) from 151.101.2.132 in session 5c99daf6458b1dcd

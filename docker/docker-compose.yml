@@ -5,6 +5,8 @@ services:
     container_name: mailserver
     hostname: mail.example.test
     domainname: example.test
+    cap_add:
+      - NET_ADMIN  
     ports:
       - "3025:25"    # SMTP
       - "3143:143"   # IMAP
@@ -40,6 +42,7 @@ services:
       retries: 20
       start_period: 90s
 
+
   # ---------- Roundcube webmail ----------
   roundcube:
     build:
@@ -48,6 +51,8 @@ services:
     container_name: roundcube-dev
     restart: unless-stopped
     stop_grace_period: 10s
+    cap_add:
+      - NET_ADMIN  
     ports:
       - "8000:80"
     volumes:

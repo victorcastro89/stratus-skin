@@ -1,0 +1,31 @@
+/**
+ * Undo Send – Baseline styles (skin-agnostic)
+ *
+ * Works with any Roundcube skin (larry, elastic, stratus, etc.).
+ * Skin-specific overrides can be placed in skins/<skin>/undo_send.css.
+ */
+
+/* ── Undo link inside #messagestack toast ────── */
+
+#messagestack .mp-undo-toast {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+#messagestack .mp-undo-cta {
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+#messagestack .mp-undo-link {
+    font-weight: bold;
+    text-decoration: underline;
+    margin-left: 0;
+    cursor: pointer;
+    color: inherit;
+}
+
+#messagestack .mp-undo-link:hover {
+    opacity: 0.8;
+}

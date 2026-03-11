@@ -270,3 +270,46 @@
 [04-Mar-2026 04:35:35 +0000]: <b6bc9090> [get_or_build] built 9 conversations, storing in cache
 [04-Mar-2026 04:36:34 +0000]: <b6bc9090> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
 [04-Mar-2026 04:37:34 +0000]: <b6bc9090> [storage_init] fetch_headers before="" after="MESSAGE-ID IN-REPLY-TO REFERENCES"
+[11-Mar-2026 00:44:23 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=13
+[11-Mar-2026 00:44:58 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=13
+[11-Mar-2026 00:45:02 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=13
+[11-Mar-2026 00:45:11 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=13
+[11-Mar-2026 00:45:29 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:46:22 +0000]: <7ae9780e> List action called with parameters: {"_task":"mail","_action":"plugin.conv.list","_mbox":"INBOX","_page":"1","_remote":"1","_unlock":"0","_":"1773189982117","colorMode":"light","language":"en","roundcube_sessid":"7ae9780ecd70681b16fbc91432238ab6","roundcube_sessauth":"nWkqEsBniIXJM351FuAbkk6rXcMq5xhh-1773189900"}
+[11-Mar-2026 00:46:22 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:46:33 +0000]: <7ae9780e> List action called with parameters: {"_task":"mail","_action":"plugin.conv.list","_mbox":"INBOX","_page":"1","_remote":"1","_unlock":"0","_":"1773189993722","colorMode":"light","language":"en","roundcube_sessid":"7ae9780ecd70681b16fbc91432238ab6","roundcube_sessauth":"nWkqEsBniIXJM351FuAbkk6rXcMq5xhh-1773189900"}
+[11-Mar-2026 00:46:33 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:46:56 +0000]: <7ae9780e> List action called with parameters: {"_task":"mail","_action":"plugin.conv.list","_mbox":"INBOX","_page":"1","_remote":"1","_unlock":"0","_":"1773190016485","colorMode":"light","language":"en","roundcube_sessid":"7ae9780ecd70681b16fbc91432238ab6","roundcube_sessauth":"nWkqEsBniIXJM351FuAbkk6rXcMq5xhh-1773189900"}
+[11-Mar-2026 00:46:56 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:47:38 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:47:43 +0000]: <7ae9780e> Fetched conversation detail: mailbox=INBOX, conv_id=e4b52ad13d4cfb2453fcdc5fd17644a8, messages_count=2
+[11-Mar-2026 00:47:43 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:47:53 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:48:01 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:48:04 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:48:14 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:48:17 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 00:48:35 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=14
+[11-Mar-2026 01:20:30 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 01:22:08 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 01:22:16 +0000]: <7ae9780e> Fetched conversation detail: mailbox=INBOX, conv_id=e4b52ad13d4cfb2453fcdc5fd17644a8, messages_count=2
+[11-Mar-2026 01:22:20 +0000]: <7ae9780e> Fetched conversation detail: mailbox=INBOX, conv_id=e4b52ad13d4cfb2453fcdc5fd17644a8, messages_count=2
+[11-Mar-2026 01:22:21 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 01:22:24 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 01:24:36 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 01:24:50 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 01:24:54 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 01:25:13 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 02:24:38 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 02:24:38 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 02:24:47 +0000]: <7ae9780e> Fetched conversation detail: mailbox=INBOX, conv_id=b9f66c566066a4c5736684a248f2ae8b, messages_count=1
+[11-Mar-2026 02:24:48 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 02:26:27 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 02:26:34 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 02:27:02 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 02:42:44 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 02:43:03 +0000]: <7ae9780e> Fetched conversation detail: mailbox=INBOX, conv_id=683c7e80114d1f9d0e3411205150031a, messages_count=2
+[11-Mar-2026 02:52:20 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=15
+[11-Mar-2026 03:12:13 +0000]: <7ae9780e> Fetched conversation list: mailbox=INBOX, page=1, page_size=50, match_uids=, conversations_count=3
+[11-Mar-2026 03:12:19 +0000]: <7ae9780e> Fetched conversation detail: mailbox=INBOX, conv_id=bcabb513942553ed00ddb1d94d4c98a4, messages_count=3
+[11-Mar-2026 03:12:25 +0000]: <7ae9780e> Fetched conversation detail: mailbox=INBOX, conv_id=bcabb513942553ed00ddb1d94d4c98a4, messages_count=3

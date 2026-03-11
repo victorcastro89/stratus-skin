@@ -1,79 +1,28 @@
 /**
- * Conversation Mode – Elastic skin overrides (v3: template-binding architecture)
+ * Conversation Mode – Elastic skin overrides (v4: flex-aligned architecture)
  *
  * Inherits defaults from skins/default/conversation_mode.css
  * and adjusts for the Elastic skin's design language and CSS custom properties.
  *
  * Panel toggling is handled by [data-conv-mode] on #layout-list.
+ *
+ * SCROLLER: uses flex:1 inherited from default CSS — no position:absolute.
+ * DATE/COUNT: in td.subject .conv-line1 — no positioning rules needed in td.flags.
+ * RESPONSIVE: uses html.touch / html.layout-* classes (Elastic JS), no @media.
  */
 
 /* ═══════════════════════════════════════════════
    Panel Toggling (elastic-specific overrides)
    ═══════════════════════════════════════════════ */
 
-/* Conversation list scroller inherits elastic's scroller behavior */
-#conv-list-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Reserve space for footer pagenav so it is not covered by absolute list layer */
-#layout-list[data-conv-mode="conversations"] #conv-list-content {
-  bottom: 35px;
-}
-
-/* Stratus mass-action/smart-bar footer is taller than Elastic default pagenav */
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content,
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) #conv-list-content {
-  bottom: 40px;
-}
-
-/* Keep footer controls above conversation list layer */
-#layout-list[data-conv-mode="conversations"] > .footer.pagenav {
-  position: relative;
-  z-index: 2;
-}
-
-/*
- * Stratus mass-action bar integration
- *
- * In Stratus, the pagenav is visually a top mass-action bar (below search).
- * Keep conversation list in flow and let flex order place the bar above it.
- */
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) #conv-list-content,
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) #conv-list-content {
-  position: relative;
-  top: auto;
-  left: auto;
-  right: auto;
-  bottom: auto;
-  order: 2;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-mass-action-bar) > .footer.pagenav.mp-mass-action-bar,
-#layout-list[data-conv-mode="conversations"]:has(> .footer.pagenav.mp-smart-bar) > .footer.pagenav.mp-smart-bar {
-  position: relative;
-  top: auto;
-  bottom: auto;
-  order: 1;
-  z-index: 3;
-}
-
 /* When in conversations mode, hide the standard scroller completely */
 #layout-list[data-conv-mode="conversations"] .conv-standard-list {
-  display: none !important;
+  display: none;
 }
 
 /* When in list mode, hide conversation scroller completely */
 #layout-list[data-conv-mode="list"] .conv-conversation-list {
-  display: none !important;
+  display: none;
 }
 
 /* ── List rows ───────────────────────────────── */
@@ -83,7 +32,7 @@
   border-left: 3px solid transparent;
 }
 
-/* Stratus listing styles add per-cell separators; use row separators here for straight lines */
+/* Stratus listing styles add per-cell separators; use row separators instead */
 .conv-list.conv-outlook tbody tr > td {
   border-bottom: 0;
 }
@@ -128,10 +77,17 @@
 /* ── Subject cell ────────────────────────────── */
 
 /* Elastic sets .messagelist td.subject span { line-height: 2em } for all spans.
-   Reset our structured lines to their own values so row height stays compact. */
+   Reset our structured lines AND their child spans to their own values so
+   row height stays compact. */
 .conv-list.conv-outlook td.subject .conv-line1,
 .conv-list.conv-outlook td.subject .conv-line2,
 .conv-list.conv-outlook td.subject .conv-line3 {
+  line-height: inherit;
+}
+
+.conv-list.conv-outlook td.subject .conv-line1 > span,
+.conv-list.conv-outlook td.subject .conv-line2 > span,
+.conv-list.conv-outlook td.subject .conv-line3 > span {
   line-height: inherit;
 }
 
@@ -151,22 +107,6 @@
 .conv-count {
   background: var(--mp-conv-count-bg, #e8e8e8);
   color: var(--mp-conv-count-text, #666);
-}
-
-/* Keep conversation count pinned in the same corner regardless of flag state */
-#conv-list-content .conv-list.conv-outlook td.flags.conv-flags-cell > .conv-count {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  margin: 0;
-  float: none;
-  clear: none;
-  z-index: 2;
-}
-
-/* Reserve space for pinned count so date/flag do not overlap it */
-#conv-list-content .conv-list.conv-outlook td.flags.conv-flags-cell:has(> .conv-count) .conv-row-date {
-  padding-top: 18px;
 }
 
 .conv-date {
@@ -195,7 +135,7 @@
   border-left-color: var(--mp-conv-warning, #f9a825);
 }
 
-/* Flag status icon — dedicated class, immune to elastic's tr.flagged td colour inheritance */
+/* Flag status icon — immune to elastic's tr.flagged td colour inheritance */
 .conv-status-flag-icon,
 .conv-status-flag-icon::before {
   color: #ff5552 !important;
@@ -205,28 +145,6 @@
 
 .conv-list.conv-outlook .conv-flag-indicator {
   color: var(--mp-conv-danger, #e53935);
-}
-
-/* ── Date in flags cell ─────────────────────── */
-
-.conv-row-date {
-  color: var(--mp-conv-text-secondary, #888);
-}
-
-/* ── Hover actions ───────────────────────────── */
-
-.conv-hover-actions {
-  background: var(--mp-conv-hover-actions-bg, rgba(255, 255, 255, 0.97));
-  box-shadow: var(--mp-conv-hover-actions-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
-}
-
-.conv-action-btn {
-  color: var(--mp-conv-hover-actions-btn-text, #666);
-}
-
-.conv-action-btn:hover {
-  background-color: var(--mp-conv-row-selected-bg, rgba(92, 107, 192, 0.08));
-  color: var(--mp-conv-hover-actions-btn-hover-text, #333);
 }
 
 /* ── Empty state ─────────────────────────────── */
@@ -323,13 +241,11 @@
    ═══════════════════════════════════════════════ */
 
 /* ── Row separators ──────────────────────────── */
-/* @color-dark-list-border: #1e2340 */
 html.dark-mode .conv-list.conv-outlook tbody tr.message {
   border-bottom-color: var(--mp-conv-row-border, #1e2340);
 }
 
 /* ── Row hover / selected ─────────────────────── */
-/* fadeout(@color-dark-main, 94%) / fadeout(@color-dark-main, 85%) */
 html.dark-mode .conv-list.conv-outlook tbody tr.message:hover {
   background-color: var(--mp-conv-row-hover-bg, rgba(121, 134, 203, 0.06));
 }
@@ -339,7 +255,6 @@ html.dark-mode .conv-list.conv-outlook tbody tr.message.selected {
 }
 
 /* ── Text colours ─────────────────────────────── */
-/* @color-dark-font: #c8d0e8 */
 html.dark-mode .conv-sender,
 html.dark-mode .conv-list.conv-outlook tr.unread .conv-sender,
 html.dark-mode .conv-subject-text,
@@ -349,9 +264,7 @@ html.dark-mode .conv-msg-subject {
   color: var(--mp-conv-text-strong, #c8d0e8);
 }
 
-/* @color-dark-font-secondary: #7e8aad */
 html.dark-mode .conv-date,
-html.dark-mode .conv-row-date,
 html.dark-mode .conv-line3,
 html.dark-mode .conv-status-icons,
 html.dark-mode .conv-detail-meta,
@@ -368,7 +281,6 @@ html.dark-mode .conv-status-flag-icon::before {
 }
 
 /* ── Count badge ─────────────────────────────── */
-/* @color-dark-main: #7986cb at 20% opacity */
 html.dark-mode .conv-count {
   background: var(--mp-conv-count-bg, rgba(121, 134, 203, 0.2));
   color: var(--mp-conv-count-text, #c8d0e8);
@@ -379,23 +291,7 @@ html.dark-mode .conv-child-divider-line {
   opacity: 0.5;
 }
 
-/* ── Hover action strip ──────────────────────── */
-html.dark-mode .conv-hover-actions {
-  background: var(--mp-conv-hover-actions-bg, rgba(26, 31, 54, 0.97));
-  box-shadow: var(--mp-conv-hover-actions-shadow, 0 1px 6px rgba(0, 0, 0, 0.4));
-}
-
-html.dark-mode .conv-action-btn {
-  color: var(--mp-conv-hover-actions-btn-text, #7e8aad);
-}
-
-html.dark-mode .conv-action-btn:hover {
-  background: var(--mp-conv-row-selected-bg, rgba(121, 134, 203, 0.12));
-  color: var(--mp-conv-hover-actions-btn-hover-text, #c8d0e8);
-}
-
 /* ── Detail panel ────────────────────────────── */
-/* @color-dark-surface: #1a1f36  @color-dark-border: #2a3050 */
 html.dark-mode .conv-detail-wrapper {
   background: var(--mp-conv-surface, #1a1f36);
 }
@@ -534,6 +430,8 @@ tr.conv-child-row .conv-action-btn:hover {
   color: var(--mp-conv-dir-received-color, #1e88e5);
 }
 
+/* ── Dark mode: expand/child rows ────────────── */
+
 html.dark-mode .conv-expand-arrow {
   color: var(--mp-conv-text-secondary, #888);
 }
@@ -551,7 +449,6 @@ html.dark-mode tr.conv-child-row.selected {
   background-color: var(--mp-conv-child-selected-bg, var(--mp-conv-row-selected-bg, rgba(121, 134, 203, 0.15)));
 }
 
-/* Dark mode: child row unread accent */
 html.dark-mode tr.conv-child-row.unread {
   border-left-color: var(--mp-conv-child-unread-accent, var(--mp-conv-main, #7986cb));
 }
@@ -560,7 +457,6 @@ html.dark-mode tr.conv-child-row.unread .conv-sender {
   color: var(--mp-conv-text-strong, #c8d0e8);
 }
 
-/* Dark mode: child hover actions */
 html.dark-mode tr.conv-child-row .conv-hover-actions {
   background: var(--mp-conv-hover-actions-bg, rgba(26, 31, 54, 0.97));
   box-shadow: var(--mp-conv-hover-actions-shadow, 0 1px 6px rgba(0, 0, 0, 0.4));
@@ -575,7 +471,6 @@ html.dark-mode tr.conv-child-row .conv-action-btn:hover {
   color: var(--mp-conv-hover-actions-btn-hover-text, #c8d0e8);
 }
 
-/* Dark mode: direction indicator */
 html.dark-mode .conv-dir-sent::before {
   color: var(--mp-conv-dir-sent-color, #66bb6a);
 }
@@ -586,75 +481,4 @@ html.dark-mode .conv-dir-received::before {
 
 html.dark-mode .conv-list.conv-outlook tbody tr.message.conv-expanded {
   background-color: var(--mp-conv-expanded-bg, rgba(255, 255, 255, 0.05));
-}
-
-/* ═══════════════════════════════════════════════
-   Responsive: mobile layout
-   ═══════════════════════════════════════════════ */
-
-@media screen and (max-width: 768px) {
-  /*
-   * Elastic sets display:flex on .messagelist tr, so table-layout:fixed
-   * does NOT control cell widths — flex properties do.
-   * Use flex shorthand on each cell for consistent column sizing.
-   */
-
-  /* Expand toggle — fixed 24px, never grow/shrink */
-  #conv-list-content .conv-list.conv-outlook td.conv-expand-cell {
-    flex: 0 0 24px;
-    width: 24px;
-    min-width: 24px;
-    max-width: 24px;
-    padding: 8px 0 8px 4px;
-  }
-
-  /* Avatar — fully collapse, reclaim space for subject */
-  #conv-list-content .conv-list.conv-outlook td.conv-avatar {
-    display: none;
-    flex: 0 0 0px;
-    width: 0;
-    min-width: 0;
-    max-width: 0;
-    padding: 0;
-    border: 0;
-    overflow: hidden;
-  }
-
-  /* Subject — fill all remaining space */
-  #conv-list-content .conv-list.conv-outlook td.subject {
-    flex: 1 1 0px;
-    min-width: 0;
-    max-width: none;
-    padding: 6px 4px;
-    overflow: hidden;
-  }
-
-  /* Flags cell — fixed 60px, override base min-width:104px */
-  #conv-list-content .conv-list.conv-outlook td.flags.conv-flags-cell {
-    flex: 0 0 60px;
-    width: 60px;
-    min-width: 60px;
-    max-width: 60px;
-    padding: 8px 4px;
-  }
-
-  .conv-sender {
-    font-size: 0.85rem;
-  }
-
-  .conv-date,
-  .conv-row-date {
-    font-size: 0.72rem;
-  }
-
-  /* Touch devices: disable hover actions, rely on tap */
-  #conv-list-content .conv-hover-actions {
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-
-  .conv-message-card {
-    margin: 6px 8px;
-    padding: 10px 12px;
-  }
 }

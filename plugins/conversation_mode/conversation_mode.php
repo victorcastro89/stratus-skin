@@ -107,18 +107,19 @@ class conversation_mode extends rcube_plugin
         $this->add_hook('template_object_mailboxlist', [$this, 'hook_inject_toggle']);
 
         // Register toolbar button for mode toggle (works across skins)
-        $this->add_button([
-            'type'       => 'link',
-            'label'      => 'conversation_mode.toggle_conversations',
-            'command'    => 'plugin.conv.toggle',
-            'class'      => 'button conv-toggle',
-            'classact'   => 'button conv-toggle active',
-            'innerclass' => 'inner',
-            'title'      => 'conversation_mode.toggle_conversations',
-            'domain'     => $this->ID,
-        ], 'toolbar');
+        // $this->add_button([
+        //     'type'       => 'link',
+        //     'label'      => 'conversation_mode.toggle_conversations',
+        //     'command'    => 'plugin.conv.toggle',
+        //     'class'      => 'button conv-toggle',
+        //     'classact'   => 'button conv-toggle active',
+        //     'innerclass' => 'inner',
+        //     'title'      => 'conversation_mode.toggle_conversations',
+        //     'domain'     => $this->ID,
+        // ], 'toolbar');
     }
-
+// In your plugin, hook 'messages_list':
+   
     // ──────────────────────────────────────────────
     //  Settings task
     // ──────────────────────────────────────────────
@@ -197,12 +198,30 @@ class conversation_mode extends rcube_plugin
      */
     public function action_list()
     {
+
+  
         $mailbox  = rcube_utils::get_input_string('_mbox', rcube_utils::INPUT_GPC) ?: 'INBOX';
         $page     = max(1, (int) rcube_utils::get_input_string('_page', rcube_utils::INPUT_GPC));
         $page_size = (int) $this->rcmail->config->get('conversation_mode_page_size', 50);
 
+        $match_uids_raw = rcube_utils::get_input_string('_match_uids', rcube_utils::INPUT_GPC);
+        $match_uids     = $match_uids_raw !== '' && $match_uids_raw !== null
+            ? array_map('intval', explode(',', $match_uids_raw))
+            : [];
+
         $service  = $this->get_service();
-        $result   = $service->list_conversations($mailbox, $page, $page_size);
+        $result   = $service->list_conversations($mailbox, $page, $page_size, $match_uids);
+
+        // Log the fetch operation
+        $count = isset($result['conversations']) && is_array($result['conversations']) ? count($result['conversations']) : 0;
+        rcmail::write_log('conversation_mode', sprintf(
+            'Fetched conversation list: mailbox=%s, page=%d, page_size=%d, match_uids=%s, conversations_count=%d',
+            $mailbox,
+            $page,
+            $page_size,
+            is_array($match_uids) ? implode(',', $match_uids) : '',
+            $count
+        ));
 
         $this->rcmail->output->command('plugin.conv.render_list', $result);
         $this->rcmail->output->send();
@@ -218,6 +237,15 @@ class conversation_mode extends rcube_plugin
 
         $service = $this->get_service();
         $result  = $service->open_conversation($mailbox, $conv_id);
+
+        // Log the fetch operation
+        $count = isset($result['messages']) && is_array($result['messages']) ? count($result['messages']) : 0;
+        rcmail::write_log('conversation_mode', sprintf(
+            'Fetched conversation detail: mailbox=%s, conv_id=%s, messages_count=%d',
+            $mailbox,
+            $conv_id,
+            $count
+        ));
 
         $this->rcmail->output->command('plugin.conv.render_open', $result);
         $this->rcmail->output->send();
@@ -261,8 +289,139 @@ class conversation_mode extends rcube_plugin
      * When in conversation mode this hook replaces the standard message rows
      * with conversation summary rows (server-side bridge).
      */
-    public function hook_messages_list($args)
-    {
+public function hook_messages_list($args)
+{
+    $storage = rcmail::get_instance()->get_storage();
+    $folder  = $storage->get_folder();
+
+    if (!($storage instanceof rcube_imap)) {
+        return $args;
+    }
+
+    $threads     = $storage->thread_index($folder);
+    $thread_data = $threads->get_thread_data();
+    $depth_map   = $thread_data[0];
+    $has_kids    = $thread_data[1];
+
+    // Build root → children map
+    $roots = [];
+    $current_root = null;
+    foreach ($depth_map as $uid => $depth) {
+        if ($depth === 0) {
+            $current_root = $uid;
+            $roots[$uid] = [];
+        } else if ($current_root !== null) {
+            $roots[$current_root][] = $uid;
+        }
+    }
+
+    // Index headers by UID for easy lookup
+    $by_uid = [];
+    foreach ($args['messages'] as $msg) {
+        $by_uid[$msg->uid] = $msg;
+    }
+
+    // Log each thread as a group
+    foreach ($roots as $root_uid => $child_uids) {
+        $all_uids = array_merge([$root_uid], $child_uids);
+        $count    = count($all_uids);
+
+        // Find latest timestamp in thread
+        $latest_ts = 0;
+        foreach ($all_uids as $uid) {
+            if (isset($by_uid[$uid])) {
+                $latest_ts = max($latest_ts, $by_uid[$uid]->timestamp);
+            }
+        }
+
+        $root_msg = $by_uid[$root_uid] ?? null;
+        $subject  = $root_msg ? $root_msg->subject : '(not fetched)';
+
+        rcube::write_log('thread-debug', "");
+        rcube::write_log('thread-debug', "=== THREAD root=$root_uid | \"$subject\" | $count msgs | latest_ts=$latest_ts ===");
+
+        foreach ($all_uids as $uid) {
+            $m = $by_uid[$uid] ?? null;
+            if (!$m) {
+                rcube::write_log('thread-debug', "  UID $uid — headers not fetched (not on this page)");
+                continue;
+            }
+
+            $depth  = $depth_map[$uid] ?? -1;
+            $indent = str_repeat('  ', $depth + 1);
+
+            rcube::write_log('thread-debug', sprintf(
+                "%sdepth=%d uid=%d | %s | from=%s | to=%s | %s | flags=%s",
+                $indent,
+                $depth,
+                $uid,
+                date('Y-m-d H:i:s', $m->timestamp),
+                $m->from,
+                $m->to,
+                $m->subject,
+                implode(',', array_keys(array_filter($m->flags)))
+            ));
+        }
+    }
+     /**
+    UID 241: Victor → Alice                    (root, no references)
+   ????: Alice → Victor                    ← Message-ID 0feea5d1... (in Sent folder or not delivered)
+UID 242: Victor → Alice (reply to Alice)   ← references include 0feea5d1...
+   ????: Alice → Victor                    ← Message-ID f95eccd0... (same situation)  
+UID 243: Victor → Alice (reply to Alice)   ← references include f95eccd0...
+Two missing Alice replies. They're either in Alice's mailbox (separate account on the test server) and were never delivered to Victor's INBOX, or they landed and were moved/deleted.
+For a full conversation, you have two options:
+Option A — Search across folders (INBOX + Sent)
+php// After getting the thread root's Message-ID, search Sent folder too
+$root_msg_id = $by_uid[$root_uid]->messageID;
+
+// Get all Message-IDs in the references chain
+$all_refs = [];
+foreach ($all_uids as $uid) {
+    $m = $by_uid[$uid] ?? null;
+    if ($m && $m->references) {
+        $refs = preg_split('/\s+/', trim($m->references));
+        $all_refs = array_merge($all_refs, $refs);
+    }
+    if ($m && $m->messageID) {
+        $all_refs[] = $m->messageID;
+    }
+}
+$all_refs = array_unique($all_refs);
+
+// Search Sent folder for any of these Message-IDs
+$sent_folder = rcmail::get_instance()->config->get('sent_mbox', 'Sent');
+foreach ($all_refs as $ref) {
+    $ref_clean = trim($ref, '<>');
+    $result = $storage->search_once($sent_folder, "HEADER Message-ID $ref_clean");
+    if ($result && $result->count() > 0) {
+        $uids = $result->get();
+        $headers = $storage->fetch_headers($sent_folder, $uids);
+        // Merge into thread display
+    }
+}
+```
+
+This is what Gmail does behind the scenes — it queries across All Mail, not a single folder.
+
+**Option B — Use a virtual "All Mail" folder**
+
+If Dovecot is configured with a virtual mailbox plugin, you can create a virtual folder that spans INBOX + Sent:
+```
+# /etc/dovecot/conf.d/virtual-allmail.conf
+namespace {
+  prefix = Virtual/
+  separator = /
+  location = virtual:/etc/dovecot/virtual:INDEX=~/virtual
+}
+
+# /etc/dovecot/virtual/All/dovecot-virtual
+INBOX
+Sent
+  ALL
+
+  */
+   
         if ($this->get_list_mode() !== 'conversations') {
             return $args;
         }

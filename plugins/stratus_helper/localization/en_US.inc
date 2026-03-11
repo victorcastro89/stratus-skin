@@ -33,5 +33,10 @@ $labels['font_poppins']     = 'Poppins';
 $labels['font_nunito']      = 'Nunito';
 
 // Messages
-$labels['appearance_saved'] = 'Appearance settings saved.';
-$labels['folder_refresh']   = 'Refresh folder list';
+$labels['appearance_saved']          = 'Appearance settings saved.';
+$labels['folder_refresh']            = 'Refresh folder list';
+$labels['yesterday']     = 'Yesterday'; 
+
+// Search empty state
+$labels['search_no_messages']        = 'No messages found for your search.';
+$labels['search_no_conversations']   = 'No conversations found for your search.';

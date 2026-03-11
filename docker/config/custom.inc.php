@@ -10,7 +10,7 @@
 
 $config = [];
 $config['htmleditor'] = 1;
-$config['default_list_mode'] = 'threads';
+$config['default_list_mode'] = '';
 $config['reply_mode'] = 1;
 // ── Database (SQLite, persisted on host via Docker volume) ─────────────────
 $config['db_dsnw'] = 'sqlite:////var/roundcube/db/sqlite.db?mode=0646';
@@ -26,7 +26,7 @@ $config['imap_cache'] = null;
 // ── General ────────────────────────────────────────────────────────────────
 $config['product_name']    = 'Stratus Webmail (Dev)';
 $config['des_key']         = 'Gd+4gJ8h29ex932cJI5M9whl';
-// $config['skin']            = 'stratus';
+ $config['skin']            = [];
 $config['support_url']     = '';
 $config['username_domain']  = '';
 $config['request_path']    = '/';
@@ -35,14 +35,17 @@ $config['log_driver']      = 'file';
 $config['log_dir']         = '/var/roundcube/logs/';
 $config['log_logins']      = true;
 $config['prettydate'] = true;
-$config['imap_debug'] = true;
+
 // ── Plugins ────────────────────────────────────────────────────────────────
 $config['plugins'] = [
+    	'xskin',
+	'xframework',
 	'archive',
 	'stratus_helper',
 	'calendar',
     'undo_send',
 ];
+$config['license_key'] = 'RCP-Rxd228rIKZiy';
 
 // ── Editor / Display ──────────────────────────────────────────────────────
 $config['htmleditor']         = 1;

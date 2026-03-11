@@ -9,6 +9,7 @@
     "rc:update": "cd roundcubemail && git pull && cd .. && ./scripts/clone-roundcube.sh",
     "docker:up": "cd docker && docker compose up -d --build",
     "docker:down": "cd docker && docker compose down",
+    "docker:downv": "cd docker && docker compose down -v",
     "docker:rebuild": "cd docker && docker compose up -d --build --force-recreate",
     "docker:restart": "cd docker && docker compose restart roundcube",
     "docker:logs": "cd docker && docker compose logs -f roundcube",
