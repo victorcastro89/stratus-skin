@@ -1,12 +1,22 @@
 /**
- * MultiSelectController — manage the multiselect mode (checkbox-toggle for multi-select).
+ * MultiSelectController — manage the multiselect mode.
+ *
+ * Delegates entirely to Elastic's native checkbox selection mechanism:
+ *   - enable_checkbox_selection() (called by Elastic's ui.js on init) adds a
+ *     per-row <td class="selection"><input type="checkbox"> to every row.
+ *   - The .withselection CSS class on #messagelist shows/hides those cells.
+ *   - Each checkbox already calls select_row(uid, CONTROL_KEY, true) natively,
+ *     so no monkey-patch or click interceptor is needed.
+ *
+ * isActive() reads directly from the DOM (.withselection class) — no shadow
+ * flag.  enter()/exit() are the only writers.  Elastic's own
+ * UI.toggle_list_selection() is also compatible as it writes the same class.
  *
  * Public API:
- *   isActive()         → boolean
- *   enter()            — activate multiselect mode
- *   exit()             — deactivate multiselect mode
- *   toggle()           — flip state
- *   patchSelectRow()   — apply the select_row monkey-patch (call once after list is ready)
+ *   isActive()    → boolean
+ *   enter()       — show checkboxes, set bar active style
+ *   exit()        — hide checkboxes, reset bar style
+ *   toggle()      — flip state
  */
 (function() {
 	'use strict';
@@ -17,51 +27,37 @@
 	 * @param {object} bar  — .mp-smart-bar DOM element
 	 */
 	ns.MultiSelectController = function(list, bar) {
-		this.list    = list;
-		this.bar     = bar;
-		this._active = false;
+		this.list = list;
+		this.bar  = bar;
 	};
 
 	// ── Public API ─────────────────────────────────────────────────────
 
+	/**
+	 * Source of truth: the .withselection class on #messagelist.
+	 * No shadow flag — the DOM is the state.
+	 */
 	ns.MultiSelectController.prototype.isActive = function() {
-		return this._active;
+		var table = document.getElementById('messagelist');
+		return table ? table.classList.contains('withselection') : false;
 	};
 
 	ns.MultiSelectController.prototype.enter = function() {
-		this._active = true;
 		this.bar.classList.add('mp-multiselect-mode');
+		var table = document.getElementById('messagelist');
+		if (table) table.classList.add('withselection');
 	};
 
 	ns.MultiSelectController.prototype.exit = function() {
-		this._active = false;
+		// Reset RC's flag so stale multi-select state doesn't linger
+		this.list.multi_selecting = false;
 		this.bar.classList.remove('mp-multiselect-mode');
+		var table = document.getElementById('messagelist');
+		if (table) table.classList.remove('withselection');
 	};
 
 	ns.MultiSelectController.prototype.toggle = function() {
-		if (this._active) this.exit(); else this.enter();
-	};
-
-	/**
-	 * Monkey-patch list.select_row so every row click in multiselect mode
-	 * behaves like Ctrl+click (toggle individual rows) without the user
-	 * needing to hold a modifier key.
-	 *
-	 * Signature matches Roundcube's own select_row(id, mod_key, with_mouse).
-	 * mod_key = 1 is CONTROL_KEY in Roundcube's list widget.
-	 */
-	ns.MultiSelectController.prototype.patchSelectRow = function() {
-		var self = this;
-		var list = this.list;
-		if (!list || list._stratusMultiSelectPatched) return;
-		var orig = list.select_row;
-		list.select_row = function(id, mod_key, with_mouse) {
-			if (self._active && with_mouse && !mod_key) {
-				mod_key = 1; // CONTROL_KEY — toggle individual row
-			}
-			return orig.call(this, id, mod_key, with_mouse);
-		};
-		list._stratusMultiSelectPatched = true;
+		if (this.isActive()) this.exit(); else this.enter();
 	};
 
 })();

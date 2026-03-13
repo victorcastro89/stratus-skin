@@ -16,10 +16,10 @@ body {
 :root {
     --mp-conv-main: var(--stratus-primary, @color-main);
     --mp-conv-main-rgb: var(--stratus-primary-rgb, 92, 107, 192);
-    --mp-conv-main-light: fadeout(@color-main, 94%);
+    --mp-conv-main-light: @mp-primary-a5;
 
     --mp-conv-row-border: @color-list-border;               // no extra fadeout — variable is already subtle (ISSUE-002)
-    --mp-conv-row-hover-bg: fadeout(@color-main, 96%);
+    --mp-conv-row-hover-bg: @mp-primary-a5;
     --mp-conv-row-selected-bg: @color-list-selected-background;
 
     --mp-conv-surface: @color-layout-content-background;
@@ -36,7 +36,7 @@ body {
     --mp-conv-count-text: @color-font-secondary;
 
     --mp-conv-warning: @mp-color-amber;
-    --mp-conv-danger: @mp-color-red;
+    --mp-conv-danger: @color-error;
 
     --mp-conv-hover-actions-bg: fade(@color-layout-list-background, 97%);
     --mp-conv-hover-actions-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
@@ -45,26 +45,26 @@ body {
     --mp-conv-card-hover-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
     --mp-conv-child-divider: var(--mp-conv-row-border);
-    --mp-conv-child-bg: fadeout(@color-main, 98%);
-    --mp-conv-child-hover-bg: fadeout(@color-main, 95%);
-    --mp-conv-child-selected-bg: fadeout(@color-main, 93%);
+    --mp-conv-child-bg: fadeout(@color-main, 98%);       // 2% — too subtle for a token
+    --mp-conv-child-hover-bg: @mp-primary-a5;
+    --mp-conv-child-selected-bg: fadeout(@color-main, 93%); // 7% — between a5 and a8
     --mp-conv-child-text: @color-font;
     --mp-conv-child-text-muted: @color-font-secondary;
-    --mp-conv-child-indent-guide: fadeout(@color-main, 88%);
+    --mp-conv-child-indent-guide: @mp-primary-a12;
 
     --mp-conv-child-row-bg: var(--mp-conv-child-bg);
     --mp-conv-child-row-border: var(--mp-conv-child-divider);
-    --mp-conv-expanded-bg: fadeout(@color-main, 94%);
+    --mp-conv-expanded-bg: @mp-primary-a5;
 
     --mp-conv-child-unread-accent: @color-main;
-    --mp-conv-dir-sent-color: #43a047;
+    --mp-conv-dir-sent-color: @color-success;
     --mp-conv-dir-received-color: @color-main;
 
     // HOVER ACTIONS — plugin CSS bridge for unified row hover actions
     --mp-hover-actions-bg: @mp-glass-bg-strong;
     --mp-hover-actions-shadow: @mp-shadow-md;
     --mp-hover-actions-icon-color: @color-font-secondary;
-    --mp-hover-actions-icon-hover-bg: fadeout(@color-main, 90%);
+    --mp-hover-actions-icon-hover-bg: @mp-primary-a10;
     --mp-hover-actions-icon-hover-color: @color-main;
 }
 
@@ -116,8 +116,8 @@ a.btn-secondary:focus {
 // ═══════════════════════════════════════════════════════════════════════════════
 // LIST SELECTION — accent highlight
 // ═══════════════════════════════════════════════════════════════════════════════
-.listing tbody tr.focused > td,
-.listing tbody tr.selected > td,
+// .listing tbody tr.focused > td,
+// .listing tbody tr.selected > td,
 .listing li.selected {
     background: rgba(var(--stratus-primary-rgb), 0.08);
 }
@@ -127,8 +127,8 @@ a.btn-secondary:focus {
 }
 
 // Focus indicator bar (left border on focused row)
-.listing tbody tr.focused > td:first-child::before,
-.listing tbody tr.selected > td:first-child::before {
+.listing tbody tr.focused > td:first-child
+.listing tbody tr.selected > td:first-child {
     background-color: var(--stratus-primary);
 }
 

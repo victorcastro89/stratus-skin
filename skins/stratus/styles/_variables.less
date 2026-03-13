@@ -37,7 +37,7 @@
 @mp-space-xl:       1.5rem;
 @mp-space-2xl:      2rem;
 @mp-space-3xl:      3rem;
-
+@mp-space-4xl:      4rem;
 @mp-hover-actions-btn-size:   35px;
 @mp-hover-actions-icon-size:  1rem;
 @mp-hover-actions-padding:    1px;
@@ -58,22 +58,25 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // ELEVATION — multi-level shadow system (atmospheric depth)
 // ═══════════════════════════════════════════════════════════════════════════════
-@mp-shadow-xs:      0 1px 2px rgba(26, 31, 54, 0.05);
-@mp-shadow-sm:      0 1px 3px rgba(26, 31, 54, 0.08), 0 1px 2px rgba(26, 31, 54, 0.04);
-@mp-shadow-md:      0 4px 6px -1px rgba(26, 31, 54, 0.07), 0 2px 4px -2px rgba(26, 31, 54, 0.05);
-@mp-shadow-lg:      0 10px 15px -3px rgba(26, 31, 54, 0.08), 0 4px 6px -4px rgba(26, 31, 54, 0.04);
-@mp-shadow-xl:      0 20px 25px -5px rgba(26, 31, 54, 0.10), 0 8px 10px -6px rgba(26, 31, 54, 0.06);
-@mp-shadow-2xl:     0 25px 50px -12px rgba(26, 31, 54, 0.20);
-@mp-shadow-glow:    0 0 20px fadeout(@color-main, 70%);
-@mp-shadow-glow-sm: 0 0 10px fadeout(@color-main, 80%);
-@mp-shadow-inset:   inset 0 2px 4px rgba(26, 31, 54, 0.05);
+@mp-shadow-xs:      0 1px 2px rgba(26, 31, 54, 0.03);
+@mp-shadow-sm:      0 1px 3px rgba(26, 31, 54, 0.05), 0 1px 2px rgba(26, 31, 54, 0.03);
+@mp-shadow-md:      0 4px 6px -1px rgba(26, 31, 54, 0.04), 0 2px 4px -2px rgba(26, 31, 54, 0.03);
+@mp-shadow-lg:      0 10px 15px -3px rgba(26, 31, 54, 0.05), 0 4px 6px -4px rgba(26, 31, 54, 0.03);
+@mp-shadow-xl:      0 20px 25px -5px rgba(26, 31, 54, 0.06), 0 8px 10px -6px rgba(26, 31, 54, 0.03);
+@mp-shadow-2xl:     0 25px 50px -12px rgba(26, 31, 54, 0.12);
+@mp-shadow-glow:    0 0 20px @mp-primary-a20;
+@mp-shadow-glow-sm: 0 0 10px @mp-primary-a12;
+@mp-shadow-inset:   inset 0 2px 4px rgba(26, 31, 54, 0.03);
 
 // Dark mode elevation (bluish tint)
-@mp-shadow-dark-sm:     0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
-@mp-shadow-dark-md:     0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -2px rgba(0, 0, 0, 0.15);
-@mp-shadow-dark-lg:     0 10px 15px -3px rgba(0, 0, 0, 0.30), 0 4px 6px -4px rgba(0, 0, 0, 0.15);
-@mp-shadow-dark-xl:     0 20px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.20);
-@mp-shadow-dark-glow:   0 0 20px fadeout(@color-dark-main, 65%);
+@mp-shadow-dark-sm:     0 1px 3px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.10);
+@mp-shadow-dark-md:     0 4px 6px -1px rgba(0, 0, 0, 0.18), 0 2px 4px -2px rgba(0, 0, 0, 0.10);
+@mp-shadow-dark-lg:     0 10px 15px -3px rgba(0, 0, 0, 0.20), 0 4px 6px -4px rgba(0, 0, 0, 0.10);
+@mp-shadow-dark-xl:     0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.14);
+@mp-shadow-dark-glow:   0 0 20px fadeout(@color-dark-main, 78%);
+
+// ─── Dark on-accent ─────────────────────────────────────────────────────
+@color-dark-on-primary:  #fff;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TRANSITIONS — fluid motion timing
@@ -121,12 +124,28 @@
 @color-link-hover:          darken(@color-link, 12%);
 @color-border:              #e0e3ef;
 
-// Accent colors (secondary palette)
-@mp-color-violet:           #7c4dff;
-@mp-color-teal:             #26a69a;
-@mp-color-amber:            #ffb300;
-@mp-color-red:              #e53935;
-@mp-color-rose:             #f06292;
+// ─── Status / Semantic colors ──────────────────────────────────────────────
+@color-information:          @color-main;
+@color-success:              #41b849;
+@color-warning:              #ffd452;
+@color-error:                #ff5552;
+@mp-color-amber:             #ffb300;
+
+// ─── On-accent (text/icons on colored backgrounds) ────────────────────────
+@color-on-primary:           #fff;
+
+// ─── Primary alpha scale (light mode) — use instead of raw fadeout() ──────
+@mp-primary-a5:     fadeout(@color-main, 95%);   // ghost tint, file-upload hover
+@mp-primary-a8:     fadeout(@color-main, 92%);   // hover bg, toolbar btn hover
+@mp-primary-a10:    fadeout(@color-main, 90%);   // action btn hover, datepicker hover
+@mp-primary-a12:    fadeout(@color-main, 88%);   // active bg, indent guide, attachment hover
+@mp-primary-a15:    fadeout(@color-main, 85%);   // recipient chip hover, today header
+@mp-primary-a20:    fadeout(@color-main, 80%);   // multiselect checkbox bg, glow shadow
+@mp-primary-a25:    fadeout(@color-main, 75%);   // focus ring, selected pill, text selection
+@mp-primary-a30:    fadeout(@color-main, 70%);   // focus-visible ring, file-upload border
+@mp-primary-a40:    fadeout(@color-main, 60%);   // border accent, searchbar focus border
+@mp-primary-a45:    fadeout(@color-main, 55%);   // hover shadow strong
+@mp-primary-a50:    fadeout(@color-main, 50%);   // scrollbar thumb
 
 // ─── Layout ─────────────────────────────────────────────────────────────────
 @color-layout-header-background:    #f8f9fd;
@@ -143,10 +162,10 @@
 @mp-list-top-shell-radius:          @mp-radius-md;
 @mp-list-top-row-height:            40px;
 @color-layout-list-top-background:  @color-layout-header-background;
-@color-layout-list-top-border:      fadeout(@color-layout-border, 25%);
-@color-layout-list-top-divider:     fadeout(@color-layout-border, 45%);
+@color-layout-list-top-border:      fadeout(@color-layout-border, 25%);    // border uses layout-border, not primary
+@color-layout-list-top-divider:     fadeout(@color-layout-border, 45%);    // divider uses layout-border, not primary
 
-@color-layout-mobile-header-background: @color-main;
+@color-layout-mobile-header-background: @color-layout-header-background;
 @color-layout-mobile-footer-background: @color-layout-header-background;
 
 // ─── Task Menu (sidebar nav) — Navy gradient atmosphere ──────────────────────
@@ -170,7 +189,7 @@
 
 // ─── Toolbar ─────────────────────────────────────────────────────────────────
 @color-toolbar-button:                  @color-font;
-@color-toolbar-button-background-hover: fadeout(@color-main, 92%);
+@color-toolbar-button-background-hover: @mp-primary-a8;
 @color-searchbar-background:            #f0f2fb;
 
 // ─── Menus ───────────────────────────────────────────────────────────────────
@@ -180,7 +199,7 @@
 // ─── Lists ───────────────────────────────────────────────────────────────────
 @color-list:                        @color-font;
 @color-list-selected:               @color-font;
-@color-list-selected-background:    fadeout(@color-main, 87%);   // 13% opacity — was 92% (8%); stronger selected state (ISSUE-003)
+@color-list-selected-background:    fadeout(@color-main, 87%);   // 13% opacity (ISSUE-003)
 @color-list-focus-indicator:        @color-main;
 @color-list-border:                 #e4e7f2;                     // was #f0f2f8; slightly more visible separator (ISSUE-002)
 @color-list-badge:                  #fff;
@@ -192,7 +211,7 @@
 // ─── Forms ───────────────────────────────────────────────────────────────────
 @color-input-border:                #d4d8e8;
 @color-input-border-focus:          @color-main;
-@color-input-border-focus-shadow:   fadeout(@color-main, 75%);
+@color-input-border-focus-shadow:   @mp-primary-a25;
 @color-checkbox:                    @color-main;
 @color-checkbox-checked:            @color-main;
 @color-checkbox-checked-disabled:   lighten(@color-main, 20%);
@@ -200,20 +219,21 @@
 // ─── Buttons ─────────────────────────────────────────────────────────────────
 @color-btn-primary:                 #fff;
 @color-btn-primary-background:      @color-main;
-@color-btn-secondary-background:    #6b7399;
+@color-btn-secondary-background:    #713FB6;
 
 // ─── Quota ───────────────────────────────────────────────────────────────────
 @color-quota-value:                 @color-main;
 
 // ─── Scrollbars ──────────────────────────────────────────────────────────────
-@color-scrollbar-thumb:             fadeout(#9098c0, 50%);
+@color-scrollbar-thumb:             fadeout(@color-font-secondary, 50%);
+@color-scrollbar-thumb-hover:       fadeout(@color-font-secondary, 30%);
 @color-scrollbar-track:             transparent;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DARK MODE
 // ═══════════════════════════════════════════════════════════════════════════════
 // Base dark palette — rich navy with indigo tint
-@color-dark-main:               #7986cb;
+@color-dark-main:               #713FB6;
 @color-dark-main-light:         #9fa8da;
 @color-dark-background:         #13172a;
 @color-dark-surface:            #1a1f36;
@@ -222,10 +242,25 @@
 @color-dark-font-secondary:     #7e8aad;
 @color-dark-border:             #2a3050;
 @color-dark-hint:               darken(@color-dark-font, 22%);
-@color-dark-information:        shade(@color-main, 30%);
-@color-dark-success:            shade(#41b849, 30%);
-@color-dark-warning:            shade(#ffd452, 30%);
-@color-dark-error:              shade(#ff5552, 30%);
+@color-dark-information:        shade(@color-information, 30%);
+@color-dark-success:            shade(@color-success, 30%);
+@color-dark-warning:            shade(@color-warning, 30%);
+@color-dark-error:              shade(@color-error, 30%);
+
+// ─── Dark primary alpha scale — use instead of raw fadeout() ──────────────
+@mp-primary-dark-a5:    fadeout(@color-dark-main, 95%);
+@mp-primary-dark-a8:    fadeout(@color-dark-main, 92%);
+@mp-primary-dark-a10:   fadeout(@color-dark-main, 90%);
+@mp-primary-dark-a12:   fadeout(@color-dark-main, 88%);
+@mp-primary-dark-a15:   fadeout(@color-dark-main, 85%);
+@mp-primary-dark-a18:   fadeout(@color-dark-main, 82%);
+@mp-primary-dark-a20:   fadeout(@color-dark-main, 80%);
+@mp-primary-dark-a25:   fadeout(@color-dark-main, 75%);
+@mp-primary-dark-a30:   fadeout(@color-dark-main, 70%);
+@mp-primary-dark-a35:   fadeout(@color-dark-main, 65%);
+@mp-primary-dark-a40:   fadeout(@color-dark-main, 60%);
+@mp-primary-dark-a45:   fadeout(@color-dark-main, 55%);
+@mp-primary-dark-a50:   fadeout(@color-dark-main, 50%);
 
 // Dark layout
 @color-dark-layout-header-background:   @color-dark-surface;
@@ -236,12 +271,12 @@
 
 // Dark taskmenu
 @mp-taskmenu-dark-gradient:         linear-gradient(180deg, #10132a 0%, #0c0e1e 100%);
-@color-dark-main-gradient:          linear-gradient(135deg, @color-dark-main 0%, #9575cd 100%);
-@color-dark-main-gradient-hover:    linear-gradient(135deg, lighten(@color-dark-main, 6%) 0%, lighten(#9575cd, 6%) 100%);
+@color-dark-main-gradient:          linear-gradient(135deg, @color-dark-main 0%, #713FB6 100%);
+@color-dark-main-gradient-hover:    linear-gradient(135deg, lighten(@color-dark-main, 6%) 0%, lighten(#713FB6, 6%) 100%);
 
 // Dark list
 @color-dark-list-selected:              @color-dark-font;
-@color-dark-list-selected-background:   fadeout(@color-dark-main, 82%);  // was 85%; slightly stronger (ISSUE-003 dark)
+@color-dark-list-selected-background:   @mp-primary-dark-a18;  // 18% opacity (ISSUE-003 dark)
 @color-dark-list-badge:                 #fff;
 @color-dark-list-badge-background:      @color-dark-main;
 @color-dark-list-deleted:               darken(@color-dark-hint, 10%);

@@ -26,9 +26,10 @@ $config['imap_cache'] = null;
 // ── General ────────────────────────────────────────────────────────────────
 $config['product_name']    = 'Stratus Webmail (Dev)';
 $config['des_key']         = 'Gd+4gJ8h29ex932cJI5M9whl';
- $config['skin']            = [];
+ $config['skin']            = "stratus";
 $config['support_url']     = '';
-$config['username_domain']  = '';
+$config['username_domain']       = '';
+$config['login_username_filter'] = 'email';
 $config['request_path']    = '/';
 $config['temp_dir']        = '/tmp/roundcube-temp';
 $config['log_driver']      = 'file';

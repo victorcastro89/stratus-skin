@@ -9,8 +9,8 @@
 @mp-cal-grid-color:          fadeout(@color-border, 60%);        // very faint grid lines
 @mp-cal-grid-color-subtle:   fadeout(@color-border, 80%);        // near-invisible for verticals
 @mp-cal-header-bg:           @color-layout-header-background;
-@mp-cal-today-bg:            fadeout(@color-main, 92%);          // soft indigo wash for column
-@mp-cal-today-header-bg:     fadeout(@color-main, 85%);          // slightly stronger for day header
+@mp-cal-today-bg:            @mp-primary-a8;                     // soft indigo wash for column
+@mp-cal-today-header-bg:     @mp-primary-a15;                    // slightly stronger for day header
 @mp-cal-today-number:        @color-main;
 @mp-cal-today-indicator:     @color-main;
 @mp-cal-event-radius:        @mp-radius-sm;
@@ -20,8 +20,8 @@
 @mp-cal-dark-grid-color:         fadeout(@color-dark-border, 65%);
 @mp-cal-dark-grid-color-subtle:  fadeout(@color-dark-border, 85%);
 @mp-cal-dark-header-bg:          @color-dark-surface;
-@mp-cal-dark-today-bg:           fadeout(@color-dark-main, 88%);
-@mp-cal-dark-today-header-bg:    fadeout(@color-dark-main, 80%);   // stronger for day header
+@mp-cal-dark-today-bg:           @mp-primary-dark-a12;
+@mp-cal-dark-today-header-bg:    @mp-primary-dark-a20;             // stronger for day header
 
 // Event card elevation — floating, airy look
 @mp-cal-event-shadow:            0 2px 8px rgba(26, 31, 54, 0.12);
@@ -31,13 +31,13 @@
 @mp-cal-dark-event-shadow-hover: 0 4px 18px rgba(0, 0, 0, 0.52);
 
 // Header & Navigation tokens — Phase 1.6.2
-@mp-cal-nav-bg:                  fadeout(@color-main, 95%);       // pill strip bg
-@mp-cal-nav-border:              fadeout(@color-main, 85%);       // pill strip border
-@mp-cal-today-pill-shadow:       0 2px 8px fadeout(@color-main, 60%);
-@mp-cal-today-pill-shadow-hover: 0 4px 12px fadeout(@color-main, 50%);
+@mp-cal-nav-bg:                  @mp-primary-a5;                  // pill strip bg
+@mp-cal-nav-border:              @mp-primary-a15;                  // pill strip border
+@mp-cal-today-pill-shadow:       0 2px 8px @mp-primary-a40;
+@mp-cal-today-pill-shadow-hover: 0 4px 12px @mp-primary-a50;
 // Dark equivalents
-@mp-cal-dark-nav-bg:             fadeout(@color-dark-main, 90%);
-@mp-cal-dark-nav-border:         fadeout(@color-dark-main, 75%);
+@mp-cal-dark-nav-bg:             @mp-primary-dark-a10;
+@mp-cal-dark-nav-border:         @mp-primary-dark-a25;
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -165,7 +165,7 @@
 
     // Today's date number — accent pill
     .fc-day-top.fc-today .fc-day-number {
-        color: #fff;
+        color: @color-on-primary;
         background: @mp-cal-today-number;
         border-radius: @mp-radius-circle;
         width: 1.65em;
@@ -252,14 +252,14 @@
                         box-shadow @mp-transition-base;
 
             &:hover:not(.active) {
-                background: fadeout(@color-main, 88%);
+                background: @mp-primary-a12;
                 color: @color-main;
             }
 
             &.active {
                 background: @color-main;
-                color: #fff;
-                box-shadow: 0 2px 6px fadeout(@color-main, 60%);
+                color: @color-on-primary;
+                box-shadow: 0 2px 6px @mp-primary-a40;
             }
         }
     }
@@ -287,15 +287,15 @@
                         box-shadow @mp-transition-base;
 
             &:hover {
-                background: fadeout(@color-main, 94%);
-                border-color: fadeout(@color-main, 60%);
+                background: @mp-primary-a5;
+                border-color: @mp-primary-a40;
                 color: @color-main;
             }
 
             // Today — primary pill CTA
             &.today {
                 background: @color-main;
-                color: #fff;
+                color: @color-on-primary;
                 border-color: @color-main;
                 border-radius: 12px;
                 padding: 5px 18px;
@@ -311,7 +311,7 @@
 
                 &:active {
                     transform: translateY(0);
-                    box-shadow: 0 1px 4px fadeout(@color-main, 70%);
+                    box-shadow: 0 1px 4px @mp-primary-a30;
                 }
             }
         }
@@ -391,7 +391,7 @@
     }
 
     .fc-list-item:hover td {
-        background-color: fadeout(@color-main, 95%);
+        background-color: @mp-primary-a5;
     }
 
 
@@ -450,7 +450,7 @@
         transition: none;
 
         &:hover {
-            background: fadeout(@color-main, 92%);
+            background: @mp-primary-a8;
             border-color: transparent;
         }
     }
@@ -521,7 +521,7 @@ body.task-calendar {
                 transition: background @mp-transition-base;
 
                 &:hover {
-                    background: fadeout(@color-main, 90%);
+                    background: @mp-primary-a10;
                 }
             }
 
@@ -597,13 +597,13 @@ body.task-calendar {
         background: @color-main;
         color: @color-btn-primary;
         font-weight: @mp-font-weight-semibold;
-        box-shadow: 0 2px 6px fadeout(@color-main, 60%);
+        box-shadow: 0 2px 6px @mp-primary-a40;
     }
 
     // Mini-calendar hover state
     #datepicker .ui-datepicker td:not(.ui-datepicker-today) a:hover,
     #datepicker .ui-datepicker td:not(.ui-datepicker-today) .ui-state-default:hover {
-        background: fadeout(@color-main, 90%);
+        background: @mp-primary-a10;
         color: @color-main;
     }
 
@@ -925,7 +925,7 @@ html.dark-mode {
         }
 
         .fc-list-item:hover td {
-            background-color: fadeout(@color-dark-main, 90%);
+            background-color: @mp-primary-dark-a10;
         }
 
         .fc-popover {
@@ -965,14 +965,14 @@ html.dark-mode {
                 color: @color-dark-font-secondary;
 
                 &:hover:not(.active) {
-                    background: fadeout(@color-dark-main, 85%);
+                    background: @mp-primary-dark-a15;
                     color: @color-dark-main;
                 }
 
                 &.active {
                     background: @color-dark-main;
-                    color: #fff;
-                    box-shadow: 0 2px 6px fadeout(@color-dark-main, 55%);
+                    color: @color-dark-on-primary;
+                    box-shadow: 0 2px 6px @mp-primary-dark-a45;
                 }
             }
         }
@@ -984,21 +984,21 @@ html.dark-mode {
                 color: @color-dark-font;
 
                 &:hover {
-                    background: fadeout(@color-dark-main, 88%);
-                    border-color: fadeout(@color-dark-main, 55%);
+                    background: @mp-primary-dark-a12;
+                    border-color: @mp-primary-dark-a45;
                     color: @color-dark-main;
                 }
 
                 &.today {
                     background: @color-dark-main;
                     border-color: @color-dark-main;
-                    box-shadow: 0 2px 8px fadeout(@color-dark-main, 55%);
+                    box-shadow: 0 2px 8px @mp-primary-dark-a45;
 
                     &:hover,
                     &:focus {
                         background: lighten(@color-dark-main, 8%);
                         border-color: lighten(@color-dark-main, 8%);
-                        box-shadow: 0 4px 12px fadeout(@color-dark-main, 45%);
+                        box-shadow: 0 4px 12px @mp-primary-dark-a45;
                     }
                 }
             }
@@ -1026,7 +1026,7 @@ html.dark-mode {
 
             .ui-datepicker-prev:hover,
             .ui-datepicker-next:hover {
-                background: fadeout(@color-dark-main, 85%);
+                background: @mp-primary-dark-a15;
             }
 
             .ui-datepicker-calendar thead th {
@@ -1038,12 +1038,12 @@ html.dark-mode {
         #datepicker .ui-datepicker td.ui-datepicker-today .ui-state-default {
             background: @color-dark-main;
             color: @color-dark-font;
-            box-shadow: 0 2px 6px fadeout(@color-dark-main, 55%);
+            box-shadow: 0 2px 6px @mp-primary-dark-a45;
         }
 
         #datepicker .ui-datepicker td:not(.ui-datepicker-today) a:hover,
         #datepicker .ui-datepicker td:not(.ui-datepicker-today) .ui-state-default:hover {
-            background: fadeout(@color-dark-main, 86%);
+            background: @mp-primary-dark-a15;
             color: @color-dark-main;
         }
 
@@ -1090,20 +1090,20 @@ html.dark-mode {
         border-color: @color-dark-border;
 
         &:hover:not(:disabled):not(.fc-button-active) {
-            background-color: fadeout(@color-dark-main, 85%);
+            background-color: @mp-primary-dark-a15;
             color: @color-dark-main;
-            border-color: fadeout(@color-dark-main, 55%);
+            border-color: @mp-primary-dark-a45;
         }
 
         &:active,
         &.fc-button-active {
             background-color: @color-dark-btn-primary-background;
-            color: #fff;
+            color: @color-dark-on-primary;
             border-color: @color-dark-main;
         }
 
         &:focus {
-            box-shadow: 0 0 0 3px fadeout(@color-dark-main, 70%);
+            box-shadow: 0 0 0 3px @mp-primary-dark-a30;
         }
     }
 

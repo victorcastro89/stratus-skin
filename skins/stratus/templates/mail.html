@@ -37,7 +37,11 @@
 		<roundcube:container name="toolbar" id="convtoolbar" />
 	</div>
 	<div id="messagelist-header" class="header">
+		<a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
+		<a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="mailboxlist" /></span></a>
 		<span class="header-title"></span>
+		<roundcube:button command="checkmail" type="link" id="mp-header-refresh"
+			class="button icon refresh mp-header-refresh-btn" title="checkmail" label="refresh" innerclass="inner" />
 	</div>
 	<roundcube:add_label name="showunread" />
 	<roundcube:object name="searchform" id="mailsearchform" wrapper="searchbar menu"

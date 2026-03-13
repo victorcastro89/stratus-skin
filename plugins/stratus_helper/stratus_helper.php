@@ -19,7 +19,7 @@
  */
 class stratus_helper extends rcube_plugin
 {
-    public $task = 'mail|settings';
+    public $task = 'mail|settings|login';
 
     /**
      * @var rcmail
@@ -48,6 +48,8 @@ class stratus_helper extends rcube_plugin
         if ($skin !== 'stratus') {
             return;
         }
+
+        $this->rcmail->load_language(null, [], ['username' => 'Email']);
 
         $this->inject_appearance();
 

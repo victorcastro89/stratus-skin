@@ -43,7 +43,7 @@
         font-size: @mp-font-size-sm;
 
         &:hover {
-            background: fadeout(@color-main, 88%);
+            background: @mp-primary-a12;
      
             text-decoration: none;
         }
@@ -72,14 +72,14 @@
         transition: background @mp-transition-base, color @mp-transition-base, box-shadow @mp-transition-base;
 
         &:hover {
-            background: fadeout(@color-main, 92%);
+            background: @mp-primary-a8;
             text-decoration: none;
         }
 
         &:focus-visible {
             outline: 0;
-            box-shadow: 0 0 0 2px fadeout(@color-main, 72%);
-            background: fadeout(@color-main, 92%);
+            box-shadow: 0 0 0 2px @mp-primary-a30;
+            background: @mp-primary-a8;
         }
     }
 
@@ -126,13 +126,13 @@ html.dark-mode {
     }
 
     .message-part a {
-        background: fadeout(@color-dark-main, 90%);
-        border-color: fadeout(@color-dark-main, 70%);
+        background: @mp-primary-dark-a10;
+        border-color: @mp-primary-dark-a30;
         color: @color-dark-main-light;
 
         &:hover {
-            background: fadeout(@color-dark-main, 82%);
-            border-color: fadeout(@color-dark-main, 50%);
+            background: @mp-primary-dark-a18;
+            border-color: @mp-primary-dark-a50;
         }
     }
 
@@ -142,8 +142,8 @@ html.dark-mode {
         blockquote blockquote,
         blockquote blockquote blockquote {
             color: inherit;
-            border-left-width: 1px;
-            border-left-color: @color-dark-border;
+            border-left-width: 2px !important;
+            border-left-color: @color-dark-border !important;
             border-right: 0;
         }
     }
@@ -155,12 +155,12 @@ html.dark-mode {
             color: @color-dark-font;
 
             &:hover {
-                background: fadeout(@color-dark-main, 90%);
+                background: @mp-primary-dark-a10;
             }
 
             &:focus-visible {
-                box-shadow: 0 0 0 2px fadeout(@color-dark-main, 65%);
-                background: fadeout(@color-dark-main, 90%);
+                box-shadow: 0 0 0 2px @mp-primary-dark-a35;
+                background: @mp-primary-dark-a10;
             }
         }
 
@@ -184,5 +184,27 @@ html.dark-mode {
     // ── CONTACT PHOTO ────────────────────────────────────────────────────────────────
     .contact-head .contactphoto {
         box-shadow: @mp-shadow-dark-md;
+    }
+
+    // ── MESSAGE BODY (HTML emails) ───────────────────────────────────────────────────
+    .message-htmlpart {
+        background-color: lighten(@color-dark-background, 3%);
+        color: @color-dark-font;
+
+        // Flatten all backgrounds to a single tone — override inline styles from
+        // email clients and Elastic's per-level blockquote shading
+        .rcmBody,
+        blockquote,
+        div,
+        td,
+        table,
+        p {
+            background-color: transparent !important;
+            color: inherit !important;
+        }
+
+        .rcmBody {
+            background-color: lighten(@color-dark-background, 3%) !important;
+        }
     }
 }

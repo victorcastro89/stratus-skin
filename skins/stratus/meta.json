@@ -4,6 +4,7 @@
 	"license": "Creative Commons Attribution-ShareAlike 3.0",
 	"license-url": "http://creativecommons.org/licenses/by-sa/3.0/",
 	"extends": "elastic",
+	"localization": true,
 	"config": {
 		"supported_layouts": ["widescreen"],
 		"jquery_ui_colors_theme": "bootstrap",

@@ -34,15 +34,6 @@
     if (dbgLevel() < 3) return;
     try { console.log.apply(console, arguments); } catch (e) {}
   }
-  function group(label) {
-    if (!dbgEnabled() || dbgLevel() < 1) return;
-    try { console.group(label); } catch (e) {}
-  }
-  function groupEnd() {
-    if (!dbgEnabled() || dbgLevel() < 1) return;
-    try { console.groupEnd(); } catch (e) {}
-  }
-
   // ──────────────────────────────────────────
   // Hook debug wrappers once
   // ──────────────────────────────────────────
@@ -306,6 +297,7 @@
     function applyDarkToEditor(editor) {
       var doc = editor.getDoc ? editor.getDoc() : null;
       if (!doc || !doc.head) return;
+      if (doc.documentElement) doc.documentElement.classList.add('dark-mode');
       if (doc.getElementById('stratus-tinymce-dark')) return;
       var style = doc.createElement('style');
       style.id = 'stratus-tinymce-dark';
@@ -317,8 +309,17 @@
       window.tinymce.on('AddEditor', function (e) {
         e.editor.on('init', function () { applyDarkToEditor(this); });
       });
+      // Handle editors that already exist: if initialized apply now,
+      // if not yet initialized attach an init listener (doc.head may be null yet).
       var editors = window.tinymce.editors || [];
-      for (var i = 0; i < editors.length; i++) applyDarkToEditor(editors[i]);
+      for (var i = 0; i < editors.length; i++) {
+        var ed = editors[i];
+        if (ed.initialized) {
+          applyDarkToEditor(ed);
+        } else {
+          ed.on('init', function () { applyDarkToEditor(this); });
+        }
+      }
     }
 
     if (window.tinymce) hookTinyMCE();
@@ -438,145 +439,62 @@
     }
 
     // ──────────────────────────────────────────
-    // Row activation / selection (the real issue)
+    // Synchronous hover action execution
     // ──────────────────────────────────────────
 
-    function snapshotState(tag) {
-      var list = rcmail.message_list;
-      var sel = list && list.selection ? list.selection.slice() : null;
-      dbg2('[STRATUS][STATE]', tag, {
-        env_uid: rcmail.env && rcmail.env.uid,
-        selection: sel,
-        last_selected: list && list.last_selected,
-        focused: (document.activeElement && document.activeElement.id) || document.activeElement
-      });
-    }
+    /**
+     * Execute a hover action for a specific row/uid without a race window.
+     *
+     * Pattern: save → point selection at target → execute → restore, all in
+     * one synchronous JS task.  JS is single-threaded so no other click event
+     * can fire between save and restore, meaning env.uid / list.selection
+     * cannot be corrupted by a concurrent user interaction.
+     *
+     * clear_selection(null, true) uses RC's no_event flag to suppress the
+     * 'select' event during the temporary state swap, preventing the smart bar
+     * from briefly flashing a "0 selected" count.
+     */
+    function executeHoverAction(cmd, uid, row, evt) {
+      var list0 = rcmail.message_list;
+      if (!list0 || !uid) return;
 
-    function focusMessageList() {
-      var list = rcmail.message_list;
-      if (!list) return;
-      if (typeof list.focus === 'function') {
-        try { list.focus(); } catch (e) {}
-      }
-      // also focus DOM table if needed
-      var tbl = document.getElementById('messagelist');
-      if (tbl && typeof tbl.focus === 'function') {
-        try { tbl.focus(); } catch (e) {}
-      }
-    }
+      dbg2('[STRATUS][HOVER] cmd=', cmd, 'uid=', uid);
 
-    function selectSingle(uid, row) {
-      var list = rcmail.message_list;
-      if (!list || !uid) return false;
+      var savedUid          = rcmail.env ? rcmail.env.uid : null;
+      var savedSelection    = list0.selection ? list0.selection.slice() : [];
+      var savedLastSelected = list0.last_selected || null;
 
-      // Clear existing selection (removes CSS highlights only, no callback fired)
-      if (typeof list.clear_selection === 'function') {
-        try { list.clear_selection(); } catch (e) {}
-      }
-
-      // Set selection state directly WITHOUT calling list.select().
-      // list.select() fires the onselect callback → show_message(), which would
-      // load the flagged message into the preview and corrupt env.uid — causing
-      // subsequent row clicks to not refresh the preview panel.
       try {
-        list.selection = [uid];
-        list.last_selected = uid;
-      } catch (e) {}
-
-      // If the list stores rows by row-id rather than uid, also expose the row-id form
-      if (row && row.id && row.id !== String(uid)) {
-        try { list.selection = [row.id]; list.last_selected = row.id; } catch (e) {}
-      }
-
-      // Update env.uid used by command handlers (toggle_flag, delete, etc.)
-      try {
+        if (typeof list0.clear_selection === 'function') list0.clear_selection(null, true);
+        list0.selection     = [uid];
+        list0.last_selected = uid;
         if (rcmail.env) rcmail.env.uid = uid;
       } catch (e) {}
 
-      return true;
-    }
-
-    /**
-     * Activate row like a real click (without opening message)
-     * - focus list
-     * - select row (robust)
-     * - set env.uid + last_selected
-     */
-    function activateRowForCommand(row, uid) {
-      group('%c[STRATUS][ACTIVATE ROW]', 'color:#16a085');
-      dbg('row.id=', row && row.id, 'uid=', uid, 'row=', row);
-      snapshotState('before');
-
-      focusMessageList();
-
-      // Important: do NOT trigger a native click (that may open message)
-      // We only replicate the minimum state needed for commands to work.
-      selectSingle(uid, row);
-
-      snapshotState('after selectSingle()');
-      groupEnd();
-    }
-
-    /**
-     * Execute a command after activation, with fallback variants.
-     * For toggle_flag, try (1) selection-based call, (2) uid-prop call if needed.
-     */
-    function runAfterActivate(cmd, row, uid, evt) {
-      // Save selection state before we touch anything, so we can restore it after
-      // the command. This ensures toggle_flag (and others) don't leave env.uid /
-      // list.last_selected pointing at the actioned row, which would prevent the
-      // next user click from refreshing the preview panel.
-      var list0 = rcmail.message_list;
-      var savedUid          = (rcmail.env && rcmail.env.uid) || null;
-      var savedLastSelected = (list0 && list0.last_selected) || null;
-      var savedSelection    = (list0 && list0.selection) ? list0.selection.slice() : [];
-
-      activateRowForCommand(row, uid);
-
-      window.setTimeout(function () {
-        group('%c[STRATUS][RUN COMMAND]', 'color:#8e44ad');
-        snapshotState('pre-command');
-
-        var ret1, ret2;
-        try {
-          if (cmd === 'toggle_flag') {
-            dbg2('[STRATUS][FLAG] calling selection-based:', "rcmail.command('toggle_flag')");
-            ret1 = rcmail.command('toggle_flag', '', row, evt);
-
-            // If Roundcube command() returns false/undefined in your build,
-            // try the UID-as-prop fallback *only if ret1 is explicitly false*.
-            if (ret1 === false) {
-              dbg2('[STRATUS][FLAG] selection-based returned false; trying uid-prop fallback');
-              ret2 = rcmail.command('toggle_flag', uid, row, evt);
-            } else {
-              dbg2('[STRATUS][FLAG] selection-based return:', ret1, '(not attempting fallback)');
-            }
+      try {
+        if (cmd === 'archive') {
+          if (typeof rcmail_archive === 'function') {
+            rcmail_archive();
           } else {
-            ret1 = rcmail.command(cmd, '', row, evt);
+            rcmail.command('plugin.archive', '', row, evt);
           }
-        } catch (err) {
-          dbg('%c[STRATUS][RUN COMMAND][ERROR]', 'color:#e74c3c', cmd, err);
+        } else if (cmd === 'toggle_flag') {
+          var ret = rcmail.command('toggle_flag', '', row, evt);
+          if (ret === false) rcmail.command('toggle_flag', uid, row, evt);
+        } else {
+          rcmail.command(cmd, '', row, evt);
         }
+      } catch (err) {
+        dbg('%c[STRATUS][HOVER][ERROR]', 'color:#e74c3c', cmd, err);
+      }
 
-        snapshotState('post-command');
-        dbg2('[STRATUS][RUN COMMAND] returns:', { primary: ret1, fallback: ret2 });
-        groupEnd();
-
-        // Restore the selection state that was active before the hover action.
-        // Without this, env.uid stays on the actioned row and clicking another
-        // message may not trigger a preview refresh in some Roundcube builds.
-        window.setTimeout(function () {
-          try {
-            var list2 = rcmail.message_list;
-            if (list2) {
-              list2.selection    = savedSelection;
-              list2.last_selected = savedLastSelected;
-            }
-            if (rcmail.env) rcmail.env.uid = savedUid;
-            dbg2('[STRATUS][RESTORE STATE] uid=', savedUid, 'last_selected=', savedLastSelected);
-          } catch (e) {}
-        }, 0);
-      }, 0);
+      try {
+        if (typeof list0.clear_selection === 'function') list0.clear_selection(null, true);
+        list0.selection     = savedSelection;
+        list0.last_selected = savedLastSelected;
+        if (rcmail.env) rcmail.env.uid = savedUid;
+        dbg2('[STRATUS][HOVER] restored uid=', savedUid);
+      } catch (e) {}
     }
 
     // ──────────────────────────────────────────
@@ -630,53 +548,25 @@
       archiveBtn.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-
-        group('%c[STRATUS][ARCHIVE CLICK]', 'color:#2980b9');
-        dbg('row.id=', row.id);
-        groupEnd();
-
         var uid = getRowUid(row);
-        dbg2('[STRATUS][ARCHIVE] resolved uid=', uid, 'from row.id=', row.id);
         if (!uid) return;
-
-        if (typeof rcmail_archive === 'function') {
-          activateRowForCommand(row, uid);
-          window.setTimeout(function () { rcmail_archive(); }, 0);
-        } else {
-          runAfterActivate('plugin.archive', row, uid, e);
-        }
+        executeHoverAction('archive', uid, row, e);
       });
 
       deleteBtn.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-
-        group('%c[STRATUS][DELETE CLICK]', 'color:#c0392b');
-        dbg('row.id=', row.id);
-        groupEnd();
-
         var uid = getRowUid(row);
-        dbg2('[STRATUS][DELETE] resolved uid=', uid, 'from row.id=', row.id);
         if (!uid) return;
-
-        runAfterActivate('delete', row, uid, e);
+        executeHoverAction('delete', uid, row, e);
       });
 
       flagBtn.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-
-        group('%c[STRATUS][FLAG CLICK]', 'color:#f1c40f');
-        dbg('row.id=', row.id);
-        dbg('toggle_flag enabled?', (rcmail.command_enabled && rcmail.command_enabled('toggle_flag')));
-        groupEnd();
-
         var uid = getRowUid(row);
-        dbg2('[STRATUS][FLAG] resolved uid=', uid, 'from row.id=', row.id);
         if (!uid) return;
-
-        // This is the key: activate row fully, then call toggle_flag.
-        runAfterActivate('toggle_flag', row, uid, e);
+        executeHoverAction('toggle_flag', uid, row, e);
       });
     }
 

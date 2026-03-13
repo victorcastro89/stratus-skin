@@ -2,8 +2,12 @@
 // Overrides: elastic layout structure — taskmenu, header, toolbar, panels
 // Design: "Atmospheric Modern" — layered depth, fluid motion, generous spacing
 
-#messagelist-header > a {
-    display: none !important; // Hide redundant header actions (sort, refresh) — these are re-parented into the new .mp-smart-bar toolbar by stratus_helper.js
+html:not(.layout-phone) #messagelist-header > a {
+    display: none !important; // Desktop: hide header nav buttons — navigation lives in the smart bar
+}
+
+#messagelist-header > a.button.selection.icon.toolbar-button {
+    display: none !important; // Hide the "selection" toggle button on desktop — it duplicates the smart bar's mass-select checkbox and takes up valuable header space. On mobile, it remains visible as a convenient way to enter multi-select mode.
 }
 // ═══════════════════════════════════════════════════════════════════════════════
 // TASK MENU — Navy gradient sidebar with pill navigation
@@ -90,6 +94,28 @@
         display: block !important; // Instant — no transition timing to miss
     }
 
+    // Mobile popover: hide compose button — it's already a FAB on mobile
+    @media screen and (max-width: @screen-width-xs) {
+        span.action-buttons {
+            display: none;
+        }
+    }
+
+    // Mobile popover: labels must be visible inline (not tooltips)
+    @media screen and (max-width: @screen-width-xs) {
+        span.inner {
+            display: inline !important;
+            position: static;
+            transform: none;
+            background: none;
+            color: inherit;
+            padding: 0;
+            box-shadow: none;
+            font-size: 80%;
+            white-space: normal;
+        }
+    }
+
     // Hover state — subtle glass fill
     a:hover {
         background: rgba(255, 255, 255, 0.08);
@@ -103,20 +129,20 @@
     // rcmail.command('switch-task',...) can fire, breaking all task navigation.
     // Instead, lock the background via an explicit :hover override.
     a.selected {
-        background: fadeout(@color-main, 75%);
+        background: @mp-primary-a25;
         color: #fff;
-        box-shadow: 0 0 16px fadeout(@color-main, 80%),
-                    inset 0 0 0 1px fadeout(@color-main, 70%);
+        box-shadow: 0 0 16px @mp-primary-a20,
+                    inset 0 0 0 1px @mp-primary-a30;
         font-weight: @mp-font-weight-semibold;
         cursor: default;
 
         // Override elastic's `a.selected:hover { background: rgba(255,255,255,0.06) }`
         // so the active pill doesn't flicker on mouse-enter.
         &:hover {
-            background: fadeout(@color-main, 75%);
+            background: @mp-primary-a25;
             color: #fff;
-            box-shadow: 0 0 16px fadeout(@color-main, 80%),
-                        inset 0 0 0 1px fadeout(@color-main, 70%);
+            box-shadow: 0 0 16px @mp-primary-a20,
+                        inset 0 0 0 1px @mp-primary-a30;
         }
     }
 
@@ -124,21 +150,21 @@
     a.compose,
     a.task-compose {
         background: @color-main-gradient;
-        color: #fff;
+        color: @color-on-primary;
         border-radius: @mp-radius-pill;
         margin: 10px 0; // No horizontal margin — sidebar width is fixed, 6px each side would overflow
-        box-shadow: 0 4px 12px fadeout(@color-main, 55%);
+        box-shadow: 0 4px 12px @mp-primary-a45;
         font-weight: @mp-font-weight-medium;
 
         &:hover {
             background: @color-main-gradient-hover;
-            box-shadow: 0 6px 20px fadeout(@color-main, 45%);
+            box-shadow: 0 6px 20px @mp-primary-a45;
             transform: translateY(-1px);
         }
 
         &:active {
             transform: translateY(0);
-            box-shadow: 0 2px 8px fadeout(@color-main, 60%);
+            box-shadow: 0 2px 8px @mp-primary-a40;
         }
     }
 
@@ -176,7 +202,7 @@
         transition: background @mp-transition-base, color @mp-transition-base;
 
         &:hover {
-            background: fadeout(@color-main, 92%);
+            background: @mp-primary-a8;
             color: @color-main;
         }
     }
@@ -200,13 +226,13 @@
                     box-shadow @mp-transition-smooth;
 
         &:hover {
-            background: fadeout(@color-main, 92%);
+            background: @mp-primary-a8;
             color: @color-main;
         }
 
         &:active,
         &.active {
-            background: fadeout(@color-main, 88%);
+            background: @mp-primary-a12;
             color: @color-main;
         }
 
@@ -240,7 +266,7 @@
 
     &:focus-within {
         background: #fff;
-        border-color: fadeout(@color-main, 60%);
+        border-color: @mp-primary-a40;
         .mp-focus-ring(@color-main, 88%);
     }
 
@@ -302,10 +328,13 @@
     background: @color-layout-content-background;
 }
 
+#compose-content { 
+    padding: 0;
+}
 // Frame content (settings pages, help, etc.)
 .frame-content,
 .content {
-    padding: @mp-space-xl;
+    padding: @mp-space-xs;
 
     // Content frames get subtle card-like treatment
     fieldset {
@@ -334,7 +363,7 @@
 
     &:hover {
         opacity: 1;
-        background: fadeout(@color-main, 70%);
+        background: @mp-primary-a30;
     }
 }
 
@@ -367,9 +396,9 @@ html.dark-mode {
 
         // Selected — indigo glow, more visible in dark
         a.selected {
-            background: fadeout(@color-dark-main, 80%);
-            box-shadow: 0 0 20px fadeout(@color-dark-main, 75%),
-                        inset 0 0 0 1px fadeout(@color-dark-main, 65%);
+            background: @mp-primary-dark-a20;
+            box-shadow: 0 0 20px @mp-primary-dark-a25,
+                        inset 0 0 0 1px @mp-primary-dark-a35;
         }
 
         // Compose — dark-mode gradient with explicit white text/icon
@@ -378,28 +407,28 @@ html.dark-mode {
         a.compose,
         a.task-compose {
             background: @color-dark-main-gradient;
-            color: #fff;
-            box-shadow: 0 4px 16px fadeout(@color-dark-main, 45%);
+            color: @color-dark-on-primary;
+            box-shadow: 0 4px 16px @mp-primary-dark-a45;
 
             &:before {
-                color: #fff;
+                color: @color-dark-on-primary;
             }
 
             &:hover {
                 background: @color-dark-main-gradient-hover;
-                color: #fff;
+                color: @color-dark-on-primary;
                 box-shadow: 0 6px 24px fadeout(@color-dark-main, 35%);
 
                 &:before {
-                    color: #fff;
+                    color: @color-dark-on-primary;
                 }
             }
 
             &:active {
-                color: #fff;
+                color: @color-dark-on-primary;
 
                 &:before {
-                    color: #fff;
+                    color: @color-dark-on-primary;
                 }
             }
         }
@@ -426,7 +455,7 @@ html.dark-mode {
             color: @color-dark-font;
 
             &:hover {
-                background: fadeout(@color-dark-main, 88%);
+                background: @mp-primary-dark-a12;
                 color: @color-dark-main;
             }
         }
@@ -468,7 +497,7 @@ html.dark-mode {
     // ── MOBILE ─────────────────────────────────────────────────────────────────────────
     @media screen and (max-width: 768px) {
         #layout > div > .header {
-            background: darken(@color-dark-main, 25%);
+
             backdrop-filter: none;
 
             .header-title { color: #fff; }
@@ -487,7 +516,7 @@ html.dark-mode {
 @media screen and (max-width: 768px) {
     // Mobile header — branded indigo
     #layout > div > .header {
-        background: @color-main;
+      
         backdrop-filter: none;
         border-bottom: none;
         box-shadow: @mp-shadow-md;

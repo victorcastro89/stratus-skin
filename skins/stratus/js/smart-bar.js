@@ -37,9 +37,6 @@
 		var massAction  = new ns.MassActionBar(rcmail, bar);
 		var sort        = new ns.SortController(rcmail, bar);
 
-		// Apply the select_row monkey-patch (single location per spec)
-		multiSelect.patchSelectRow();
-
 		// ── Wire: selection changes → update bar UI ──────────────────
 		selection.onChanged(function(state) {
 			massAction.updateState(state, multiSelect.isActive());
@@ -47,7 +44,6 @@
 			// Auto-exit multiselect when selection empties
 			if (state.count === 0) {
 				if (multiSelect.isActive()) multiSelect.exit();
-				list.multi_selecting = false;
 			}
 		});
 
@@ -91,11 +87,29 @@
 			}, true);
 		}
 
-		// ── Toggle click: just prevent href navigation ───────────────
-		var toggle = document.getElementById('mp-mass-select-toggle');
-		if (toggle) {
-			toggle.addEventListener('click', function(e) {
+		// ── Checkbox click: enter/exit multiselect (no popup) ───────
+		var checkbox = document.getElementById('mp-mass-select-checkbox');
+		if (checkbox) {
+			checkbox.addEventListener('click', function(e) {
 				e.preventDefault();
+				if (selection.getCount() > 0) {
+					// Always clear selection first — regardless of multiselect mode.
+					// This covers the case where the user single-clicked a row (no
+					// multiselect entered) and then clicks the checkbox to dismiss.
+					selection.forceDeselectAll();
+					if (multiSelect.isActive()) multiSelect.exit();
+					massAction.showDefaultState();
+				} else if (multiSelect.isActive()) {
+					multiSelect.exit();
+				} else {
+					multiSelect.enter();
+				}
+			});
+			checkbox.addEventListener('keydown', function(e) {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					checkbox.click();
+				}
 			});
 		}
 

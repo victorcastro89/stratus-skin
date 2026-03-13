@@ -14,12 +14,12 @@ button.btn-primary {
     font-weight: @mp-font-weight-medium;
     letter-spacing: @mp-letter-spacing-wide;
     padding: 0.5rem 1.25rem;
-    box-shadow: 0 2px 8px fadeout(@color-main, 70%);
+    box-shadow: 0 2px 8px @mp-primary-a30;
 
     &:hover,
     &:focus {
         background: @color-main-gradient-hover;
-        box-shadow: 0 4px 16px fadeout(@color-main, 55%);
+        box-shadow: 0 4px 16px @mp-primary-a45;
         transform: translateY(-1px);
         color: @color-btn-primary;
     }
@@ -41,8 +41,8 @@ button.btn-secondary {
 
     &:hover,
     &:focus {
-        background: fadeout(@color-main, 94%);
-        border-color: fadeout(@color-main, 60%);
+        background: @mp-primary-a5;
+        border-color: @mp-primary-a40;
         color: @color-main;
     }
 }
@@ -52,7 +52,7 @@ a.btn-danger {
     border-radius: @mp-radius-md;
 
     &:hover {
-        box-shadow: 0 2px 8px fadeout(#ff5552, 60%);
+        box-shadow: 0 2px 8px fadeout(@color-error, 60%);
     }
 }
 
@@ -68,6 +68,8 @@ a.button.icon:not(.btn) {
 
 // Floating action button — elevated circle
 .floating-action-buttons {
+    z-index: 999;
+    bottom: 30px;
     a.button {
         box-shadow: @mp-shadow-lg, @mp-shadow-glow-sm;
         border-radius: @mp-radius-circle;
@@ -91,13 +93,13 @@ html.dark-mode {
         color: @color-dark-font;
 
         &:hover {
-            background: fadeout(@color-dark-main, 88%);
+            background: @mp-primary-dark-a12;
             color: @color-dark-main;
         }
 
         &:active,
         &.active {
-            background: fadeout(@color-dark-main, 82%);
+            background: @mp-primary-dark-a18;
             color: @color-dark-main;
         }
 
@@ -108,10 +110,10 @@ html.dark-mode {
 
     // ── BUTTONS ──────────────────────────────────────────────────────────────────────
     .btn-primary {
-        box-shadow: 0 2px 8px fadeout(@color-dark-main, 60%);
+        box-shadow: 0 2px 8px @mp-primary-dark-a40;
 
         &:hover {
-            box-shadow: 0 4px 16px fadeout(@color-dark-main, 45%);
+            box-shadow: 0 4px 16px @mp-primary-dark-a45;
         }
     }
 
@@ -120,8 +122,8 @@ html.dark-mode {
         color: @color-dark-font;
 
         &:hover {
-            background: fadeout(@color-dark-main, 90%);
-            border-color: fadeout(@color-dark-main, 55%);
+            background: @mp-primary-dark-a10;
+            border-color: @mp-primary-dark-a45;
             color: @color-dark-main-light;
         }
     }

@@ -9,7 +9,7 @@
     .bar {
         border-radius: @mp-radius-pill;
         height: 6px;
-        background: fadeout(@color-main, 88%);
+        background: @mp-primary-a12;
         overflow: hidden;
 
         .value {
@@ -33,7 +33,7 @@
     border-radius: @mp-radius-pill;
 
     &:hover {
-        background: fadeout(#6b7399, 30%);
+        background: @color-scrollbar-thumb-hover;
     }
 }
 
@@ -51,7 +51,7 @@
 // SELECTION HIGHLIGHT
 // ═══════════════════════════════════════════════════════════════════════════════
 ::selection {
-    background: fadeout(@color-main, 75%);
+    background: @mp-primary-a25;
     color: @color-font;
 }
 
@@ -71,7 +71,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 .file-upload {
     border-radius: @mp-radius-lg;
-    border: 2px dashed fadeout(@color-main, 60%);
+    border: 2px dashed @mp-primary-a40;
     padding: @mp-space-2xl;
     text-align: center;
     transition: border-color @mp-transition-base, background @mp-transition-base;
@@ -79,7 +79,7 @@
     &:hover,
     &.hover {
         border-color: @color-main;
-        background: fadeout(@color-main, 96%);
+        background: @mp-primary-a5;
     }
 }
 
@@ -97,7 +97,7 @@
         transition: background @mp-transition-fast;
 
         &:hover {
-            background: fadeout(@color-main, 90%);
+            background: @mp-primary-a10;
         }
     }
 }
@@ -167,22 +167,6 @@ html.layout-phone #layout-list > .searchbar {
     gap: @mp-space-sm;
 }
 
-// Mobile nav buttons — hidden on desktop, shown on phone by elastic rules
-.mp-smart-bar > .task-menu-button,
-.mp-smart-bar > .back-sidebar-button {
-    display: none !important;
-    flex-shrink: 0;
-}
-
-html.layout-phone {
-    .mp-smart-bar > .task-menu-button,
-    .mp-smart-bar > .back-sidebar-button {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-    }
-}
-
 // Left group: checkbox trigger + default/action sections
 .mp-smart-bar-left {
     display: flex;
@@ -190,6 +174,7 @@ html.layout-phone {
     flex-shrink: 1;
     min-width: 0;
     overflow: hidden;
+    padding: @mp-space-sm;
 }
 
 // Override elastic's global `a.disabled { pointer-events: none }` on select trigger
@@ -214,7 +199,7 @@ html.layout-phone {
     height: auto !important;    // override elastic .pagenav a height
 
     &:hover {
-        background: fadeout(@color-main, 92%);
+        background: @mp-primary-a8;
     }
 
     &:before {
@@ -226,9 +211,11 @@ html.layout-phone {
     }
 }
 
-// Checkbox square indicator
+// Checkbox square indicator — standalone interactive element (not inside a trigger)
 .mp-mass-action-checkbox {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 16px;
     height: 16px;
     border: 2px solid @color-input-border;
@@ -236,47 +223,95 @@ html.layout-phone {
     background: transparent;
     transition: border-color @mp-transition-fast, background @mp-transition-fast;
     flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
 
-    .mp-mass-action-trigger:hover & {
+    &:hover {
         border-color: @color-main;
     }
+}
 
-    // Multiselect mode (ready to pick) — indeterminate dash
-    .mp-multiselect-mode:not(.mp-has-selection) .mp-mass-action-trigger & {
-        border-color: @color-main;
-        background: fadeout(@color-main, 80%);
-        position: relative;
+// Multiselect mode (ready to pick) — indeterminate dash
+.mp-multiselect-mode:not(.mp-has-selection) #mp-mass-select-checkbox {
+    border-color: @color-main;
+    background: @mp-primary-a20;
 
-        &::after {
-            content: '';
-            position: absolute;
-            left: 2px;
-            top: 5px;
-            width: 8px;
-            height: 2px;
-            background: @color-main;
-            border-radius: 1px;
-        }
-    }
-
-    // When selection is active, show checked state
-    .mp-has-selection .mp-mass-action-trigger & {
+    &::after {
+        content: '';
+        position: absolute;
+        left: 2px;
+        top: 5px;
+        width: 8px;
+        height: 2px;
         background: @color-main;
-        border-color: @color-main;
-        // Checkmark via pseudo-element
-        position: relative;
+        border-radius: 1px;
+    }
+}
 
-        &::after {
-            content: '';
-            position: absolute;
-            left: 3px;
-            top: 0;
-            width: 5px;
-            height: 9px;
-            border: solid #fff;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
+// When selection is active — checked state (checkmark)
+.mp-has-selection #mp-mass-select-checkbox {
+    background: @color-main;
+    border-color: @color-main;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 3px;
+        top: 0;
+        width: 5px;
+        height: 9px;
+        border: solid @color-on-primary;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+}
+
+// Caret button — dropdown arrow opening the batch-select popup
+.mp-mass-select-caret {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 28px;
+    padding: 0;
+    cursor: pointer;
+    color: @color-font-secondary;
+    text-decoration: none;
+    border-right: 1px solid @color-layout-border;
+    margin-right: 4px;
+    flex-shrink: 0;
+    min-width: 0 !important;
+    flex-grow: 0 !important;
+
+    &::before { display: none !important; } // suppress elastic icon
+
+    .inner { display: none; } // screen-reader text, hidden visually
+
+    &:hover {
+        background: @mp-primary-a8;
+        color: @color-main;
+    }
+
+    &:focus-visible {
+        outline: 2px solid @color-main;
+        outline-offset: 2px;
+    }
+}
+
+// ▾ icon inside the caret button
+.mp-select-caret-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    &::before {
+        font-family: 'Icons';
+        font-weight: 900;
+        font-size: 0.7rem;
+        content: '\f0d7'; // fa-caret-down
+        line-height: 1;
     }
 }
 
@@ -323,7 +358,7 @@ html.layout-phone {
     &::before { content: none !important; display: none !important; }
 
     &:hover {
-        background: fadeout(@color-main, 92%);
+        background: @mp-primary-a8;
     }
 
     &:focus-visible {
@@ -332,7 +367,8 @@ html.layout-phone {
     }
 }
 
-// Arrow icon — rendered inside its own <span> to sidestep ::before fights
+// Arrow icon — JS applies mp-sort-asc / mp-sort-desc directly to this span
+// via this._sortArrow.classList.toggle(), so selectors target the span itself.
 .mp-sort-arrow {
     display: inline-flex;
     align-items: center;
@@ -342,31 +378,23 @@ html.layout-phone {
     flex-shrink: 0;
     color: @color-font-secondary;
 
-    // Hidden by default (no sort active)
     &::before {
         font-family: 'Icons';
         font-weight: 900;
         font-style: normal;
         font-size: 0.9rem;
         line-height: 1;
+        content: '\f0dd'; // fa-sort-down — default until JS runs
+        opacity: 0.5;
     }
 
-    // No sort selected — show neutral double-arrow
-    .mp-sort-trigger:not(.mp-sort-asc):not(.mp-sort-desc) &::before,
-    .mp-sort-trigger.mp-sort-none &::before {
-        content: '\f0dc'; // fa-sort  (up+down stacked)
-        opacity: 0.4;
-    }
-
-    // Ascending
-    .mp-sort-trigger.mp-sort-asc &::before {
+    &.mp-sort-asc::before {
         content: '\f0de'; // fa-sort-up
         opacity: 1;
         color: @color-main;
     }
 
-    // Descending
-    .mp-sort-trigger.mp-sort-desc &::before {
+    &.mp-sort-desc::before {
         content: '\f0dd'; // fa-sort-down
         opacity: 1;
         color: @color-main;
@@ -383,16 +411,16 @@ html.layout-phone {
     white-space: nowrap;
 }
 
-// When a sort is active, elevate the label colour slightly
-.mp-sort-trigger.mp-sort-asc .mp-sort-label,
-.mp-sort-trigger.mp-sort-desc .mp-sort-label {
+// Elevate label colour when a direction is active (sibling selector — arrow precedes label)
+.mp-sort-arrow.mp-sort-asc ~ .mp-sort-label,
+.mp-sort-arrow.mp-sort-desc ~ .mp-sort-label {
     color: @color-font;
 }
 
 // Phone: hide text label, show icon-only
-html.layout-phone .mp-sort-label {
-    display: none;
-}
+// html.layout-phone .mp-sort-label {
+//     display: none;
+// }
 
 // Refresh button in default section
 .mp-smart-bar-default .mp-action-btn.refresh {
@@ -400,6 +428,72 @@ html.layout-phone .mp-sort-label {
         content: "\f021"; // fa-sync / fa-arrows-rotate
         font-weight: 900;
     }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SORT POPUP (#mp-sort-menu)
+// Same structure as #message-menu (.popupmenu + .menu.listing).
+// Container appearance (shadow, border, border-radius) comes from .popover wrapper
+// created by show_menu() — already styled in dialogs.less.
+// Elastic's a.selected::before { content: fa-check } handles column/direction
+// checkmarks automatically — no custom ::before overrides needed.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Suppress Elastic's ::before icon slot for all items (no icons needed in sort menu)
+// Selected column item keeps visual feedback via color/weight rather than fa-check
+#mp-sort-menu .menu.listing a::before {
+    content: none !important;
+    display: none !important;
+}
+
+// Separator <li> between column list and direction options
+#mp-sort-menu .mp-sort-dir-separator {
+    border-top: 1px solid @color-layout-border;
+    height: 0;
+    padding: 0;
+    margin: @mp-space-xs 0;
+    pointer-events: none;
+}
+
+
+// Column items — indent to match direction items (radio dot 12px + gap 0.25rem)
+#mp-sort-menu [data-sort-col] {
+    padding-left: calc(12px + 0.25rem) !important;
+}
+
+// Direction items — layout + capitalize
+#mp-sort-menu .mp-sort-dir-option {
+    display: flex !important;
+    align-items: center;
+    gap: @mp-space-xs;
+    text-transform: capitalize;
+}
+
+// Radio dot — explicit <span class="mp-radio-dot"> inside each direction <a>
+// Avoids all ::before / icon-font conflicts with Elastic's .listing styles.
+.mp-radio-dot {
+    display: inline-block;
+    width: 12px;
+    min-width: 12px;
+    height: 12px;
+    border: 1.5px solid @color-input-border;
+    border-radius: 50%;
+    background: transparent;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    transition: border-color @mp-transition-fast, background @mp-transition-fast, box-shadow @mp-transition-fast;
+}
+
+#mp-sort-menu .mp-sort-dir-option.selected .mp-radio-dot {
+    border-color: @color-main;
+    background: @color-main;
+    box-shadow: inset 0 0 0 2.5px @color-layout-content-background;
+}
+
+// Hide the "Selection" toggle in listselect-menu — the checkbox handles multiselect toggle.
+// Do not remove from template; Elastic's JS references it by ID.
+#listselect-menu .selection {
+    display: none !important;
 }
 
 // Right group: message count + prev/next nav
@@ -434,7 +528,7 @@ html.layout-phone .mp-sort-label {
     color: @color-font;
 
     &:hover:not(.disabled) {
-        background: fadeout(@color-main, 92%);
+        background: @mp-primary-a8;
         color: @color-main;
     }
 
@@ -530,8 +624,20 @@ html.layout-phone .mp-sort-label {
         font-weight: 900;
     }
 
+    // move — inline SVG (mdi-folder-move); suppress icon-font ::before
+    // !important needed: elastic's .menu a.move:before has higher specificity (0,2,1) vs our (0,2,0)
+    &.move:before {
+        content: none !important;
+    }
+    &.move svg {
+        width: 25px;
+        height: 25px;
+        fill: currentColor;
+        flex-shrink: 0;
+    }
+
     &:hover:not(.disabled):not(.mp-folder-disabled):not([data-mp-folder-disabled="true"]) {
-        background: fadeout(@color-main, 90%);
+        background: @mp-primary-a10;
         color: @color-main;
     }
 
@@ -555,7 +661,7 @@ html.layout-phone .mp-sort-label {
     align-items: center;
     padding: 2px @mp-space-sm;
     background: @color-main;
-    color: #fff;
+    color: @color-on-primary;
     font-size: @mp-font-size-xs;
     border-radius: @mp-radius-pill;
     white-space: nowrap;
@@ -571,6 +677,49 @@ html.layout-phone .mp-sort-label {
 
 .mp-smart-bar.mp-has-selection .mp-mass-action-count {
     display: none;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MOBILE PAGINATION — standard elastic location, shown only on layout-phone
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Hidden by default; desktop uses smart bar pagination
+#mp-mobile-pagenav {
+    display: none;
+    order: 3; // after messagelist-content (order: 2) in layout-list flex column
+}
+
+// Refresh button in #messagelist-header — mobile only
+#mp-header-refresh {
+    display: none !important;
+}
+
+html.layout-phone {
+    // Show mobile pagenav instead of smart bar pagination
+    #mp-mobile-pagenav {
+        display: flex;
+        position: relative;
+        z-index: 10; // sit above scrolling messagelist-content and .floating-action-buttons
+    }
+
+    // Hide prev/next and count from smart bar on mobile (moved to mobile pagenav)
+    .mp-smart-bar .prevpage,
+    .mp-smart-bar .nextpage {
+        display: none !important;
+    }
+
+    .mp-mass-action-count {
+        display: none !important;
+    }
+
+    // Show refresh in header, hide from smart bar on mobile
+    #mp-header-refresh {
+        display: flex !important;
+    }
+
+    .mp-smart-bar-default .mp-action-btn.refresh {
+        display: none !important;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -630,12 +779,12 @@ html.dark-mode {
 
     // ── QUOTA BAR ────────────────────────────────────────────────────────────────────
     .quota-widget .bar {
-        background: fadeout(@color-dark-main, 85%);
+        background: @mp-primary-dark-a15;
     }
 
     // ── COLUMN RESIZER ─────────────────────────────────────────────────────────────
     .column-resizer:hover {
-        background: fadeout(@color-dark-main, 65%);
+        background: @mp-primary-dark-a35;
     }
 
     // ── SMART BAR ───────────────────────────────────────────────────────────
@@ -656,7 +805,7 @@ html.dark-mode {
         color: @color-dark-font;
 
         &:hover {
-            background: fadeout(@color-dark-main, 88%);
+            background: @mp-primary-dark-a12;
         }
     }
 
@@ -664,8 +813,8 @@ html.dark-mode {
         color: @color-dark-font-secondary;
     }
 
-    .mp-sort-trigger.mp-sort-asc .mp-sort-arrow::before,
-    .mp-sort-trigger.mp-sort-desc .mp-sort-arrow::before {
+    .mp-sort-arrow.mp-sort-asc::before,
+    .mp-sort-arrow.mp-sort-desc::before {
         color: @color-dark-main;
     }
 
@@ -673,8 +822,8 @@ html.dark-mode {
         color: @color-dark-font-secondary;
     }
 
-    .mp-sort-trigger.mp-sort-asc .mp-sort-label,
-    .mp-sort-trigger.mp-sort-desc .mp-sort-label {
+    .mp-sort-arrow.mp-sort-asc ~ .mp-sort-label,
+    .mp-sort-arrow.mp-sort-desc ~ .mp-sort-label {
         color: @color-dark-font;
     }
 
@@ -682,30 +831,55 @@ html.dark-mode {
         color: @color-dark-font;
 
         &:hover {
-            background: fadeout(@color-dark-main, 88%);
+            background: @mp-primary-dark-a12;
         }
     }
 
     .mp-mass-action-checkbox {
         border-color: @color-dark-checkbox;
 
-        .mp-mass-action-trigger:hover & {
+        &:hover {
             border-color: @color-dark-main;
         }
+    }
 
-        .mp-multiselect-mode:not(.mp-has-selection) .mp-mass-action-trigger & {
-            border-color: @color-dark-main;
-            background: fadeout(@color-dark-main, 80%);
+    .mp-multiselect-mode:not(.mp-has-selection) #mp-mass-select-checkbox {
+        border-color: @color-dark-main;
+        background: @mp-primary-dark-a20;
 
-            &::after {
-                background: @color-dark-main;
-            }
-        }
-
-        .mp-has-selection .mp-mass-action-trigger & {
+        &::after {
             background: @color-dark-main;
-            border-color: @color-dark-main;
         }
+    }
+
+    .mp-has-selection #mp-mass-select-checkbox {
+        background: @color-dark-main;
+        border-color: @color-dark-main;
+    }
+
+    .mp-mass-select-caret {
+        color: @color-dark-font-secondary;
+        border-right-color: @color-dark-border;
+
+        &:hover {
+            background: @mp-primary-dark-a12;
+            color: @color-dark-main;
+        }
+    }
+
+    #mp-sort-menu .mp-sort-dir-separator {
+        border-top-color: @color-dark-border;
+    }
+
+    .mp-radio-dot {
+        border-color: @color-dark-checkbox;
+    }
+ 
+    
+    #mp-sort-menu .mp-sort-dir-option.selected .mp-radio-dot {
+        border-color: @color-dark-main;
+        background: @color-dark-main;
+        box-shadow: inset 0 0 0 2.5px @color-dark-surface;
     }
 
     .mp-mass-action-count {
@@ -717,7 +891,7 @@ html.dark-mode {
         color: @color-dark-font;
 
         &:hover:not(.disabled) {
-            background: fadeout(@color-dark-main, 88%);
+            background: @mp-primary-dark-a12;
             color: @color-dark-main;
         }
     }
@@ -730,7 +904,7 @@ html.dark-mode {
         color: @color-dark-font;
 
         &:hover:not(.disabled):not(.mp-folder-disabled):not([data-mp-folder-disabled="true"]) {
-            background: fadeout(@color-dark-main, 88%);
+            background: @mp-primary-dark-a12;
             color: @color-dark-main;
         }
     }

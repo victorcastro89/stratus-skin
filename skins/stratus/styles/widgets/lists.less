@@ -15,7 +15,7 @@
     // Hover — gentle elevation
     tbody tr:hover > td,
     li:hover {
-        background: fadeout(@color-main, 96%);
+        background: @mp-primary-a5;
     }
 
     // Selected — soft indigo wash
@@ -61,7 +61,7 @@ html:not(.touch) {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        border: 3px solid fadeout(@color-main, 80%);
+        border: 3px solid @mp-primary-a20;
         border-top-color: @color-main;
         animation: mp-spin 0.75s linear infinite;
         z-index: 5;
@@ -77,7 +77,7 @@ html:not(.touch) {
 
         // Hover — subtle card lift
         &:hover {
-            background: fadeout(@color-main, 96%);
+            background: @mp-primary-a5;
             box-shadow: @mp-shadow-xs;
         }
 
@@ -215,7 +215,7 @@ html:not(.touch) {
     }
 
     &:hover {
-        background: fadeout(@color-main, 90%);
+        background: @mp-primary-a10;
         color: @color-main;
     }
 
@@ -392,14 +392,14 @@ html.dark-mode #mp-search-empty-state {
 
     // Selected folder — pill shape (Gmail-style, rounded right)
     li.selected > a {
-        background: fadeout(@color-main, 88%);
+        background: @mp-primary-a12;
         color: @color-main;
         font-weight: @mp-font-weight-medium;
     }
 
     // Hover
     li > a:hover {
-        background: fadeout(@color-main, 94%);
+        background: @mp-primary-a5;
     }
 
     // Nested depth styling
@@ -452,12 +452,12 @@ html.dark-mode {
         tbody td,
         li {
             // ISSUE-010: use a light indigo tint instead of near-invisible dark-list-border
-            border-bottom-color: fadeout(@color-dark-main, 80%);
+            border-bottom-color: @mp-primary-dark-a20;
         }
 
         tbody tr:hover > td,
         li:hover {
-            background: fadeout(@color-dark-main, 94%);
+            background: @mp-primary-dark-a5;
         }
 
         li.selected,
@@ -469,7 +469,7 @@ html.dark-mode {
     #messagelist,
     .messagelist {
         tr:hover {
-            background: fadeout(@color-dark-main, 94%);
+            background: @mp-primary-dark-a5;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
         }
 
@@ -495,7 +495,7 @@ html.dark-mode {
 
     // Message list loading spinner — dark variant
     #messagelist-content:not(.mp-search-empty):has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
-        border-color: fadeout(@color-dark-main, 80%);
+        border-color: @mp-primary-dark-a20;
         border-top-color: @color-dark-main;
     }
 
@@ -513,13 +513,13 @@ html.dark-mode {
     // ── FOLDER LIST ───────────────────────────────────────────────────────────────────
     .listing.folderlist li.selected > a,
     #mailboxlist li.selected > a {
-        background: fadeout(@color-dark-main, 82%);
+        background: @mp-primary-dark-a18;
         color: @color-dark-main-light;
     }
 
     .listing.folderlist li > a:hover,
     #mailboxlist li > a:hover {
-        background: fadeout(@color-dark-main, 92%);
+        background: @mp-primary-dark-a8;
     }
 
     // ── BADGES ─────────────────────────────────────────────────────────────────────────
@@ -527,7 +527,7 @@ html.dark-mode {
     .badge {
         background: @color-dark-list-badge-background;
         color: @color-dark-list-badge;
-        box-shadow: 0 0 8px fadeout(@color-dark-main, 60%);
+        box-shadow: 0 0 8px @mp-primary-dark-a40;
     }
 
     // Fix: elastic's .folderlist li.mailbox .unreadcount has higher specificity
@@ -545,7 +545,7 @@ html.dark-mode {
         border: 1px solid @mp-glass-dark-border;
 
         a:hover {
-            background: fadeout(@color-dark-main, 85%);
+            background: @mp-primary-dark-a15;
         }
     }
 
@@ -560,7 +560,7 @@ html.dark-mode {
         color: @color-dark-font-secondary;
 
         &:hover {
-            background: fadeout(@color-dark-main, 85%);
+            background: @mp-primary-dark-a15;
             color: @color-dark-main;
         }
     }

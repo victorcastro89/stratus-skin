@@ -64,3 +64,28 @@ pre code {
     background: none;
     padding: 0;
 }
+
+/* ─── Dark mode ─────────────────────────────────────────────────────────────
+ * html.dark-mode is injected into the iframe by initDarkModeFramePropagation()
+ * and initTinyMCEDarkMode() in stratus_helper.js.
+ * ─────────────────────────────────────────────────────────────────────────── */
+html.dark-mode body {
+    background: #1a1f36;
+    color: #c8d0e8;
+}
+
+html.dark-mode a { color: #7986cb; }
+
+html.dark-mode blockquote {
+    border-left-color: #7986cb;
+    color: #7e8aad;
+}
+
+html.dark-mode pre,
+html.dark-mode code {
+    background: #212845;
+    color: #c8d0e8;
+    border-color: #2a3050;
+}
+
+html.dark-mode hr { border-color: #2a3050; }

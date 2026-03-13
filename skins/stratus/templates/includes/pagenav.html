@@ -13,22 +13,25 @@
 <roundcube:add_label name="size" />
 <roundcube:add_label name="cc" />
 <roundcube:add_label name="listsorting" />
+<roundcube:add_label name="asc" />
+<roundcube:add_label name="desc" />
 <roundcube:if condition="template:name == 'mail'" />
 <div id="mail-list-navbar" class="pagenav menu footer small mp-smart-bar" role="toolbar" aria-label="<roundcube:label name="arialabellistnav" />">
-	<!-- Mobile nav buttons (display:none on desktop, shown on phone via elastic rules) -->
-	<a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
-	<a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="mailboxlist" /></span></a>
 	<div class="mp-smart-bar-left">
-		<!-- Checkbox trigger (always visible) — opens select-options popup -->
-		<a href="#select" id="mp-mass-select-toggle" class="mp-mass-action-trigger select" title="<roundcube:label name="select" />"
-			data-popup="listselect-menu">
-			<span class="mp-mass-action-checkbox" aria-hidden="true"></span>
+		<!-- (A) Select zone: checkbox (enters multiselect) + caret (opens batch-select popup) -->
+		<span class="mp-mass-action-checkbox" id="mp-mass-select-checkbox"
+			role="checkbox" aria-checked="false" tabindex="0"
+			title="<roundcube:label name="select" />"></span>
+		<a href="#select" id="mp-mass-select-caret" class="mp-mass-select-caret"
+			data-popup="listselect-menu"
+			title="<roundcube:label name="select" />" aria-haspopup="true">
+			<span class="mp-select-caret-icon" aria-hidden="true"></span>
 			<span class="inner"><roundcube:label name="select" /></span>
 		</a>
 		<!-- Default state: sort indicator + refresh (visible when no selection) -->
 		<div class="mp-smart-bar-default" aria-label="List controls" id="sort-bar-mail-list">
 			<a href="#sort" id="mp-sort-trigger" class="mp-sort-trigger"
-				aria-haspopup="dialog" aria-expanded="false"
+				aria-haspopup="true" aria-expanded="false"
 				title="<roundcube:label name="listsorting" />">
 				<span class="mp-sort-arrow" aria-hidden="true"></span>
 				<span class="mp-sort-label"></span>
@@ -45,9 +48,12 @@
 			<a href="#archive" id="mp-action-archive" class="mp-action-btn archive"
 				title="<roundcube:label name="archive.buttontitle" />"
 				><span class="inner"><roundcube:label name="archive.buttontext" /></span></a>
-			<roundcube:button command="move" type="link"
-				class="mp-action-btn move disabled" classAct="mp-action-btn move"
-				title="moveto" innerclass="inner" label="moveto" />
+			<a href="#" id="mp-action-move" class="mp-action-btn move disabled"
+				title="<roundcube:label name="moveto" />"
+				onclick="return rcmail.command('move','',this,event)">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14,18V15H10V11H14V8L19,13M20,6H12L10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6Z" /></svg>
+				<span class="inner"><roundcube:label name="moveto" /></span>
+			</a>
 			<span class="mp-mass-action-divider" aria-hidden="true"></span>
 			<a href="#mark-toggle" id="mp-action-mark-toggle" class="mp-action-btn unread disabled" title="<roundcube:label name="markunread" />">
 				<span class="inner"><roundcube:label name="markunread" /></span>
@@ -72,6 +78,33 @@
 		<roundcube:button command="nextpage" type="link" class="nextpage disabled" classAct="nextpage"
 			title="nextpage" label="next" innerclass="inner" />
 	</div>
+</div>
+<!-- Mobile-only pagination: hidden on desktop, shown on html.layout-phone at standard elastic location -->
+<div id="mp-mobile-pagenav" class="pagenav menu footer small" role="navigation" aria-label="<roundcube:label name="arialabellistnav" />">
+	<roundcube:button command="previouspage" type="link" class="prevpage disabled" classAct="prevpage"
+		title="previouspage" label="previous" innerclass="inner" />
+	<roundcube:object name="messageCountDisplay" class="pagenav-text" aria-live="polite" aria-relevant="text" />
+	<roundcube:button command="nextpage" type="link" class="nextpage disabled" classAct="nextpage"
+		title="nextpage" label="next" innerclass="inner" />
+</div>
+<!-- Sort popup — opened by sort-controller.js via rcmail.command('menu-open').
+     show_menu() relocates this to document.body; use standalone selectors in CSS.
+     Uses the same .popupmenu + .menu.listing structure as #message-menu so Elastic's
+     native styles apply (icon font, a.selected::before checkmark, hover colours). -->
+<div id="mp-sort-menu" class="popupmenu" aria-label="Sort options">
+	<ul class="menu listing" role="menu">
+		<li role="menuitem"><a href="#sort" data-sort-col="date"><roundcube:label name="sentdate" /></a></li>
+		<li role="menuitem"><a href="#sort" data-sort-col="arrival"><roundcube:label name="arrival" /></a></li>
+		<li role="menuitem"><a href="#sort" data-sort-col="from"><roundcube:label name="from" /></a></li>
+		<li role="menuitem"><a href="#sort" data-sort-col="to"><roundcube:label name="to" /></a></li>
+		<li role="menuitem"><a href="#sort" data-sort-col="fromto"><roundcube:label name="fromto" /></a></li>
+		<li role="menuitem"><a href="#sort" data-sort-col="subject"><roundcube:label name="subject" /></a></li>
+		<li role="menuitem"><a href="#sort" data-sort-col="size"><roundcube:label name="size" /></a></li>
+		<!-- Separator between sort columns and direction options -->
+		<li class="mp-sort-dir-separator" role="separator"></li>
+		<li role="menuitem"><a href="#sort-dir" data-sort-order="ASC" class="mp-sort-dir-option"><span class="mp-radio-dot"></span><roundcube:label name="asc" /></a></li>
+		<li role="menuitem"><a href="#sort-dir" data-sort-order="DESC" class="mp-sort-dir-option"><span class="mp-radio-dot"></span><roundcube:label name="desc" /></a></li>
+	</ul>
 </div>
 <roundcube:else />
 <!-- Non-mail templates: standard elastic paging -->

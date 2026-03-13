@@ -31,6 +31,7 @@
 		this._markToggleBtn   = document.getElementById('mp-action-mark-toggle');
 		this._flagToggleBtn   = document.getElementById('mp-action-flag-toggle');
 		this._archiveBtn      = document.getElementById('mp-action-archive') || bar.querySelector('.mp-action-btn.archive');
+		this._moveBtn         = document.getElementById('mp-action-move');
 		this._deleteBtn       = bar.querySelector('.mp-action-btn.delete');
 		this._prevPageBtn     = bar.querySelector('.prevpage');
 		this._nextPageBtn     = bar.querySelector('.nextpage');
@@ -95,7 +96,7 @@
 	ns.MassActionBar.prototype.updateState = function(selectionState, isMultiSelect) {
 		this._lastState = selectionState;
 		var count      = selectionState.count || 0;
-		var showActive = isMultiSelect || count > 1;
+		var showActive = isMultiSelect || count > 0;
 
 		if (showActive) {
 			this.showActiveState(count);
@@ -112,11 +113,19 @@
 	ns.MassActionBar.prototype.showActiveState = function(count) {
 		this.bar.classList.add('mp-has-selection');
 		if (this._chip) this._chip.textContent = count + ' selected';
+		if (this._moveBtn) {
+			this._moveBtn.classList.remove('disabled');
+			this._moveBtn.removeAttribute('aria-disabled');
+		}
 	};
 
 	ns.MassActionBar.prototype.showDefaultState = function() {
 		this.bar.classList.remove('mp-has-selection');
 		if (this._chip) this._chip.textContent = '';
+		if (this._moveBtn) {
+			this._moveBtn.classList.add('disabled');
+			this._moveBtn.setAttribute('aria-disabled', 'true');
+		}
 	};
 
 	/**

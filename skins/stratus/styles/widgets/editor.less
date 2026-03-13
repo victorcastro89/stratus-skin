@@ -9,10 +9,13 @@
     border: 1px solid @color-input-border;
     
     &.focused,
-    &:focus-within {
+    &:focus-within { 
         border-color: @color-main;
         .mp-focus-ring();
     }
+}
+.tox.tox-tinymce.focused, .tox.tox-tinymce:focus-within {
+  box-shadow: none !important
 }
 
 // Legacy TinyMCE 4.x
@@ -39,13 +42,14 @@
     transition: background @mp-transition-fast;
     
     &:hover:not(.tox-tbtn--disabled) {
-        background: fadeout(@color-main, 92%) !important;
+        background: @mp-primary-a8 !important;
     }
 }
 
 // TinyMCE 5+ edit area needs padding via parent container
 .tox-edit-area {
-    padding: @mp-space-md;
+    margin-left: 5px !important;
+    margin-right: 5px !important;
 }
 
 // Legacy TinyMCE 4.x
@@ -56,11 +60,11 @@
 }
 
 .mce-btn {
-    border-radius: @mp-radius-sm;
-    transition: background @mp-transition-fast;
+    // border-radius: @mp-radius-sm;
+    // transition: background @mp-transition-fast;
     
     &:hover {
-        background: fadeout(@color-main, 92%);
+        background: @mp-primary-a8;
     }
 }
 
@@ -71,7 +75,10 @@
 // stratus_helper.js which injects a stylesheet directly into the iframe document.
 // ═══════════════════════════════════════════════════════════════════════════════
 html.dark-mode {
-
+    .mce-content-body {
+        background: @color-dark-surface;
+        color: @color-dark-font;
+    }
     .tox.tox-tinymce {
         border-color: @color-dark-border;
 
@@ -96,12 +103,12 @@ html.dark-mode {
             }
 
             &:hover:not(.tox-tbtn--disabled) {
-                background: fadeout(@color-dark-main, 85%) !important;
+                background: @mp-primary-dark-a15 !important;
             }
 
             &.tox-tbtn--enabled,
             &.tox-tbtn--enabled:hover {
-                background: fadeout(@color-dark-main, 75%) !important;
+                background: @mp-primary-dark-a25 !important;
             }
         }
 
@@ -143,7 +150,7 @@ html.dark-mode {
         color: @color-dark-font;
 
         &:hover {
-            background: fadeout(@color-dark-main, 85%);
+            background: @mp-primary-dark-a15;
         }
     }
 }

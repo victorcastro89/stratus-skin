@@ -51,7 +51,7 @@ html.dark-mode {
     // SELECTION
     // ═══════════════════════════════════════════════════════════════════════════
     ::selection {
-        background: fadeout(@color-dark-main, 60%);
+        background: @mp-primary-dark-a40;
         color: @color-dark-font;
     }
 
@@ -69,8 +69,8 @@ html.dark-mode {
     --mp-conv-main-rgb: var(--stratus-primary-dark-rgb, 121, 134, 203);
     --mp-conv-main-light: @color-dark-main-light;
 
-    --mp-conv-row-border: fadeout(@color-dark-main, 80%);   // ISSUE-010: visible light tint on dark (was dark-list-border at 50%)
-    --mp-conv-row-hover-bg: fadeout(@color-dark-main, 94%);
+    --mp-conv-row-border: @mp-primary-dark-a20;   // ISSUE-010: visible light tint on dark
+    --mp-conv-row-hover-bg: @mp-primary-dark-a5;
     --mp-conv-row-selected-bg: @color-dark-list-selected-background;
 
     --mp-conv-surface: @color-dark-surface;
@@ -83,10 +83,10 @@ html.dark-mode {
     --mp-conv-text-secondary: @color-dark-font-secondary;
     --mp-conv-text-muted: @color-dark-font-secondary;
 
-    --mp-conv-count-bg: fadeout(@color-dark-main, 80%);
+    --mp-conv-count-bg: @mp-primary-dark-a20;
     --mp-conv-count-text: @color-dark-font;
 
-    --mp-conv-danger: #ef5350;
+    --mp-conv-danger: @color-dark-error;
 
     --mp-conv-hover-actions-bg: fade(@color-dark-surface, 97%);
     --mp-conv-hover-actions-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
@@ -95,25 +95,25 @@ html.dark-mode {
     --mp-conv-card-hover-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 
     --mp-conv-child-divider: var(--mp-conv-row-border);
-    --mp-conv-child-bg: fadeout(@color-dark-main, 95%);
-    --mp-conv-child-hover-bg: fadeout(@color-dark-main, 92%);
-    --mp-conv-child-selected-bg: fadeout(@color-dark-main, 88%);
+    --mp-conv-child-bg: @mp-primary-dark-a5;
+    --mp-conv-child-hover-bg: @mp-primary-dark-a8;
+    --mp-conv-child-selected-bg: @mp-primary-dark-a12;
     --mp-conv-child-text: @color-dark-font;
     --mp-conv-child-text-muted: @color-dark-font-secondary;
-    --mp-conv-child-indent-guide: fadeout(@color-dark-main, 72%);
+    --mp-conv-child-indent-guide: @mp-primary-dark-a30;
 
     --mp-conv-child-row-bg: var(--mp-conv-child-bg);
     --mp-conv-child-row-border: var(--mp-conv-child-divider);
     --mp-conv-expanded-bg: fade(#fff, 5%);
 
     --mp-conv-child-unread-accent: @color-dark-main;
-    --mp-conv-dir-sent-color: #66bb6a;
+    --mp-conv-dir-sent-color: @color-dark-success;
     --mp-conv-dir-received-color: @color-dark-main;
 
     // HOVER ACTIONS — dark variant
     --mp-hover-actions-bg: @mp-glass-dark-bg-strong;
     --mp-hover-actions-shadow: @mp-shadow-dark-md;
     --mp-hover-actions-icon-color: @color-dark-font-secondary;
-    --mp-hover-actions-icon-hover-bg: fadeout(@color-dark-main, 85%);
+    --mp-hover-actions-icon-hover-bg: @mp-primary-dark-a15;
     --mp-hover-actions-icon-hover-color: @color-dark-main;
 }

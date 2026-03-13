@@ -107729,3 +107729,7 @@ Stack trace:
 [11-Mar-2026 15:29:56 +0000]: <07260049> PHP Error: Error loading template for mail in /var/www/html/program/include/rcmail_output_html.php on line 804 (GET /)
 [11-Mar-2026 15:29:57 +0000]: <07260049> PHP Error: Error loading template for mail in /var/www/html/program/include/rcmail_output_html.php on line 804 (GET /)
 [11-Mar-2026 15:29:58 +0000]: <07260049> PHP Error: Error loading template for mail in /var/www/html/program/include/rcmail_output_html.php on line 804 (GET /)
+[13-Mar-2026 21:49:50 +0000]: <a8d611c4> IMAP Error: Login failed for ads against mailserver from 168.119.192.145. AUTHENTICATE PLAIN: Authentication failed. in /var/www/html/program/lib/Roundcube/rcube_imap.php on line 211 (POST /?_task=login&_action=login)
+[13-Mar-2026 22:02:56 +0000]: <a8d611c4> IMAP Error: Login failed for asd against mailserver from 168.119.192.145. AUTHENTICATE PLAIN: Authentication failed. in /var/www/html/program/lib/Roundcube/rcube_imap.php on line 211 (POST /?_task=login&_action=login)
+[13-Mar-2026 22:03:40 +0000]: <a8d611c4> IMAP Error: Login failed for asd against mailserver from 168.119.192.145. AUTHENTICATE PLAIN: Authentication failed. in /var/www/html/program/lib/Roundcube/rcube_imap.php on line 211 (POST /?_task=login&_action=login)
+[13-Mar-2026 22:05:34 +0000]: <a8d611c4> IMAP Error: Login failed for as against mailserver from 168.119.192.145. AUTHENTICATE PLAIN: Authentication failed. in /var/www/html/program/lib/Roundcube/rcube_imap.php on line 211 (POST /?_task=login&_action=login)
