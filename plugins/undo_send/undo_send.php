@@ -81,6 +81,7 @@ class undo_send extends rcube_plugin
         $this->rcmail->output->add_label(
             'undo_send.sending_in',
             'undo_send.undo',
+            'undo_send.send_now',
             'undo_send.sending_cancelled',
             'undo_send.sending'
         );

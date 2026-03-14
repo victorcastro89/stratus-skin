@@ -10,6 +10,7 @@
 //    elastic/styles/, but our compiled CSS lives in stratus/styles/, so
 //    we override with the correct path to elastic's fonts directory.
 @import "_fonts";
+@import "_icons";            // Material Icons codepoint overrides (after _fonts, before component files)
 
 // 3. Variable overrides (MUST come AFTER elastic — LESS lazy eval: last def wins)
 //    Without this order, elastic's @color-main:#37beff overrides our #5c6bc0.

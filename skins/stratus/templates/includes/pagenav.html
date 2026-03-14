@@ -41,7 +41,6 @@
 		</div>
 		<!-- Action buttons (visible only when messages selected — active state) -->
 		<div class="mp-mass-action-actions" aria-label="Message actions">
-			<span class="mp-mass-action-divider" aria-hidden="true"></span>
 			<roundcube:button command="delete" type="link"
 				class="mp-action-btn delete disabled" classAct="mp-action-btn delete"
 				title="deletemessage" innerclass="inner" label="delete" />
@@ -51,7 +50,6 @@
 			<a href="#" id="mp-action-move" class="mp-action-btn move disabled"
 				title="<roundcube:label name="moveto" />"
 				onclick="return rcmail.command('move','',this,event)">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14,18V15H10V11H14V8L19,13M20,6H12L10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6Z" /></svg>
 				<span class="inner"><roundcube:label name="moveto" /></span>
 			</a>
 			<span class="mp-mass-action-divider" aria-hidden="true"></span>

@@ -220,17 +220,17 @@ html:not(.touch) {
     }
 
     &.archive:before {
-        content: "\f187"; // fa-archive
+        content: @mi-archive; // archive
         font-weight: 900;
     }
 
     &.delete:before {
-        content: "\f2ed"; // fa-trash-alt
+        content: @mi-trash-alt; // delete
         font-weight: 400;
     }
 
     &.flag:before {
-        content: "\f024"; // fa-flag
+        content: @mi-flag; // flag
         font-weight: 400; // outline
     }
 
@@ -295,10 +295,10 @@ html:not(.touch) {
     opacity: 0.8;
 
     &::before {
-        content: "\f0e0"; // fa-envelope
+        content: @mi-envelope; // mail
         font-family: 'Icons';
         font-weight: 400;
-        font-size: 2.5rem;
+        font-size: @mp-icon-size-xl;
         display: block;
         margin-bottom: @mp-space-md;
         opacity: 0.45;
@@ -307,7 +307,7 @@ html:not(.touch) {
 
 // SEARCH EMPTY STATE — swap icon to magnifying glass
 #messagelist-content.mp-search-empty .listing-info::before {
-    content: "\f002"; // fa-search
+    content: @mi-search; // search
     font-weight: 900;
 }
 
@@ -328,10 +328,10 @@ html:not(.touch) {
     line-height: 1.5;
 
     &::before {
-        content: "\f002"; // fa-search
+        content: @mi-search; // search
         font-family: 'Icons';
         font-weight: 900;
-        font-size: 2.5rem;
+        font-size: @mp-icon-size-xl;
         display: block;
         margin-bottom: @mp-space-md;
         opacity: 0.45;
@@ -359,7 +359,7 @@ html.dark-mode #mp-search-empty-state {
 // The elastic toolbar icon pattern uses ::before + font-family: 'Icons'.
 .toolbar a.button.conv-toggle::before,
 .menu.toolbar a.button.conv-toggle::before {
-    content: "\f086"; // fa-comments
+    content: @mi-comments; // forum
     font-family: 'Icons';
     font-weight: 900;
     font-style: normal;

@@ -88,6 +88,9 @@ class stratus_helper extends rcube_plugin
 
         // Message-list date formatting
         $this->add_hook('messages_list', [$this, 'messages_list']);
+
+        // Outlook-style reply divider
+        $this->add_hook('message_compose_body', [$this, 'outlook_reply_divider']);
     }
 
     private function init_settings()
@@ -280,6 +283,74 @@ class stratus_helper extends rcube_plugin
             }
         }
 
+        return $args;
+    }
+
+    /**
+     * Replace the default Roundcube reply intro + blockquote with an
+     * Outlook-style horizontal rule and From/Date/To/Subject header.
+     *
+     * Roundcube generates:
+     *   <p id="reply-intro">On [date], [sender] wrote:</p>
+     *   <blockquote>[original message]</blockquote>
+     *
+     * We transform it to:
+     *   <hr id="reply-divider" style="...">
+     *   <div id="reply-header" style="...">From / Date / To / Subject</div>
+     *   [original message]  ← blockquote wrapper removed
+     */
+    public function outlook_reply_divider($args)
+    {
+        if ($args['mode'] !== 'reply' || empty($args['html'])) {
+            return $args;
+        }
+
+        $body = $args['body'];
+
+        if (strpos($body, '<p id="reply-intro">') === false) {
+            return $args;
+        }
+
+        $message = !empty($args['message']) ? $args['message'] : null;
+        if (empty($message) || empty($message->headers)) {
+            return $args;
+        }
+
+        $date    = $this->rcmail->format_date($message->get_header('date'), $this->rcmail->config->get('date_long'));
+        $from    = rcube::Q($message->get_header('from'));
+        $to      = rcube::Q($message->get_header('to'));
+        $subject = rcube::Q($message->subject);
+
+        $lbl_from    = rcube::Q($this->rcmail->gettext('from'));
+        $lbl_date    = rcube::Q($this->rcmail->gettext('date'));
+        $lbl_to      = rcube::Q($this->rcmail->gettext('to'));
+        $lbl_subject = rcube::Q($this->rcmail->gettext('subject'));
+
+        $divider = '<hr id="reply-divider" style="border:0;border-top:1px solid #e0e0e0;margin:20px 0">'
+            . '<div id="reply-header" style="color:#555555;font-size:0.875em;line-height:1.8;margin-bottom:16px">'
+            . '<b>' . $lbl_from    . ':</b> ' . $from    . '<br>'
+            . '<b>' . $lbl_date    . ':</b> ' . rcube::Q($date) . '<br>'
+            . '<b>' . $lbl_to      . ':</b> ' . $to      . '<br>'
+            . '<b>' . $lbl_subject . ':</b> ' . $subject
+            . '</div>';
+
+        // Replace reply-intro paragraph + opening blockquote with the divider.
+        // The optional leading <br> is present for top-posting mode.
+        $body = preg_replace(
+            '/(?:<br\s*\/?>)?\s*<p id="reply-intro">[^<]*<\/p>\s*<blockquote>/si',
+            $divider,
+            $body
+        );
+
+        // Remove the outer </blockquote> (always the last one in the body —
+        // it was added by create_reply_body() as a direct wrapper around the
+        // entire quoted message).
+        $last = strrpos($body, '</blockquote>');
+        if ($last !== false) {
+            $body = substr_replace($body, '', $last, strlen('</blockquote>'));
+        }
+
+        $args['body'] = $body;
         return $args;
     }
 

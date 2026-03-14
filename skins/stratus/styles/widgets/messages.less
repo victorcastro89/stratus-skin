@@ -50,16 +50,16 @@
     }
 }
 
-// Keep quote history readable: no per-level quote colors
+// Outlook-style blockquote: single navy blue left border, no background
 .message-part,
 .message-htmlpart {
     blockquote,
     blockquote blockquote,
     blockquote blockquote blockquote {
         color: inherit;
-        border-left-width: 1px;
-        border-left-color: @color-layout-border;
+        border-left: 2px solid #1F497D;
         border-right: 0;
+        background-color: transparent;
     }
 }
 
@@ -141,10 +141,8 @@ html.dark-mode {
         blockquote,
         blockquote blockquote,
         blockquote blockquote blockquote {
-            color: inherit;
-            border-left-width: 2px !important;
-            border-left-color: @color-dark-border !important;
-            border-right: 0;
+            border-left-color: #434343;
+            background-color: transparent !important;
         }
     }
 

@@ -309,8 +309,8 @@ html.layout-phone #layout-list > .searchbar {
     &::before {
         font-family: 'Icons';
         font-weight: 900;
-        font-size: 0.7rem;
-        content: '\f0d7'; // fa-caret-down
+        font-size: @mp-icon-size-md;
+        content: @mi-caret-down; // arrow_drop_down
         line-height: 1;
     }
 }
@@ -382,20 +382,20 @@ html.layout-phone #layout-list > .searchbar {
         font-family: 'Icons';
         font-weight: 900;
         font-style: normal;
-        font-size: 0.9rem;
+        font-size: @mp-icon-size-sm;
         line-height: 1;
-        content: '\f0dd'; // fa-sort-down — default until JS runs
+        content: @mi-sort-down; // arrow_downward — default until JS runs
         opacity: 0.5;
     }
 
     &.mp-sort-asc::before {
-        content: '\f0de'; // fa-sort-up
+        content: @mi-sort-up; // arrow_upward
         opacity: 1;
         color: @color-main;
     }
 
     &.mp-sort-desc::before {
-        content: '\f0dd'; // fa-sort-down
+        content: @mi-sort-down; // arrow_downward
         opacity: 1;
         color: @color-main;
     }
@@ -425,7 +425,7 @@ html.layout-phone #layout-list > .searchbar {
 // Refresh button in default section
 .mp-smart-bar-default .mp-action-btn.refresh {
     &:before {
-        content: "\f021"; // fa-sync / fa-arrows-rotate
+        content: @mi-sync; // sync
         font-weight: 900;
     }
 }
@@ -540,7 +540,7 @@ html.layout-phone #layout-list > .searchbar {
     &:before {
         margin: 0 !important;
         line-height: 28px !important;
-        font-size: 1rem;
+        font-size: @mp-icon-size-md;
         font-weight: 900; // angle-left/right are solid-only
     }
 
@@ -608,7 +608,7 @@ html.layout-phone #layout-list > .searchbar {
     &:before {
         margin: 0 !important;
         display: block;
-        font-size: 1rem;
+        font-size: @mp-icon-size-md;
         line-height: 1 !important;
         font-weight: 400; // fa-regular-400 outline icons
     }
@@ -620,7 +620,7 @@ html.layout-phone #layout-list > .searchbar {
 
     // sync (refresh) icon — not in elastic's icon map, define explicitly
     &.sync:before {
-        content: "\f021"; // fa-arrows-rotate / fa-sync
+        content: @mi-sync; // sync
         font-weight: 900;
     }
 
