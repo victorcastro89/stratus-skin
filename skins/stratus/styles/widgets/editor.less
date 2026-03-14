@@ -136,6 +136,98 @@ html.dark-mode {
         }
     }
 
+    // TinyMCE 5+ dropdown menus and dialogs
+    .tox-menu,
+    .tox-collection {
+        background-color: @color-dark-surface-raised;
+        border-color: @color-dark-border;
+    }
+
+    .tox-collection__item {
+        color: @color-dark-font;
+
+        &:hover,
+        &--active {
+            background-color: @mp-primary-dark-a15;
+        }
+    }
+
+    .tox-collection__item-label {
+        color: @color-dark-font;
+    }
+
+    .tox-collection__item-checkmark svg {
+        fill: @color-dark-font;
+    }
+
+    // TinyMCE 5+ dialogs (link, image, search/replace, etc.)
+    .tox-dialog-wrap__backdrop {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .tox-dialog {
+        background-color: @color-dark-surface-raised;
+        border-color: @color-dark-border;
+
+        .tox-dialog__header {
+            background-color: @color-dark-surface-raised;
+            color: @color-dark-font;
+        }
+
+        .tox-dialog__title {
+            color: @color-dark-font;
+        }
+
+        .tox-dialog__body {
+            color: @color-dark-font;
+        }
+
+        .tox-dialog__footer {
+            background-color: @color-dark-surface-raised;
+            border-top-color: @color-dark-border;
+        }
+
+        .tox-label,
+        .tox-toolbar-label {
+            color: @color-dark-font-secondary;
+        }
+
+        .tox-textfield,
+        .tox-textarea,
+        .tox-selectfield select {
+            background-color: @color-dark-surface;
+            border-color: @color-dark-border;
+            color: @color-dark-font;
+        }
+
+        .tox-button {
+            &--secondary {
+                background-color: @color-dark-surface;
+                border-color: @color-dark-border;
+                color: @color-dark-font;
+
+                &:hover {
+                    background-color: @mp-primary-dark-a15;
+                }
+            }
+        }
+    }
+
+    // TinyMCE 5+ color picker swatches
+    .tox-swatches__picker-btn svg {
+        fill: @color-dark-font;
+    }
+
+    // TinyMCE 5+ font/size select button labels
+    .tox-tbtn--select .tox-tbtn__select-label {
+        color: @color-dark-font;
+    }
+
+    // TinyMCE 5+ select chevron
+    .tox-tbtn__select-chevron svg {
+        fill: @color-dark-font;
+    }
+
     // Legacy TinyMCE 4.x outer chrome
     .mce-tinymce {
         border-color: @color-dark-border;
