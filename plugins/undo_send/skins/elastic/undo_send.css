@@ -29,6 +29,33 @@
     border-radius: 2px;
 }
 
+/* ── Send now refinements (elastic/stratus) ──── */
+
+#messagestack .mp-send-now-link {
+    font-weight: normal;
+    text-decoration: none;
+    opacity: 0.9;
+    transition: opacity 0.15s ease;
+}
+
+#messagestack .mp-send-now-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+#messagestack .mp-send-now-link:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 2px;
+    opacity: 1;
+}
+
+#messagestack .mp-undo-sep {
+    opacity: 0.35;
+    user-select: none;
+}
+
 /* Dark mode: no extra rules needed — color:inherit picks up the correct
    text color from #messagestack .notice / .confirmation / .error styling
    which elastic and stratus already theme for dark mode. */

@@ -39,8 +39,14 @@
 @mp-space-3xl:      3rem;
 @mp-space-4xl:      4rem;
 @mp-hover-actions-btn-size:   35px;
-@mp-hover-actions-icon-size:  1rem;
 @mp-hover-actions-padding:    1px;
+
+// ─── Icon sizes ────────────────────────────────────────────────────────────
+@mp-icon-size-sm:             0.9rem;   // sort arrow, secondary icons
+@mp-icon-size-md:             1rem;     // standard UI icons (action btns, caret, pagination)
+@mp-icon-size-xl:             2.5rem;   // empty-state decorative icons
+
+@mp-hover-actions-icon-size:  1.2rem;
 @mp-hover-actions-height:     (@mp-hover-actions-btn-size + (2 * @mp-hover-actions-padding));
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -317,9 +323,9 @@
 @color-dark-scrollbar-track:            transparent;
 
 // Dark blockquotes
-@color-dark-blockquote-0:               lighten(@color-main, 15%);
-@color-dark-blockquote-1:               lighten(@color-main, 25%);
-@color-dark-blockquote-2:               lighten(@color-main, 35%);
+@color-dark-blockquote-0:               lighten(@color-main-lighter, 15%);
+@color-dark-blockquote-1:               lighten(@color-main-lighter, 25%);
+@color-dark-blockquote-2:               lighten(@color-main-lighter, 35%);
 @color-dark-blockquote-0-border:        @color-dark-blockquote-0;
 @color-dark-blockquote-1-border:        @color-dark-blockquote-1;
 @color-dark-blockquote-2-border:        @color-dark-blockquote-2;

@@ -1,0 +1,639 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// _icons.less — Material Icons codepoint overrides
+//
+// Replaces every FontAwesome content: value in Elastic with the Material
+// Icons equivalent. Imported after _fonts.less (which swaps the font files)
+// so the cascade wins without !important on most rules.
+//
+// Structure:
+//   Section 1 — @mi-* variable definitions (118 icons)
+//   Section 2 — Elastic selector overrides (organized by source file)
+//
+// ─── How to find icon codepoints ───────────────────────────────────────
+//
+//   1. Browse / search:  https://fonts.google.com/icons
+//      Click any icon → the codepoint is shown in the detail panel.
+//
+//   2. Raw codepoint list (useful for grep):
+//      https://github.com/google/material-design-icons/blob/master/font/MaterialIcons-Regular.codepoints
+//      Format: icon_name  hex   (e.g. "logout e9ba")
+//
+//   3. Use in LESS:  @mi-example: "\e9ba";   ← prefix hex with \e
+//
+//   4. Filled vs Outlined:
+//      font-weight: 900  → filled style  (material-icons.woff2)
+//      font-weight: 400  → outlined style (material-icons-outlined.woff2)
+//
+// ═══════════════════════════════════════════════════════════════════════════
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION 1: Material Icons codepoint variables
+// Source: Google Material Icons (MaterialIcons-Regular.codepoints)
+// Font: material-icons.woff2  (filled,   weight 900)
+//       material-icons-outlined.woff2  (outlined, weight 400)
+// Naming: @mi-{fa-name} for easy cross-reference to Elastic's @fa-var-{name}
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── Navigation / Arrows ─────────────────────────────────────────────────
+@mi-arrow-left:               "\e5c4";  // arrow_back
+@mi-arrow-right:              "\e5c8";  // arrow_forward
+@mi-chevron-left:             "\e5cb";  // chevron_left
+@mi-chevron-right:            "\e5cc";  // chevron_right
+@mi-angle-down:               "\e5cf";  // expand_more
+@mi-angle-up:                 "\e5ce";  // expand_less
+@mi-angle-left:               "\e314";  // keyboard_arrow_left
+@mi-angle-right:              "\e315";  // keyboard_arrow_right
+@mi-angle-double-down:        "\e5cf";  // expand_more  (no double variant — use single)
+@mi-angle-double-up:          "\e5ce";  // expand_less
+@mi-angle-double-left:        "\e5dc";  // first_page
+@mi-angle-double-right:       "\e5dd";  // last_page
+@mi-caret-down:               "\e5c5";  // arrow_drop_down
+
+// ─── Actions ─────────────────────────────────────────────────────────────
+@mi-check:                    "\e5ca";  // check
+@mi-check-circle:             "\e86c";  // check_circle
+@mi-check-square:             "\e834";  // check_box
+@mi-times:                    "\e5cd";  // close
+@mi-times-circle:             "\e5c9";  // cancel
+@mi-plus:                     "\e145";  // add
+@mi-plus-square:              "\e146";  // add_box
+@mi-minus-circle:             "\e15b";  // remove
+@mi-ban:                      "\e14c";  // clear
+@mi-undo:                     "\e166";  // undo
+@mi-redo:                     "\e15a";  // redo
+@mi-redo-alt:                 "\e15a";  // redo
+
+// ─── Mail ────────────────────────────────────────────────────────────────
+@mi-envelope:                 "\e158";  // mail
+@mi-envelope-open:            "\e151";  // drafts
+@mi-paper-plane:              "\e163";  // send
+@mi-reply:                    "\e15e";  // reply
+@mi-reply-all:                "\e15f";  // reply_all
+@mi-inbox:                    "\e156";  // inbox
+@mi-archive:                  "\e149";  // archive
+@mi-flag:                     "\e153";  // flag
+@mi-tag:                      "\e892";  // label
+@mi-paperclip:                "\e226";  // attach_file
+@mi-spell-check:              "\e8ce";  // spellcheck
+@mi-signature:                "\e228";  // draw (gesture)
+
+// ─── Objects ─────────────────────────────────────────────────────────────
+@mi-move-icon:                "\e675";  // swap_horiz (semantic equiv for move)
+@mi-trash-alt:                "\e872";  // delete
+@mi-folder:                   "\e2c7";  // folder
+@mi-folder-open:              "\e2c8";  // folder_open
+@mi-file:                     "\e24d";  // insert_drive_file
+@mi-file-alt:                 "\e873";  // description
+@mi-file-code:                "\e86f";  // code
+@mi-file-pdf:                 "\e415";  // picture_as_pdf
+@mi-file-word:                "\e873";  // description  (no exact word equiv)
+@mi-file-excel:               "\e265";  // table_chart
+@mi-file-powerpoint:          "\e41b";  // slideshow
+@mi-file-archive:             "\e2c4";  // folder_zip
+@mi-file-image:               "\e3f4";  // image
+@mi-file-audio:               "\eb82";  // audio_file
+@mi-file-video:               "\eb87";  // video_file
+@mi-sticky-note:              "\f1fc";  // sticky_note_2
+@mi-save:                     "\e161";  // save
+@mi-print:                    "\e8ad";  // print
+@mi-download:                 "\f090";  // download
+@mi-upload:                   "\f09b";  // upload
+@mi-copy:                     "\e14d";  // content_copy
+@mi-image:                    "\e3f4";  // image
+@mi-link:                     "\e157";  // link
+@mi-qrcode:                   "\e00a";  // qr_code_2
+
+// ─── People ──────────────────────────────────────────────────────────────
+@mi-user:                     "\e7fd";  // person
+@mi-users:                    "\e7ef";  // group
+@mi-user-plus:                "\e7fe";  // person_add
+@mi-user-times:               "\ef66";  // person_remove
+@mi-user-friends:             "\e7ef";  // group
+@mi-address-book:             "\e0ba";  // contacts
+@mi-address-card:             "\f22e";  // contact_page
+@mi-id-card:                  "\f22e";  // contact_page
+
+// ─── UI / Interface ──────────────────────────────────────────────────────
+@mi-search:                   "\e8b6";  // search
+@mi-search-plus:              "\e8ff";  // zoom_in
+@mi-search-minus:             "\e900";  // zoom_out
+@mi-filter:                   "\ef4f";  // filter_alt
+@mi-cog:                      "\e8b8";  // settings
+@mi-sliders-h:                "\e429";  // tune
+@mi-wrench:                   "\e869";  // build
+@mi-bars:                     "\e5d2";  // menu
+@mi-ellipsis-h:               "\e5d3";  // more_horiz
+@mi-ellipsis-v:               "\e5d4";  // more_vert
+@mi-info-circle:              "\e88e";  // info
+@mi-question:                 "\eb8b";  // question_mark
+@mi-question-circle:          "\e887";  // help
+@mi-exclamation-triangle:     "\e002";  // warning
+@mi-exclamation-circle:       "\e000";  // error
+@mi-circle:                   "\ef4a";  // circle
+@mi-circle-notch:             "\e863";  // hourglass_empty (spinner analog)
+@mi-lightbulb:                "\e0f0";  // lightbulb
+@mi-eye:                      "\e8f4";  // visibility
+@mi-mouse-pointer:            "\e913";  // touch_app
+@mi-asterisk:                 "\e838";  // star
+
+// ─── Security / Auth ─────────────────────────────────────────────────────
+@mi-lock:                     "\e897";  // lock
+@mi-unlock:                   "\e898";  // lock_open
+@mi-key:                      "\e0da";  // vpn_key
+@mi-shield-alt:               "\e9e0";  // shield
+@mi-sign-in-alt:              "\ea77";  // login
+
+// ─── Communication ───────────────────────────────────────────────────────
+@mi-comment:                  "\e0b9";  // comment
+@mi-comments:                 "\e0bf";  // forum
+@mi-share:                    "\e80d";  // share
+@mi-share-alt:                "\e80d";  // share
+@mi-share-square:             "\e80d";  // share
+@mi-bell:                     "\e7f4";  // notifications
+@mi-rss-square:               "\e0e5";  // rss_feed
+
+// ─── Misc ────────────────────────────────────────────────────────────────
+@mi-calendar:                 "\e935";  // calendar_today
+@mi-calendar-alt:             "\e878";  // event
+@mi-tasks:                    "\e2e6";  // task_alt
+@mi-home:                     "\e88a";  // home
+@mi-globe:                    "\e894";  // language
+@mi-desktop:                  "\e30b";  // desktop_windows
+@mi-server:                   "\e875";  // dns
+@mi-hdd:                      "\e1db";  // storage
+@mi-sun:                      "\e430";  // wb_sunny
+@mi-moon:                     "\e51c";  // dark_mode
+@mi-fire-alt:                 "\ef55";  // local_fire_department
+@mi-eraser:                   "\e14c";  // clear
+@mi-compress-arrows-alt:      "\e5d6";  // unfold_less
+@mi-life-ring:                "\e887";  // help (semantic equiv)
+@mi-power-off:                "\e9ba";  // logout
+@mi-edit:                     "\e3c9";  // edit
+@mi-pencil-alt:               "\e3c9";  // edit
+@mi-pen:                      "\e3c9";  // edit
+@mi-external-link-square-alt: "\e89e";  // open_in_new
+@mi-window-close:             "\e5cd";  // close
+@mi-align-justify:            "\e235";  // format_align_justify
+@mi-sort-down:                "\e5db";  // arrow_downward
+@mi-sort-up:                  "\e5d8";  // arrow_upward
+@mi-sync:                     "\e627";  // sync
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION 2: Elastic icon overrides
+// Override every content: @fa-var-* in Elastic with the MI codepoint.
+// Organized by Elastic source file for maintainability.
+// Same specificity as Elastic — later cascade position wins.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── From: elastic/styles/widgets/buttons.less ───────────────────────────
+a.button.icon,
+button.btn {
+    &.sidebar-menu:before,
+    &.toolbar-menu-button:before,
+    &.toolbar-list-button:before     { content: @mi-ellipsis-v; }
+    &.task-menu-button:before        { content: @mi-bars; }
+    &.back-sidebar-button:before,
+    &.back-content-button:before,
+    &.back-list-button:before        { content: @mi-chevron-left; }
+    &.refresh:before                 { content: @mi-sync; }
+    &.generate:before,
+    &.yes:before,
+    &.submit:before,
+    &.continue:before,
+    &.save:before                    { content: @mi-check; }
+    &.create:before                  { content: @mi-plus-square; }
+    &.edit:before                    { content: @mi-pencil-alt; }
+    &.qrcode:before                  { content: @mi-qrcode; }
+    &.search:before                  { content: @mi-search; }
+    &.filter:before                  { content: @mi-filter; }
+    &.import:before                  { content: @mi-upload; }
+    &.export:before                  { content: @mi-download; }
+    &.discard:before,
+    &.delete:before                  { content: @mi-trash-alt; font-weight: 400; }
+    &.next:before                    { content: @mi-arrow-right; }
+    &.restore:before                 { content: @mi-undo; }
+    &.send:before,
+    &.bounce:before                  { content: @mi-paper-plane !important; }
+    &.attach:before                  { content: @mi-paperclip; }
+    &.attach.vcard:before            { content: @mi-user; }
+    &.no:before,
+    &.close:before,
+    &.cancel:before                  { content: @mi-times; }
+    &.back:before                    { content: @mi-chevron-left; }
+    &.remove:before                  { content: @mi-times; }
+    &.unlock:before                  { content: @mi-unlock; }
+    &.help:before                    { content: @mi-life-ring; font-weight: 400; }
+    &.folders:before                 { content: @mi-folder-open; }
+    &.options:before                 { content: @mi-sliders-h; }
+    &.tools:before,
+    &.settings:before                { content: @mi-cog; }
+    &.properties:before              { content: @mi-info-circle; }
+    &.selection:before               { content: @mi-check-square; font-weight: 400; }
+    &.insert.recipient:before        { content: @mi-user-plus; }
+    &.encrypt:before                 { content: @mi-lock; }
+    &.sign:before                    { content: @mi-signature; }
+    &.sso:before                     { content: @mi-sign-in-alt; }
+    &.extwin:before                  { content: @mi-external-link-square-alt; }
+    &.dropdown:before                { content: @mi-caret-down; }
+}
+
+.floating-action-buttons a.button {
+    &:before         { content: @mi-plus; }
+    &.compose:before { content: @mi-pen; }
+}
+
+.popover-header a.button:before    { content: @mi-plus; }
+.input-group-append .icon:before   { content: @mi-pen; }
+
+// ─── From: elastic/styles/widgets/menu.less ──────────────────────────────
+.menu a {
+    &.mail:before           { content: @mi-envelope; }
+    &.contacts:before       { content: @mi-users; }
+    &.options:before        { content: @mi-sliders-h; }
+    &.settings:before,
+    &.actions:before        { content: @mi-cog; }
+    &.theme.light:before    { content: @mi-sun; }
+    &.theme.dark:before     { content: @mi-moon; }
+    &.help:before           { content: @mi-life-ring; }
+    &.logout:before         { content: @mi-power-off; }
+    &.about:before          { content: @mi-question; }
+    &.refresh:before        { content: @mi-sync; }
+    &.compose:before        { content: @mi-edit; }
+    &.calendar:before       { content: @mi-calendar-alt; }
+    &.tasklist:before       { content: @mi-tasks; }
+    &.files:before          { content: @mi-folder; }
+    &.notes:before          { content: @mi-sticky-note; }
+    &.chat:before           { content: @mi-comments; }
+    &.addressbook:before    { content: @mi-user; }
+    &.archive:before        { content: @mi-archive; }
+    &.assigngroup:before    { content: @mi-user-plus; }
+    &.attach:before,
+    &.vcard:before          { content: @mi-paperclip; }
+    &.next:before           { content: @mi-arrow-right; }
+    &.prev:before,
+    &.back:before           { content: @mi-arrow-left; }
+    &.check.selected:before { content: @mi-check; }
+    &.closewin:before       { content: @mi-window-close; }
+    &.collapse:before       { content: @mi-angle-down; }
+    &.copy:before           { content: @mi-copy; }
+    &.create:before         { content: @mi-plus-square; }
+    &.delete:before         { content: @mi-trash-alt; }
+    &.download:before,
+    &.download.eml:before,
+    &.download.maildir:before,
+    &.download.mbox:before  { content: @mi-download; }
+    &.dropdown:before       { content: @mi-caret-down; }
+    &.edit:before,
+    &.rename:before         { content: @mi-pencil-alt; }
+    &.encrypt:before,
+    &.enigma:before,
+    &.encrypt.sign:before   { content: @mi-lock; }
+    &.expand:before         { content: @mi-angle-right; }
+    &.expand.all:before     { content: @mi-angle-double-down; }
+    &.expand.none:before    { content: @mi-angle-double-up; }
+    &.export:before,
+    &.export.all:before,
+    &.export.selection:before { content: @mi-download; }
+    &.expunge:before        { content: @mi-compress-arrows-alt; }
+    &.extwin:before         { content: @mi-external-link-square-alt; }
+    &.filter:before,
+    &.filterlink:before     { content: @mi-filter; }
+    &.firstpage:before      { content: @mi-angle-double-left; }
+    &.nextpage:before       { content: @mi-angle-right; }
+    &.prevpage:before       { content: @mi-angle-left; }
+    &.lastpage:before       { content: @mi-angle-double-right; }
+    &.flag:before,
+    &.select.flagged:before { content: @mi-flag; font-weight: 900; }
+    &.unflag:before         { content: @mi-flag; font-weight: 400; }
+    &.undo:before           { content: @mi-redo; }
+    &.folders:before        { content: @mi-folder; }
+    &.forward:before,
+    &.forward.attachment:before,
+    &.forward.bounce:before,
+    &.forward.inline:before { content: @mi-share; }
+    &.import:before,
+    &.upload:before         { content: @mi-upload; }
+    &.insertresponse:before,
+    &.responses:before      { content: @mi-comment; }
+    &.junk:before           { content: @mi-fire-alt; }
+    &.notjunk:before        { content: @mi-inbox; }
+    &.markmessage:before    { content: @mi-tag; }
+    &.more:before           { content: @mi-ellipsis-h; }
+    &.move:before           { content: @mi-move-icon !important}
+    &.print:before          { content: @mi-print; }
+    &.properties:before     { content: @mi-file; }
+    &.purge:before          { content: @mi-eraser; }
+    &.qrcode:before         { content: @mi-qrcode; }
+    &.read:before           { content: @mi-envelope-open; font-weight: 400; }
+    &.unread:before,
+    &.expand.unread:before,
+    &.select.unread:before  { content: @mi-envelope; font-weight: 900; }
+    &.recipient:before      { content: @mi-envelope; font-weight: 400; }
+    &.refresh:before        { content: @mi-sync; }
+    &.remove:before         { content: @mi-eraser; }
+    &.removegroup:before    { content: @mi-user-times; }
+    &.reply:before          { content: @mi-reply; }
+    &.reply-all:before,
+    &.reply.all:before,
+    &.reply.list:before     { content: @mi-reply-all; }
+    &.rotate:before         { content: @mi-redo-alt; }
+    &.save:before           { content: @mi-save; font-weight: 400; }
+    &.search:before         { content: @mi-search; }
+    &.search.delete:before  { content: @mi-trash-alt; }
+    &.select:before         { content: @mi-mouse-pointer; }
+    &.select.all:before     { content: @mi-asterisk; }
+    &.select.invert:before  { content: @mi-check-square; }
+    &.select.none:before    { content: @mi-times; font-weight: 900; }
+    &.select.page:before    { content: @mi-bars; font-weight: 900; }
+    &.selection:before      { content: @mi-check-square; font-weight: 400 !important; }
+    &.send:before           { content: @mi-paper-plane !important; }
+    &.showurl:before        { content: @mi-link; }
+    &.signature:before      { content: @mi-signature; }
+    &.source:before         { content: @mi-file-code; }
+    &.spellcheck:before     { content: @mi-spell-check; }
+    &.status:before         { content: @mi-lightbulb; font-weight: 400; }
+    &.submit:before         { content: @mi-check; }
+    &.info:before           { content: @mi-info-circle; }
+    &.threads:before        { content: @mi-comments; }
+    &.zoomin:before         { content: @mi-search-plus; }
+    &.zoomout:before        { content: @mi-search-minus; }
+}
+
+.menu[aria-haspopup]:after { content: @mi-chevron-right; }
+
+.searchbar {
+    form:before             { content: @mi-search; }
+    a.options:before        { content: @mi-angle-down; }
+    a.reset:before          { content: @mi-times; }
+    a.unread:before         { content: @mi-envelope; font-weight: 900; }
+    &.open a.options:before { content: @mi-angle-up; }
+}
+
+// ─── From: elastic/styles/widgets/lists.less ─────────────────────────────
+.listing.iconized li {
+    &.preferences > a:before   { content: @mi-sliders-h; }
+    &.folders > a:before       { content: @mi-folder; }
+    &.responses > a:before     { content: @mi-comment; }
+    &.identities > a:before    { content: @mi-id-card; }
+    &.password > a:before      { content: @mi-lock; }
+    &.addressbook a:before     { content: @mi-address-book; font-weight: 400; }
+    &.contactgroup a:before    { content: @mi-users; font-weight: 900; }
+    &.contactsearch a:before   { content: @mi-search; }
+    &.filter > a:before        { content: @mi-filter; }
+    &.vacation > a:before      { content: @mi-calendar; font-weight: 400; }
+    &.forward > a:before       { content: @mi-share-square; }
+    &.enigma.keys > a:before   { content: @mi-key; }
+    &.info > a:before,
+    &.userinfo > a:before      { content: @mi-info-circle; }
+    a.help:before              { content: @mi-life-ring; }
+    a.about:before             { content: @mi-question-circle; font-weight: 400; }
+    a.license:before           { content: @mi-shield-alt; }
+    & > i:before               { content: @mi-user; }
+    &.group > i:before         { content: @mi-users; }
+}
+
+.listing.iconized tr {
+    &.contact.person td.name:before   { content: @mi-user; }
+    &.contact.group td.name:before    { content: @mi-users; }
+    &.general > td.section:before     { content: @mi-desktop; }
+    &.mailbox > td.section:before     { content: @mi-envelope; font-weight: 400; }
+    &.mailview > td.section:before    { content: @mi-inbox; }
+    &.compose > td.section:before     { content: @mi-paper-plane; }
+    &.addressbook > td.section:before { content: @mi-users; }
+    &.folders > td.section:before     { content: @mi-folder; font-weight: 400; }
+    &.server > td.section:before      { content: @mi-server; }
+    &.encryption > td.section:before  { content: @mi-lock; }
+    &.calendar > td.section:before    { content: @mi-calendar; }
+    &.chat > td.section:before        { content: @mi-comments; }
+}
+
+.listing.iconized.selectable li a.selected:before { content: @mi-check; }
+
+.listing td.action a.pushgroup:before { content: @mi-chevron-right; }
+
+ul.treelist li {
+    div.treetoggle:before          { content: @mi-angle-right; }
+    div.treetoggle.expanded:before { content: @mi-angle-down; }
+}
+
+.folderlist li {
+    a:before                 { content: @mi-folder; font-weight: 400; }
+    &.inbox > a:before       { content: @mi-inbox; font-weight: 900; }
+    &.trash a:before         { content: @mi-trash-alt; font-weight: 900; }
+    &.trash.empty > a:before { content: @mi-trash-alt; font-weight: 400; }
+    &.drafts a:before        { content: @mi-pencil-alt; font-weight: 900; }
+    &.sent a:before          { content: @mi-paper-plane; font-weight: 900; }
+    &.junk a:before          { content: @mi-fire-alt; font-weight: 900; }
+    &.archive > a:before     { content: @mi-archive; font-weight: 900; }
+    &.ns-shared > a:before   { content: @mi-share-alt; font-weight: 900; }
+    &.ns-other > a:before    { content: @mi-user-friends; font-weight: 900; }
+}
+
+.messagelist {
+    tr.thread td.threads div:before          { content: @mi-angle-right; }
+    tr.thread.expanded td.threads div:before { content: @mi-angle-down; }
+
+    td.subject span.msgicon.status {
+        &:before                   { content: @mi-circle; }
+        &.unread:before            { content: @mi-circle; }
+        &.unreadchildren:before    { content: @mi-circle; font-weight: 400; }
+        &.replied:before           { content: @mi-reply; font-weight: 900; }
+        &.forwarded:before         { content: @mi-share; font-weight: 900; }
+        &.replied.forwarded:before { content: @mi-reply; font-weight: 900; }
+        &.replied.forwarded:after  { content: @mi-share; font-weight: 900; }
+    }
+
+    tr.deleted td.subject span.msgicon.status:before {
+        content: @mi-ban !important;
+        font-weight: 900 !important;
+    }
+
+    span.attachment span {
+        &:before           { content: @mi-paperclip; }
+        &.report:before    { content: @mi-file-alt; font-weight: 400; }
+        &.encrypted:before { content: @mi-lock; }
+        &.vcard:before     { content: @mi-user; font-weight: 400; }
+    }
+
+    span.flagged:before                          { content: @mi-flag; }
+    tr.flaggedroot:not(:hover) span.unflagged:before { content: @mi-flag; }
+    tr:hover span.unflagged:before               { content: @mi-flag; font-weight: 400; }
+}
+
+.contactlist {
+    td.contact:before      { content: @mi-user; }
+    td.contactgroup:before { content: @mi-users; }
+    li {
+        a.addressbook::before  { content: @mi-address-book; font-weight: 400; }
+        a.contactgroup::before { content: @mi-users; font-weight: 900; }
+    }
+}
+
+.attachmentslist li {
+    &:before           { content: @mi-file; font-weight: 400; }
+    &.txt:before,
+    &.text:before      { content: @mi-file-alt; font-weight: 400; }
+    &.pdf:before       { content: @mi-file-pdf; font-weight: 400; }
+    &.odt:before,
+    &.doc:before,
+    &.docx:before,
+    &.msword:before    { content: @mi-file-word; font-weight: 400; }
+    &.ods:before,
+    &.xls:before,
+    &.xlsx:before,
+    &.msexcel:before   { content: @mi-file-excel; font-weight: 400; }
+    &.rar:before,
+    &.zip:before,
+    &.gz:before        { content: @mi-file-archive; font-weight: 400; }
+    &.image:before,
+    &.jpg:before,
+    &.jpeg:before,
+    &.png:before       { content: @mi-file-image; font-weight: 400; }
+    &.mp3:before,
+    &.audio:before     { content: @mi-file-audio; font-weight: 400; }
+    &.m4p:before,
+    &.video:before     { content: @mi-file-video; font-weight: 400; }
+    &.vcard:before     { content: @mi-address-card; font-weight: 400; }
+    &.html:before      { content: @mi-file-code; font-weight: 400; }
+    &.odp:before,
+    &.otp:before,
+    &.ppt:before,
+    &.pptx:before,
+    &.ppsx:before      { content: @mi-file-powerpoint; font-weight: 400; }
+    a.cancelupload:before,
+    a.delete:before    { content: @mi-trash-alt; }
+    &.uploading:before { content: @mi-circle-notch; font-weight: 900; }
+}
+
+.keylist li:before            { content: @mi-key; }
+#identities-table td.mail:before  { content: @mi-id-card; }
+#responses-table td.name:before   { content: @mi-comment; }
+#filterslist td.name:before       { content: @mi-filter; }
+#filtersetslist td.name:before    { content: @mi-file-alt; }
+
+// ─── From: elastic/styles/widgets/forms.less ─────────────────────────────
+.propform td.rowbuttons {
+    a:before          { content: @mi-plus; }
+    a.delete:before   { content: @mi-trash-alt; }
+    a.advanced:before { content: @mi-cog; }
+}
+
+fieldset.advanced > legend {
+    &:after        { content: @mi-angle-up; }
+    &.closed:after { content: @mi-angle-down; }
+}
+
+.input-group .icon {
+    &.user:before         { content: @mi-user; }
+    &.pass:before         { content: @mi-lock; }
+    &.host:before         { content: @mi-home; }
+    &.language:before     { content: @mi-globe; }
+    &.cancel:before       { content: @mi-times; }
+    &.delete:before       { content: @mi-trash-alt; }
+    &.edit:before         { content: @mi-pencil-alt; }
+    &.add:before          { content: @mi-plus; }
+    &.add.recipient:before { content: @mi-users; }
+    &.search:before       { content: @mi-search; }
+    &.filter:before       { content: @mi-filter; }
+    &.key:before          { content: @mi-key; }
+}
+
+.multi-input a.icon.reset:before { content: @mi-trash-alt; }
+
+.tagedit-list li.tagedit-listelement-old a:before { content: @mi-times; }
+
+.googie_list li {
+    .googie_list_revert:before  { content: @mi-undo; }
+    .googie_add_to_dict:before  { content: @mi-plus-square; }
+}
+
+// ─── From: elastic/styles/widgets/messages.less ──────────────────────────
+.ui.alert {
+    & > i.icon:before                  { content: @mi-info-circle; }
+    &.loading > i.icon:before          { content: @mi-circle-notch; }
+    &.alert-success > i.icon:before    { content: @mi-check-circle; }
+    &.alert-warning > i.icon:before    { content: @mi-exclamation-triangle; }
+    &.alert-danger > i.icon:before     { content: @mi-exclamation-circle; }
+    &.vcardattachment > i.icon:before  { content: @mi-address-card; }
+    &.enigmaattachment > i.icon:before { content: @mi-key; }
+    &.signed > i.icon:before,
+    &.encrypted > i.icon:before        { content: @mi-lock; }
+    &.chat > i.icon:before             { content: @mi-comment; }
+}
+
+// ─── From: elastic/styles/widgets/common.less ────────────────────────────
+.quota-widget:before { content: @mi-hdd; }
+
+.table.table th.checkbox-cell {
+    &.subscription:before { content: @mi-rss-square; }
+    &.alarm:before        { content: @mi-bell; font-weight: 400; }
+    &.read:before         { content: @mi-eye; }
+    &.write:before        { content: @mi-pencil-alt; }
+}
+
+.table-widget table.options-table {
+    td.enabled span:before { content: @mi-check; }
+    td.partial span:before { content: @mi-check; }
+}
+
+p.image-attachment .attachment-links {
+    a.open:before     { content: @mi-external-link-square-alt; }
+    a.download:before { content: @mi-download; }
+}
+
+// ─── From: elastic/styles/widgets/editor.less ────────────────────────────
+div.tox {
+    .tox-dialog__header .tox-button:before                       { content: @mi-times; }
+    .tox-dialog__footer .tox-button:before                       { content: @mi-check; }
+    .tox-dialog__footer .tox-button.tox-button--secondary:before { content: @mi-times; }
+    .tox-search-dialog .tox-dialog__footer-end {
+        button:nth-of-type(1):before { content: @mi-search !important; }
+        button:before                { content: @mi-pencil-alt !important; }
+    }
+}
+
+.html-editor .editor-toolbar .mce-i-html:before { content: @mi-image; }
+
+// ─── From: elastic/styles/widgets/dialogs.less ───────────────────────────
+.pgpkeyimport {
+    label.keyid + a:before { content: @mi-key; }
+    li.uid:before          { content: @mi-user; }
+}
+
+// ─── From: elastic/styles/widgets/jqueryui.less ──────────────────────────
+.ui-dialog .ui-dialog-titlebar-close:before                      { content: @mi-times; }
+.ui-dialog .ui-dialog-buttonpane a.btn-link.options:before       { content: @mi-cog; }
+
+// jQuery UI datepicker: hardcoded FA hex in Elastic (\f053, \f054)
+.ui-datepicker .ui-datepicker-prev:before { content: @mi-chevron-left; }
+.ui-datepicker .ui-datepicker-next:before { content: @mi-chevron-right; }
+
+// ─── From: elastic/styles/styles.less ────────────────────────────────────
+#message-header > .subject {
+    body.status-flagged &:before { content: @mi-flag; }
+    a.extwin:before              { content: @mi-external-link-square-alt; }
+}
+
+#message-header .header-links {
+    a.headers-details:before { content: @mi-envelope; }
+    a.headers-summary:before { content: @mi-envelope; font-weight: 400; }
+    a.headers-all:before     { content: @mi-info-circle; }
+    a.html:before            { content: @mi-image; }
+    a.plain:before           { content: @mi-align-justify; }
+    a.zipdownload:before     { content: @mi-download; }
+}
+
+.message-part blockquote span.blockquote-link {
+    &:after          { content: @mi-angle-down; }
+    &.collapsed:after { content: @mi-angle-up; }
+}
+
+.settings-default-icon {
+    tr > td.section::before { content: @mi-cog; }
+    li > a:before           { content: @mi-cog; }
+}
+
+// ─── From: elastic/styles/embed.less ─────────────────────────────────────
+.rcmail-inline-message:before { content: @mi-exclamation-triangle; }

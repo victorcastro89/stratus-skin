@@ -8,20 +8,23 @@
 
 @mp-font-path: "../../elastic/fonts"; 
 
+// Material Icons — filled (weight 900) and outlined (weight 400)
+// Files live in skins/stratus/fonts/ (not elastic/fonts/)
+// Path is relative to compiled CSS location: skins/stratus/styles/ → ../fonts/
 @font-face {
   font-family: 'Icons';
   font-style: normal;
   font-weight: 900;
-  src: url("@{mp-font-path}/fa-solid-900.woff2") format('woff2'),
-       url("@{mp-font-path}/fa-solid-900.woff") format('woff');
+  src: url("../fonts/material-icons.woff2") format('woff2'),
+       url("../fonts/material-icons.woff") format('woff');
 }
 
 @font-face {
   font-family: 'Icons';
   font-style: normal;
-  font-weight: 400; 
-  src: url("@{mp-font-path}/fa-regular-400.woff2") format('woff2'),
-       url("@{mp-font-path}/fa-regular-400.woff") format('woff');
+  font-weight: 400;
+  src: url("../fonts/material-icons-outlined.woff2") format('woff2'),
+       url("../fonts/material-icons-outlined.woff") format('woff');
 }
 
 @font-face {

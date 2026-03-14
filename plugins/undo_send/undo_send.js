@@ -89,6 +89,16 @@
             return false; // prevent default send
         },
 
+        // ── Send Now ───────────────────────────────
+
+        /**
+         * User clicked "Send now" — skip remaining countdown.
+         */
+        sendNow: function () {
+            if (this.state !== 'counting') return;
+            this.doSend();
+        },
+
         // ── Cancel ─────────────────────────────────
 
         /**
@@ -173,12 +183,16 @@
         },
 
         /**
-         * Build the toast HTML: "Sending in Xs… Undo"
+         * Build the toast HTML: "Sending in Xs… Send now · Undo"
          */
         buildMsg: function () {
-            var text = rcmail.gettext('undo_send.sending_in').replace('$s', this.remaining);
-            var undo = rcmail.gettext('undo_send.undo');
+            var text    = rcmail.gettext('undo_send.sending_in').replace('$s', this.remaining);
+            var sendNow = rcmail.gettext('undo_send.send_now');
+            var undo    = rcmail.gettext('undo_send.undo');
             return '<span class="mp-undo-text">' + text + '</span>'
+                + '<a href="#" class="mp-undo-link mp-send-now-link" onclick="window.undoSend.sendNow(); return false;">'
+                + sendNow + '</a>'
+                + '<span class="mp-undo-sep" aria-hidden="true">·</span>'
                 + '<a href="#" class="mp-undo-link mp-undo-cta" onclick="window.undoSend.cancel(); return false;">'
                 + undo + '</a>';
         },
