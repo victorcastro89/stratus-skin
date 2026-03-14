@@ -116,6 +116,12 @@
     }
   }
 
+  // ══════════════════════════════════════════════
+  //  TinyMCE Email Composer Configuration
+  //  Must run at load time (before editor.js reads window.rcmail_editor_settings)
+  // ══════════════════════════════════════════════
+  initTinyMCEEmailComposer();
+
   rcmail.addEventListener('init', function () {
 
     installDebugHooksOnce();
@@ -247,6 +253,230 @@
   }
 
   // ══════════════════════════════════════════════
+  //  TinyMCE Email Composer Configuration
+  // ══════════════════════════════════════════════
+
+  function initTinyMCEEmailComposer() {
+    var DEFAULT_TEXT_COLOR = '#1a1a1a';
+    var DEFAULT_FONT_FAMILY = 'Arial, Helvetica, sans-serif';
+    var DEFAULT_FONT_SIZE = '14px';
+    var DEFAULT_LINE_HEIGHT = '1.5';
+    var isDark = document.documentElement.classList.contains('dark-mode');
+
+    // Email-safe valid elements whitelist
+    var validElements = [
+      'p[style]', 'div[style]', 'br',
+      'a[href|target|style]',
+      'img[src|alt|width|height|style]',
+      'table[style|width|cellpadding|cellspacing|border]',
+      'tr[style]',
+      'td[style|width|colspan|rowspan]', 'th[style|width|colspan|rowspan]',
+      'b', 'strong', 'i', 'em', 'u', 's',
+      'ul[style]', 'ol[style]', 'li[style]',
+      'blockquote[style]',
+      'h1[style]', 'h2[style]', 'h3[style]',
+      'hr', 'span[style|id|class]',
+      'font[face|size|color|style]'
+    ].join(',');
+
+    var validStyles = {
+      '*': 'color,background-color,font-size,font-family,text-align,text-decoration,'
+        + 'font-weight,font-style,padding,margin,border,width,height,line-height,'
+        + 'border-collapse,vertical-align,list-style-type,border-left,padding-left,'
+        + 'margin-left,margin-right,margin-top,margin-bottom,border-top,border-bottom,'
+        + 'border-color,border-style,border-width,max-width,float,display'
+    };
+
+    // Email-safe fonts only (no web fonts)
+    var fontFormats = [
+      'Arial=arial, helvetica, sans-serif',
+      'Verdana=verdana, geneva, sans-serif',
+      'Georgia=georgia, palatino, serif',
+      'Tahoma=tahoma, arial, sans-serif',
+      'Times New Roman=times new roman, times, serif',
+      'Courier New=courier new, courier, monospace',
+      'Trebuchet MS=trebuchet ms, arial, sans-serif'
+    ].join('; ');
+
+    var contentStyle = 'body {'
+      + ' font-family: ' + DEFAULT_FONT_FAMILY + ';'
+      + ' font-size: ' + DEFAULT_FONT_SIZE + ';'
+      + ' color: ' + DEFAULT_TEXT_COLOR + ';'
+      + ' line-height: ' + DEFAULT_LINE_HEIGHT + ';'
+      + ' margin: 8px;'
+      + ' background: transparent;'
+      + '}'
+      + ' blockquote {'
+      + '   margin: 0 0 0 0.8em;'
+      + '   border-left: 2px solid #ccc;'
+      + '   padding-left: 0.8em;'
+      + '   color: #555;'
+      + ' }'
+      + ' img { max-width: 100%; height: auto; }';
+
+    // Paste sanitization: strip non-email-safe markup
+    function pastePreprocess(plugin, args) {
+      var c = args.content;
+      if (!c) return;
+      c = c.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+      c = c.replace(/<(meta|link|title)[^>]*\/?>/gi, '');
+      c = c.replace(/<\/?[owv]:[^>]*>/gi, '');
+      c = c.replace(/\bmso-[^;:"']+:[^;:"']+;?/gi, '');
+      c = c.replace(/\s+class\s*=\s*"[^"]*"/gi, '');
+      c = c.replace(/\s+class\s*=\s*'[^']*'/gi, '');
+      c = c.replace(/\s+id\s*=\s*"[^"]*"/gi, '');
+      c = c.replace(/\s+id\s*=\s*'[^']*'/gi, '');
+      c = c.replace(/\s+data-[a-z0-9-]+\s*=\s*"[^"]*"/gi, '');
+      c = c.replace(/\s+data-[a-z0-9-]+\s*=\s*'[^']*'/gi, '');
+      c = c.replace(/\s+xmlns[:\w]*\s*=\s*"[^"]*"/gi, '');
+      c = c.replace(/<span\s*>([\s\S]*?)<\/span>/gi, '$1');
+      c = c.replace(/<!--[\s\S]*?-->/g, '');
+      args.content = c;
+    }
+
+    // On-send HTML sanitizer — strip dark mode artifacts, ensure email-safe output
+    function sanitizeEmailOutput(editor) {
+      var body = editor.getBody();
+      if (!body) return;
+
+      body.style.color = DEFAULT_TEXT_COLOR;
+      body.style.removeProperty('background-color');
+      body.style.removeProperty('background');
+
+      var doc = editor.getDoc();
+      var darkStyle = doc && doc.getElementById('stratus-tinymce-dark');
+      if (darkStyle) darkStyle.parentNode.removeChild(darkStyle);
+      if (doc && doc.documentElement) doc.documentElement.classList.remove('dark-mode');
+
+      // Strip dark-mode color artifacts from elements
+      var all = body.querySelectorAll('*');
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        if (el.parentNode === body && el.style.backgroundColor) {
+          if (_isDarkBg(el.style.backgroundColor)) {
+            el.style.removeProperty('background-color');
+          }
+        }
+        if (el.style.color && _isLightColor(el.style.color)) {
+          el.style.removeProperty('color');
+        }
+      }
+
+      // Ensure root blocks have default styles
+      var roots = body.querySelectorAll(':scope > div, :scope > p');
+      for (var j = 0; j < roots.length; j++) {
+        var blk = roots[j];
+        if (!blk.style.color) blk.style.color = DEFAULT_TEXT_COLOR;
+        if (!blk.style.fontFamily) blk.style.fontFamily = DEFAULT_FONT_FAMILY;
+        if (!blk.style.fontSize) blk.style.fontSize = DEFAULT_FONT_SIZE;
+      }
+    }
+
+    function _parseColor(c) {
+      if (!c) return null;
+      var m = c.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+      if (m) return [+m[1], +m[2], +m[3]];
+      var h = c.match(/^#([0-9a-f]{3,8})$/i);
+      if (h) {
+        var x = h[1];
+        if (x.length === 3) x = x[0]+x[0]+x[1]+x[1]+x[2]+x[2];
+        return [parseInt(x.substring(0,2),16), parseInt(x.substring(2,4),16), parseInt(x.substring(4,6),16)];
+      }
+      return null;
+    }
+    function _lum(rgb) { return (rgb[0]*299 + rgb[1]*587 + rgb[2]*114) / 1000; }
+    function _isDarkBg(c) { var rgb = _parseColor(c); return rgb && _lum(rgb) < 50; }
+    function _isLightColor(c) { var rgb = _parseColor(c); return rgb && _lum(rgb) > 200; }
+
+    // Setup callback — keyboard shortcuts + on-send sanitizer
+    function setupCallback(editor) {
+      // Ctrl+Enter / Cmd+Enter = Send
+      editor.addShortcut('ctrl+return', 'Send email', function() {
+        if (window.rcmail) rcmail.command('send');
+      });
+      editor.addShortcut('meta+return', 'Send email', function() {
+        if (window.rcmail) rcmail.command('send');
+      });
+
+      // Ctrl+S / Cmd+S = Save Draft
+      editor.addShortcut('ctrl+s', 'Save draft', function() {
+        if (window.rcmail) rcmail.command('savedraft');
+      });
+      editor.addShortcut('meta+s', 'Save draft', function() {
+        if (window.rcmail) rcmail.command('savedraft');
+      });
+
+      // Ctrl+K / Cmd+K = Insert Link
+      editor.addShortcut('ctrl+k', 'Insert link', function() {
+        editor.execCommand('mceLink');
+      });
+      editor.addShortcut('meta+k', 'Insert link', function() {
+        editor.execCommand('mceLink');
+      });
+
+      // On submit (send): sanitize HTML output
+      editor.on('submit', function() { sanitizeEmailOutput(editor); });
+      editor.on('SaveContent', function() { sanitizeEmailOutput(editor); });
+
+      // Tab/Shift+Tab: indent/outdent in lists AND normal text
+      editor.on('keydown', function(e) {
+        if (e.keyCode !== 9) return; // Tab key only
+        e.preventDefault();
+        if (e.shiftKey) {
+          editor.execCommand('Outdent');
+        } else {
+          editor.execCommand('Indent');
+        }
+      });
+
+      // Ctrl+] / Ctrl+[ = Indent/Outdent
+      editor.addShortcut('ctrl+]', 'Indent', function() { editor.execCommand('Indent'); });
+      editor.addShortcut('meta+]', 'Indent', function() { editor.execCommand('Indent'); });
+      editor.addShortcut('ctrl+[', 'Outdent', function() { editor.execCommand('Outdent'); });
+      editor.addShortcut('meta+[', 'Outdent', function() { editor.execCommand('Outdent'); });
+    }
+
+    // Set the global config object that editor.js reads
+    window.rcmail_editor_settings = {
+      plugins: 'autolink lists link image charmap searchreplace table '
+        + 'paste emoticons noneditable',
+      toolbar: 'fontselect fontsizeselect | bold italic underline strikethrough | '
+        + 'forecolor backcolor | alignleft aligncenter alignright | '
+        + 'bullist numlist | outdent indent | link image emoticons | $extra',
+      toolbar_drawer: 'sliding',
+      menubar: false,
+      statusbar: false,
+      content_style: contentStyle,
+      forced_root_block: 'div',
+      forced_root_block_attrs: {
+        'style': 'color: ' + DEFAULT_TEXT_COLOR + ';'
+          + ' font-family: ' + DEFAULT_FONT_FAMILY + ';'
+          + ' font-size: ' + DEFAULT_FONT_SIZE + ';'
+      },
+      font_formats: fontFormats,
+      fontsize_formats: '10px 11px 12px 14px 16px 18px 20px 24px',
+      skin: isDark ? 'oxide-dark' : 'oxide',
+      valid_elements: validElements,
+      valid_styles: validStyles,
+      paste_as_text: false,
+      paste_word_valid_elements: 'b,strong,i,em,u,s,p,br,a[href],ul,ol,li,'
+        + 'table,tr,td,th,h1,h2,h3,img[src|alt|width|height],div,span,blockquote,hr',
+      paste_retain_style_properties: 'color,font-size,font-family,font-weight,'
+        + 'font-style,text-decoration,text-align,background-color',
+      paste_preprocess: pastePreprocess,
+      default_link_target: '_blank',
+      link_default_protocol: 'https',
+      image_advtab: false,
+      image_dimensions: true,
+      paste_data_images: true,
+      browser_spellcheck: true,
+      resize: false,
+      min_height: 300,
+      setup_callback: setupCallback
+    };
+  }
+
+  // ══════════════════════════════════════════════
   //  Dark Mode — iframe propagation
   // ══════════════════════════════════════════════
 
@@ -287,12 +517,32 @@
   // ══════════════════════════════════════════════
 
   function initTinyMCEDarkMode() {
+    // Dark mode content styles for the editor iframe.
+    // These are display-only — stripped on send by tinymce-email-composer.js.
+    // Uses theme-aware colors that match the Stratus dark palette.
     var darkCSS =
-      'html, body { background-color: #1a1f36 !important; color: #c8d0e8 !important; }' +
+      'html, body {' +
+      '  background-color: #1a1f36 !important;' +
+      '  color: #c8d0e8 !important;' +
+      '}' +
       'a { color: #7986cb !important; }' +
-      'blockquote { border-left: 3px solid #7986cb; color: #7e8aad; }' +
-      'pre, code { background: #212845; color: #c8d0e8; border-color: #2a3050; }' +
-      'hr { border-color: #2a3050; }';
+      'blockquote {' +
+      '  border-left: 3px solid #7986cb !important;' +
+      '  color: #7e8aad !important;' +
+      '}' +
+      'pre, code {' +
+      '  background: #212845 !important;' +
+      '  color: #c8d0e8 !important;' +
+      '  border-color: #2a3050 !important;' +
+      '}' +
+      'hr { border-color: #2a3050 !important; }' +
+      'table, td, th {' +
+      '  border-color: #2a3050 !important;' +
+      '}' +
+      // Override forced_root_block_attrs color for display in dark mode
+      'div[style*="color: #1a1a1a"], div[style*="color:#1a1a1a"] {' +
+      '  color: #c8d0e8 !important;' +
+      '}';
 
     function applyDarkToEditor(editor) {
       var doc = editor.getDoc ? editor.getDoc() : null;
@@ -309,8 +559,6 @@
       window.tinymce.on('AddEditor', function (e) {
         e.editor.on('init', function () { applyDarkToEditor(this); });
       });
-      // Handle editors that already exist: if initialized apply now,
-      // if not yet initialized attach an init listener (doc.head may be null yet).
       var editors = window.tinymce.editors || [];
       for (var i = 0; i < editors.length; i++) {
         var ed = editors[i];
