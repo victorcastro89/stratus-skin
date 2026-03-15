@@ -633,11 +633,17 @@ body.task-calendar {
         align-items: center;
     }
 
-    // Search form — horizontal margin mirrors #calendar.content padding so the
-    // search bar edges align with the calendar grid (uses same @mp-space-xl token).
+    // Search bar — matches mail list shell style (common.less #layout-list > .searchbar).
+    // Full border-radius (closed capsule) because there is no smart bar below.
     #layout-content > .searchbar {
-        margin-left: @mp-space-xl;
-        margin-right: @mp-space-xl;
+        margin: @mp-space-xs;
+        padding: 0 @mp-space-xs;
+        height: @mp-list-top-row-height;
+        min-height: @mp-list-top-row-height;
+        background: @color-layout-content-background;
+        border: 1px solid @color-layout-list-top-border;
+        border-radius: @mp-list-top-shell-radius;
+        box-shadow: @mp-shadow-xs;
     }
 
     // ── #mp-cal-actions — persistent inline Create button ─────────────────────
@@ -828,6 +834,13 @@ body.task-calendar {
 // DARK MODE
 // ═════════════════════════════════════════════════════════════════════════════════
 html.dark-mode {
+
+    // Search bar — dark mode shell (mirrors #layout-list > .searchbar dark treatment)
+    body.task-calendar #layout-content > .searchbar {
+        background: @color-dark-layout-list-top-background;
+        border-color: @color-dark-layout-list-top-border;
+        box-shadow: @mp-shadow-dark-sm;
+    }
 
     // ── CALENDAR GRID ──────────────────────────────────────────────────────────────
     .fc {

@@ -26,7 +26,7 @@ $config['imap_cache'] = null;
 // ── General ────────────────────────────────────────────────────────────────
 $config['product_name']    = 'Stratus Webmail (Dev)';
 $config['des_key']         = 'Gd+4gJ8h29ex932cJI5M9whl';
- $config['skin']            = "stratus";
+$config['skin']            = "stratus";
 $config['support_url']     = '';
 $config['username_domain']       = '';
 $config['login_username_filter'] = 'email';
@@ -44,6 +44,7 @@ $config['plugins'] = [
 	'archive',
 	'stratus_helper',
 	'calendar',
+    'carddav',
     'undo_send',
 ];
 $config['license_key'] = 'RCP-Rxd228rIKZiy';
@@ -84,4 +85,5 @@ $config['calendar_categories'] = [
     'Family'   => '00ff00',
     'Holiday'  => 'ff6600',
 ];
+
 

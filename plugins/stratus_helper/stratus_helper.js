@@ -153,13 +153,14 @@
     }
 
     // ──────────────────────────────────────────
-    //  4. Dark Mode — iframe propagation
+    //  4. Dark Mode — iframe propagation + TinyMCE
     // ──────────────────────────────────────────
 
+    initDarkModeFramePropagation();
     if (document.documentElement.classList.contains('dark-mode')) {
-      initDarkModeFramePropagation();
       initTinyMCEDarkMode();
     }
+    initDarkModeObserver();
 
     // ──────────────────────────────────────────
     //  5. Unified Hover Actions (mail task)
@@ -298,19 +299,21 @@
       'Trebuchet MS=trebuchet ms, arial, sans-serif'
     ].join('; ');
 
+    // Build content_style — when dark mode is active, include dark background
+    // directly so TinyMCE applies it at init (no white flash)
     var contentStyle = 'body {'
       + ' font-family: ' + DEFAULT_FONT_FAMILY + ';'
       + ' font-size: ' + DEFAULT_FONT_SIZE + ';'
-      + ' color: ' + DEFAULT_TEXT_COLOR + ';'
+      + ' color: ' + (isDark ? '#c8d0e8' : DEFAULT_TEXT_COLOR) + ';'
       + ' line-height: ' + DEFAULT_LINE_HEIGHT + ';'
       + ' margin: 8px;'
-      + ' background: transparent;'
+      + ' background: ' + (isDark ? '#1a1f36' : 'transparent') + ';'
       + '}'
       + ' blockquote {'
       + '   margin: 0 0 0 0.8em;'
-      + '   border-left: 2px solid #ccc;'
+      + '   border-left: 2px solid ' + (isDark ? '#7986cb' : '#ccc') + ';'
       + '   padding-left: 0.8em;'
-      + '   color: #555;'
+      + '   color: ' + (isDark ? '#7e8aad' : '#555') + ';'
       + ' }'
       + ' img { max-width: 100%; height: auto; }';
 
@@ -481,29 +484,31 @@
   // ══════════════════════════════════════════════
 
   function initDarkModeFramePropagation() {
-    function injectDark(frame) {
+    function syncDarkMode(frame) {
       try {
         var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
-        if (doc && doc.documentElement) doc.documentElement.classList.add('dark-mode');
+        if (!doc || !doc.documentElement) return;
+        var isDark = document.documentElement.classList.contains('dark-mode');
+        doc.documentElement.classList[isDark ? 'add' : 'remove']('dark-mode');
       } catch (e) {}
     }
 
     ['preferences-frame', 'contentframe', 'messagecontframe'].forEach(function (id) {
       var frame = document.getElementById(id);
       if (!frame) return;
-      injectDark(frame);
-      frame.addEventListener('load', function () { injectDark(this); });
+      syncDarkMode(frame);
+      frame.addEventListener('load', function () { syncDarkMode(this); });
     });
 
     var observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         mutation.addedNodes.forEach(function (node) {
           if (node.nodeType !== 1) return;
-          if (node.tagName === 'IFRAME') node.addEventListener('load', function () { injectDark(this); });
+          if (node.tagName === 'IFRAME') node.addEventListener('load', function () { syncDarkMode(this); });
 
           var nested = node.querySelectorAll && node.querySelectorAll('iframe');
           if (nested) Array.prototype.forEach.call(nested, function (f) {
-            f.addEventListener('load', function () { injectDark(this); });
+            f.addEventListener('load', function () { syncDarkMode(this); });
           });
         });
       });
@@ -513,59 +518,116 @@
   }
 
   // ══════════════════════════════════════════════
-  //  Dark Mode — TinyMCE
+  //  Dark Mode — TinyMCE (iframe content + skin swap)
   // ══════════════════════════════════════════════
 
-  function initTinyMCEDarkMode() {
-    // Dark mode content styles for the editor iframe.
-    // These are display-only — stripped on send by tinymce-email-composer.js.
-    // Uses theme-aware colors that match the Stratus dark palette.
-    var darkCSS =
-      'html, body {' +
-      '  background-color: #1a1f36 !important;' +
-      '  color: #c8d0e8 !important;' +
-      '}' +
-      'a { color: #7986cb !important; }' +
-      'blockquote {' +
-      '  border-left: 3px solid #7986cb !important;' +
-      '  color: #7e8aad !important;' +
-      '}' +
-      'pre, code {' +
-      '  background: #212845 !important;' +
-      '  color: #c8d0e8 !important;' +
-      '  border-color: #2a3050 !important;' +
-      '}' +
-      'hr { border-color: #2a3050 !important; }' +
-      'table, td, th {' +
-      '  border-color: #2a3050 !important;' +
-      '}' +
-      // Override forced_root_block_attrs color for display in dark mode
-      'div[style*="color: #1a1a1a"], div[style*="color:#1a1a1a"] {' +
-      '  color: #c8d0e8 !important;' +
-      '}';
+  // Dark mode content styles for the editor iframe.
+  // Display-only — stripped on send by the sanitizer.
+  var _tinymceDarkCSS =
+    'html, body {' +
+    '  background-color: #1a1f36 !important;' +
+    '  color: #c8d0e8 !important;' +
+    '}' +
+    'a { color: #7986cb !important; }' +
+    'blockquote {' +
+    '  border-left: 3px solid #7986cb !important;' +
+    '  color: #7e8aad !important;' +
+    '}' +
+    'pre, code {' +
+    '  background: #212845 !important;' +
+    '  color: #c8d0e8 !important;' +
+    '  border-color: #2a3050 !important;' +
+    '}' +
+    'hr { border-color: #2a3050 !important; }' +
+    'table, td, th {' +
+    '  border-color: #2a3050 !important;' +
+    '}' +
+    'div[style*="color: #1a1a1a"], div[style*="color:#1a1a1a"] {' +
+    '  color: #c8d0e8 !important;' +
+    '}';
 
-    function applyDarkToEditor(editor) {
-      var doc = editor.getDoc ? editor.getDoc() : null;
-      if (!doc || !doc.head) return;
-      if (doc.documentElement) doc.documentElement.classList.add('dark-mode');
-      if (doc.getElementById('stratus-tinymce-dark')) return;
+  function _applyDarkToEditor(editor) {
+    var doc = editor.getDoc ? editor.getDoc() : null;
+    if (!doc || !doc.head) return;
+    if (doc.documentElement) doc.documentElement.classList.add('dark-mode');
+    // Inject dark stylesheet if not already present
+    if (!doc.getElementById('stratus-tinymce-dark')) {
       var style = doc.createElement('style');
       style.id = 'stratus-tinymce-dark';
-      style.textContent = darkCSS;
+      style.textContent = _tinymceDarkCSS;
       doc.head.appendChild(style);
     }
+    // Also set body inline styles (covers toggling from light → dark mid-session)
+    var body = doc.body;
+    if (body) {
+      body.style.backgroundColor = '#1a1f36';
+      body.style.color = '#c8d0e8';
+    }
+  }
 
+  function _applyLightToEditor(editor) {
+    var doc = editor.getDoc ? editor.getDoc() : null;
+    if (!doc) return;
+    if (doc.documentElement) doc.documentElement.classList.remove('dark-mode');
+    // Remove injected dark stylesheet
+    var el = doc.getElementById('stratus-tinymce-dark');
+    if (el) el.parentNode.removeChild(el);
+    // Reset body inline styles back to light (overrides content_style from dark init)
+    var body = doc.body;
+    if (body) {
+      body.style.backgroundColor = 'transparent';
+      body.style.color = '#1a1a1a';
+    }
+  }
+
+  function _removeDarkFromEditor(editor) {
+    _applyLightToEditor(editor);
+  }
+
+  /**
+   * Swap the TinyMCE skin stylesheet between oxide and oxide-dark.
+   * TinyMCE 5 loads skin.min.css in document.head and in the editor iframe.
+   */
+  function _swapTinyMCESkin(toDark) {
+    // Swap in the main document head (toolbar/chrome skin)
+    _swapSkinLinks(document, toDark);
+
+    // Swap in each editor iframe (content skin)
+    if (!window.tinymce) return;
+    var editors = window.tinymce.editors || [];
+    for (var i = 0; i < editors.length; i++) {
+      var ed = editors[i];
+      if (!ed.initialized) continue;
+      var doc = ed.getDoc ? ed.getDoc() : null;
+      if (doc) _swapSkinLinks(doc, toDark);
+    }
+  }
+
+  function _swapSkinLinks(doc, toDark) {
+    var links = doc.querySelectorAll('link[rel="stylesheet"]');
+    for (var i = 0; i < links.length; i++) {
+      var href = links[i].getAttribute('href') || '';
+      if (href.indexOf('/skins/ui/oxide') === -1) continue;
+      if (toDark && href.indexOf('oxide-dark') === -1) {
+        links[i].setAttribute('href', href.replace('/skins/ui/oxide/', '/skins/ui/oxide-dark/'));
+      } else if (!toDark && href.indexOf('oxide-dark') !== -1) {
+        links[i].setAttribute('href', href.replace('/skins/ui/oxide-dark/', '/skins/ui/oxide/'));
+      }
+    }
+  }
+
+  function initTinyMCEDarkMode() {
     function hookTinyMCE() {
       window.tinymce.on('AddEditor', function (e) {
-        e.editor.on('init', function () { applyDarkToEditor(this); });
+        e.editor.on('init', function () { _applyDarkToEditor(this); });
       });
       var editors = window.tinymce.editors || [];
       for (var i = 0; i < editors.length; i++) {
         var ed = editors[i];
         if (ed.initialized) {
-          applyDarkToEditor(ed);
+          _applyDarkToEditor(ed);
         } else {
-          ed.on('init', function () { applyDarkToEditor(this); });
+          ed.on('init', function () { _applyDarkToEditor(this); });
         }
       }
     }
@@ -579,6 +641,49 @@
         else if (attempts > 150) clearInterval(timer);
       }, 200);
     }
+  }
+
+  // ══════════════════════════════════════════════
+  //  Dark Mode — MutationObserver for live toggle
+  // ══════════════════════════════════════════════
+
+  function initDarkModeObserver() {
+    var html = document.documentElement;
+    var wasDark = html.classList.contains('dark-mode');
+
+    var observer = new MutationObserver(function () {
+      var isDark = html.classList.contains('dark-mode');
+      if (isDark === wasDark) return;
+      wasDark = isDark;
+
+      // Propagate dark mode change to all iframes
+      var iframes = document.querySelectorAll('iframe');
+      Array.prototype.forEach.call(iframes, function (frame) {
+        try {
+          var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+          if (doc && doc.documentElement) doc.documentElement.classList[isDark ? 'add' : 'remove']('dark-mode');
+        } catch (e) {}
+      });
+
+      if (!window.tinymce) return;
+      var editors = window.tinymce.editors || [];
+
+      if (isDark) {
+        // Switching TO dark mode
+        _swapTinyMCESkin(true);
+        for (var i = 0; i < editors.length; i++) {
+          if (editors[i].initialized) _applyDarkToEditor(editors[i]);
+        }
+      } else {
+        // Switching TO light mode
+        _swapTinyMCESkin(false);
+        for (var j = 0; j < editors.length; j++) {
+          if (editors[j].initialized) _removeDarkFromEditor(editors[j]);
+        }
+      }
+    });
+
+    observer.observe(html, { attributes: true, attributeFilter: ['class'] });
   }
 
   // ══════════════════════════════════════════════
@@ -727,8 +832,11 @@
             rcmail.command('plugin.archive', '', row, evt);
           }
         } else if (cmd === 'toggle_flag') {
-          var ret = rcmail.command('toggle_flag', '', row, evt);
-          if (ret === false) rcmail.command('toggle_flag', uid, row, evt);
+          // Bypass rcmail.command() which gate-checks commands['toggle_flag'].
+          // Call mark_message directly — same path toggle_flag uses internally.
+          var rowData = list0.rows && list0.rows[uid];
+          var flag = (rowData && rowData.flagged) ? 'unflagged' : 'flagged';
+          rcmail.mark_message(flag, uid);
         } else {
           rcmail.command(cmd, '', row, evt);
         }

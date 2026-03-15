@@ -71,6 +71,8 @@ services:
       - ./logs:/var/roundcube/logs
       # Custom PHP settings (upload limits, timezone, etc.)
       - ./roundcube.ini:/usr/local/etc/php/conf.d/zzz_roundcube-custom.ini
+      # rcmcarddav preset config (CardDAV via Davis)
+      - ./config/carddav.config.inc.php:/var/www/html/plugins/carddav/config.inc.php
       # Composer cache (speeds up rebuilds)
       - composer-cache:/root/.composer
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
@@ -79,9 +81,59 @@ services:
         condition: service_healthy
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
+  # ---------- Davis CalDAV / CardDAV ----------
+
+  davis:
+    image: ghcr.io/tchapi/davis:latest
+    container_name: davis
+    user: "0:0"
+    command: >-
+      sh -c "chown -R www-data:www-data /data /var/www/davis/var
+      && su -s /bin/sh www-data -c 'php /var/www/davis/bin/console doctrine:migrations:migrate --no-interaction'
+      && cp -a /var/www/davis/public/. /davis-public/
+      && exec php-fpm"
+    environment:
+      - APP_ENV=prod
+      - DATABASE_DRIVER=sqlite
+      - DATABASE_URL=sqlite:////data/davis-database.db
+      - CALDAV_ENABLED=true
+      - CARDDAV_ENABLED=true
+      - WEBDAV_ENABLED=false
+      - ADMIN_LOGIN=admin
+      - ADMIN_PASSWORD=admin
+      - AUTH_METHOD=IMAP
+      - IMAP_AUTH_URL=mailserver:143
+      - IMAP_ENCRYPTION_METHOD=false
+      - IMAP_CERTIFICATE_VALIDATION=false
+      - IMAP_AUTH_USER_AUTOCREATE=true
+      - AUTH_REALM=SabreDAV
+      - APP_TIMEZONE=UTC
+      - INVITE_FROM_ADDRESS=no-reply@example.test
+    volumes:
+      - davis-data:/data
+      - davis-public:/davis-public
+    depends_on:
+      mailserver:
+        condition: service_healthy
+    restart: unless-stopped
+
+  davis-nginx:
+    image: nginx:1.25-alpine
+    container_name: davis-nginx
+    ports:
+      - "9000:80"
+    volumes:
+      - davis-public:/var/www/davis/public:ro
+      - ./config/davis-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - davis
+    restart: unless-stopped
+
 volumes:
   maildata:
   mailstate:
   maillogs:
   composer-cache:
   roundcube-db:
+  davis-data:
+  davis-public:

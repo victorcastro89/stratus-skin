@@ -96,12 +96,16 @@ html:not(.touch) {
             border-left-color: @color-main;
         }
 
-        // Flagged — subtle warm indicator
-        &.flagged td.flag {
-            &:before {
-                color: @mp-color-amber;
-                text-shadow: 0 0 8px fadeout(@mp-color-amber, 60%);
-            }
+        // Flagged — flag icon red, no text color change
+        &.flagged td,
+        &.flagged td.subject span.subject a,
+        &.flagged td.subject span.date,
+        &.flagged td.subject span.fromto {
+            color: inherit;
+        }
+
+        &.flagged td span.flagged {
+            color: @color-list-flagged;
         }
 
         // Date/size columns — secondary text
@@ -237,7 +241,7 @@ html:not(.touch) {
     // When row is flagged, show solid flag
     tr.flagged & .flag:before {
         font-weight: 900; // solid
-        color: @mp-color-amber;
+        color: @color-list-flagged;
     }
 }
 
@@ -260,10 +264,27 @@ html:not(.touch) {
     z-index: 6;
 }
 
-// Standard list: remove Elastic's native single-flag indicator.
-// Keep only the unified mp-hover-actions strip.
+// Standard list: flag indicator — passive, non-clickable.
+// Only the filled flag is visible (when message is flagged).
 #messagelist td.flags > span.flag {
-    display: none !important;
+    pointer-events: none;
+    cursor: default;
+
+    span.unflagged:before { content: none; }
+}
+
+// Elastic hides .flag on touch/phone; show it when the message is actually flagged,
+// centered vertically so it doesn't overlap the date line at the top
+html.layout-phone,
+html.touch {
+    #messagelist tr.flagged td.flags {
+        display: flex;
+        align-items: end;
+
+        .flag {
+            visibility: visible;
+        }
+    }
 }
 
 #messagelist .mp-hover-action-host > .mp-hover-actions,
@@ -411,6 +432,15 @@ html.dark-mode #mp-search-empty-state {
         ul li > a {
             padding-left: @mp-space-2xl;
         }
+    }
+}
+
+// Settings task: normalize UL-based listing row heights to match TABLE-based listings (36px)
+.task-settings #layout-list {
+    .listing li > a {
+        padding-top: 0;
+        padding-bottom: 0;
+        line-height: 36px;
     }
 }
 

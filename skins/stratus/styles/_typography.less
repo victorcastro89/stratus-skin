@@ -1,6 +1,13 @@
 // stratus skin — Typography system
 // Overrides: elastic's Roboto-based type with modern system font stack & refined hierarchy
 
+// ─── Override Elastic's .font-family mixin ──────────────────────────────────
+// Elastic calls .font-family() in body, iframes, editor, forms, etc.
+// Redefining it here ensures our stack is used everywhere Elastic hardcodes Roboto.
+.font-family {
+    font-family: var(--stratus-font-family) !important;
+}
+
 // ─── Base font ───────────────────────────────────────────────────────────────
 html {
     font-size: 16px; // root for rem calculations

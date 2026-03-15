@@ -7,5 +7,6 @@ Review quickbvar buttons and more buttons on top of quick view( remove copy? mov
 Setings icon broken, it opens user interface highlighted without opening user inteface
 review calendar UI
 1. When archive message when archive folder does not exist yet, folder it is not listed at left side bar( side bar does not refresh)
-
-
+Tinymc color background not change without reload fi darkmode activated
+update tab icon to webmail
+Not html editor by default on http://localhost:8000/?_task=settings&_action=identities

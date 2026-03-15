@@ -108,11 +108,24 @@ html:not(.layout-phone) #messagelist-header > a {
             position: static;
             transform: none;
             background: none;
-            color: inherit;
+            color: rgba(255, 255, 255, 0.75);
             padding: 0;
             box-shadow: none;
             font-size: 80%;
             white-space: normal;
+        }
+
+        a.selected span.inner {
+            color: #fff;
+        }
+
+        a.logout,
+        a[href*="logout"] {
+            opacity: 1;
+
+            span.inner {
+                color: rgba(255, 255, 255, 0.75);
+            }
         }
     }
 

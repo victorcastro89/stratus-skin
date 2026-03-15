@@ -122,7 +122,7 @@ class stratus_helper extends rcube_plugin
         $css .= "}\n";
 
         if ($font['family']) {
-            $css .= "body { --stratus-font-family: {$font['family']}; }\n";
+            $css .= ":root { --stratus-font-family: {$font['family']}; }\n";
         }
 
         $this->rcmail->output->add_header(
@@ -271,6 +271,12 @@ class stratus_helper extends rcube_plugin
 
             if (isset($schemes[$value])) {
                 $args['prefs']['stratus_color_scheme'] = $value;
+                $scheme = $schemes[$value];
+                $this->rcmail->output->command('plugin.stratus.scheme_applied', [
+                    'key'          => $value,
+                    'primary'      => $scheme['primary'],
+                    'primary_dark' => $scheme['primary_dark'],
+                ]);
             }
         }
 
@@ -280,6 +286,12 @@ class stratus_helper extends rcube_plugin
 
             if (isset($fonts[$value])) {
                 $args['prefs']['stratus_font_family'] = $value;
+                $font = $fonts[$value];
+                $this->rcmail->output->command('plugin.stratus.font_applied', [
+                    'key'    => $value,
+                    'family' => $font['family'],
+                    'url'    => $font['url'],
+                ]);
             }
         }
 

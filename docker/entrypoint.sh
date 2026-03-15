@@ -112,6 +112,14 @@ if ! php -r 'require "/var/www/html/vendor/autoload.php"; exit((class_exists("Ma
         "lolli42/finediff:~1.0.3"
 fi
 
+# 6) Install rcmcarddav (CardDAV contacts) if not present
+if [ ! -d "$RC_ROOT/plugins/carddav" ]; then
+    echo "[entrypoint] Installing rcmcarddav plugin …"
+    composer require --working-dir="$RC_ROOT" \
+        --no-interaction --prefer-dist --no-progress --update-no-dev -W -o \
+        "roundcube/carddav:*"
+fi
+
 # Roundcube templates reference /deps/* from the web root.
 if [ ! -e "$RC_ROOT/public_html/deps" ]; then
     ln -s ../skins/elastic/deps "$RC_ROOT/public_html/deps"
