@@ -13,6 +13,8 @@
 <roundcube:add_label name="size" />
 <roundcube:add_label name="cc" />
 <roundcube:add_label name="listsorting" />
+<roundcube:add_label name="stratus_helper.selected_count" />
+<roundcube:add_label name="stratus_helper.showunread" />
 <roundcube:add_label name="asc" />
 <roundcube:add_label name="desc" />
 <roundcube:if condition="template:name == 'mail'" />
@@ -29,7 +31,7 @@
 			<span class="inner"><roundcube:label name="select" /></span>
 		</a>
 		<!-- Default state: sort indicator + refresh (visible when no selection) -->
-		<div class="mp-smart-bar-default" aria-label="List controls" id="sort-bar-mail-list">
+		<div class="mp-smart-bar-default" aria-label="<roundcube:label name="stratus_helper.listcontrols" />" id="sort-bar-mail-list">
 			<a href="#sort" id="mp-sort-trigger" class="mp-sort-trigger"
 				aria-haspopup="true" aria-expanded="false"
 				title="<roundcube:label name="listsorting" />">
@@ -40,7 +42,7 @@
 				label="refresh" title="checkmail" innerclass="inner" />
 		</div>
 		<!-- Action buttons (visible only when messages selected — active state) -->
-		<div class="mp-mass-action-actions" aria-label="Message actions">
+		<div class="mp-mass-action-actions" aria-label="<roundcube:label name="stratus_helper.messageactions" />">
 			<roundcube:button command="delete" type="link"
 				class="mp-action-btn delete disabled" classAct="mp-action-btn delete"
 				title="deletemessage" innerclass="inner" label="delete" />
@@ -49,6 +51,7 @@
 				><span class="inner"><roundcube:label name="archive.buttontext" /></span></a>
 			<a href="#" id="mp-action-move" class="mp-action-btn move disabled"
 				title="<roundcube:label name="moveto" />"
+				data-popup-pos="bottom"
 				onclick="return rcmail.command('move','',this,event)">
 				<span class="inner"><roundcube:label name="moveto" /></span>
 			</a>
@@ -89,7 +92,7 @@
      show_menu() relocates this to document.body; use standalone selectors in CSS.
      Uses the same .popupmenu + .menu.listing structure as #message-menu so Elastic's
      native styles apply (icon font, a.selected::before checkmark, hover colours). -->
-<div id="mp-sort-menu" class="popupmenu" aria-label="Sort options">
+<div id="mp-sort-menu" class="popupmenu" aria-label="<roundcube:label name="stratus_helper.sortoptions" />">
 	<ul class="menu listing" role="menu">
 		<li role="menuitem"><a href="#sort" data-sort-col="date"><roundcube:label name="sentdate" /></a></li>
 		<li role="menuitem"><a href="#sort" data-sort-col="arrival"><roundcube:label name="arrival" /></a></li>

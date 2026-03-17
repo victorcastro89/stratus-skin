@@ -109,7 +109,7 @@ class undo_send extends rcube_plugin
     {
         $args['list']['undo_send'] = [
             'id'      => 'undo_send',
-            'section' => rcube::Q($this->gettext('section_title')),
+            'section' => $this->gettext('section_title'),
         ];
         return $args;
     }

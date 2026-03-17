@@ -24,6 +24,13 @@ npm run less:build     # Compile LESS → skins/stratus/styles/styles.min.css
 npm run less:watch     # Watch and recompile on changes
 ```
 
+### PHP Tests
+```bash
+npm test               # Run PHPUnit suite (93 tests)
+npm run test:watch     # Re-run on file changes (requires fswatch)
+composer install       # Install PHPUnit (first time only)
+```
+
 ### Test Emails
 ```bash
 npm run mail:seed      # Seed test emails into the dev mailbox

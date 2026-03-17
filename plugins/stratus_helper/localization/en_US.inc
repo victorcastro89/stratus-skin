@@ -43,6 +43,13 @@ $labels['font_size_small']   = 'Small';
 $labels['font_size_default'] = 'Default';
 $labels['font_size_large']   = 'Large';
 
+// Smart bar aria labels
+$labels['listcontrols']      = 'List controls';
+$labels['messageactions']    = 'Message actions';
+$labels['sortoptions']       = 'Sort options';
+$labels['selected_count']    = '$count selected';
+$labels['showunread']        = 'Show unread messages';
+
 // Search empty state
 $labels['search_no_messages']        = 'No messages found for your search.';
 $labels['search_no_conversations']   = 'No conversations found for your search.';

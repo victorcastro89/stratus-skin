@@ -169,6 +169,13 @@
 			this._moveBtn.addEventListener('click', function() {
 				self._schedulePostAction();
 			});
+
+			// Popper.js miscalculates the move button's position because it sits inside
+			// a flex-reordered container that also has overflow:hidden (.footer from
+			// Elastic's layout CSS).  Fix the popover coordinates after Bootstrap renders.
+			$(this._moveBtn).on('shown.bs.popover', function() {
+				self._fixMovePopoverPosition();
+			});
 		}
 
 		// ── Mark toggle ────────────────────────────────────────────
@@ -249,6 +256,47 @@
 
 			self.rcmail.refresh();
 		});
+	};
+
+	/**
+	 * Reposition the folder-selector popover so it opens directly below the
+	 * move button.  Called from the shown.bs.popover handler because Popper.js
+	 * computes wrong coordinates when the trigger is inside a flex-reordered
+	 * container with overflow:hidden (Elastic's .footer layout rule).
+	 */
+	ns.ActionDispatcher.prototype._fixMovePopoverPosition = function() {
+		if (!this._moveBtn) return;
+
+		var popoverId = this._moveBtn.getAttribute('aria-describedby');
+		if (!popoverId) return;
+		var popover = document.getElementById(popoverId);
+		if (!popover) return;
+
+		var rect    = this._moveBtn.getBoundingClientRect();
+		var scrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
+		var scrollY = window.pageYOffset || document.documentElement.scrollTop  || 0;
+		var winW    = window.innerWidth  || document.documentElement.clientWidth || 0;
+		var pw      = popover.offsetWidth;
+
+		// Place the popover below the button, horizontally centred on it
+		var top  = rect.bottom + scrollY;
+		var left = rect.left + scrollX + rect.width / 2 - pw / 2;
+
+		// Keep the popover within the viewport
+		left = Math.max(scrollX + 4, Math.min(left, scrollX + winW - pw - 4));
+
+		popover.style.transform = 'none';
+		popover.style.top       = top  + 'px';
+		popover.style.left      = left + 'px';
+
+		// Align the arrow with the button's horizontal centre
+		var arrow = popover.querySelector('.arrow');
+		if (arrow) {
+			var btnCx      = rect.left + rect.width / 2;
+			var popoverBCR = popover.getBoundingClientRect();
+			var arrowLeft  = btnCx - popoverBCR.left - arrow.offsetWidth / 2;
+			arrow.style.left = Math.max(0, arrowLeft) + 'px';
+		}
 	};
 
 	// ── Public API ─────────────────────────────────────────────────────

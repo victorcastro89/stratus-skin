@@ -138,7 +138,7 @@
 		// ── Accessibility: unread filter button label ────────────────
 		var unreadFilterBtn = document.querySelector('.searchbar .button.unread, #mailsearchform .button.unread');
 		if (unreadFilterBtn && !unreadFilterBtn.getAttribute('title')) {
-			var showUnreadLabel = rcmail.get_label('showunread') || 'Show unread messages';
+			var showUnreadLabel = rcmail.get_label('stratus_helper.showunread') || rcmail.get_label('showunread') || 'Show unread messages';
 			unreadFilterBtn.setAttribute('title', showUnreadLabel);
 			unreadFilterBtn.setAttribute('aria-label', showUnreadLabel);
 		}

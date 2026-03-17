@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<phpunit
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd"
+>
+    <testsuites>
+        <testsuite name="Stratus Helper">
+            <directory suffix="Test.php">plugins/stratus_helper/tests</directory>
+        </testsuite>
+        <testsuite name="Undo Send">
+            <directory suffix="Test.php">plugins/undo_send/tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

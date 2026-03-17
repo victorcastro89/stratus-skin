@@ -112,7 +112,10 @@
 
 	ns.MassActionBar.prototype.showActiveState = function(count) {
 		this.bar.classList.add('mp-has-selection');
-		if (this._chip) this._chip.textContent = count + ' selected';
+		if (this._chip) {
+			var label = this.rcmail.get_label('stratus_helper.selected_count') || '$count selected';
+			this._chip.textContent = label.replace('$count', count);
+		}
 		if (this._moveBtn) {
 			this._moveBtn.classList.remove('disabled');
 			this._moveBtn.removeAttribute('aria-disabled');

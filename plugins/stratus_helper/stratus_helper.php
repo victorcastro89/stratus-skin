@@ -348,7 +348,7 @@ class stratus_helper extends rcube_plugin
     {
         $args['list']['stratus'] = [
             'id'      => 'stratus',
-            'section' => rcube::Q($this->gettext('section_title')),
+            'section' => $this->gettext('section_title'),
         ];
 
         return $args;
@@ -376,7 +376,7 @@ class stratus_helper extends rcube_plugin
                 $checked     = ($key === $current) ? ' checked="checked"' : '';
                 $sidebar_bg  = rcube::Q($scheme['sidebar_bg'] ?? '#1a1f36');
                 $primary     = rcube::Q($this->sanitize_color($scheme['primary']));
-                $label_text  = rcube::Q($scheme['label']);
+                $label_text  = rcube::Q($this->resolve_label('scheme_' . $key, $scheme['label']));
                 $scheme_json = htmlspecialchars(
                     json_encode($this->get_scheme_js_data($scheme), JSON_HEX_TAG | JSON_HEX_QUOT),
                     ENT_QUOTES,
@@ -415,7 +415,7 @@ class stratus_helper extends rcube_plugin
             ]);
 
             foreach ($fonts as $key => $font) {
-                $select->add($font['label'], $key);
+                $select->add($this->resolve_label('font_' . str_replace('-', '_', $key), $font['label']), $key);
             }
 
             $blocks['font'] = [
@@ -443,7 +443,7 @@ class stratus_helper extends rcube_plugin
             ]);
 
             foreach ($sizes as $key => $sz) {
-                $select->add($sz['label'], $key);
+                $select->add($this->resolve_label('font_size_' . $key, $sz['label']), $key);
             }
 
             $blocks['fontsize'] = [
@@ -739,6 +739,16 @@ public function messages_list($args)
         }
 
         return $this->rcmail->format_date($timestamp, 'd');
+    }
+
+    /**
+     * Resolve a localized label, falling back to the config-provided label.
+     * Returns the translated string if the key exists, otherwise the fallback.
+     */
+    private function resolve_label(string $l10n_key, string $fallback): string
+    {
+        $translated = $this->gettext($l10n_key);
+        return ($translated !== $l10n_key) ? $translated : $fallback;
     }
 
     /**
