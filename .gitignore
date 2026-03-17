@@ -41,3 +41,16 @@ config.inc.php
 config.inc copy.php
 roundcubemail.worktrees/
 README_CALDAV.md
+
+# ── QA / dogfood output ────────────────────────────────────────────────
+dogfood-output/
+
+# ── Design specs (historical, not source) ─────────────────────────────
+specs/
+
+# ── Stray root artifacts ───────────────────────────────────────────────
+roundcubemail-thread-methods.md
+claude\ init
+
+# ── PHPUnit cache ──────────────────────────────────────────────────────
+.phpunit.result.cache
