@@ -13,12 +13,18 @@
 - 📅 **Calendar polish** — decluttered ghost grid, floating event cards
 
 
-## Quick Start
+## Installation
+
+Download the latest release from the [Releases page](https://github.com/victorcastro89/stratus-skin/releases) and follow **[INSTALL.md](INSTALL.md)**.
+
+---
+
+## Development Setup
 
 ### Prerequisites
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for the dev environment)
-- [Node.js](https://nodejs.org/) v18+ (for LESS compilation)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Node.js](https://nodejs.org/) v18+
 - Git
 
 ### Setup (one command)
@@ -74,32 +80,13 @@ Stratus extends elastic via `"extends": "elastic"` in `meta.json`. This means:
 2. **Styles** — Our `styles.less` imports elastic's full stylesheet first, then layers our variable overrides and custom partials on top.
 3. **Dark mode** — Uses elastic's native `html.dark-mode` class + `@color-dark-*` variables. Our `_dark.less` adds supplemental rules.
 
-## Plugin Dependency Map
+## Plugin Dependency
 
-- **`stratus_helper` → `stratus` skin (hard dependency)**
-	- The plugin exits early unless active skin is `stratus`.
-	- It injects runtime CSS variables (`--stratus-primary`, `--stratus-font-family`) used by Stratus styles.
-- **`conversation_mode` ↔ `stratus` skin (integration dependency in this repo)**
-	- Plugin logic is skin-agnostic (ships default + elastic CSS).
-	- In this workspace, the Stratus `mail.html` override provides conversation containers (`#conv-list-content`, `#conv-detail`) used by `conversation_mode.js`.
-	- Without this template integration, full Stratus conversation UI is not available.
-- **`stratus_helper` ↔ `conversation_mode`**
-	- No direct dependency. They can run independently.
+**`stratus_helper`** is a hard dependency of the skin — it exits early unless the active skin is `stratus`. It injects runtime CSS variables (`--stratus-primary`, `--stratus-font-family`) that the skin relies on, and loads the Smart Bar JS.
 
-## Database Support (Plugin Level)
+**`undo_send`** is independent and works with any Roundcube skin.
 
-- **`stratus_helper`**
-	- No plugin-specific tables.
-	- Stores user preferences through Roundcube preference storage.
-- **`conversation_mode`**
-	- No plugin-specific tables.
-	- Builds conversation data from IMAP headers and caches in PHP session (`$_SESSION`).
-
-### Supported DB Engines
-
-Both plugins rely on Roundcube core APIs and do not require their own schema, so they work with any DB backend supported by Roundcube (SQLite, MySQL/MariaDB, PostgreSQL).
-
-Dev environment default in this repo: **SQLite** (`db_dsnw = sqlite:////var/roundcube/db/sqlite.db`).
+Neither plugin requires its own database tables. They use Roundcube's built-in preference storage and are compatible with SQLite, MySQL/MariaDB, and PostgreSQL.
 
 
 ## AI-Assisted Development

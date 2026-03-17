@@ -1,0 +1,32 @@
+# ====================================================================
+# .gitattributes — Controls git archive / GitHub ZIP export behavior
+# Dev-only paths are excluded from `git archive` so release zips only
+# contain production deliverables.
+# ====================================================================
+
+# ── Dev-only directories ─────────────────────────────────────────────
+docker/               export-ignore
+roundcubemail/        export-ignore
+node_modules/         export-ignore
+vendor/               export-ignore
+scripts/              export-ignore
+
+# ── Dev tooling files ────────────────────────────────────────────────
+package.json          export-ignore
+package-lock.json     export-ignore
+composer.json         export-ignore
+composer.lock         export-ignore
+.github/              export-ignore
+CLAUDE.md             export-ignore
+CONTRIBUTING.md       export-ignore
+roundcubemail-thread-methods.md  export-ignore
+
+# ── Normalise line endings ────────────────────────────────────────────
+*.php   text eol=lf
+*.js    text eol=lf
+*.css   text eol=lf
+*.less  text eol=lf
+*.html  text eol=lf
+*.json  text eol=lf
+*.inc   text eol=lf
+*.md    text eol=lf

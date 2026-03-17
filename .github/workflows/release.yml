@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build release archives
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # stratus skin
+          mkdir -p dist/stratus
+          cp -r skins/stratus dist/stratus/stratus
+          cd dist/stratus && zip -r "../../stratus-${VERSION}.zip" stratus/ && cd ../..
+
+          # stratus_helper plugin
+          mkdir -p dist/stratus_helper
+          cp -r plugins/stratus_helper dist/stratus_helper/stratus_helper
+          cd dist/stratus_helper && zip -r "../../stratus_helper-${VERSION}.zip" stratus_helper/ && cd ../..
+
+          # undo_send plugin
+          mkdir -p dist/undo_send
+          cp -r plugins/undo_send dist/undo_send/undo_send
+          cd dist/undo_send && zip -r "../../undo_send-${VERSION}.zip" undo_send/ && cd ../..
+
+          # Combined bundle (skins/ + plugins/ layout — unzip directly into Roundcube root)
+          mkdir -p dist/bundle/skins dist/bundle/plugins
+          cp -r skins/stratus         dist/bundle/skins/stratus
+          cp -r plugins/stratus_helper dist/bundle/plugins/stratus_helper
+          cp -r plugins/undo_send      dist/bundle/plugins/undo_send
+          cp INSTALL.md CHANGELOG.md dist/bundle/
+          cd dist/bundle && zip -r "../../stratus-bundle-${VERSION}.zip" . && cd ../..
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Stratus v${{ steps.version.outputs.version }}"
+          body_path: CHANGELOG.md
+          files: |
+            stratus-${{ steps.version.outputs.version }}.zip
+            stratus_helper-${{ steps.version.outputs.version }}.zip
+            undo_send-${{ steps.version.outputs.version }}.zip
+            stratus-bundle-${{ steps.version.outputs.version }}.zip
