@@ -23,6 +23,7 @@
     "mail:clean": "./scripts/clean-emails.sh",
     "less:build": "lessc --include-path=roundcubemail/skins --clean-css=\"--s1 --advanced\" skins/stratus/styles/styles.less skins/stratus/styles/styles.min.css",
     "less:watch": "chokidar \"skins/stratus/styles/**/*.less\" -c \"npm run less:build\"",
+    "release": "node scripts/release.js",
     "thumbnail": "node scripts/generate-thumbnail.js",
     "test": "./vendor/bin/phpunit",
     "test:watch": "fswatch -o plugins/stratus_helper plugins/undo_send | xargs -n1 -I{} ./vendor/bin/phpunit"

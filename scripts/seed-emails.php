@@ -566,9 +566,10 @@ EMAIL;
             $previousBody = $renderedBodies[$i - 1];
             $previousFrom = $messageMeta[$i - 1]['from'];
             $previousDate = $messageMeta[$i - 1]['date'];
+            $previousTo = $messageMeta[$i - 1]['to'];
+            $previousSubject = $messageMeta[$i - 1]['subject'];
 
-            $body .= "\n\nOn {$previousDate}, {$previousFrom} wrote:\n";
-            $body .= $this->quoteForReply($previousBody);
+            $body .= "\n\n" . $this->outlookDivider($previousFrom, $previousDate, $previousTo, $previousSubject, $previousBody);
         }
 
         $date = date('r', $timestamps[$i]);
@@ -646,12 +647,18 @@ private function normalizeThreadSubject(string $subject): string
 }
 
 
-    private function quoteForReply(string $text): string
+    private function outlookDivider(string $from, string $date, string $to, string $subject, string $body): string
     {
-        $normalized = str_replace(["\r\n", "\r"], "\n", $text);
-        $lines = explode("\n", $normalized);
-
-        return implode("\n", array_map(fn($line) => '> ' . $line, $lines));
+        $normalized = str_replace(["\r\n", "\r"], "\n", $body);
+        return implode("\n", [
+            '________________________________________',
+            'From: ' . $from,
+            'Sent: ' . $date,
+            'To: ' . $to,
+            'Subject: ' . $subject,
+            '',
+            $normalized,
+        ]);
     }
 
     private function createThreadBody(int $index, string $from, string $subject): string
@@ -745,7 +752,7 @@ EMAIL;
         return <<<EMAIL
 From: $from
 To: $to
-Subject: 📎 Q4 Report (with attachment)
+Subject: Q4 Report 
 Date: $date
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----ATTACHMENT_BOUNDARY"

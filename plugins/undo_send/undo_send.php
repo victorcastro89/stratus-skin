@@ -71,9 +71,9 @@ class undo_send extends rcube_plugin
         $this->include_script('undo_send.js');
 
         // Push delay preference to client
-        $delay = (int) $this->rcmail->config->get('undo_send_delay', 5);
+        $delay = (int) $this->rcmail->config->get('undo_send_delay', 3);
         if (!in_array($delay, $this->delay_options)) {
-            $delay = 5;
+            $delay = 3;
         }
         $this->rcmail->output->set_env('undo_send_delay', $delay);
 

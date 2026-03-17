@@ -11,5 +11,5 @@
 // During this window, the user can click "Undo" to cancel.
 // Set to 0 to disable the undo-send feature entirely.
 // Available values: 0 (disabled), 3, 5, 10, 15, 30
-// Default: 5
-$config['undo_send_delay'] = 5;
+// Default: 3
+$config['undo_send_delay'] = 3;

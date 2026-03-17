@@ -45,11 +45,6 @@
 
 	// ── Private helpers ────────────────────────────────────────────────
 
-	ns.ActionDispatcher.prototype._logArchive = function(eventName, extra) {
-		if (!window.console || typeof console.log !== 'function') return;
-		console.log('[Stratus Archive]', eventName, extra || {});
-	};
-
 	/**
 	 * Resolve the archive folder target from rcmail env.
 	 */
@@ -108,8 +103,7 @@
 					if (archivedLabel && archivedLabel !== 'archived') {
 						msg = archivedLabel;
 					}
-					self._logArchive('suppressed-archivedreload', { original: reloadLabel, replacement: msg });
-				}
+					}
 			}
 			return orig.call(this, msg, type, timeout, key);
 		};
@@ -128,12 +122,6 @@
 				e.stopPropagation();
 				if (self._archiveBtn.getAttribute('data-mp-folder-disabled') === 'true') return;
 				self._closeMassActionPopovers();
-
-				self._logArchive('archive-btn-click', {
-					mailbox:            self.rcmail.env.mailbox,
-					archiveTarget:      self._detectArchiveFolder(),
-					hasArchiveFunction: typeof rcmail_archive === 'function'
-				});
 
 				// Primary: archive plugin handles selection, subfolder routing, mark-as-read
 				if (typeof rcmail_archive === 'function') {
@@ -251,7 +239,6 @@
 				}, parentId, false);
 
 				self.rcmail.set_unread_count_display(archiveRoot, false);
-				self._logArchive('archive-folder-inserted', { folder: archiveRoot, parent: parentId });
 			}
 
 			self.rcmail.refresh();

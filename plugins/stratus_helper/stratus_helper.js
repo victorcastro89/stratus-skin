@@ -1,120 +1,12 @@
 /**
- * Stratus Helper – Client-side JS (DEBUG BUILD)
+ * Stratus Helper – Client-side JS
  *
- * @version 0.1.0-debug
+ * @version 0.1.0
  */
 (function () {
   'use strict';
 
   if (!window.rcmail) return;
-
-  // ──────────────────────────────────────────
-  // DEBUG CONTROLS (toggle in console if needed)
-  // ──────────────────────────────────────────
-  // window.STRATUS_HOVER_DEBUG = true/false
-  // window.STRATUS_HOVER_DEBUG_LEVEL = 0..3
-  if (typeof window.STRATUS_HOVER_DEBUG === 'undefined') window.STRATUS_HOVER_DEBUG = true;
-  if (typeof window.STRATUS_HOVER_DEBUG_LEVEL === 'undefined') window.STRATUS_HOVER_DEBUG_LEVEL = 3;
-
-  function dbgEnabled() { return !!window.STRATUS_HOVER_DEBUG; }
-  function dbgLevel() { return +window.STRATUS_HOVER_DEBUG_LEVEL || 0; }
-
-  function dbg() {
-    if (!dbgEnabled()) return;
-    if (dbgLevel() < 1) return;
-    try { console.log.apply(console, arguments); } catch (e) {}
-  }
-  function dbg2() {
-    if (!dbgEnabled()) return;
-    if (dbgLevel() < 2) return;
-    try { console.log.apply(console, arguments); } catch (e) {}
-  }
-  function dbg3() {
-    if (!dbgEnabled()) return;
-    if (dbgLevel() < 3) return;
-    try { console.log.apply(console, arguments); } catch (e) {}
-  }
-  // ──────────────────────────────────────────
-  // Hook debug wrappers once
-  // ──────────────────────────────────────────
-  function installDebugHooksOnce() {
-    if (!dbgEnabled()) return;
-    if (window.__STRATUS_DEBUG_HOOKS_INSTALLED) return;
-    window.__STRATUS_DEBUG_HOOKS_INSTALLED = true;
-
-    // Wrap rcmail.command
-    if (rcmail && typeof rcmail.command === 'function' && !rcmail.command.__stratusWrapped) {
-      var _cmd = rcmail.command;
-      var wrapped = function (cmd, prop, obj, evt) {
-        try {
-          dbg2('%c[STRATUS][COMMAND] →', 'color:#9b59b6', cmd, { prop: prop, obj: obj, evt: evt });
-        } catch (e) {}
-        var ret;
-        try {
-          ret = _cmd.apply(rcmail, arguments);
-        } catch (err) {
-          dbg('%c[STRATUS][COMMAND][ERROR]', 'color:#e74c3c', cmd, err);
-          throw err;
-        }
-        dbg2('%c[STRATUS][COMMAND] ← return', 'color:#9b59b6', cmd, ret);
-        return ret;
-      };
-      wrapped.__stratusWrapped = true;
-      rcmail.command = wrapped;
-      dbg('%c[STRATUS] Wrapped rcmail.command for debug', 'color:#2ecc71');
-    }
-
-    // Wrap rcmail.http_post (Roundcube AJAX)
-    if (rcmail && typeof rcmail.http_post === 'function' && !rcmail.http_post.__stratusWrapped) {
-      var _post = rcmail.http_post;
-      var wrappedPost = function (action, data, lock) {
-        dbg2('%c[STRATUS][HTTP_POST] →', 'color:#3498db', action, data, { lock: lock });
-        var ret;
-        try {
-          ret = _post.apply(rcmail, arguments);
-        } catch (err) {
-          dbg('%c[STRATUS][HTTP_POST][ERROR]', 'color:#e74c3c', action, err);
-          throw err;
-        }
-        dbg2('%c[STRATUS][HTTP_POST] ← return', 'color:#3498db', action, ret);
-        return ret;
-      };
-      wrappedPost.__stratusWrapped = true;
-      rcmail.http_post = wrappedPost;
-      dbg('%c[STRATUS] Wrapped rcmail.http_post for debug', 'color:#2ecc71');
-    }
-
-    // jQuery global AJAX sniffing (Roundcube uses jQuery)
-    var $ = window.jQuery || window.$;
-    if ($ && $.fn && $.ajax && !window.__STRATUS_JQ_AJAX_HOOKED) {
-      window.__STRATUS_JQ_AJAX_HOOKED = true;
-
-      $(document).on('ajaxSend.stratusHoverDebug', function (_e, xhr, settings) {
-        try {
-          var url = settings && settings.url;
-          var data = settings && settings.data;
-          // Log everything at max debug, but highlight possible flag-related calls
-          var interesting = /flag|mark|_uid|toggle_flag/i.test(String(url)) || /flag|mark|_uid|toggle_flag/i.test(String(data));
-          if (dbgLevel() >= 3 || interesting) {
-            dbg3('%c[STRATUS][AJAX SEND]', 'color:#f39c12', { url: url, type: settings.type, data: data });
-          }
-        } catch (e) {}
-      });
-
-      $(document).on('ajaxComplete.stratusHoverDebug', function (_e, xhr, settings) {
-        try {
-          var url = settings && settings.url;
-          var status = xhr && xhr.status;
-          var interesting = /flag|mark|_uid|toggle_flag/i.test(String(url));
-          if (dbgLevel() >= 3 || interesting) {
-            dbg3('%c[STRATUS][AJAX DONE]', 'color:#f39c12', { url: url, status: status, response: (xhr && xhr.responseText ? String(xhr.responseText).slice(0, 200) : null) });
-          }
-        } catch (e) {}
-      });
-
-      dbg('%c[STRATUS] Hooked jQuery ajaxSend/ajaxComplete for debug', 'color:#2ecc71');
-    }
-  }
 
   // ══════════════════════════════════════════════
   //  TinyMCE Email Composer Configuration
@@ -192,8 +84,6 @@
   }
 
   rcmail.addEventListener('init', function () {
-
-    installDebugHooksOnce();
 
     // ──────────────────────────────────────────
     //  1. Color Scheme Switching
@@ -1013,12 +903,10 @@
   }
 
   // ══════════════════════════════════════════════
-  //  Unified Hover Actions (MAX DEBUG)
+  //  Unified Hover Actions
   // ══════════════════════════════════════════════
 
   function initUnifiedHoverActions() {
-    dbg('%c[STRATUS] initUnifiedHoverActions()', 'color:#2ecc71');
-
     // Resolve UID in your environment
     var rowIdToUid = Object.create(null);
 
@@ -1027,8 +915,6 @@
       var list = rcmail.message_list;
       var rows = list && list.rows;
 
-      dbg2('[STRATUS][UID INDEX] rebuildRowIdUidIndex() list=', !!list, 'rows=', rows ? Object.keys(rows).length : null);
-
       if (!rows) return;
       for (var key in rows) {
         if (!Object.prototype.hasOwnProperty.call(rows, key)) continue;
@@ -1036,11 +922,6 @@
         if (!r || !r.id) continue;
         rowIdToUid[r.id] = r.uid || key;
       }
-
-      dbg3('[STRATUS][UID INDEX] sample map:', Object.keys(rowIdToUid).slice(0, 5).reduce(function (acc, k) {
-        acc[k] = rowIdToUid[k];
-        return acc;
-      }, {}));
     }
 
     function getUidById(rows, id) {
@@ -1094,8 +975,6 @@
       var list0 = rcmail.message_list;
       if (!list0 || !uid) return;
 
-      dbg2('[STRATUS][HOVER] cmd=', cmd, 'uid=', uid);
-
       var savedUid          = rcmail.env ? rcmail.env.uid : null;
       var savedSelection    = list0.selection ? list0.selection.slice() : [];
       var savedLastSelected = list0.last_selected || null;
@@ -1124,7 +1003,7 @@
           rcmail.command(cmd, '', row, evt);
         }
       } catch (err) {
-        dbg('%c[STRATUS][HOVER][ERROR]', 'color:#e74c3c', cmd, err);
+        // ignore
       }
 
       try {
@@ -1132,7 +1011,6 @@
         list0.selection     = savedSelection;
         list0.last_selected = savedLastSelected;
         if (rcmail.env) rcmail.env.uid = savedUid;
-        dbg2('[STRATUS][HOVER] restored uid=', savedUid);
       } catch (e) {}
     }
 
@@ -1228,7 +1106,6 @@
 
     // Refresh on list updates (RC replaces tbody)
     rcmail.addEventListener('listupdate', function () {
-      dbg2('[STRATUS] listupdate → rebuild index + process rows');
       rebuildRowIdUidIndex();
       if (stdList) processRows(stdList);
     });
