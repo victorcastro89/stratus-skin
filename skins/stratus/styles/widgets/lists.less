@@ -15,13 +15,23 @@
     // Hover — gentle elevation
     tbody tr:hover > td,
     li:hover {
-        background: @mp-primary-a5;
+        background: rgba(var(--stratus-primary-rgb), 0.05);
     }
 
-    // Selected — soft indigo wash
+    // Selected — scheme-aware wash via CSS custom property
     li.selected,
     tr.selected td {
-        background: @color-list-selected-background;
+        background: var(--stratus-selected-bg);
+    }
+
+    // Div-wrapper children (kolab calendar/addressbook): text color on selection
+    li.selected > div > *:not(.count) {
+        color: @color-list-selected !important;
+    }
+
+    // Quickview icon (kolab calendar list)
+    li > div a.quickview:before {
+        color: @color-link !important;
     }
 
     // Focus indicator — indigo bar
@@ -39,7 +49,7 @@ html:not(.touch) {
         li > a:focus,
         &.focus tbody tr.focused > td:first-child,
         &.focus:not(.withselection) tbody tr.focused > td.selection + td {
-            border-left: 3px solid @color-main;
+            border-left: 3px solid var(--stratus-primary);
         }
     }
 }
@@ -61,8 +71,8 @@ html:not(.touch) {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        border: 3px solid @mp-primary-a20;
-        border-top-color: @color-main;
+        border: 3px solid rgba(var(--stratus-primary-rgb), 0.20);
+        border-top-color: var(--stratus-primary);
         animation: mp-spin 0.75s linear infinite;
         z-index: 5;
         pointer-events: none;
@@ -77,7 +87,7 @@ html:not(.touch) {
 
         // Hover — subtle card lift
         &:hover {
-            background: @mp-primary-a5;
+            background: rgba(var(--stratus-primary-rgb), 0.05);
             box-shadow: @mp-shadow-xs;
         }
 
@@ -87,13 +97,13 @@ html:not(.touch) {
         }
         &.unread td:first-child,
         &.unread:not(.withselection) td.selection + td {
-            border-left: 3px solid @color-main;
+            border-left: 3px solid var(--stratus-primary);
         }
 
         // Selected
         &.selected td {
-            background: @color-list-selected-background;
-            border-left-color: @color-main;
+            background: var(--stratus-selected-bg);
+            border-left-color: var(--stratus-primary);
         }
 
         // Flagged — flag icon red, no text color change
@@ -216,11 +226,12 @@ html:not(.touch) {
         font-size: @mp-hover-actions-icon-size;
         line-height: 1;
         margin: 0;
+        font-weight: 400 !important;
     }
 
     &:hover {
-        background: @mp-primary-a10;
-        color: @color-main;
+        background: rgba(var(--stratus-primary-rgb), 0.10);
+        color: var(--stratus-text-accent);
     }
 
     &.archive:before {
@@ -360,7 +371,7 @@ html.touch {
 }
 
 html.dark-mode #mp-search-empty-state {
-    color: @color-dark-font-secondary;
+    color: var(--stratus-dark-font-secondary);
 }
 
 // ISSUE-006: Unread subject should be bolder than read subject.
@@ -413,14 +424,14 @@ html.dark-mode #mp-search-empty-state {
 
     // Selected folder — pill shape (Gmail-style, rounded right)
     li.selected > a {
-        background: @mp-primary-a12;
-        color: @color-main;
+        background: rgba(var(--stratus-primary-rgb), 0.12);
+        color: var(--stratus-text-accent);
         font-weight: @mp-font-weight-medium;
     }
 
     // Hover
     li > a:hover {
-        background: @mp-primary-a5;
+        background: rgba(var(--stratus-primary-rgb), 0.05);
     }
 
     // Nested depth styling
@@ -458,7 +469,7 @@ html.dark-mode #mp-search-empty-state {
     min-width: 18px;
     text-align: center;
     line-height: 1.4;
-    box-shadow: 0 1px 3px fadeout(@color-main, 65%);
+    box-shadow: 0 1px 3px rgba(var(--stratus-primary-rgb), 0.35);
 }
 
 // Fix: elastic's .folderlist li.mailbox .unreadcount has higher specificity (3 classes)
@@ -469,7 +480,7 @@ html.dark-mode #mp-search-empty-state {
 
 // Recent/active badges — glow
 .recent .unreadcount {
-    box-shadow: 0 0 8px fadeout(@color-main, 55%);
+    box-shadow: 0 0 8px rgba(var(--stratus-primary-rgb), 0.45);
 }
 
 // ═════════════════════════════════════════════════════════════════════════════════
@@ -482,34 +493,34 @@ html.dark-mode {
         tbody td,
         li {
             // ISSUE-010: use a light indigo tint instead of near-invisible dark-list-border
-            border-bottom-color: @mp-primary-dark-a20;
+            border-bottom-color: rgba(var(--stratus-primary-dark-rgb), 0.20);
         }
 
         tbody tr:hover > td,
         li:hover {
-            background: @mp-primary-dark-a5;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.05);
         }
 
         li.selected,
         tr.selected td {
-            background: @color-dark-list-selected-background;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.18);
         }
     }
 
     #messagelist,
     .messagelist {
         tr:hover {
-            background: @mp-primary-dark-a5;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            background: rgba(var(--stratus-primary-dark-rgb), 0.05);
+            box-shadow: @mp-shadow-dark-sm;
         }
 
         tr.unread td:first-child,
         tr.unread:not(.withselection) td.selection + td {
-            border-left-color: @color-dark-main;
+            border-left-color: var(--stratus-primary-dark);
         }
 
         tr.selected td {
-            background: @color-dark-list-selected-background;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.18);
         }
 
         tr.flagged td.flag:before {
@@ -519,19 +530,19 @@ html.dark-mode {
 
         td.date,
         td.size {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
         }
     }
 
     // Message list loading spinner — dark variant
     #messagelist-content:not(.mp-search-empty):has(#messagelist tbody:empty):has(.listing-info.hidden)::after {
-        border-color: @mp-primary-dark-a20;
-        border-top-color: @color-dark-main;
+        border-color: rgba(var(--stratus-primary-dark-rgb), 0.20);
+        border-top-color: var(--stratus-primary-dark);
     }
 
     // ── EMPTY STATE ───────────────────────────────────────────────────────────────────
     #messagelist-content .listing-info {
-        color: @color-dark-font-secondary;
+        color: var(--stratus-dark-font-secondary);
     }
 
     // ── UNREAD SUBJECT ────────────────────────────────────────────────────────────────
@@ -543,55 +554,59 @@ html.dark-mode {
     // ── FOLDER LIST ───────────────────────────────────────────────────────────────────
     .listing.folderlist li.selected > a,
     #mailboxlist li.selected > a {
-        background: @mp-primary-dark-a18;
-        color: @color-dark-main-light;
+        background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+        color: var(--stratus-text-accent-dark);
     }
 
     .listing.folderlist li > a:hover,
     #mailboxlist li > a:hover {
-        background: @mp-primary-dark-a8;
+        background: rgba(var(--stratus-primary-dark-rgb), 0.08);
     }
 
     // ── BADGES ─────────────────────────────────────────────────────────────────────────
     .unreadcount,
     .badge {
-        background: @color-dark-list-badge-background;
-        color: @color-dark-list-badge;
-        box-shadow: 0 0 8px @mp-primary-dark-a40;
+        background: var(--stratus-primary-dark);
+        color: @color-dark-on-primary;
+        box-shadow: 0 0 8px rgba(var(--stratus-primary-dark-rgb), 0.40);
     }
 
     // Fix: elastic's .folderlist li.mailbox .unreadcount has higher specificity
     // and its background/border-radius rules apply in dark mode too.
     .folderlist li.mailbox .unreadcount {
         border-radius: @mp-radius-pill;
-        background: @color-dark-list-badge-background;
-        color: @color-dark-list-badge;
+        background: var(--stratus-primary-dark);
+        color: @color-dark-on-primary;
     }
 
     // ── HOVER MENU ───────────────────────────────────────────────────────────────────
     .listing-hover-menu {
-        .mp-frosted-glass-dark(@mp-glass-dark-bg-strong);
+        background: rgba(var(--stratus-dark-surface-rgb), 0.90);
+        backdrop-filter: blur(@mp-glass-blur);
+        -webkit-backdrop-filter: blur(@mp-glass-blur);
         box-shadow: @mp-shadow-dark-md;
         border: 1px solid @mp-glass-dark-border;
 
         a:hover {
-            background: @mp-primary-dark-a15;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.15);
         }
     }
 
     // ── UNIFIED HOVER ACTIONS (dark) ──────────────────────────────────────────────
     .mp-hover-actions {
-        .mp-frosted-glass-dark(@mp-glass-dark-bg-strong);
+        background: rgba(var(--stratus-dark-surface-rgb), 0.90);
+        backdrop-filter: blur(@mp-glass-blur);
+        -webkit-backdrop-filter: blur(@mp-glass-blur);
         box-shadow: @mp-shadow-dark-md;
         border: 1px solid @mp-glass-dark-border;
     }
 
     .mp-hover-btn {
-        color: @color-dark-font-secondary;
+        color: var(--stratus-dark-font-secondary);
 
         &:hover {
-            background: @mp-primary-dark-a15;
-            color: @color-dark-main;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.15);
+            color: var(--stratus-text-accent-dark);
         }
     }
 }

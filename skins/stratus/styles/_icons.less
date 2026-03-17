@@ -21,7 +21,7 @@
 //   3. Use in LESS:  @mi-example: "\e9ba";   ← prefix hex with \e
 //
 //   4. Filled vs Outlined:
-//      font-weight: 900  → filled style  (material-icons.woff2)
+//      font-weight: 400  → filled style  (material-icons.woff2)
 //      font-weight: 400  → outlined style (material-icons-outlined.woff2)
 //
 // ═══════════════════════════════════════════════════════════════════════════
@@ -30,7 +30,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // SECTION 1: Material Icons codepoint variables
 // Source: Google Material Icons (MaterialIcons-Regular.codepoints)
-// Font: material-icons.woff2  (filled,   weight 900)
+// Font: material-icons.woff2  (filled,   weight 400)
 //       material-icons-outlined.woff2  (outlined, weight 400)
 // Naming: @mi-{fa-name} for easy cross-reference to Elastic's @fa-var-{name}
 // ═══════════════════════════════════════════════════════════════════════════
@@ -118,7 +118,7 @@
 // ─── UI / Interface ──────────────────────────────────────────────────────
 @mi-search:                   "\e8b6";  // search
 @mi-search-plus:              "\e8ff";  // zoom_in
-@mi-search-minus:             "\e900";  // zoom_out
+@mi-search-minus:             "\e400";  // zoom_out
 @mi-filter:                   "\ef4f";  // filter_alt
 @mi-cog:                      "\e8b8";  // settings
 @mi-sliders-h:                "\e429";  // tune
@@ -249,7 +249,7 @@
 // ─── Misc (xframework extended set) ──────────────────────────────────────
 @mi-newspaper:                "\eb81";  // newspaper
 
-
+ 
 // ═══════════════════════════════════════════════════════════════════════════
 // SECTION 2: Elastic icon overrides
 // Override every content: @fa-var-* in Elastic with the MI codepoint.
@@ -259,19 +259,19 @@
 // ─── From: carddav plugin (elastic/carddav.css) ───────────────────────────
 // CardDAV loads after the skin, so we need `body` prefix for higher specificity.
 body .listing.iconized {
-    tr.cd_preferences > td.section:before { font-family: 'Icons' !important; content: @mi-users !important; font-weight: 900 !important; }
-    li.cd_preferences > a:before          { font-family: 'Icons' !important; content: @mi-users !important; font-weight: 900 !important; }
+    tr.cd_preferences > td.section:before { font-family: 'Icons' !important; content: @mi-users !important; font-weight: 400 !important; }
+    li.cd_preferences > a:before          { font-family: 'Icons' !important; content: @mi-users !important; font-weight: 400 !important; }
     li.addressbook > a:before             { font-family: 'Icons' !important; content: @mi-address-book !important; font-weight: 400 !important; }
-    & > li.account.preset > a:before      { font-family: 'Icons' !important; content: @mi-cloud !important; font-weight: 900 !important; }
-    & > li.account:not(.preset) > a:before { font-family: 'Icons' !important; content: @mi-user !important; font-weight: 900 !important; }
+    & > li.account.preset > a:before      { font-family: 'Icons' !important; content: @mi-cloud !important; font-weight: 400 !important; }
+    & > li.account:not(.preset) > a:before { font-family: 'Icons' !important; content: @mi-user !important; font-weight: 400 !important; }
 }
 
 body .menu a {
-    &.carddav_AccAdd:before    { font-family: 'Icons' !important; content: @mi-user-plus !important; font-weight: 900 !important; }
-    &.carddav_AccRm:before     { font-family: 'Icons' !important; content: @mi-user-times !important; font-weight: 900 !important; }
-    &.carddav_AccRedisc:before { font-family: 'Icons' !important; content: @mi-sync !important; font-weight: 900 !important; }
-    &.carddav_AbSync:before    { font-family: 'Icons' !important; content: @mi-sync !important; font-weight: 900 !important; }
-    &.carddav_AbClrCache:before { font-family: 'Icons' !important; content: @mi-eraser !important; font-weight: 900 !important; }
+    &.carddav_AccAdd:before    { font-family: 'Icons' !important; content: @mi-user-plus !important; font-weight: 400 !important; }
+    &.carddav_AccRm:before     { font-family: 'Icons' !important; content: @mi-user-times !important; font-weight: 400 !important; }
+    &.carddav_AccRedisc:before { font-family: 'Icons' !important; content: @mi-sync !important; font-weight: 400 !important; }
+    &.carddav_AbSync:before    { font-family: 'Icons' !important; content: @mi-sync !important; font-weight: 400 !important; }
+    &.carddav_AbClrCache:before { font-family: 'Icons' !important; content: @mi-eraser !important; font-weight: 400 !important; }
 }
 
 // ─── From: elastic/styles/widgets/buttons.less ───────────────────────────
@@ -337,7 +337,7 @@ button.btn {
 
 // ─── From: elastic/styles/widgets/menu.less ──────────────────────────────
 .menu a {
-        font-family: 'Icons' !important;
+      
     &.mail:before           { content: @mi-envelope; }
     &.contacts:before       { content: @mi-users; }
     &.options:before        { content: @mi-sliders-h; }
@@ -394,7 +394,7 @@ button.btn {
     &.prevpage:before       { content: @mi-angle-left; }
     &.lastpage:before       { content: @mi-angle-double-right; }
     &.flag:before,
-    &.select.flagged:before { content: @mi-flag; font-weight: 900; }
+    &.select.flagged:before { content: @mi-flag; font-weight: 400; }
     &.unflag:before         { content: @mi-flag; font-weight: 400; }
     &.undo:before           { content: @mi-redo; }
     &.folders:before        { content: @mi-folder; }
@@ -418,7 +418,7 @@ button.btn {
     &.read:before           { content: @mi-envelope-open; font-weight: 400; }
     &.unread:before,
     &.expand.unread:before,
-    &.select.unread:before  { content: @mi-envelope; font-weight: 900; }
+    &.select.unread:before  { content: @mi-envelope; font-weight: 400; }
     &.recipient:before      { content: @mi-envelope; font-weight: 400; }
     &.refresh:before        { content: @mi-sync; }
     &.remove:before         { content: @mi-eraser; }
@@ -434,8 +434,8 @@ button.btn {
     // &.select:before         { content: @mi-mouse-pointer; }
     &.select.all:before     { content: @mi-asterisk; }
     &.select.invert:before  { content: @mi-check-square; }
-    &.select.none:before    { content: @mi-times; font-weight: 900; }
-    &.select.page:before    { content: @mi-bars; font-weight: 900; }
+    &.select.none:before    { content: @mi-times; font-weight: 400; }
+    &.select.page:before    { content: @mi-bars; font-weight: 400; }
     &.selection:before      { content: @mi-check-square; font-weight: 400 !important; }
     &.send:before           { content: @mi-paper-plane !important; }
     &.showurl:before        { content: @mi-link; }
@@ -456,7 +456,7 @@ button.btn {
     form:before             { content: @mi-search; }
     a.options:before        { content: @mi-angle-down; }
     a.reset:before          { content: @mi-times; }
-    a.unread:before         { content: @mi-envelope; font-weight: 900; }
+    a.unread:before         { content: @mi-envelope; font-weight: 400; }
     &.open a.options:before { content: @mi-angle-up; }
 }
 
@@ -469,7 +469,7 @@ button.btn {
     &.identities > a:before    { content: @mi-id-card; }
     &.password > a:before      { content: @mi-lock; }
     &.addressbook a:before     { content: @mi-address-book; font-weight: 400; }
-    &.contactgroup a:before    { content: @mi-users; font-weight: 900; }
+    &.contactgroup a:before    { content: @mi-users; font-weight: 400; }
     &.contactsearch a:before   { content: @mi-search; }
     &.filter > a:before        { content: @mi-filter; }
     &.vacation > a:before      { content: @mi-calendar; font-weight: 400; }
@@ -497,6 +497,7 @@ button.btn {
     &.encryption > td.section:before  { content: @mi-lock; }
     &.calendar > td.section:before    { content: @mi-calendar; }
     &.chat > td.section:before        { content: @mi-comments; }
+    &.undo_send > td.section:before   { content: @mi-undo; }
 }
 
 .listing.iconized.selectable li a.selected:before { content: @mi-check; }
@@ -510,15 +511,15 @@ ul.treelist li {
 
 .folderlist li {
     a:before                 { content: @mi-folder; font-weight: 400; }
-    &.inbox > a:before       { content: @mi-inbox; font-weight: 900; }
-    &.trash a:before         { content: @mi-trash-alt; font-weight: 900; }
+    &.inbox > a:before       { content: @mi-inbox; font-weight: 400; }
+    &.trash a:before         { content: @mi-trash-alt; font-weight: 400; }
     &.trash.empty > a:before { content: @mi-trash-alt; font-weight: 400; }
-    &.drafts a:before        { content: @mi-pencil-alt; font-weight: 900; }
-    &.sent a:before          { content: @mi-paper-plane; font-weight: 900; }
-    &.junk a:before          { content: @mi-fire-alt; font-weight: 900; }
-    &.archive > a:before     { content: @mi-archive; font-weight: 900; }
-    &.ns-shared > a:before   { content: @mi-share-alt; font-weight: 900; }
-    &.ns-other > a:before    { content: @mi-user-friends; font-weight: 900; }
+    &.drafts a:before        { content: @mi-pencil-alt; font-weight: 400; }
+    &.sent a:before          { content: @mi-paper-plane; font-weight: 400; }
+    &.junk a:before          { content: @mi-fire-alt; font-weight: 400; }
+    &.archive > a:before     { content: @mi-archive; font-weight:400; }
+    &.ns-shared > a:before   { content: @mi-share-alt; font-weight: 400; }
+    &.ns-other > a:before    { content: @mi-user-friends; font-weight: 400; }
 }
 
 .messagelist {
@@ -529,15 +530,15 @@ ul.treelist li {
         &:before                   { content: @mi-circle; }
         &.unread:before            { content: @mi-circle; }
         &.unreadchildren:before    { content: @mi-circle; font-weight: 400; }
-        &.replied:before           { content: @mi-reply; font-weight: 900; }
-        &.forwarded:before         { content: @mi-share; font-weight: 900; }
-        &.replied.forwarded:before { content: @mi-reply; font-weight: 900; }
-        &.replied.forwarded:after  { content: @mi-share; font-weight: 900; }
-    }
+        &.replied:before           { content: @mi-reply; font-weight: 400; }
+        &.forwarded:before         { content: @mi-share; font-weight: 400; }
+        &.replied.forwarded:before { content: @mi-reply; font-weight: 400; }
+        &.replied.forwarded:after  { content: @mi-share; font-weight: 400; }
+    } 
 
     tr.deleted td.subject span.msgicon.status:before {
         content: @mi-ban !important;
-        font-weight: 900 !important;
+        font-weight: 400 !important;
     }
 
     span.attachment span {
@@ -557,7 +558,7 @@ ul.treelist li {
     td.contactgroup:before { content: @mi-users; }
     li {
         a.addressbook::before  { content: @mi-address-book; font-weight: 400; }
-        a.contactgroup::before { content: @mi-users; font-weight: 900; }
+        a.contactgroup::before { content: @mi-users; font-weight: 400; }
     }
 }
 
@@ -594,7 +595,7 @@ ul.treelist li {
     &.ppsx:before      { content: @mi-file-powerpoint; font-weight: 400; }
     a.cancelupload:before,
     a.delete:before    { content: @mi-trash-alt; }
-    &.uploading:before { content: @mi-circle-notch; font-weight: 900; }
+    &.uploading:before { content: @mi-circle-notch; font-weight: 400; }
 }
 
 .keylist li:before            { content: @mi-key; }

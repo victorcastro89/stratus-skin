@@ -24,42 +24,42 @@ html.dark-mode {
     // BASE
     // ═══════════════════════════════════════════════════════════════════════════
     body {
-        background: @color-dark-background;
+        background: var(--stratus-dark-background);
     }
 
     // Headings — lighter in dark mode
     h1, h2, h3, h4, h5, h6 {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
     // SCROLLBARS
     // ═══════════════════════════════════════════════════════════════════════════
     ::-webkit-scrollbar-thumb {
-        background: @color-dark-scrollbar-thumb;
+        background: rgba(var(--stratus-primary-dark-rgb), 0.50);
     }
 
     ::-webkit-scrollbar-track {
-        background: @color-dark-scrollbar-track;
+        background: transparent;
     }
 
     * {
-        scrollbar-color: @color-dark-scrollbar-thumb @color-dark-scrollbar-track;
+        scrollbar-color: rgba(var(--stratus-primary-dark-rgb), 0.50) transparent;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
     // SELECTION
     // ═══════════════════════════════════════════════════════════════════════════
     ::selection {
-        background: @mp-primary-dark-a40;
-        color: @color-dark-font;
+        background: rgba(var(--stratus-primary-dark-rgb), 0.40);
+        color: var(--stratus-dark-font);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
     // FOCUS RING
     // ═══════════════════════════════════════════════════════════════════════════
     :focus-visible {
-        outline-color: @color-dark-main;
+        outline-color: var(--stratus-primary-dark);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -67,53 +67,447 @@ html.dark-mode {
     // ═══════════════════════════════════════════════════════════════════════
     --mp-conv-main: var(--stratus-primary-dark, @color-dark-main);
     --mp-conv-main-rgb: var(--stratus-primary-dark-rgb, 121, 134, 203);
-    --mp-conv-main-light: @color-dark-main-light;
+    --mp-conv-main-light: var(--stratus-primary-dark-light);
 
-    --mp-conv-row-border: @mp-primary-dark-a20;   // ISSUE-010: visible light tint on dark
-    --mp-conv-row-hover-bg: @mp-primary-dark-a5;
-    --mp-conv-row-selected-bg: @color-dark-list-selected-background;
+    --mp-conv-row-border: rgba(var(--stratus-primary-dark-rgb), 0.20);   // ISSUE-010: visible light tint on dark
+    --mp-conv-row-hover-bg: rgba(var(--stratus-primary-dark-rgb), 0.05);
+    --mp-conv-row-selected-bg: rgba(var(--stratus-primary-dark-rgb), 0.18);
 
-    --mp-conv-surface: @color-dark-surface;
-    --mp-conv-surface-alt: @color-dark-surface;
-    --mp-conv-list-surface: @color-dark-surface;
-    --mp-conv-surface-raised: @color-dark-surface-raised;
+    --mp-conv-surface: var(--stratus-dark-surface);
+    --mp-conv-surface-alt: var(--stratus-dark-surface);
+    --mp-conv-list-surface: var(--stratus-dark-surface);
+    --mp-conv-surface-raised: var(--stratus-dark-surface-raised);
 
-    --mp-conv-text: @color-dark-font;
-    --mp-conv-text-strong: @color-dark-font;
-    --mp-conv-text-secondary: @color-dark-font-secondary;
-    --mp-conv-text-muted: @color-dark-font-secondary;
+    --mp-conv-text: var(--stratus-dark-font);
+    --mp-conv-text-strong: var(--stratus-dark-font);
+    --mp-conv-text-secondary: var(--stratus-dark-font-secondary);
+    --mp-conv-text-muted: var(--stratus-dark-font-secondary);
 
-    --mp-conv-count-bg: @mp-primary-dark-a20;
-    --mp-conv-count-text: @color-dark-font;
+    --mp-conv-count-bg: rgba(var(--stratus-primary-dark-rgb), 0.20);
+    --mp-conv-count-text: var(--stratus-dark-font);
 
     --mp-conv-danger: @color-dark-error;
 
-    --mp-conv-hover-actions-bg: fade(@color-dark-surface, 97%);
-    --mp-conv-hover-actions-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
-    --mp-conv-hover-actions-btn-text: @color-dark-font-secondary;
-    --mp-conv-hover-actions-btn-hover-text: @color-dark-font;
-    --mp-conv-card-hover-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --mp-conv-hover-actions-bg: rgba(var(--stratus-dark-surface-rgb), 0.97);
+    --mp-conv-hover-actions-shadow: @mp-shadow-dark-md;
+    --mp-conv-hover-actions-btn-text: var(--stratus-dark-font-secondary);
+    --mp-conv-hover-actions-btn-hover-text: var(--stratus-dark-font);
+    --mp-conv-card-hover-shadow: @mp-shadow-dark-md;
 
     --mp-conv-child-divider: var(--mp-conv-row-border);
-    --mp-conv-child-bg: @mp-primary-dark-a5;
-    --mp-conv-child-hover-bg: @mp-primary-dark-a8;
-    --mp-conv-child-selected-bg: @mp-primary-dark-a12;
-    --mp-conv-child-text: @color-dark-font;
-    --mp-conv-child-text-muted: @color-dark-font-secondary;
-    --mp-conv-child-indent-guide: @mp-primary-dark-a30;
+    --mp-conv-child-bg: rgba(var(--stratus-primary-dark-rgb), 0.05);
+    --mp-conv-child-hover-bg: rgba(var(--stratus-primary-dark-rgb), 0.08);
+    --mp-conv-child-selected-bg: rgba(var(--stratus-primary-dark-rgb), 0.12);
+    --mp-conv-child-text: var(--stratus-dark-font);
+    --mp-conv-child-text-muted: var(--stratus-dark-font-secondary);
+    --mp-conv-child-indent-guide: rgba(var(--stratus-primary-dark-rgb), 0.30);
 
     --mp-conv-child-row-bg: var(--mp-conv-child-bg);
     --mp-conv-child-row-border: var(--mp-conv-child-divider);
-    --mp-conv-expanded-bg: fade(#fff, 5%);
+    --mp-conv-expanded-bg: fade(@color-dark-on-primary, 5%);
 
-    --mp-conv-child-unread-accent: @color-dark-main;
+    --mp-conv-child-unread-accent: var(--stratus-primary-dark);
     --mp-conv-dir-sent-color: @color-dark-success;
-    --mp-conv-dir-received-color: @color-dark-main;
+    --mp-conv-dir-received-color: var(--stratus-primary-dark);
 
     // HOVER ACTIONS — dark variant
-    --mp-hover-actions-bg: @mp-glass-dark-bg-strong;
+    --mp-hover-actions-bg: rgba(var(--stratus-dark-surface-rgb), 0.90);
     --mp-hover-actions-shadow: @mp-shadow-dark-md;
-    --mp-hover-actions-icon-color: @color-dark-font-secondary;
-    --mp-hover-actions-icon-hover-bg: @mp-primary-dark-a15;
-    --mp-hover-actions-icon-hover-color: @color-dark-main;
+    --mp-hover-actions-icon-color: var(--stratus-dark-font-secondary);
+    --mp-hover-actions-icon-hover-bg: rgba(var(--stratus-primary-dark-rgb), 0.15);
+    --mp-hover-actions-icon-hover-color: var(--stratus-text-accent-dark);
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ELASTIC OVERRIDES — scheme-aware replacements for Elastic's dark.less
+    // Elastic compiles @color-dark-* LESS vars to fixed colors. We re-declare
+    // every rule that uses a scheme-tinted token so it follows the active scheme.
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ── Body & layout base text ──────────────────────────────────────────────
+    body {
+        color: var(--stratus-dark-font);
+    }
+
+    // ── Layout borders ───────────────────────────────────────────────────────
+    #layout-list,
+    #layout-content,
+    #layout-sidebar,
+    #layout > div > .header,
+    #layout > div > .footer,
+    .popup .listbox .footer,
+    .menu.pagenav.pagenav-list,
+    .menu.pagenav.pagenav-list + .navlist,
+    .menu.pagenav.pagenav-list.expanded + .navlist {
+        border-color: var(--stratus-dark-border);
+    }
+
+    #layout > div > .header a.button,
+    #layout > div > .footer a.button {
+        color: var(--stratus-dark-font);
+    }
+
+    // ── Task menu ────────────────────────────────────────────────────────────
+    #layout-menu {
+        border-right-color: var(--stratus-dark-border);
+
+        .special-buttons a:not(:focus) {
+            background: var(--stratus-dark-background);
+        }
+    }
+
+    &.layout-phone #layout-menu {
+        background: var(--stratus-dark-surface);
+    }
+
+    // ── Searchbar ────────────────────────────────────────────────────────────
+    .searchbar {
+        border-color: var(--stratus-dark-border);
+    }
+
+    // ── Toast messages ───────────────────────────────────────────────────────
+    #messagestack div {
+        color: var(--stratus-dark-font);
+
+        i.icon:before {
+            color: var(--stratus-dark-font);
+        }
+    }
+
+    #messagestack .loading {
+        background-color: var(--stratus-dark-message-loading-bg);
+    }
+
+    // ── Taskmenu & toolbar ───────────────────────────────────────────────────
+    #taskmenu a,
+    .menu.toolbar a {
+        color: var(--stratus-dark-font);
+    }
+
+    // ── Menu hovers — Elastic sets background-color: @color-dark-list-selected-background
+    #taskmenu a:hover,
+    .popupmenu .listing li > a:not(.disabled):hover,
+    .header a.button.icon:not(.disabled):focus,
+    .header a.button.icon:not(.disabled):hover,
+    .menu.toolbar .dropbutton:not(.disabled):hover,
+    .menu a:not(.disabled):focus,
+    .menu a:not(.disabled):hover {
+        background-color: rgba(var(--stratus-primary-dark-rgb), 0.12);
+    }
+
+    .menu.toolbar .dropbutton a.dropdown:hover {
+        background-color: rgba(var(--stratus-primary-dark-rgb), 0.18);
+    }
+
+    // ── Lists — Elastic's text color + borders ───────────────────────────────
+    .proplist li.with-sublist > a.dropdown,
+    .listing tbody td,
+    .listing tbody td a,
+    .listing li a {
+        color: var(--stratus-dark-font);
+    }
+
+    .listing li ul,
+    .listing tbody td,
+    .listing li {
+        border-color: rgba(var(--stratus-dark-border-rgb), 0.65);
+    }
+
+    .listing li.selected,
+    .listing li.selected > a,
+    .listing li.selected > div > a,
+    .listing li.selected > div > *:not(.count),
+    .listing tr.selected td {
+        background-color: rgba(var(--stratus-primary-dark-rgb), 0.18);
+    }
+
+    // Div-wrapper children (kolab calendar/addressbook): accent text on selection
+    // .listing li.selected > div > *:not(.count) {
+    //     background-color: var(--stratus-sidebar-active-bg) !important;
+    // }
+
+  .calname:before {
+    color: var(--stratus-sidebar-text)!important;
+
+}
+
+    .listing li.selected ul {
+        background-color: var(--stratus-dark-background);
+
+        div.treetoggle {
+            color: var(--stratus-dark-font);
+        }
+    }
+
+    // ── Message list — Elastic's hint colors ─────────────────────────────────
+    .messagelist {
+        color: var(--stratus-dark-font);
+
+        tr:not(.flagged):not(.deleted) td.subject {
+            span.size,
+            span.date,
+            span.fromto {
+                color: var(--stratus-dark-font-secondary);
+            }
+
+            span.msgicon.status {
+                color: var(--stratus-dark-font);
+            }
+        }
+
+        span.attachment span {
+            color: var(--stratus-dark-font-secondary);
+        }
+    }
+
+    // ── Attachments list ─────────────────────────────────────────────────────
+    .attachmentslist {
+        background-color: var(--stratus-dark-surface-raised);
+
+        a,
+        li .attachment-name {
+            color: var(--stratus-dark-font);
+        }
+
+        li .attachment-size {
+            color: var(--stratus-dark-font-secondary);
+        }
+    }
+
+    // ── Buttons — Elastic's text color ───────────────────────────────────────
+    .btn {
+        color: var(--stratus-dark-font);
+    }
+
+    // ── Form controls — Elastic's backgrounds + borders ──────────────────────
+    .custom-file-label,
+    .form-control {
+        background-color: var(--stratus-dark-background);
+        color: var(--stratus-dark-font);
+
+        &:focus {
+            background-color: var(--stratus-dark-input-bg-focus);
+        }
+    }
+
+    .custom-file-label::after,
+    .input-group-text {
+        color: var(--stratus-dark-font);
+        background-color: var(--stratus-dark-surface-raised);
+    }
+
+    .custom-switch .custom-control-label::after {
+        background-color: var(--stratus-dark-font);
+    }
+
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        background-color: var(--stratus-dark-font);
+    }
+
+    .recipient-input {
+        background-color: var(--stratus-dark-background);
+        border-color: var(--stratus-dark-border);
+        color: var(--stratus-dark-font);
+
+        &.focus {
+            background-color: var(--stratus-dark-input-bg-focus);
+        }
+
+        .recipient {
+            background-color: var(--stratus-dark-surface-raised);
+        }
+    }
+
+    .image-upload {
+        background-color: var(--stratus-dark-surface-raised);
+
+        a.button {
+            background-color: rgba(var(--stratus-dark-background-rgb), 0.75);
+        }
+    }
+
+    // ── Placeholder & hint text ──────────────────────────────────────────────
+    ::placeholder,
+    ::-webkit-input-placeholder,
+    .listing-info,
+    .listing span.secondary,
+    .file-upload .hint,
+    .contactlist span.email,
+    #login-footer,
+    #contacthead.readonly .source.row,
+    .formcontent .hint {
+        color: var(--stratus-dark-font-secondary);
+    }
+
+    // ── Iframe loader ────────────────────────────────────────────────────────
+    .iframe-loader {
+        background-color: rgba(var(--stratus-dark-background-rgb), 0.90);
+    }
+
+    // ── Popovers — Elastic's popover bg ──────────────────────────────────────
+    .popover {
+        background-color: var(--stratus-dark-surface);
+
+        .menu li.separator {
+            color: var(--stratus-dark-font-secondary);
+        }
+
+        .menu ul + li.separator {
+            border-top-color: rgba(var(--stratus-dark-border-rgb), 0.65);
+        }
+    }
+
+    .popover-body {
+        color: var(--stratus-dark-font);
+    }
+
+    &.layout-small,
+    &.layout-phone {
+        .popover-header {
+            background: var(--stratus-dark-surface);
+            border-bottom-color: var(--stratus-dark-border);
+        }
+    }
+
+    // ── Tables ───────────────────────────────────────────────────────────────
+    .table {
+        color: var(--stratus-dark-font);
+
+        td, th, thead th {
+            border-color: var(--stratus-dark-border);
+        }
+    }
+
+    .table-widget {
+        border-color: var(--stratus-dark-border);
+
+        & > .footer {
+            border-color: var(--stratus-dark-border);
+        }
+
+        table.options-table {
+            tr:last-child td {
+                border-color: var(--stratus-dark-border);
+            }
+
+            tr.selected td {
+                background-color: rgba(var(--stratus-primary-dark-rgb), 0.18);
+                color: var(--stratus-dark-font);
+            }
+        }
+    }
+
+    // ── jQuery UI widgets — Elastic's bg/border overrides ────────────────────
+    .ui-widget {
+        border-color: var(--stratus-dark-border);
+    }
+
+    .ui-widget-header,
+    .ui-widget-content {
+        background-color: var(--stratus-dark-background);
+    }
+
+    .ui-menu {
+        background-color: var(--stratus-dark-surface);
+        border-color: var(--stratus-dark-border);
+
+        .ui-menu-item {
+            border-bottom-color: rgba(var(--stratus-dark-border-rgb), 0.65);
+        }
+
+        .ui-state-active {
+            background-color: rgba(var(--stratus-primary-dark-rgb), 0.18) !important;
+        }
+    }
+
+    .minicolors-panel {
+        border-color: var(--stratus-dark-border);
+        background: var(--stratus-dark-surface);
+    }
+
+    // ── Mail preview — blockquote backgrounds ────────────────────────────────
+    .message-part {
+        border-color: var(--stratus-dark-border);
+
+        blockquote span.blockquote-link {
+            background: var(--stratus-dark-background);
+        }
+    }
+
+    // ── Message part headers / image attachments ─────────────────────────────
+    .message-partheaders {
+        background-color: var(--stratus-dark-surface-raised);
+
+        table.headers-table {
+            color: var(--stratus-dark-font);
+        }
+    }
+
+    p.image-attachment {
+        border-color: var(--stratus-dark-border);
+        background-color: var(--stratus-dark-surface-raised);
+
+        span {
+            color: var(--stratus-dark-font-secondary);
+        }
+    }
+
+    fieldset.image-attachment legend {
+        color: var(--stratus-dark-font-secondary);
+        border-color: var(--stratus-dark-border);
+    }
+
+    // ── Contact photo ────────────────────────────────────────────────────────
+    img.contactphoto,
+    #contactpic {
+        background-color: var(--stratus-dark-surface-raised) !important;
+    }
+
+    // ── Drag layer ───────────────────────────────────────────────────────────
+    #rcmdraglayer {
+        background-color: var(--stratus-dark-surface);
+        border-color: var(--stratus-dark-border);
+        color: var(--stratus-dark-font);
+    }
+
+    // ── Quota ────────────────────────────────────────────────────────────────
+    .quota-info .root {
+        color: var(--stratus-dark-font-secondary);
+    }
+
+    // ── Nav tabs — Elastic's dark tab overrides ──────────────────────────────
+    .nav-tabs {
+        .nav-link:hover {
+            background: var(--stratus-dark-background);
+        }
+
+        .nav-link.active {
+            background: var(--stratus-dark-background);
+            border-color: var(--stratus-dark-border);
+        }
+    }
+
+    // ── CodeMirror ───────────────────────────────────────────────────────────
+    .formcontent.raweditor .CodeMirror {
+        color: var(--stratus-dark-font);
+        background-color: var(--stratus-dark-background);
+
+        &-focused {
+            background-color: var(--stratus-dark-input-bg-focus);
+        }
+    }
+
+    .CodeMirror-selected,
+    .CodeMirror-line::selection,
+    .CodeMirror-line > span::selection,
+    .CodeMirror-line > span > span::selection {
+        background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+    }
+
+    .CodeMirror-gutters {
+        background-color: var(--stratus-dark-surface);
+    }
+
+    .CodeMirror-activeline-background {
+        background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+    }
 }

@@ -8,11 +8,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 @mp-cal-grid-color:          fadeout(@color-border, 60%);        // very faint grid lines
 @mp-cal-grid-color-subtle:   fadeout(@color-border, 80%);        // near-invisible for verticals
-@mp-cal-header-bg:           @color-layout-header-background;
-@mp-cal-today-bg:            @mp-primary-a8;                     // soft indigo wash for column
-@mp-cal-today-header-bg:     @mp-primary-a15;                    // slightly stronger for day header
-@mp-cal-today-number:        @color-main;
-@mp-cal-today-indicator:     @color-main;
+@mp-cal-header-bg:           @color-layout-content-background;
+@mp-cal-today-bg:            rgba(var(--stratus-primary-rgb), 0.08);   // soft primary wash for column
+@mp-cal-today-header-bg:     rgba(var(--stratus-primary-rgb), 0.15);   // slightly stronger for day header
+@mp-cal-today-number:        var(--stratus-primary);
+@mp-cal-today-indicator:     var(--stratus-primary);
 @mp-cal-event-radius:        @mp-radius-sm;
 @mp-cal-popover-radius:      @mp-radius-lg;
 
@@ -20,24 +20,24 @@
 @mp-cal-dark-grid-color:         fadeout(@color-dark-border, 65%);
 @mp-cal-dark-grid-color-subtle:  fadeout(@color-dark-border, 85%);
 @mp-cal-dark-header-bg:          @color-dark-surface;
-@mp-cal-dark-today-bg:           @mp-primary-dark-a12;
-@mp-cal-dark-today-header-bg:    @mp-primary-dark-a20;             // stronger for day header
+@mp-cal-dark-today-bg:           rgba(var(--stratus-primary-dark-rgb), 0.12);
+@mp-cal-dark-today-header-bg:    rgba(var(--stratus-primary-dark-rgb), 0.20);  // stronger for day header
 
 // Event card elevation — floating, airy look
-@mp-cal-event-shadow:            0 2px 8px rgba(26, 31, 54, 0.12);
-@mp-cal-event-shadow-hover:      0 4px 16px rgba(26, 31, 54, 0.20);
+@mp-cal-event-shadow:            0 2px 8px fadeout(@color-black, 88%);
+@mp-cal-event-shadow-hover:      0 4px 16px fadeout(@color-black, 80%);
 @mp-cal-event-padding:           3px 6px; 
 @mp-cal-dark-event-shadow:       0 2px 10px rgba(0, 0, 0, 0.36);
 @mp-cal-dark-event-shadow-hover: 0 4px 18px rgba(0, 0, 0, 0.52);
 
 // Header & Navigation tokens — Phase 1.6.2
-@mp-cal-nav-bg:                  @mp-primary-a5;                  // pill strip bg
-@mp-cal-nav-border:              @mp-primary-a15;                  // pill strip border
-@mp-cal-today-pill-shadow:       0 2px 8px @mp-primary-a40;
-@mp-cal-today-pill-shadow-hover: 0 4px 12px @mp-primary-a50;
+@mp-cal-nav-bg:                  rgba(var(--stratus-primary-rgb), 0.05);      // pill strip bg
+@mp-cal-nav-border:              rgba(var(--stratus-primary-rgb), 0.15);      // pill strip border
+@mp-cal-today-pill-shadow:       0 1px 4px rgba(var(--stratus-primary-rgb), 0.25);
+@mp-cal-today-pill-shadow-hover: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.30);
 // Dark equivalents
-@mp-cal-dark-nav-bg:             @mp-primary-dark-a10;
-@mp-cal-dark-nav-border:         @mp-primary-dark-a25;
+@mp-cal-dark-nav-bg:             rgba(var(--stratus-primary-dark-rgb), 0.10);
+@mp-cal-dark-nav-border:         rgba(var(--stratus-primary-dark-rgb), 0.25);
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -121,7 +121,7 @@
         font-size: @mp-font-size-sm;
         text-transform: uppercase;
         letter-spacing: @mp-letter-spacing-wide;
-        color: @color-font-secondary;
+        color: var(--stratus-font-secondary);
     }
 
     // ── View container outer border — keep only bottom ───────────────────────
@@ -205,7 +205,7 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     .fc-header-toolbar {
-        background-color: @mp-cal-header-bg;
+        background-color: var(--stratus-layout-header-background) !important;
         border-bottom: 1px solid @mp-cal-grid-color;
         padding: @mp-space-sm @mp-space-md;
         align-items: center;
@@ -218,7 +218,7 @@
         font-size: 1.25rem;
         font-weight: @mp-font-weight-bold;
         letter-spacing: @mp-letter-spacing-tight;
-        color: @color-font;
+        color: var(--stratus-font);
         font-variant-numeric: tabular-nums;
         line-height: 1.2;
     }
@@ -226,8 +226,8 @@
     // ── View-switcher — pill tab strip (Day / Week / Month / Agenda) ─────────
     // Elastic JS wraps FC view buttons in .btn-group.btn-group-toggle inside .fc-left
     .fc-header-toolbar .fc-left .btn-group {
-        background: @mp-cal-nav-bg;
-        border: none;
+        background: rgba(var(--stratus-primary-rgb), 0.05);
+        border: 1px solid rgba(var(--stratus-primary-rgb), 0.15);
         border-radius: 12px;
         padding: 2px;
         gap: 0;
@@ -243,23 +243,23 @@
             background: transparent;
             border: none;
             border-radius: 12px;
-            color: @color-font-secondary;
+            color: var(--stratus-font-secondary);
             font-weight: @mp-font-weight-medium;
             font-size: @mp-font-size-sm;
             padding: 5px 14px;
-            transition: background @mp-transition-base,
-                        color @mp-transition-base,
-                        box-shadow @mp-transition-base;
+            // transition: background @mp-transition-base,
+            //             color @mp-transition-base,
+            //             box-shadow @mp-transition-base;
 
             &:hover:not(.active) {
-                background: @mp-primary-a12;
-                color: @color-main;
+                background: rgba(var(--stratus-primary-rgb), 0.12);
+                color: var(--stratus-text-accent);
             }
 
             &.active {
-                background: @color-main;
+                background: var(--stratus-primary);
                 color: @color-on-primary;
-                box-shadow: 0 2px 6px @mp-primary-a40;
+                box-shadow: 0 1px 3px rgba(var(--stratus-primary-rgb), 0.25);
             }
         }
     }
@@ -275,9 +275,9 @@
         padding: 0;
 
         .btn.btn-secondary {
-            border: 1px solid @color-border;
+            border: 1px solid var(--stratus-border);
             border-radius: @mp-radius-md;
-            color: @color-font;
+            color: var(--stratus-font);
             font-size: @mp-font-size-sm;
             font-weight: @mp-font-weight-medium;
             padding: 5px 12px;
@@ -287,16 +287,16 @@
                         box-shadow @mp-transition-base;
 
             &:hover {
-                background: @mp-primary-a5;
-                border-color: @mp-primary-a40;
-                color: @color-main;
+                background: rgba(var(--stratus-primary-rgb), 0.05);
+                border-color: rgba(var(--stratus-primary-rgb), 0.40);
+                color: var(--stratus-text-accent);
             }
 
             // Today — primary pill CTA
             &.today {
-                background: @color-main;
+                background: var(--stratus-primary);
                 color: @color-on-primary;
-                border-color: @color-main;
+                border-color: var(--stratus-primary);
                 border-radius: 12px;
                 padding: 5px 18px;
                 font-weight: @mp-font-weight-semibold;
@@ -304,14 +304,15 @@
 
                 &:hover,
                 &:focus {
-                    background: darken(@color-main, 8%);
-                    border-color: darken(@color-main, 8%);
+                    background: var(--stratus-primary);
+                    border-color: var(--stratus-primary);
                     box-shadow: @mp-cal-today-pill-shadow-hover;
+                    filter: brightness(0.88);
                 }
 
                 &:active {
                     transform: translateY(0);
-                    box-shadow: 0 1px 4px @mp-primary-a30;
+                    box-shadow: 0 1px 4px rgba(var(--stratus-primary-rgb), 0.30);
                 }
             }
         }
@@ -391,7 +392,7 @@
     }
 
     .fc-list-item:hover td {
-        background-color: @mp-primary-a5;
+        background-color: rgba(var(--stratus-primary-rgb), 0.05);
     }
 
 
@@ -401,13 +402,13 @@
 
     .fc-axis {
         font-size: @mp-font-size-xs;
-        color: @color-font-secondary;
+        color: var(--stratus-font-secondary);
         font-weight: @mp-font-weight-normal;
     }
 
     .fc-week-number {
         font-size: @mp-font-size-xs;
-        color: @color-font-secondary;
+        color: var(--stratus-font-secondary);
     }
 }
 
@@ -450,7 +451,7 @@
         transition: none;
 
         &:hover {
-            background: @mp-primary-a8;
+            background: rgba(var(--stratus-primary-rgb), 0.08);
             border-color: transparent;
         }
     }
@@ -497,7 +498,7 @@ body.task-calendar {
             .ui-datepicker-title {
                 font-weight: @mp-font-weight-semibold;
                 font-size: @mp-font-size-base;
-                color: @color-font;
+                color: var(--stratus-font);
                 letter-spacing: @mp-letter-spacing-tight;
                 order: 0;
                 flex: 1;
@@ -521,7 +522,7 @@ body.task-calendar {
                 transition: background @mp-transition-base;
 
                 &:hover {
-                    background: @mp-primary-a10;
+                    background: rgba(var(--stratus-primary-rgb), 0.10);
                 }
             }
 
@@ -537,7 +538,7 @@ body.task-calendar {
             .ui-datepicker-calendar thead th {
                 font-size: @mp-font-size-xs;
                 font-weight: @mp-font-weight-medium;
-                color: @color-font-secondary;
+                color: var(--stratus-font-secondary);
                 text-transform: uppercase;
                 letter-spacing: @mp-letter-spacing-wide;
                 padding: @mp-space-xs 0;
@@ -594,17 +595,28 @@ body.task-calendar {
     // High-contrast today marker in mini-calendar
     #datepicker .ui-datepicker td.ui-datepicker-today a,
     #datepicker .ui-datepicker td.ui-datepicker-today .ui-state-default {
-        background: @color-main;
+        background: var(--stratus-primary);
         color: @color-btn-primary;
         font-weight: @mp-font-weight-semibold;
-        box-shadow: 0 2px 6px @mp-primary-a40;
+        box-shadow: 0 1px 3px rgba(var(--stratus-primary-rgb), 0.25);
     }
 
     // Mini-calendar hover state
     #datepicker .ui-datepicker td:not(.ui-datepicker-today) a:hover,
     #datepicker .ui-datepicker td:not(.ui-datepicker-today) .ui-state-default:hover {
-        background: @mp-primary-a10;
-        color: @color-main;
+        background: rgba(var(--stratus-primary-rgb), 0.10);
+        color: var(--stratus-text-accent);
+    }
+
+    // Inline datepicker — week number column (clickable, select whole week)
+    .ui-datepicker-inline .ui-datepicker-week-col {
+        color: var(--stratus-text-accent ) !important;
+        cursor: pointer;
+    }
+
+    // Inline datepicker — active date range highlight
+    .ui-datepicker-inline .ui-datepicker-activerange {
+        background-color: rgba(var(--stratus-primary-rgb), 0.12)  !important;
     }
 
     #layout-sidebar {
@@ -696,7 +708,7 @@ body.task-calendar {
 
         &:not(.disabled):hover,
         &:not(.disabled):focus {
-            background-color: @color-toolbar-button-background-hover;
+            background-color: rgba(var(--stratus-primary-rgb), 0.08);
             color: @color-toolbar-button;
         }
 
@@ -767,7 +779,7 @@ body.task-calendar {
 
         &:hover,
         &:focus {
-            background-color: @color-toolbar-button-background-hover;
+            background-color: rgba(var(--stratus-primary-rgb), 0.08);
             color: @color-toolbar-button;
         }
     }
@@ -814,7 +826,7 @@ body.task-calendar {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 #agendaoptions {
-    background-color: @mp-cal-header-bg;
+    background-color: @mp-cal-header-bg !important;
     border-bottom: 1px solid @mp-cal-grid-color;
     border-radius: @mp-radius-md @mp-radius-md 0 0;
 }
@@ -830,6 +842,163 @@ body.task-calendar {
     }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// INVITATION RSVP — Modern card + color-coded action hierarchy
+// ═══════════════════════════════════════════════════════════════════════════════
+.invitebox > i.icon::before{
+    color: var(--stratus-font) !important;
+}
+.invitebox.calendar-invitebox {
+    background: @color-layout-content-background !important;
+    border: 1px solid @color-border!important;
+    border-radius: @mp-radius-lg !important;
+    box-shadow: @mp-shadow-sm !important;
+    padding: @mp-space-lg !important;
+
+    // Event details table
+    .calendar-eventdetails {
+        margin-bottom: @mp-space-md !important;
+    }
+
+    // "Do you accept this invitation?" label
+    #event-rsvp > .label,
+    .rsvp-buttons > .label {
+        font-weight: @mp-font-weight-semibold !important;
+        font-size: @mp-font-size-base !important;
+        color: var(--stratus-font) !important;
+        padding: @mp-space-md 0 @mp-space-sm !important;
+        border-top: 1px solid @color-border !important;
+        margin-top: @mp-space-sm !important;
+    }
+
+    // Button container
+    .itip-buttons {
+        gap: @mp-space-sm !important;
+
+        // All RSVP buttons — base styling
+        input.button {
+            border: 1px solid @color-border!important;
+            border-radius: @mp-radius-md!important;
+            padding: @mp-space-sm @mp-space-lg!important;
+            font-weight: @mp-font-weight-medium!important;
+            font-size: @mp-font-size-base!important;
+            cursor: pointer!important;
+            transition: background @mp-transition-base,
+                        border-color @mp-transition-base,
+                        color @mp-transition-base!important;
+            background: transparent!important;
+            color: @color-font!important;
+            box-shadow: none!important;
+
+            &:hover {
+                background: rgba(var(--stratus-primary-rgb), 0.06)!important;
+                border-color: rgba(var(--stratus-primary-rgb), 0.40)!important;
+                color: var(--stratus-text-accent)!important;
+            }
+
+            &:focus,
+            &:active {
+                box-shadow: none!important;
+                outline: none!important;
+            }
+        }
+
+        // Accept — solid success green (primary CTA)
+        input.button[rel=accepted] {
+            background: @color-success!important;
+            border-color: @color-success!important;
+            color: @color-on-primary!important;
+            box-shadow: 0 2px 8px fadeout(@color-success, 70%)!important;
+
+            &:hover {
+                filter: brightness(0.92)!important;
+                box-shadow: 0 4px 12px fadeout(@color-success, 55%)!important;
+            }
+
+            &:focus,
+            &:active {
+                box-shadow: 0 2px 8px fadeout(@color-success, 70%)!important;
+            }
+        }
+
+        // Maybe — outlined secondary
+        input.button[rel=tentative] {
+            border-color: @color-border!important;
+            color: @color-font!important;
+
+            &:hover, &:focus ,&:active, &:visited {
+                background: rgba(var(--stratus-primary-rgb), 0.06)!important;
+                border-color: rgba(var(--stratus-primary-rgb), 0.40)!important;
+                color: var(--stratus-text-accent)!important;
+            }
+        }
+
+        // Decline — outlined danger
+        input.button[rel=declined] {
+            border-color: fadeout(@color-error, 60%)!important;
+            color: @color-error!important;
+
+            &:hover {
+                background: fadeout(@color-error, 92%)!important;
+                border-color: @color-error!important;
+            }
+        }
+
+        // Delegate & Check Calendar — ghost tertiary
+        input.button[rel=delegated],
+        input.button[rel=check-calendar] {
+            border-color: transparent!important;
+            color: var(--stratus-font-secondary)!important;
+            font-size: @mp-font-size-sm!important;
+
+            &:hover {
+                background: rgba(var(--stratus-primary-rgb), 0.06)!important;
+                color: var(--stratus-text-accent)!important;
+            }
+        }
+    }
+
+    // Reply controls — de-emphasized
+    .itip-reply-controls {
+        font-size: @mp-font-size-sm!important;
+        color: var(--stratus-font-secondary)!important;
+        margin-top: @mp-space-md!important;
+    }
+
+    // Folder select — de-emphasized
+    .folder-select {
+        font-size: @mp-font-size-sm!important;
+        color: var(--stratus-font-secondary)!important;
+
+        select {
+            padding-right: 1.75rem!important;
+            background-color: @color-layout-content-background!important;
+            border-color: @color-border!important;
+            color: @color-font!important;
+        }
+    }
+
+    // RSVP status (post-response) — pill indicator
+    .rsvp-status {
+        border-radius: @mp-radius-md!important;
+        padding: @mp-space-sm @mp-space-md!important;
+        font-weight: @mp-font-weight-medium!important;
+
+        &.accepted {
+            background: fadeout(@color-success, 90%)!important;
+            color: darken(@color-success, 10%)!important;
+        }
+        &.declined {
+            background: fadeout(@color-error, 90%)!important;
+            color: @color-error!important;
+        }
+        &.tentative {
+            background: fadeout(@mp-color-amber, 85%)!important;
+            color: darken(@mp-color-amber, 15%)!important;
+        }
+    }
+}
+
 // ═════════════════════════════════════════════════════════════════════════════════
 // DARK MODE
 // ═════════════════════════════════════════════════════════════════════════════════
@@ -837,8 +1006,8 @@ html.dark-mode {
 
     // Search bar — dark mode shell (mirrors #layout-list > .searchbar dark treatment)
     body.task-calendar #layout-content > .searchbar {
-        background: @color-dark-layout-list-top-background;
-        border-color: @color-dark-layout-list-top-border;
+        background: var(--stratus-dark-surface);
+        border-color: rgba(var(--stratus-dark-border-rgb), 0.80);
         box-shadow: @mp-shadow-dark-sm;
     }
 
@@ -846,7 +1015,7 @@ html.dark-mode {
     .fc {
         th,
         td {
-            border-color: @mp-cal-dark-grid-color;
+            border-color: rgba(var(--stratus-dark-border-rgb), 0.35);
         }
 
         .fc-bg td,
@@ -858,7 +1027,7 @@ html.dark-mode {
         .fc-time-grid .fc-slats td {
             border-left-color: transparent;
             border-right-color: transparent;
-            border-top-color: @mp-cal-dark-grid-color;
+            border-top-color: rgba(var(--stratus-dark-border-rgb), 0.35);
         }
 
         .fc-time-grid .fc-slats .fc-minor td {
@@ -881,7 +1050,7 @@ html.dark-mode {
             .fc-popover,
             .fc-list-view,
             .fc-list-heading td {
-                border-color: @mp-cal-dark-grid-color;
+                border-color: rgba(var(--stratus-dark-border-rgb), 0.35);
             }
         }
 
@@ -894,69 +1063,69 @@ html.dark-mode {
         }
 
         .fc-day-header.fc-today {
-            color: @color-dark-main;
+            color: var(--stratus-primary-dark);
             font-weight: @mp-font-weight-semibold;
             background: @mp-cal-dark-today-header-bg;
         }
 
         .fc-day-top.fc-today .fc-day-number {
-            background: @color-dark-main;
+            background: var(--stratus-primary-dark);
         }
 
         .fc-header-toolbar {
-            background-color: @mp-cal-dark-header-bg;
+            background-color: var(--stratus-dark-surface);
             border-bottom-color: transparent;
         }
 
         .fc-center h2 {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
         }
 
         .fc-day-header {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
         }
 
         .fc-axis {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
         }
 
         .fc-week-number {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
         }
 
         td.fc-head-container {
-            border-bottom-color: @mp-cal-dark-grid-color;
+            border-bottom-color: rgba(var(--stratus-dark-border-rgb), 0.35);
         }
 
         .fc-list-heading td {
-            background: fadeout(@color-dark-surface-raised, 40%);
-            color: @color-dark-font-secondary;
+            background: rgba(var(--stratus-dark-surface-rgb), 0.60);
+            color: var(--stratus-dark-font-secondary);
         }
 
         .fc-list-table td {
-            border-color: @mp-cal-dark-grid-color;
+            border-color: rgba(var(--stratus-dark-border-rgb), 0.35);
         }
 
         .fc-list-item:hover td {
-            background-color: @mp-primary-dark-a10;
+            background-color: rgba(var(--stratus-primary-dark-rgb), 0.10);
         }
 
         .fc-popover {
-            background-color: @color-dark-surface-raised;
-            border-color: @mp-cal-dark-grid-color;
+            background-color: var(--stratus-dark-surface-raised);
+            border-color: rgba(var(--stratus-dark-border-rgb), 0.35);
             box-shadow: @mp-shadow-dark-lg;
 
             .fc-header {
-                color: @color-dark-font;
+                color: var(--stratus-dark-font);
             }
         }
 
         .fc-now-indicator {
-            border-color: @color-dark-main;
+            border-color: var(--stratus-primary-dark);
         }
 
         .fc-now-indicator-line::before {
-            background: @color-dark-main;
+            background: var(--stratus-primary-dark);
         }
 
         .fc-event {
@@ -971,21 +1140,21 @@ html.dark-mode {
 
         // View-switcher pill strip — dark bg
         .fc-header-toolbar .fc-left .btn-group {
-            background: @mp-cal-dark-nav-bg;
-            border-color: @mp-cal-dark-nav-border;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.10);
+            border-color: rgba(var(--stratus-primary-dark-rgb), 0.25);
 
             .btn.btn-secondary {
-                color: @color-dark-font-secondary;
+                color: var(--stratus-dark-font-secondary);
 
                 &:hover:not(.active) {
-                    background: @mp-primary-dark-a15;
-                    color: @color-dark-main;
+                    background: rgba(var(--stratus-primary-dark-rgb), 0.15);
+                    color: var(--stratus-text-accent-dark);
                 }
 
                 &.active {
-                    background: @color-dark-main;
+                    background: var(--stratus-primary-dark);
                     color: @color-dark-on-primary;
-                    box-shadow: 0 2px 6px @mp-primary-dark-a45;
+                    box-shadow: 0 1px 3px rgba(var(--stratus-primary-dark-rgb), 0.28);
                 }
             }
         }
@@ -993,25 +1162,26 @@ html.dark-mode {
         // Nav buttons — prev/today/next dark styling
         .fc-header-toolbar .fc-right .btn-group {
             .btn.btn-secondary {
-                border-color: @color-dark-border;
-                color: @color-dark-font;
+                border-color: var(--stratus-dark-border);
+                color: var(--stratus-dark-font);
 
                 &:hover {
-                    background: @mp-primary-dark-a12;
-                    border-color: @mp-primary-dark-a45;
-                    color: @color-dark-main;
+                    background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+                    border-color: rgba(var(--stratus-primary-dark-rgb), 0.45);
+                    color: var(--stratus-text-accent-dark);
                 }
 
                 &.today {
-                    background: @color-dark-main;
-                    border-color: @color-dark-main;
-                    box-shadow: 0 2px 8px @mp-primary-dark-a45;
+                    background: var(--stratus-primary-dark);
+                    border-color: var(--stratus-primary-dark);
+                    box-shadow: 0 1px 4px rgba(var(--stratus-primary-dark-rgb), 0.30);
 
                     &:hover,
                     &:focus {
-                        background: lighten(@color-dark-main, 8%);
-                        border-color: lighten(@color-dark-main, 8%);
-                        box-shadow: 0 4px 12px @mp-primary-dark-a45;
+                        background: var(--stratus-primary-dark);
+                        border-color: var(--stratus-primary-dark);
+                        box-shadow: 0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.35);
+                        filter: brightness(1.12);
                     }
                 }
             }
@@ -1021,8 +1191,8 @@ html.dark-mode {
     // ── CALENDAR TOOLBAR (create pill + overflow trigger) ──────────────────────
     body.task-calendar {
         #layout-sidebar .mp-sidebar-datepicker {
-            background: @color-dark-surface;
-            border-bottom-color: @color-dark-border;
+            background: var(--stratus-dark-surface);
+            border-bottom-color: var(--stratus-dark-border);
 
             .ui-datepicker {
                 background: transparent;
@@ -1034,46 +1204,46 @@ html.dark-mode {
             }
 
             .ui-datepicker-title {
-                color: @color-dark-font;
+                color: var(--stratus-dark-font);
             }
 
             .ui-datepicker-prev:hover,
             .ui-datepicker-next:hover {
-                background: @mp-primary-dark-a15;
+                background: rgba(var(--stratus-primary-dark-rgb), 0.15);
             }
 
             .ui-datepicker-calendar thead th {
-                color: @color-dark-font-secondary;
+                color: var(--stratus-dark-font-secondary);
             }
         }
 
         #datepicker .ui-datepicker td.ui-datepicker-today a,
         #datepicker .ui-datepicker td.ui-datepicker-today .ui-state-default {
-            background: @color-dark-main;
-            color: @color-dark-font;
-            box-shadow: 0 2px 6px @mp-primary-dark-a45;
+            background: var(--stratus-primary-dark);
+            color: var(--stratus-dark-font);
+            box-shadow: 0 1px 3px rgba(var(--stratus-primary-dark-rgb), 0.28);
         }
 
         #datepicker .ui-datepicker td:not(.ui-datepicker-today) a:hover,
         #datepicker .ui-datepicker td:not(.ui-datepicker-today) .ui-state-default:hover {
-            background: @mp-primary-dark-a15;
-            color: @color-dark-main;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.15);
+            color: var(--stratus-text-accent-dark);
         }
 
         // Create button — now in #mp-cal-actions (Tier B template)
         #mp-cal-actions > a.button.create {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
 
             &:not(.disabled):hover,
             &:not(.disabled):focus {
-                background-color: @color-dark-border;
-                color: @color-dark-font;
+                background-color: var(--stratus-dark-border);
+                color: var(--stratus-dark-font);
             }
         }
 
         // More button — popover trigger for secondary actions
         #layout-content > .header > a.toolbar-menu-button {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
 
             &[aria-expanded="true"] {
                 display: block !important;
@@ -1082,15 +1252,25 @@ html.dark-mode {
 
             &:hover,
             &:focus {
-                background-color: @color-dark-border;
-                color: @color-dark-font;
+                background-color: var(--stratus-dark-border);
+                color: var(--stratus-dark-font);
             }
+        }
+
+        // Inline datepicker — week number column
+        .ui-datepicker-inline .ui-datepicker-week-col {
+            color: var(--stratus-text-accent-dark)  !important;
+        }
+
+        // Inline datepicker — active date range highlight
+        .ui-datepicker-inline .ui-datepicker-activerange {
+            background-color: rgba(var(--stratus-primary-dark-rgb), 0.18)  !important;
         }
     }
 
     #agendaoptions {
-        background-color: @mp-cal-dark-header-bg;
-        border-bottom-color: @mp-cal-dark-grid-color;
+        background-color: var(--stratus-dark-surface);
+        border-bottom-color: rgba(var(--stratus-dark-border-rgb), 0.35);
     }
 
     // ── FullCalendar native buttons (.fc-button) ──────────────────────────────
@@ -1098,33 +1278,130 @@ html.dark-mode {
     // button API instead of Roundcube/Bootstrap wrappers. Without this block they
     // render with light-gray browser defaults and are unreadable on the dark bg.
     .fc-button {
-        background-color: @color-dark-surface-raised;
-        color: @color-dark-btn;
-        border-color: @color-dark-border;
+        background-color: var(--stratus-dark-surface-raised);
+        color: var(--stratus-dark-font);
+        border-color: var(--stratus-dark-border);
 
         &:hover:not(:disabled):not(.fc-button-active) {
-            background-color: @mp-primary-dark-a15;
-            color: @color-dark-main;
-            border-color: @mp-primary-dark-a45;
+            background-color: rgba(var(--stratus-primary-dark-rgb), 0.15);
+            color: var(--stratus-primary-dark);
+            border-color: rgba(var(--stratus-primary-dark-rgb), 0.45);
         }
 
         &:active,
         &.fc-button-active {
-            background-color: @color-dark-btn-primary-background;
+            background-color: var(--stratus-primary-dark);
             color: @color-dark-on-primary;
-            border-color: @color-dark-main;
+            border-color: var(--stratus-primary-dark);
         }
 
         &:focus {
-            box-shadow: 0 0 0 3px @mp-primary-dark-a30;
+            box-shadow: 0 0 0 3px rgba(var(--stratus-primary-dark-rgb), 0.30);
         }
     }
 
     .fc-button-group .fc-button:not(:first-child) {
-        border-left-color: @color-dark-border;
+        border-left-color: var(--stratus-dark-border);
     }
 
     body.task-calendar #layout-sidebar {
-        border-right-color: @mp-cal-dark-grid-color;
+        border-right-color: rgba(var(--stratus-dark-border-rgb), 0.35);
+    }
+
+    // ── INVITATION RSVP — dark mode overrides ────────────────────────────────────
+    .invitebox.calendar-invitebox {
+        background: var(--stratus-dark-surface-raised) !important;
+        border-color: var(--stratus-dark-border)!important;
+        box-shadow: @mp-shadow-dark-sm!important;
+
+        #event-rsvp > .label,
+        .rsvp-buttons > .label {
+            color: var(--stratus-dark-font)!important;
+            border-top-color: var(--stratus-dark-border)!important;
+        }
+
+        .itip-buttons input.button {
+            border-color: var(--stratus-dark-border)!important;
+            color: var(--stratus-dark-font)!important;
+            box-shadow: none!important;
+
+            &:hover {
+                background: rgba(var(--stratus-primary-dark-rgb), 0.10)!important;
+                border-color: rgba(var(--stratus-primary-dark-rgb), 0.40)!important;
+                color: var(--stratus-text-accent-dark)!important;
+            }
+
+            &:focus,
+            &:active {
+                box-shadow: none!important;
+            }
+        }
+
+        .itip-buttons input.button[rel=accepted] {
+            background: @color-dark-success!important;
+            border-color: @color-dark-success!important;
+            color: @color-dark-on-primary!important;
+            box-shadow: 0 2px 8px fadeout(@color-dark-success, 65%)!important;
+
+            &:focus,
+            &:active {
+                box-shadow: 0 2px 8px fadeout(@color-dark-success, 65%)!important;
+            }
+        }
+
+        .itip-buttons input.button[rel=tentative]:hover {
+            background: rgba(var(--stratus-primary-dark-rgb), 0.10)!important;
+            border-color: rgba(var(--stratus-primary-dark-rgb), 0.40)!important;
+            color: var(--stratus-text-accent-dark)!important;
+        }
+
+        .itip-buttons input.button[rel=declined] {
+            border-color: fadeout(@color-dark-error, 55%)!important;
+            color: @color-dark-error!important;
+
+            &:hover {
+                background: fadeout(@color-dark-error, 88%)!important;
+                border-color: @color-dark-error!important;
+            }
+        }
+
+        .itip-buttons input.button[rel=delegated],
+        .itip-buttons input.button[rel=check-calendar] {
+            color: var(--stratus-dark-font-secondary)!important;
+
+            &:hover {
+                background: rgba(var(--stratus-primary-dark-rgb), 0.10)!important;
+                color: var(--stratus-text-accent-dark)!important;
+            }
+        }
+
+        .itip-reply-controls {
+            color: var(--stratus-dark-font-secondary)!important;
+        }
+
+        .folder-select {
+            color: var(--stratus-dark-font-secondary)!important;
+
+            select {
+                background-color: var(--stratus-dark-surface-raised)!important;
+                border-color: var(--stratus-dark-border)!important;
+                color: var(--stratus-dark-font)!important;
+            }
+        }
+
+        .rsvp-status {
+            &.accepted {
+                background: fadeout(@color-dark-success, 85%)!important;
+                color: lighten(@color-dark-success, 20%)!important;
+            }
+            &.declined {
+                background: fadeout(@color-dark-error, 85%)!important;
+                color: lighten(@color-dark-error, 15%)!important;
+            }
+            &.tentative {
+                background: fadeout(@mp-color-amber, 82%)!important;
+                color: lighten(@mp-color-amber, 10%)!important;
+            }
+        }
     }
 }

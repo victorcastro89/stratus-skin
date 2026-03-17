@@ -7,6 +7,54 @@
  * Stratus extends elastic, so local_skin_path() resolves here for both.
  */
 
+/* ── Centered undo-send toast (desktop) ─────── */
+
+#messagestack .mp-undo-toast {
+    position: fixed;
+    bottom: 3.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    min-width: 320px;
+    max-width: 480px;
+    z-index: 110;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+    animation: mp-undo-slide-up 0.25s ease-out;
+}
+
+#messagestack .mp-undo-toast .mp-undo-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.25em;
+}
+
+@keyframes mp-undo-slide-up {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(1rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* On small screens, keep full-width bottom bar (no centering) */
+@media screen and (max-width: 480px) {
+    #messagestack .mp-undo-toast {
+        position: relative;
+        left: auto;
+        bottom: auto;
+        transform: none;
+        min-width: 0;
+        max-width: none;
+        width: auto;
+        animation: none;
+    }
+}
+
 /* ── Undo link refinements ───────────────────── */
 
 #messagestack .mp-undo-link {

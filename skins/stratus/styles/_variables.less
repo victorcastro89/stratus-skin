@@ -64,15 +64,15 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // ELEVATION — multi-level shadow system (atmospheric depth)
 // ═══════════════════════════════════════════════════════════════════════════════
-@mp-shadow-xs:      0 1px 2px rgba(26, 31, 54, 0.03);
-@mp-shadow-sm:      0 1px 3px rgba(26, 31, 54, 0.05), 0 1px 2px rgba(26, 31, 54, 0.03);
-@mp-shadow-md:      0 4px 6px -1px rgba(26, 31, 54, 0.04), 0 2px 4px -2px rgba(26, 31, 54, 0.03);
-@mp-shadow-lg:      0 10px 15px -3px rgba(26, 31, 54, 0.05), 0 4px 6px -4px rgba(26, 31, 54, 0.03);
-@mp-shadow-xl:      0 20px 25px -5px rgba(26, 31, 54, 0.06), 0 8px 10px -6px rgba(26, 31, 54, 0.03);
-@mp-shadow-2xl:     0 25px 50px -12px rgba(26, 31, 54, 0.12);
+@mp-shadow-xs:      0 1px 2px fadeout(@color-black, 97%);
+@mp-shadow-sm:      0 1px 3px fadeout(@color-black, 95%), 0 1px 2px fadeout(@color-black, 97%);
+@mp-shadow-md:      0 4px 6px -1px fadeout(@color-black, 96%), 0 2px 4px -2px fadeout(@color-black, 97%);
+@mp-shadow-lg:      0 10px 15px -3px fadeout(@color-black, 95%), 0 4px 6px -4px fadeout(@color-black, 97%);
+@mp-shadow-xl:      0 20px 25px -5px fadeout(@color-black, 94%), 0 8px 10px -6px fadeout(@color-black, 97%);
+@mp-shadow-2xl:     0 25px 50px -12px fadeout(@color-black, 88%);
 @mp-shadow-glow:    0 0 20px @mp-primary-a20;
 @mp-shadow-glow-sm: 0 0 10px @mp-primary-a12;
-@mp-shadow-inset:   inset 0 2px 4px rgba(26, 31, 54, 0.03);
+@mp-shadow-inset:   inset 0 2px 4px fadeout(@color-black, 97%);
 
 // Dark mode elevation (bluish tint)
 @mp-shadow-dark-sm:     0 1px 3px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.10);
@@ -117,16 +117,16 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // PRIMARY PALETTE — Indigo atmosphere
 // ═══════════════════════════════════════════════════════════════════════════════
-@color-main:                #5c6bc0;
+@color-main:                #000000;
 @color-main-dark:           darken(@color-main, 35%);
-@color-main-light:          #8e99e4;
+@color-main-light:          #000000;
 @color-main-lighter:        #c5caf0;
-@color-main-gradient:       linear-gradient(135deg, #5c6bc0 0%, #7c4dff 100%);
-@color-main-gradient-hover: linear-gradient(135deg, darken(#5c6bc0, 6%) 0%, darken(#7c4dff, 6%) 100%);
+@color-main-gradient:       linear-gradient(135deg, #000000 0%, #000000 100%);
+@color-main-gradient-hover: linear-gradient(135deg, darken(#000000, 6%) 0%, darken(#000000, 6%) 100%);
 @color-black:               #1a1f36;
-@color-font:                #4a5278;
-@color-font-secondary:      #6b7399;
-@color-link:                #5c6bc0;
+@color-font:                #000000;
+@color-font-secondary:      #000000;
+@color-link:                #000000;
 @color-link-hover:          darken(@color-link, 12%);
 @color-border:              #e0e3ef;
 
@@ -167,7 +167,7 @@
 @mp-list-top-shell-gap:             0;
 @mp-list-top-shell-radius:          @mp-radius-md;
 @mp-list-top-row-height:            40px;
-@color-layout-list-top-background:  @color-layout-header-background;
+@color-layout-list-top-background:  #ffffff;
 @color-layout-list-top-border:      fadeout(@color-layout-border, 25%);    // border uses layout-border, not primary
 @color-layout-list-top-divider:     fadeout(@color-layout-border, 45%);    // divider uses layout-border, not primary
 
@@ -188,7 +188,7 @@
 @color-taskmenu-button-selected-hover:          #fff;
 @color-taskmenu-button-action-hover:            lighten(@color-main, 10%);
 
-@color-taskmenu-button-background-hover:        rgba(255, 255, 255, 0.06);
+@color-taskmenu-button-background-hover:        rgba(0, 0, 0, 0.06);
 @color-taskmenu-button-action-background-hover: @color-taskmenu-button-background-hover;
 @color-taskmenu-button-logout:                  #f87171;
 @color-taskmenu-button-logout-hover:            #fca5a5;
@@ -196,7 +196,7 @@
 // ─── Toolbar ─────────────────────────────────────────────────────────────────
 @color-toolbar-button:                  @color-font;
 @color-toolbar-button-background-hover: @mp-primary-a8;
-@color-searchbar-background:            #f0f2fb;
+@color-searchbar-background:            #ffffff;
 
 // ─── Menus ───────────────────────────────────────────────────────────────────
 @color-menu-hover:               #fff;
@@ -341,4 +341,62 @@
     --stratus-primary-rgb:      92, 107, 192;    // #5c6bc0
     --stratus-primary-dark-rgb: 121, 134, 203;   // #7986cb
     --stratus-font-family:      @mp-font-family;
+    --stratus-font-size:        0.875rem;   // 14px default
+    --stratus-line-height:      1.5;
+
+    // Text accent — WCAG AA validated colors for readable text on surfaces.
+    // Never use --stratus-primary for body text; use these instead.
+    // Overridden at runtime by stratus_helper's injected <style> block.
+    --stratus-text-accent:      #3949ab;   // Indigo darkened — 5.6:1 on #fff
+    --stratus-text-accent-dark: #9fa8da;   // Indigo lightened — 5.2:1 on #1a1f36
+
+    // Sidebar / Taskmenu — scheme-aware colors replacing hardcoded navy.
+    // Overridden at runtime by stratus_helper's injected <style> block.
+    --stratus-sidebar-bg:           @color-taskmenu-background;
+    --stratus-sidebar-gradient:     @mp-taskmenu-gradient;
+    --stratus-sidebar-text:         @color-taskmenu-button;
+    --stratus-sidebar-text-hover:   @color-taskmenu-button-hover;
+    --stratus-sidebar-text-active:  @color-taskmenu-button-selected;
+    --stratus-sidebar-active-bg:    @color-taskmenu-button-selected-background;
+
+    // Surface tints — scheme-aware alpha overlays.
+    // Values are scheme-configurable because some colors need higher opacity to be visible.
+    --stratus-surface-tint:  rgba(92, 107, 192, 0.03);
+    --stratus-hover-bg:      rgba(92, 107, 192, 0.06);
+    --stratus-selected-bg:   rgba(92, 107, 192, 0.13);
+    --stratus-focus-ring:    rgba(92, 107, 192, 0.25);
+
+    // Gradient — accent gradient for buttons and UI chrome.
+    // Overridden at runtime by stratus_helper when scheme changes.
+    --stratus-gradient:       @color-main-gradient;
+    --stratus-gradient-hover: @color-main-gradient-hover;
+
+    // Dark mode complementary light color — used for dark mode text/links.
+    --stratus-primary-dark-light: @color-dark-main-light;
+
+    // Typography & border — body text and divider, exposed for runtime overriding
+    --stratus-font:           @color-font;
+    --stratus-font-secondary: @color-font-secondary;
+    --stratus-border:         @color-border;
+
+    // Dark mode palette — scheme-aware tokens.
+    // Compile-time defaults from LESS vars; overridden at runtime by stratus_helper.
+    --stratus-dark-background:       @color-dark-background;
+    --stratus-dark-background-rgb:   19, 23, 42;   // #13172a
+    --stratus-dark-surface:          @color-dark-surface;
+    --stratus-dark-surface-rgb:      26, 31, 54;   // #1a1f36
+    --stratus-dark-surface-raised:   @color-dark-surface-raised;
+    --stratus-dark-font:             @color-dark-font;
+    --stratus-dark-font-secondary:   @color-dark-font-secondary;
+    --stratus-dark-border:           @color-dark-border;
+    --stratus-dark-border-rgb:       42, 48, 80;   // #2a3050
+
+    // Dark utility tokens — pre-computed lighten() replacements
+    --stratus-dark-input-bg-focus:        lighten(@color-dark-background, 3%);
+    --stratus-dark-message-loading-bg:    lighten(@color-dark-background, 10%);
+    --stratus-dark-input-addon-focus-bg:  lighten(@color-dark-surface-raised, 8%);
+
+    // Sidebar interaction helpers
+    --stratus-sidebar-hover-bg:      rgba(255, 255, 255, 0.08);
+    --stratus-sidebar-divider:       rgba(255, 255, 255, 0.06);
 }

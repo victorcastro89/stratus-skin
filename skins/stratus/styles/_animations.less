@@ -95,8 +95,8 @@ select,
 
 // Subtle pulse (for compose button hover)
 @keyframes mp-pulse-soft {
-    0%, 100% { box-shadow: 0 0 0 0 fadeout(@color-main, 60%); }
-    50%      { box-shadow: 0 0 0 8px fadeout(@color-main, 100%); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--stratus-primary-rgb), 0.40); }
+    50%      { box-shadow: 0 0 0 8px transparent; }
 }
 
 // Shimmer loading effect

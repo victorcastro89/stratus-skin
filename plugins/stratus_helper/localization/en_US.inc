@@ -7,7 +7,7 @@
 $labels = [];
 
 // Settings section
-$labels['section_title']    = 'Stratus Appearance';
+$labels['section_title']    = 'Appearance';
 
 // Preference labels
 $labels['color_scheme']     = 'Color Scheme';
@@ -36,6 +36,12 @@ $labels['font_nunito']      = 'Nunito';
 $labels['appearance_saved']          = 'Appearance settings saved.';
 $labels['folder_refresh']            = 'Refresh folder list';
 $labels['yesterday']     = 'Yesterday'; 
+
+// Font size
+$labels['font_size']         = 'Font Size';
+$labels['font_size_small']   = 'Small';
+$labels['font_size_default'] = 'Default';
+$labels['font_size_large']   = 'Large';
 
 // Search empty state
 $labels['search_no_messages']        = 'No messages found for your search.';

@@ -43,8 +43,8 @@
         font-size: @mp-font-size-sm;
 
         &:hover {
-            background: @mp-primary-a12;
-     
+            background: rgba(var(--stratus-primary-rgb), 0.12);
+
             text-decoration: none;
         }
     }
@@ -57,7 +57,7 @@
     blockquote blockquote,
     blockquote blockquote blockquote {
         color: inherit;
-        border-left: 2px solid #1F497D;
+        border-left: 2px solid var(--stratus-primary);
         border-right: 0;
         background-color: transparent;
     }
@@ -72,14 +72,14 @@
         transition: background @mp-transition-base, color @mp-transition-base, box-shadow @mp-transition-base;
 
         &:hover {
-            background: @mp-primary-a8;
+            background: rgba(var(--stratus-primary-rgb), 0.08);
             text-decoration: none;
         }
 
         &:focus-visible {
             outline: 0;
-            box-shadow: 0 0 0 2px @mp-primary-a30;
-            background: @mp-primary-a8;
+            box-shadow: 0 0 0 2px rgba(var(--stratus-primary-rgb), 0.30);
+            background: rgba(var(--stratus-primary-rgb), 0.08);
         }
     }
 
@@ -122,17 +122,17 @@ html.dark-mode {
 
     // ── MESSAGE VIEW ─────────────────────────────────────────────────────────────────
     #message-header {
-        border-bottom-color: @color-dark-border;
+        border-bottom-color: var(--stratus-dark-border);
     }
 
     .message-part a {
-        background: @mp-primary-dark-a10;
-        border-color: @mp-primary-dark-a30;
-        color: @color-dark-main-light;
+        background: rgba(var(--stratus-primary-dark-rgb), 0.10);
+        border-color: rgba(var(--stratus-primary-dark-rgb), 0.30);
+        color: var(--stratus-primary-dark-light);
 
         &:hover {
-            background: @mp-primary-dark-a18;
-            border-color: @mp-primary-dark-a50;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+            border-color: rgba(var(--stratus-primary-dark-rgb), 0.50);
         }
     }
 
@@ -141,7 +141,7 @@ html.dark-mode {
         blockquote,
         blockquote blockquote,
         blockquote blockquote blockquote {
-            border-left-color: #434343;
+            border-left-color: var(--stratus-primary-dark);
             background-color: transparent !important;
         }
     }
@@ -150,26 +150,26 @@ html.dark-mode {
         a {
             background: transparent;
             border-color: transparent;
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
 
             &:hover {
-                background: @mp-primary-dark-a10;
+                background: rgba(var(--stratus-primary-dark-rgb), 0.10);
             }
 
             &:focus-visible {
-                box-shadow: 0 0 0 2px @mp-primary-dark-a35;
-                background: @mp-primary-dark-a10;
+                box-shadow: 0 0 0 2px rgba(var(--stratus-primary-dark-rgb), 0.35);
+                background: rgba(var(--stratus-primary-dark-rgb), 0.10);
             }
         }
 
         a.dropdown,
         a.cancelupload,
         a.delete {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
 
             &:hover,
             &:focus-visible {
-                color: @color-dark-font;
+                color: var(--stratus-dark-font);
             }
         }
     }
@@ -185,24 +185,61 @@ html.dark-mode {
     }
 
     // ── MESSAGE BODY (HTML emails) ───────────────────────────────────────────────────
+    // Default: darken all emails in dark mode (avoids white flash before JS runs).
+    // JS adds .stratus-styled to newsletters/styled emails → those get white bg instead.
     .message-htmlpart {
-        background-color: lighten(@color-dark-background, 3%);
-        color: @color-dark-font;
+        background-color: var(--stratus-dark-input-bg-focus);
+        color: var(--stratus-dark-font);
 
-        // Flatten all backgrounds to a single tone — override inline styles from
-        // email clients and Elastic's per-level blockquote shading
-        .rcmBody,
-        blockquote,
-        div,
-        td,
-        table,
-        p {
+        .rcmBody {
+            background-color: var(--stratus-dark-input-bg-focus) !important;
+            color: var(--stratus-dark-font) !important;
+        }
+
+        // Override white/light inline backgrounds on common elements
+        .rcmBody div,
+        .rcmBody td,
+        .rcmBody th,
+        .rcmBody table,
+        .rcmBody p,
+        blockquote {
             background-color: transparent !important;
             color: inherit !important;
         }
 
-        .rcmBody {
-            background-color: lighten(@color-dark-background, 3%) !important;
+        // Links
+        .rcmBody a {
+            color: var(--stratus-primary-dark) !important;
+        }
+
+        // HRs
+        .rcmBody hr {
+            border-color: var(--stratus-dark-border);
+        }
+    }
+
+    // Styled emails (newsletters, marketing): preserve original white background
+    .message-htmlpart.stratus-styled {
+        background-color: white;
+        color: initial;
+
+        .rcmBody,
+        .rcmBody div,
+        .rcmBody td,
+        .rcmBody th,
+        .rcmBody table,
+        .rcmBody p,
+        blockquote {
+            background-color: revert !important;
+            color: revert !important;
+        }
+
+        .rcmBody a {
+            color: revert !important;
+        }
+
+        .rcmBody hr {
+            border-color: revert;
         }
     }
 }

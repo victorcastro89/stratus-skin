@@ -4,8 +4,18 @@
 // Only components that NEED runtime color switching are listed here.
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FONT FAMILY — runtime switchable
+// FONT SIZE — applied to html (root), not body
+// ───────────────────────────────────────────────────────────────────────────────
+// Elastic uses rem units throughout. rem resolves against <html>, never body.
+// Applying font-size here makes every rem value in the page scale with the
+// user's preference — no targeted per-element overrides needed.
+// NEVER move this to body; doing so silently breaks all rem-based elements.
 // ═══════════════════════════════════════════════════════════════════════════════
+html {
+    font-size: var(--stratus-font-size, 0.875rem);
+    line-height: var(--stratus-line-height, 1.5);
+}
+
 body {
     font-family: var(--stratus-font-family);
 }
@@ -16,11 +26,11 @@ body {
 :root {
     --mp-conv-main: var(--stratus-primary, @color-main);
     --mp-conv-main-rgb: var(--stratus-primary-rgb, 92, 107, 192);
-    --mp-conv-main-light: @mp-primary-a5;
+    --mp-conv-main-light: rgba(var(--stratus-primary-rgb), 0.05);
 
     --mp-conv-row-border: @color-list-border;               // no extra fadeout — variable is already subtle (ISSUE-002)
-    --mp-conv-row-hover-bg: @mp-primary-a5;
-    --mp-conv-row-selected-bg: @color-list-selected-background;
+    --mp-conv-row-hover-bg: rgba(var(--stratus-primary-rgb), 0.05);
+    --mp-conv-row-selected-bg: rgba(var(--stratus-primary-rgb), 0.13);
 
     --mp-conv-surface: @color-layout-content-background;
     --mp-conv-surface-alt: @color-layout-header-background;
@@ -39,34 +49,40 @@ body {
     --mp-conv-danger: @color-error;
 
     --mp-conv-hover-actions-bg: fade(@color-layout-list-background, 97%);
-    --mp-conv-hover-actions-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+    --mp-conv-hover-actions-shadow: 0 1px 6px fadeout(@color-black, 88%);
     --mp-conv-hover-actions-btn-text: @color-font-secondary;
     --mp-conv-hover-actions-btn-hover-text: @color-font;
-    --mp-conv-card-hover-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --mp-conv-card-hover-shadow: 0 2px 8px fadeout(@color-black, 92%);
 
     --mp-conv-child-divider: var(--mp-conv-row-border);
-    --mp-conv-child-bg: fadeout(@color-main, 98%);       // 2% — too subtle for a token
-    --mp-conv-child-hover-bg: @mp-primary-a5;
-    --mp-conv-child-selected-bg: fadeout(@color-main, 93%); // 7% — between a5 and a8
+    --mp-conv-child-bg: rgba(var(--stratus-primary-rgb), 0.02);
+    --mp-conv-child-hover-bg: rgba(var(--stratus-primary-rgb), 0.05);
+    --mp-conv-child-selected-bg: rgba(var(--stratus-primary-rgb), 0.07);
     --mp-conv-child-text: @color-font;
     --mp-conv-child-text-muted: @color-font-secondary;
-    --mp-conv-child-indent-guide: @mp-primary-a12;
+    --mp-conv-child-indent-guide: rgba(var(--stratus-primary-rgb), 0.12);
 
     --mp-conv-child-row-bg: var(--mp-conv-child-bg);
     --mp-conv-child-row-border: var(--mp-conv-child-divider);
-    --mp-conv-expanded-bg: @mp-primary-a5;
+    --mp-conv-expanded-bg: rgba(var(--stratus-primary-rgb), 0.05);
 
-    --mp-conv-child-unread-accent: @color-main;
+    --mp-conv-child-unread-accent: var(--stratus-primary);
     --mp-conv-dir-sent-color: @color-success;
-    --mp-conv-dir-received-color: @color-main;
+    --mp-conv-dir-received-color: var(--stratus-primary);
 
     // HOVER ACTIONS — plugin CSS bridge for unified row hover actions
     --mp-hover-actions-bg: @mp-glass-bg-strong;
     --mp-hover-actions-shadow: @mp-shadow-md;
     --mp-hover-actions-icon-color: @color-font-secondary;
-    --mp-hover-actions-icon-hover-bg: @mp-primary-a10;
-    --mp-hover-actions-icon-hover-color: @color-main;
+    --mp-hover-actions-icon-hover-bg: rgba(var(--stratus-primary-rgb), 0.10);
+    --mp-hover-actions-icon-hover-color: var(--stratus-primary);
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SURFACE TINT TOKENS — scheme-aware alpha overlays for hover/selected/focus
+// These use named tokens so opacity values are scheme-configurable.
+// ═══════════════════════════════════════════════════════════════════════════════
+// (Defined in :root block of _variables.less, consumed here and in widget files)
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // PRIMARY BUTTONS — gradient replaced with solid var() color for runtime switching
@@ -98,7 +114,7 @@ a.btn-secondary:hover,
 a.btn-secondary:focus {
     background: rgba(var(--stratus-primary-rgb), 0.06);
     border-color: rgba(var(--stratus-primary-rgb), 0.40);
-    color: var(--stratus-primary);
+    color: var(--stratus-text-accent);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -119,11 +135,24 @@ a.btn-secondary:focus {
 // .listing tbody tr.focused > td,
 // .listing tbody tr.selected > td,
 .listing li.selected {
-    background: rgba(var(--stratus-primary-rgb), 0.08);
+    background: rgba(var(--stratus-primary-rgb), 0.13);
+}
+.calname:before {
+    color: var(--stratus-sidebar-text)!important;
+
+}
+// Div-wrapper children (kolab calendar/addressbook): accent text on selection
+.listing li.selected > div > *:not(.count) {
+    background-color: var(--stratus-sidebar-active-bg)!important;
 }
 
+// // Quickview icon (kolab calendar list)
+// .listing li > div a.quickview:before {
+//    background-color:  var(--stratus-sidebar-active-bg) !important;
+// }
+
 .listing .listing-info .listing-mark {
-    color: var(--stratus-primary);
+    color: var(--stratus-text-accent);
 }
 
 // Focus indicator bar (left border on focused row)
@@ -133,21 +162,21 @@ a.btn-secondary:focus {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// LINKS — accent color
+// LINKS — accessible text accent (WCAG AA validated)
 // ═══════════════════════════════════════════════════════════════════════════════
 a {
-    color: var(--stratus-primary);
+    color: var(--stratus-text-accent);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // INPUT FOCUS — accent border
 // ═══════════════════════════════════════════════════════════════════════════════
 .form-control:focus,
+.recipient-input.focus,
 input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--stratus-primary);
-  
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -172,7 +201,7 @@ textarea:focus {
 .toolbar a.button:hover,
 a.button.icon:not(.btn):hover {
     background: rgba(var(--stratus-primary-rgb), 0.08);
-    color: var(--stratus-primary);
+    color: var(--stratus-text-accent);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -192,21 +221,50 @@ a.button.icon:not(.btn):hover {
 // DARK MODE — use dark variant of primary
 // ═══════════════════════════════════════════════════════════════════════════════
 html.dark-mode {
+    // Dark mode gradient — derived from dark primary
+    --stratus-gradient: var(--stratus-primary-dark);
+    --stratus-gradient-hover: var(--stratus-primary-dark);
+
+    // Conversation mode + hover action tokens — switch to dark-rgb variants
+    :root,
+    & {
+        --mp-conv-main: var(--stratus-primary-dark, @color-dark-main);
+        --mp-conv-main-rgb: var(--stratus-primary-dark-rgb, 121, 134, 203);
+        --mp-conv-main-light: rgba(var(--stratus-primary-dark-rgb), 0.08);
+
+        --mp-conv-row-hover-bg: rgba(var(--stratus-primary-dark-rgb), 0.08);
+        --mp-conv-row-selected-bg: rgba(var(--stratus-primary-dark-rgb), 0.15);
+        --mp-conv-expanded-bg: rgba(var(--stratus-primary-dark-rgb), 0.08);
+
+        --mp-conv-child-bg: rgba(var(--stratus-primary-dark-rgb), 0.03);
+        --mp-conv-child-hover-bg: rgba(var(--stratus-primary-dark-rgb), 0.08);
+        --mp-conv-child-selected-bg: rgba(var(--stratus-primary-dark-rgb), 0.12);
+        --mp-conv-child-indent-guide: rgba(var(--stratus-primary-dark-rgb), 0.15);
+
+        --mp-conv-child-unread-accent: var(--stratus-primary-dark);
+        --mp-conv-dir-received-color: var(--stratus-primary-dark);
+
+        --mp-hover-actions-icon-hover-bg: rgba(var(--stratus-primary-dark-rgb), 0.12);
+        --mp-hover-actions-icon-hover-color: var(--stratus-primary-dark);
+    }
+
     .btn-primary,
     a.btn-primary,
     button.btn-primary {
         background: var(--stratus-primary-dark);
+        filter: brightness(0.82);
         box-shadow: 0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.3);
 
         &:hover,
         &:focus {
             background: var(--stratus-primary-dark);
+            filter: brightness(0.72);
             box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
         }
     }
 
     a {
-        color: var(--stratus-primary-dark);
+        color: var(--stratus-text-accent-dark);
     }
 
     .badge,
@@ -221,11 +279,17 @@ html.dark-mode {
     }
 
     .form-control:focus,
-    input:focus,
+    .recipient-input.focus,
+    input:focus:not(.recipient-input input),
     select:focus,
     textarea:focus {
         border-color: var(--stratus-primary-dark);
         box-shadow: 0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.25);
+    }
+
+    .recipient-input input:focus {
+        border-color: transparent;
+        box-shadow: none;
     }
 
     .custom-control-input:checked ~ .custom-control-label::before,
@@ -241,15 +305,23 @@ html.dark-mode {
     .toolbar a.button:hover,
     a.button.icon:not(.btn):hover {
         background: rgba(var(--stratus-primary-dark-rgb), 0.12);
-        color: var(--stratus-primary-dark);
+        color: var(--stratus-text-accent-dark);
+    }
+
+    .btn-secondary,
+    a.btn-secondary,
+    button.btn-secondary {
+        background: rgba(var(--stratus-primary-dark-rgb), 0.05);
+        filter: brightness(0.9);
     }
 
     .btn-secondary:hover,
     .btn-secondary:focus,
     a.btn-secondary:hover,
     a.btn-secondary:focus {
-        background: rgba(var(--stratus-primary-dark-rgb), 0.10);
+        background: rgba(var(--stratus-primary-dark-rgb), 0.18);
         border-color: rgba(var(--stratus-primary-dark-rgb), 0.40);
-        color: var(--stratus-primary-dark);
+        color: var(--stratus-text-accent-dark);
+        filter: brightness(0.80);
     }
 }

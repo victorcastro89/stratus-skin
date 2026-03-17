@@ -110,12 +110,6 @@
     + ' margin: 8px;'
     + ' background: transparent;'
     + '}'
-    + ' blockquote {'
-    + '   margin: 0 0 0 0.8em;'
-    + '   border-left: 2px solid #ccc;'
-    + '   padding-left: 0.8em;'
-    + '   color: #555;'
-    + ' }'
     + ' img { max-width: 100%; height: auto; }';
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -231,6 +225,22 @@
       }
       if (!block.style.fontSize) {
         block.style.fontSize = DEFAULT_FONT_SIZE;
+      }
+    }
+
+    // Inline blockquote styles so recipients see the border
+    // (CSS-only styles in embed.css / content_style are display-only in the editor)
+    var blockquotes = body.querySelectorAll('blockquote');
+    for (var k = 0; k < blockquotes.length; k++) {
+      var bq = blockquotes[k];
+      if (!bq.style.borderLeft) {
+        bq.style.borderLeft = '2px solid #cccccc';
+      }
+      if (!bq.style.paddingLeft) {
+        bq.style.paddingLeft = '0.8em';
+      }
+      if (!bq.style.marginLeft) {
+        bq.style.marginLeft = '0.8em';
       }
     }
   }

@@ -131,7 +131,7 @@
 //        &:hover { .mp-card-hover(0 4px 14px rgba(0,0,0,.22), -1px); }
 // ═══════════════════════════════════════════════════════════════════════════════
 .mp-card-hover(
-    @shadow: 0 4px 16px rgba(26, 31, 54, 0.14);
+    @shadow: 0 4px 16px fadeout(@color-black, 86%);
     @lift: -1px
 ) {
     box-shadow: @shadow;

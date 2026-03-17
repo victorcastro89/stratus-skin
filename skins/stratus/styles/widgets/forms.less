@@ -34,8 +34,9 @@
                 background @mp-transition-base;
 
     &:focus {
-        border-color: @color-main;
-        .mp-focus-ring();
+        border-color: var(--stratus-primary);
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.15);
     }
 }
 
@@ -84,39 +85,124 @@ textarea.form-control {
     }
 }
 
-// Custom switches — indigo when checked
+// Custom switches — primary accent when checked
 .custom-switch {
     .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: @color-main;
-        border-color: @color-main;
+        background-color: var(--stratus-primary);
+        border-color: var(--stratus-primary);
     }
 }
 
-// Custom checkboxes — rounded, indigo
+// Custom checkboxes — rounded, primary accent
 .custom-checkbox {
     .custom-control-label::before {
         border-radius: @mp-radius-xs;
     }
 
     .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: @color-main;
-        border-color: @color-main;
+        background-color: var(--stratus-primary);
+        border-color: var(--stratus-primary);
     }
 }
 
-// Recipient chips (compose)
+// Recipient inputs (compose) — match Subject input styling
 .recipient-input {
+    border-radius: @mp-radius-md;
+    border: 1px solid fade(@color-input-border, 55%);
+    padding: 0.35rem 0.75rem;
+    height: auto;
+    transition: border-color @mp-transition-base, box-shadow @mp-transition-smooth,
+                background @mp-transition-base;
+
+    &.focus {
+        border-color: var(--stratus-primary);
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.15);
+    }
+
+    // Inside .input-group, keep left corners rounded to match standalone .form-control
+    .input-group & {
+        border-top-left-radius: @mp-radius-md;
+        border-bottom-left-radius: @mp-radius-md;
+    }
+
     .recipient {
         .mp-pill-shape();
         padding: 2px 10px;
         font-size: @mp-font-size-sm;
-        background: @mp-primary-a8;
-        border: 1px solid @mp-primary-a25;
+        background: rgba(var(--stratus-primary-rgb), 0.08);
+        border: 1px solid rgba(var(--stratus-primary-rgb), 0.25);
         .mp-transition(background @mp-transition-base);
 
         &:hover {
-            background: @mp-primary-a15;
+            background: rgba(var(--stratus-primary-rgb), 0.15);
         }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLOR SCHEME PICKER — visual swatch card grid (Settings → Stratus)
+// ═══════════════════════════════════════════════════════════════════════════════
+.stratus-scheme-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+
+    .stratus-scheme-card {
+        position: relative;
+
+        input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: @mp-radius-md;
+            border: 2px solid transparent;
+            transition: border-color @mp-transition-base, background @mp-transition-base;
+
+            &:hover {
+                background: rgba(var(--stratus-primary-rgb), 0.06);
+                border-color: rgba(var(--stratus-primary-rgb), 0.22);
+            }
+        }
+
+        input[type="radio"]:checked + label {
+            border-color: var(--stratus-primary);
+            background: rgba(var(--stratus-primary-rgb), 0.06);
+        }
+
+        input[type="radio"]:focus-visible + label {
+            box-shadow: 0 0 0 2px rgba(var(--stratus-primary-rgb), 0.30);
+        }
+    }
+
+    .stratus-scheme-swatch-card {
+        display: block;
+        width: 44px;
+        height: 30px;
+        border-radius: @mp-radius-sm;
+        border: 1px solid fadeout(@color-black, 87%);
+        flex-shrink: 0;
+    }
+
+    .stratus-scheme-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: @color-font-secondary;
+        white-space: nowrap;
+        text-align: center;
+        line-height: 1.2;
     }
 }
 
@@ -128,25 +214,27 @@ html.dark-mode {
     // ── SEARCH BAR ───────────────────────────────────────────────────────────────────
     .searchbar,
     #searchbar {
-        background: fadeout(@color-dark-surface-raised, 50%);
+        background: rgba(var(--stratus-dark-surface-rgb), 0.50);
         border-color: transparent;
 
         &:focus-within {
-            background: @color-dark-surface-raised;
-            border-color: @mp-primary-dark-a40;
-            .mp-focus-ring(@color-dark-main, 85%);
+            background: var(--stratus-dark-surface-raised);
+            border-color: rgba(var(--stratus-primary-dark-rgb), 0.40);
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.15);
         }
     }
 
     // ── FORM CONTROLS ──────────────────────────────────────────────────────────────
     .form-control {
-        border-color: @color-dark-input-border;
-        color: @color-dark-input;
+        border-color: var(--stratus-dark-border);
+        color: var(--stratus-dark-font);
 
         &:focus {
-            border-color: @color-dark-main;
-            .mp-focus-ring(@color-dark-main, 82%);
-            background: @color-dark-input-background-focus;
+            border-color: var(--stratus-primary-dark);
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.18);
+            background: var(--stratus-dark-input-bg-focus);
         }
     }
 
@@ -155,14 +243,15 @@ html.dark-mode {
     // `background: url(svg) no-repeat …`. The image layer survives; we only
     // change the fill color beneath it.
     .custom-select {
-        background-color: @color-dark-input-background;
-        border-color: @color-dark-input-border;
-        color: @color-dark-input;
+        background-color: var(--stratus-dark-background);
+        border-color: var(--stratus-dark-border);
+        color: var(--stratus-dark-font);
 
         &:focus {
-            border-color: @color-dark-main;
-            .mp-focus-ring(@color-dark-main, 82%);
-            background-color: @color-dark-input-background-focus;
+            border-color: var(--stratus-primary-dark);
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.18);
+            background-color: var(--stratus-dark-input-bg-focus);
         }
     }
 
@@ -172,51 +261,87 @@ html.dark-mode {
         select.ui-datepicker-month,
         select.ui-datepicker-year {
             @color-arrow: escape(~"@{color-dark-input}");
-            background: @color-dark-surface-raised url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
-            border-color: @color-dark-border;
-            color: @color-dark-font;
+            background: var(--stratus-dark-surface-raised) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+            border-color: var(--stratus-dark-border);
+            color: var(--stratus-dark-font);
 
             &:focus {
-                background: @color-dark-surface-raised url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
-                border-color: @color-dark-main;
-                box-shadow: 0 0 0 2px @mp-primary-dark-a18;
+                background: var(--stratus-dark-surface-raised) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
+                border-color: var(--stratus-primary-dark);
+                box-shadow: 0 0 0 2px rgba(var(--stratus-primary-dark-rgb), 0.18);
             }
         }
     }
 
     label,
     .form-label {
-        color: @color-dark-font-secondary;
+        color: var(--stratus-dark-font-secondary);
     }
 
     .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: @color-dark-main;
-        border-color: @color-dark-main;
+        background-color: var(--stratus-primary-dark);
+        border-color: var(--stratus-primary-dark);
     }
 
     .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: @color-dark-main;
-        border-color: @color-dark-main;
+        background-color: var(--stratus-primary-dark);
+        border-color: var(--stratus-primary-dark);
     }
 
-    .recipient-input .recipient {
-        background: @mp-primary-dark-a12;
-        border-color: @mp-primary-dark-a35;
-        color: @color-dark-main-light;
+    .recipient-input {
+        background-color: var(--stratus-dark-background);
+        border-color: var(--stratus-dark-border);
+        color: var(--stratus-dark-font);
 
-        &:hover {
-            background: @mp-primary-dark-a20;
+        &.focus {
+            border-color: var(--stratus-primary-dark);
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.18);
+            background-color: var(--stratus-dark-input-bg-focus);
+        }
+
+        .recipient {
+            background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+            border-color: rgba(var(--stratus-primary-dark-rgb), 0.35);
+            color: var(--stratus-primary-dark-light);
+
+            &:hover {
+                background: rgba(var(--stratus-primary-dark-rgb), 0.20);
+            }
         }
     }
 
     // ── FILE UPLOAD ───────────────────────────────────────────────────────────────────
     .file-upload {
-        border-color: @mp-primary-dark-a40;
+        border-color: rgba(var(--stratus-primary-dark-rgb), 0.40);
 
         &:hover,
         &.hover {
-            border-color: @color-dark-main;
-            background: @mp-primary-dark-a5;
+            border-color: var(--stratus-primary-dark);
+            background: rgba(var(--stratus-primary-dark-rgb), 0.05);
+        }
+    }
+
+    // ── COLOR SCHEME PICKER ──────────────────────────────────────────────────────────
+    .stratus-scheme-picker {
+        .stratus-scheme-card {
+            label:hover {
+                background: rgba(var(--stratus-primary-dark-rgb), 0.08);
+                border-color: rgba(var(--stratus-primary-dark-rgb), 0.28);
+            }
+
+            input[type="radio"]:checked + label {
+                border-color: var(--stratus-primary-dark);
+                background: rgba(var(--stratus-primary-dark-rgb), 0.10);
+            }
+        }
+
+        .stratus-scheme-swatch-card {
+            border-color: rgba(var(--stratus-dark-border-rgb), 0.65);
+        }
+
+        .stratus-scheme-label {
+            color: var(--stratus-dark-font-secondary);
         }
     }
 }

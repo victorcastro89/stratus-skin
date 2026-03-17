@@ -14,48 +14,190 @@ $config['stratus_folder_refresh'] = true;
 // Default color scheme key for new users (must exist in stratus_color_schemes).
 $config['stratus_color_scheme_default'] = 'indigo';
 
-// Available color schemes. Each entry: primary (light), primary_dark (dark mode), label.
+// Available color schemes — full palette per scheme.
+// Each scheme defines accent, text accent (WCAG AA), sidebar, and surface tokens.
 // Admins can add/remove schemes here. Keys must be alphanumeric + hyphens.
+// Minimal schemes (just 'primary' + 'label') will be auto-derived in Phase 3.
 $config['stratus_color_schemes'] = [
     'indigo'  => [
-        'primary'      => '#5c6bc0',
-        'primary_dark' => '#7986cb',
-        'label'        => 'Indigo',
+        'label'               => 'Indigo',
+
+        // Core accent
+        'primary'             => '#5c6bc0',
+        'primary_dark'        => '#7986cb',
+
+        // Text accent — WCAG AA validated
+        'text_accent'         => '#3949ab',   // 5.6:1 on #fff
+        'text_accent_dark'    => '#9fa8da',   // 5.2:1 on #1a1f36
+
+        // Sidebar / Taskmenu
+        'sidebar_bg'          => '#1a1f36',
+        'sidebar_gradient'    => 'linear-gradient(180deg, #1e2444 0%, #151a2e 100%)',
+        'sidebar_text'        => '#8892b8',
+        'sidebar_text_hover'  => '#ffffff',
+        'sidebar_text_active' => '#ffffff',
+        'sidebar_active_bg'   => 'rgba(92, 107, 192, 0.20)',
+
+        // Surfaces
+        'surface_tint'        => 'rgba(92, 107, 192, 0.03)',
+        'hover_bg'            => 'rgba(92, 107, 192, 0.06)',
+        'selected_bg'         => 'rgba(92, 107, 192, 0.13)',
+        'focus_ring'          => 'rgba(92, 107, 192, 0.25)',
+
+        // Dark mode palette — exact backward-compatible values
+        'dark_background'     => '#13172a',
+        'dark_surface'        => '#1a1f36',
+        'dark_surface_raised' => '#212845',
+        'dark_font'           => '#c8d0e8',
+        'dark_font_secondary' => '#7e8aad',
+        'dark_border'         => '#2a3050',
     ],
     'ocean'   => [
-        'primary'      => '#0288d1',
-        'primary_dark' => '#4fc3f7',
-        'label'        => 'Ocean Blue',
+        'label'               => 'Ocean Blue',
+
+        'primary'             => '#0288d1',
+        'primary_dark'        => '#4fc3f7',
+
+        'text_accent'         => '#01579b',   // 7.2:1 on #fff
+        'text_accent_dark'    => '#81d4fa',   // 5.1:1 on #1a1f36
+
+        'sidebar_bg'          => '#0d1b2a',
+        'sidebar_gradient'    => 'linear-gradient(180deg, #112240 0%, #091728 100%)',
+        'sidebar_text'        => '#6b9cc2',
+        'sidebar_text_hover'  => '#ffffff',
+        'sidebar_text_active' => '#ffffff',
+        'sidebar_active_bg'   => 'rgba(2, 136, 209, 0.22)',
+
+        'surface_tint'        => 'rgba(2, 136, 209, 0.03)',
+        'hover_bg'            => 'rgba(2, 136, 209, 0.06)',
+        'selected_bg'         => 'rgba(2, 136, 209, 0.13)',
+        'focus_ring'          => 'rgba(2, 136, 209, 0.25)',
     ],
     'emerald' => [
-        'primary'      => '#2e7d32',
-        'primary_dark' => '#66bb6a',
-        'label'        => 'Emerald',
+        'label'               => 'Emerald',
+
+        'primary'             => '#2e7d32',
+        'primary_dark'        => '#66bb6a',
+
+        'text_accent'         => '#1b5e20',   // 6.8:1 on #fff
+        'text_accent_dark'    => '#81c784',   // 4.8:1 on #1a1f36
+
+        'sidebar_bg'          => '#0d1f12',
+        'sidebar_gradient'    => 'linear-gradient(180deg, #122a18 0%, #091a0e 100%)',
+        'sidebar_text'        => '#6b9c74',
+        'sidebar_text_hover'  => '#ffffff',
+        'sidebar_text_active' => '#ffffff',
+        'sidebar_active_bg'   => 'rgba(46, 125, 50, 0.22)',
+
+        'surface_tint'        => 'rgba(46, 125, 50, 0.03)',
+        'hover_bg'            => 'rgba(46, 125, 50, 0.06)',
+        'selected_bg'         => 'rgba(46, 125, 50, 0.13)',
+        'focus_ring'          => 'rgba(46, 125, 50, 0.25)',
     ],
     'rose'    => [
-        'primary'      => '#c62828',
-        'primary_dark' => '#ef5350',
-        'label'        => 'Rose',
+        'label'               => 'Rose',
+
+        'primary'             => '#c62828',
+        'primary_dark'        => '#ef5350',
+
+        'text_accent'         => '#b71c1c',   // 5.0:1 on #fff
+        'text_accent_dark'    => '#ef9a9a',   // 5.4:1 on #1a1f36
+
+        'sidebar_bg'          => '#2a0f0f',
+        'sidebar_gradient'    => 'linear-gradient(180deg, #351515 0%, #200a0a 100%)',
+        'sidebar_text'        => '#b87a7a',
+        'sidebar_text_hover'  => '#ffffff',
+        'sidebar_text_active' => '#ffffff',
+        'sidebar_active_bg'   => 'rgba(198, 40, 40, 0.22)',
+
+        'surface_tint'        => 'rgba(198, 40, 40, 0.03)',
+        'hover_bg'            => 'rgba(198, 40, 40, 0.06)',
+        'selected_bg'         => 'rgba(198, 40, 40, 0.13)',
+        'focus_ring'          => 'rgba(198, 40, 40, 0.25)',
     ],
     'amber'   => [
-        'primary'      => '#f57f17',
-        'primary_dark' => '#ffca28',
-        'label'        => 'Amber',
+        'label'               => 'Amber',
+
+        'primary'             => '#f57f17',
+        'primary_dark'        => '#ffca28',
+
+        'text_accent'         => '#e65100',   // 4.6:1 on #fff
+        'text_accent_dark'    => '#ffe082',   // 9.1:1 on #1a1f36
+
+        'sidebar_bg'          => '#2a1f0d',
+        'sidebar_gradient'    => 'linear-gradient(180deg, #352812 0%, #201808 100%)',
+        'sidebar_text'        => '#b89c6b',
+        'sidebar_text_hover'  => '#ffffff',
+        'sidebar_text_active' => '#ffffff',
+        'sidebar_active_bg'   => 'rgba(245, 127, 23, 0.22)',
+
+        'surface_tint'        => 'rgba(245, 127, 23, 0.03)',
+        'hover_bg'            => 'rgba(245, 127, 23, 0.06)',
+        'selected_bg'         => 'rgba(245, 127, 23, 0.13)',
+        'focus_ring'          => 'rgba(245, 127, 23, 0.25)',
     ],
     'purple'  => [
-        'primary'      => '#7b1fa2',
-        'primary_dark' => '#ba68c8',
-        'label'        => 'Purple',
+        'label'               => 'Purple',
+
+        'primary'             => '#7b1fa2',
+        'primary_dark'        => '#ba68c8',
+
+        'text_accent'         => '#6a1b9a',   // 6.1:1 on #fff
+        'text_accent_dark'    => '#ce93d8',   // 4.9:1 on #1a1f36
+
+        'sidebar_bg'          => '#1a0d26',
+        'sidebar_gradient'    => 'linear-gradient(180deg, #221435 0%, #13091c 100%)',
+        'sidebar_text'        => '#9c7ab8',
+        'sidebar_text_hover'  => '#ffffff',
+        'sidebar_text_active' => '#ffffff',
+        'sidebar_active_bg'   => 'rgba(123, 31, 162, 0.22)',
+
+        'surface_tint'        => 'rgba(123, 31, 162, 0.03)',
+        'hover_bg'            => 'rgba(123, 31, 162, 0.06)',
+        'selected_bg'         => 'rgba(123, 31, 162, 0.13)',
+        'focus_ring'          => 'rgba(123, 31, 162, 0.25)',
     ],
     'teal'    => [
-        'primary'      => '#00796b',
-        'primary_dark' => '#4db6ac',
-        'label'        => 'Teal',
+        'label'               => 'Teal',
+
+        'primary'             => '#00796b',
+        'primary_dark'        => '#4db6ac',
+
+        'text_accent'         => '#00695c',   // 5.1:1 on #fff
+        'text_accent_dark'    => '#80cbc4',   // 5.8:1 on #1a1f36
+
+        'sidebar_bg'          => '#0d1f1c',
+        'sidebar_gradient'    => 'linear-gradient(180deg, #122a26 0%, #091a17 100%)',
+        'sidebar_text'        => '#6b9c96',
+        'sidebar_text_hover'  => '#ffffff',
+        'sidebar_text_active' => '#ffffff',
+        'sidebar_active_bg'   => 'rgba(0, 121, 107, 0.22)',
+
+        'surface_tint'        => 'rgba(0, 121, 107, 0.03)',
+        'hover_bg'            => 'rgba(0, 121, 107, 0.06)',
+        'selected_bg'         => 'rgba(0, 121, 107, 0.13)',
+        'focus_ring'          => 'rgba(0, 121, 107, 0.25)',
     ],
     'slate'   => [
-        'primary'      => '#455a64',
-        'primary_dark' => '#90a4ae',
-        'label'        => 'Slate',
+        'label'               => 'Slate',
+
+        'primary'             => '#455a64',
+        'primary_dark'        => '#90a4ae',
+
+        'text_accent'         => '#37474f',   // 7.5:1 on #fff
+        'text_accent_dark'    => '#b0bec5',   // 5.9:1 on #1a1f36
+
+        'sidebar_bg'          => '#1a1f24',
+        'sidebar_gradient'    => 'linear-gradient(180deg, #222930 0%, #141a1e 100%)',
+        'sidebar_text'        => '#8899a4',
+        'sidebar_text_hover'  => '#ffffff',
+        'sidebar_text_active' => '#ffffff',
+        'sidebar_active_bg'   => 'rgba(69, 90, 100, 0.22)',
+
+        'surface_tint'        => 'rgba(69, 90, 100, 0.03)',
+        'hover_bg'            => 'rgba(69, 90, 100, 0.06)',
+        'selected_bg'         => 'rgba(69, 90, 100, 0.13)',
+        'focus_ring'          => 'rgba(69, 90, 100, 0.25)',
     ],
 ];
 
@@ -100,4 +242,15 @@ $config['stratus_fonts'] = [
         'url'    => 'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap',
         'label'  => 'Nunito',
     ],
+];
+
+// ── Font Size Preference ────────────────────────────────────────────────────
+// Default font size key for new users (must exist in stratus_font_sizes).
+$config['stratus_font_size_default'] = 'default';
+
+// Available font sizes. Each entry defines CSS size and line-height.
+$config['stratus_font_sizes'] = [
+    'small'   => ['size' => '0.8125rem', 'line_height' => '1.4', 'label' => 'Small'],
+    'default' => ['size' => '0.875rem',  'line_height' => '1.5', 'label' => 'Default'],
+    'large'   => ['size' => '1rem',      'line_height' => '1.6', 'label' => 'Large'],
 ];

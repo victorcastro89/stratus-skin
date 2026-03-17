@@ -51,7 +51,7 @@ $config['license_key'] = 'RCP-Rxd228rIKZiy';
 
 // ── Editor / Display ──────────────────────────────────────────────────────
 $config['htmleditor']         = 1;
-$config['default_list_mode']  = 'threads';
+// $config['default_list_mode']  = 'threads';
 $config['reply_mode']         = 1;
 $config['enable_spellcheck']  = true;
 $config['spellcheck_engine']  = 'pspell';

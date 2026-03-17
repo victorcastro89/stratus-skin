@@ -56,12 +56,12 @@
 
 // Popovers
 .popover {
-    border-radius: @mp-radius-lg;
-    box-shadow: @mp-shadow-xl;
+    border-radius: @mp-radius-sm;
+    box-shadow: @mp-shadow-sm;
     border: 1px solid fadeout(@color-layout-border, 20%);
 
     .popover-header {
-        border-radius: @mp-radius-lg @mp-radius-lg 0 0;
+        border-radius: @mp-radius-sm @mp-radius-sm 0 0;
         font-weight: @mp-font-weight-semibold;
         background: @color-layout-header-background;
         border-bottom: 1px solid @color-layout-border;
@@ -79,13 +79,13 @@
 
         a {
             border-radius: @mp-radius-sm;
-            margin: 1px @mp-space-xs;
-            padding: @mp-space-xs @mp-space-md;
+            margin: 0.1em @mp-space-sm;
+            padding: @mp-space-sm @mp-space-sm;
             transition: background @mp-transition-fast, color @mp-transition-fast;
 
             &:hover {
-                background: @mp-primary-a10;
-                color: @color-main;
+                background: rgba(var(--stratus-primary-rgb), 0.10);
+                color: var(--stratus-text-accent);
             }
         }
     }
@@ -98,40 +98,40 @@ html.dark-mode {
 
     // ── DIALOGS ───────────────────────────────────────────────────────────────────────
     .ui-dialog {
-        background: @color-dark-surface;
-        border-color: @color-dark-border;
+        background: var(--stratus-dark-surface);
+        border-color: var(--stratus-dark-border);
         box-shadow: @mp-shadow-dark-xl;
 
         .ui-dialog-titlebar {
-            background: @color-dark-surface-raised;
-            border-bottom-color: @color-dark-border;
-            color: @color-dark-font;
+            background: var(--stratus-dark-surface-raised);
+            border-bottom-color: var(--stratus-dark-border);
+            color: var(--stratus-dark-font);
         }
 
         .ui-dialog-buttonpane {
-            border-top-color: @color-dark-border;
+            border-top-color: var(--stratus-dark-border);
         }
     }
 
     .ui-widget-overlay {
-        background: fadeout(@color-dark-background, 35%);
+        background: rgba(var(--stratus-dark-background-rgb), 0.65);
     }
 
     // ── POPOVERS ──────────────────────────────────────────────────────────────────────
     .popover {
-        background: @color-dark-popover-background;
-        border-color: @color-dark-popover-border;
+        background: var(--stratus-dark-surface);
+        border-color: var(--stratus-dark-border);
         box-shadow: @mp-shadow-dark-xl;
 
         .popover-header {
-            background: @color-dark-surface-raised;
-            border-bottom-color: @color-dark-border;
-            color: @color-dark-font;
+            background: var(--stratus-dark-surface-raised);
+            border-bottom-color: var(--stratus-dark-border);
+            color: var(--stratus-dark-font);
         }
     }
 
     .popover .listing li a:hover {
-        background: @mp-primary-dark-a12;
-        color: @color-dark-main-light;
+        background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+        color: var(--stratus-text-accent-dark);
     }
 }

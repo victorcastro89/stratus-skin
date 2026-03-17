@@ -122,7 +122,7 @@
 
             &:focus {
                 border-color: @color-main;
-                box-shadow: 0 0 0 3px @mp-primary-a12;
+                box-shadow: 0 0 0 3px rgba(var(--stratus-primary-rgb), 0.12);
                 outline: none;
             }
         }
@@ -185,7 +185,7 @@
         button[type="submit"],
         .input-group-append .btn-primary,
         #rcmloginsubmit {
-            background: @color-main-gradient;
+            background: var(--stratus-gradient);
             border: none;
             color: @color-btn-primary;
             border-radius: @mp-radius-md;
@@ -197,24 +197,24 @@
             width: 100%;
             margin-top: @mp-space-sm;
             cursor: pointer;
-            box-shadow: 0 2px 8px @mp-primary-a30;
+            box-shadow: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.30);
             transition: background @mp-transition-smooth, box-shadow @mp-transition-smooth, transform @mp-transition-fast;
 
             &:hover {
-                background: @color-main-gradient-hover;
-                box-shadow: 0 4px 16px @mp-primary-a45;
+                background: var(--stratus-gradient-hover);
+                box-shadow: 0 4px 16px rgba(var(--stratus-primary-rgb), 0.45);
                 transform: translateY(-1px);
                 color: @color-btn-primary;
             }
 
             &:active {
                 transform: translateY(0);
-                box-shadow: 0 1px 4px fadeout(@color-main, 65%);
+                box-shadow: 0 1px 4px rgba(var(--stratus-primary-rgb), 0.35);
             }
 
             &:focus {
                 outline: none;
-                box-shadow: 0 0 0 3px @mp-primary-a25;
+                box-shadow: 0 0 0 3px rgba(var(--stratus-primary-rgb), 0.25);
             }
         }
 
@@ -244,75 +244,75 @@ html.dark-mode .task-login {
     #logo-dark { display: block; }
 
     body {
-        background: @color-dark-background;
+        background: var(--stratus-dark-background);
     }
 
     #login-heading {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
     }
 
     #login-form {
         label[for="rcmloginuser"],
         .row:has(#rcmloginuser) label,
         .form-group:has(#rcmloginuser) label {
-            color: @color-dark-main;
+            color: var(--stratus-primary-dark);
         }
 
         label[for="rcmloginpwd"],
         .row:has(#rcmloginpwd) label,
         .form-group:has(#rcmloginpwd) label {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
         }
 
         .form-control,
         input[type="text"],
         input[type="password"],
         input[type="email"] {
-            background: rgba(255, 255, 255, 0.04);
-            color: @color-dark-font;
+            background: var(--stratus-dark-surface-raised);
+            color: var(--stratus-dark-font);
 
             &::placeholder {
-                color: fadeout(@color-dark-font, 55%);
+                color: var(--stratus-dark-font-secondary);
             }
         }
 
         #rcmloginuser {
-            border-color: @color-dark-main;
+            border-color: var(--stratus-primary-dark);
 
             &:focus {
-                border-color: @color-dark-main;
-                box-shadow: 0 0 0 3px @mp-primary-dark-a25;
+                border-color: var(--stratus-primary-dark);
+                box-shadow: 0 0 0 3px rgba(var(--stratus-primary-dark-rgb), 0.25);
             }
         }
 
         #rcmloginpwd {
-            border-bottom-color: @color-dark-border;
+            border-bottom-color: var(--stratus-dark-border);
 
             &:focus {
-                border-bottom-color: @color-dark-main;
-                box-shadow: 0 1px 0 0 @color-dark-main;
+                border-bottom-color: var(--stratus-primary-dark);
+                box-shadow: 0 1px 0 0 var(--stratus-primary-dark);
             }
         }
 
         input[type="submit"],
         button[type="submit"],
         #rcmloginsubmit {
-            background: @color-dark-main;
+            background: var(--stratus-primary-dark);
             color: @color-btn-primary;
-            box-shadow: 0 2px 8px @mp-primary-dark-a40;
+            box-shadow: 0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.40);
 
             &:hover {
-                background: @color-dark-main-gradient-hover;
-                box-shadow: 0 4px 16px @mp-primary-dark-a45;
+                background: var(--stratus-gradient-hover);
+                box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
             }
         }
 
         .input-group .input-group-append .btn,
         .input-group .input-group-btn .btn {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
 
             &:hover {
-                color: @color-dark-font;
+                color: var(--stratus-dark-font);
             }
         }
     }

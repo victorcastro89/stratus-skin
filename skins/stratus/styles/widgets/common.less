@@ -9,12 +9,12 @@
     .bar {
         border-radius: @mp-radius-pill;
         height: 6px;
-        background: @mp-primary-a12;
+        background: rgba(var(--stratus-primary-rgb), 0.12);
         overflow: hidden;
 
         .value {
             border-radius: @mp-radius-pill;
-            background: @color-main-gradient;
+            background: var(--stratus-gradient);
             height: 100%;
         }
     }
@@ -51,7 +51,7 @@
 // SELECTION HIGHLIGHT
 // ═══════════════════════════════════════════════════════════════════════════════
 ::selection {
-    background: @mp-primary-a25;
+    background: rgba(var(--stratus-primary-rgb), 0.25);
     color: @color-font;
 }
 
@@ -71,15 +71,15 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 .file-upload {
     border-radius: @mp-radius-lg;
-    border: 2px dashed @mp-primary-a40;
+    border: 2px dashed rgba(var(--stratus-primary-rgb), 0.40);
     padding: @mp-space-2xl;
     text-align: center;
     transition: border-color @mp-transition-base, background @mp-transition-base;
 
     &:hover,
     &.hover {
-        border-color: @color-main;
-        background: @mp-primary-a5;
+        border-color: var(--stratus-primary);
+        background: rgba(var(--stratus-primary-rgb), 0.05);
     }
 }
 
@@ -97,7 +97,7 @@
         transition: background @mp-transition-fast;
 
         &:hover {
-            background: @mp-primary-a10;
+            background: rgba(var(--stratus-primary-rgb), 0.10);
         }
     }
 }
@@ -199,7 +199,7 @@ html.layout-phone #layout-list > .searchbar {
     height: auto !important;    // override elastic .pagenav a height
 
     &:hover {
-        background: @mp-primary-a8;
+        background: rgba(var(--stratus-primary-rgb), 0.08);
     }
 
     &:before {
@@ -227,14 +227,14 @@ html.layout-phone #layout-list > .searchbar {
     position: relative;
 
     &:hover {
-        border-color: @color-main;
+        border-color: var(--stratus-primary);
     }
 }
 
 // Multiselect mode (ready to pick) — indeterminate dash
 .mp-multiselect-mode:not(.mp-has-selection) #mp-mass-select-checkbox {
-    border-color: @color-main;
-    background: @mp-primary-a20;
+    border-color: var(--stratus-primary);
+    background: rgba(var(--stratus-primary-rgb), 0.20);
 
     &::after {
         content: '';
@@ -243,15 +243,15 @@ html.layout-phone #layout-list > .searchbar {
         top: 5px;
         width: 8px;
         height: 2px;
-        background: @color-main;
+        background: var(--stratus-primary);
         border-radius: 1px;
     }
 }
 
 // When selection is active — checked state (checkmark)
 .mp-has-selection #mp-mass-select-checkbox {
-    background: @color-main;
-    border-color: @color-main;
+    background: var(--stratus-primary);
+    border-color: var(--stratus-primary);
 
     &::after {
         content: '';
@@ -288,12 +288,12 @@ html.layout-phone #layout-list > .searchbar {
     .inner { display: none; } // screen-reader text, hidden visually
 
     &:hover {
-        background: @mp-primary-a8;
-        color: @color-main;
+        background: rgba(var(--stratus-primary-rgb), 0.08);
+        color: var(--stratus-text-accent);
     }
 
     &:focus-visible {
-        outline: 2px solid @color-main;
+        outline: 2px solid var(--stratus-primary);
         outline-offset: 2px;
     }
 }
@@ -358,11 +358,11 @@ html.layout-phone #layout-list > .searchbar {
     &::before { content: none !important; display: none !important; }
 
     &:hover {
-        background: @mp-primary-a8;
+        background: rgba(var(--stratus-primary-rgb), 0.08);
     }
 
     &:focus-visible {
-        outline: 2px solid @color-main;
+        outline: 2px solid var(--stratus-primary);
         outline-offset: 2px;
     }
 }
@@ -391,13 +391,13 @@ html.layout-phone #layout-list > .searchbar {
     &.mp-sort-asc::before {
         content: @mi-sort-up; // arrow_upward
         opacity: 1;
-        color: @color-main;
+        color: var(--stratus-font-secondary);
     }
 
     &.mp-sort-desc::before {
         content: @mi-sort-down; // arrow_downward
         opacity: 1;
-        color: @color-main;
+        color: var(--stratus-font-secondary);
     }
 }
 
@@ -485,8 +485,8 @@ html.layout-phone #layout-list > .searchbar {
 }
 
 #mp-sort-menu .mp-sort-dir-option.selected .mp-radio-dot {
-    border-color: @color-main;
-    background: @color-main;
+    border-color: var(--stratus-primary);
+    background: var(--stratus-primary);
     box-shadow: inset 0 0 0 2.5px @color-layout-content-background;
 }
 
@@ -528,8 +528,8 @@ html.layout-phone #layout-list > .searchbar {
     color: @color-font;
 
     &:hover:not(.disabled) {
-        background: @mp-primary-a8;
-        color: @color-main;
+        background: rgba(var(--stratus-primary-rgb), 0.08);
+        color: var(--stratus-text-accent);
     }
 
     &.disabled {
@@ -637,8 +637,8 @@ html.layout-phone #layout-list > .searchbar {
     }
 
     &:hover:not(.disabled):not(.mp-folder-disabled):not([data-mp-folder-disabled="true"]) {
-        background: @mp-primary-a10;
-        color: @color-main;
+        background: rgba(var(--stratus-primary-rgb), 0.10);
+        color: var(--stratus-text-accent);
     }
 
     &.disabled,
@@ -660,7 +660,7 @@ html.layout-phone #layout-list > .searchbar {
     display: none;
     align-items: center;
     padding: 2px @mp-space-sm;
-    background: @color-main;
+    background: var(--stratus-primary);
     color: @color-on-primary;
     font-size: @mp-font-size-xs;
     border-radius: @mp-radius-pill;
@@ -757,14 +757,14 @@ html.layout-phone {
         height: 16px;
         left: 3px;
         top: 3px;
-        background: #fff;
+        background: @color-on-primary;
         border-radius: @mp-radius-circle;
         transition: transform @mp-transition-smooth;
         box-shadow: @mp-shadow-xs;
     }
 
     input:checked + & {
-        background: @color-main;
+        background: var(--stratus-primary);
     }
 
     input:checked + &::before {
@@ -779,146 +779,146 @@ html.dark-mode {
 
     // ── QUOTA BAR ────────────────────────────────────────────────────────────────────
     .quota-widget .bar {
-        background: @mp-primary-dark-a15;
+        background: rgba(var(--stratus-primary-dark-rgb), 0.15);
     }
 
     // ── COLUMN RESIZER ─────────────────────────────────────────────────────────────
     .column-resizer:hover {
-        background: @mp-primary-dark-a35;
+        background: rgba(var(--stratus-primary-dark-rgb), 0.35);
     }
 
     // ── SMART BAR ───────────────────────────────────────────────────────────
     #layout-list > .searchbar {
-        background: @color-dark-layout-list-top-background;
-        border-color: @color-dark-layout-list-top-border;
+        background: var(--stratus-dark-surface);
+        border-color: rgba(var(--stratus-dark-border-rgb), 0.80);
         box-shadow: @mp-shadow-dark-sm;
     }
 
     .mp-smart-bar {
-        background: @color-dark-layout-list-top-background;
-        border-color: @color-dark-layout-list-top-border;
-        border-top-color: @color-dark-layout-list-top-divider;
+        background: var(--stratus-dark-surface);
+        border-color: rgba(var(--stratus-dark-border-rgb), 0.80);
+        border-top-color: rgba(var(--stratus-dark-border-rgb), 0.65);
         box-shadow: @mp-shadow-dark-sm;
     }
 
     .mp-sort-trigger {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
 
         &:hover {
-            background: @mp-primary-dark-a12;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.12);
         }
     }
 
     .mp-sort-arrow {
-        color: @color-dark-font-secondary;
+        color: var(--stratus-dark-font-secondary);
     }
 
     .mp-sort-arrow.mp-sort-asc::before,
     .mp-sort-arrow.mp-sort-desc::before {
-        color: @color-dark-main;
+        color: var(--stratus-dark-font-secondary);
     }
 
     .mp-sort-label {
-        color: @color-dark-font-secondary;
+        color: var(--stratus-dark-font-secondary);
     }
 
     .mp-sort-arrow.mp-sort-asc ~ .mp-sort-label,
     .mp-sort-arrow.mp-sort-desc ~ .mp-sort-label {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
     }
 
     .mp-mass-action-trigger {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
 
         &:hover {
-            background: @mp-primary-dark-a12;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.12);
         }
     }
 
     .mp-mass-action-checkbox {
-        border-color: @color-dark-checkbox;
+        border-color: var(--stratus-dark-border);
 
         &:hover {
-            border-color: @color-dark-main;
+            border-color: var(--stratus-primary-dark);
         }
     }
 
     .mp-multiselect-mode:not(.mp-has-selection) #mp-mass-select-checkbox {
-        border-color: @color-dark-main;
-        background: @mp-primary-dark-a20;
+        border-color: var(--stratus-primary-dark);
+        background: rgba(var(--stratus-primary-dark-rgb), 0.20);
 
         &::after {
-            background: @color-dark-main;
+            background: var(--stratus-primary-dark);
         }
     }
 
     .mp-has-selection #mp-mass-select-checkbox {
-        background: @color-dark-main;
-        border-color: @color-dark-main;
+        background: var(--stratus-primary-dark);
+        border-color: var(--stratus-primary-dark);
     }
 
     .mp-mass-select-caret {
-        color: @color-dark-font-secondary;
-        border-right-color: @color-dark-border;
+        color: var(--stratus-dark-font-secondary);
+        border-right-color: var(--stratus-dark-border);
 
         &:hover {
-            background: @mp-primary-dark-a12;
-            color: @color-dark-main;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+            color: var(--stratus-text-accent-dark);
         }
     }
 
     #mp-sort-menu .mp-sort-dir-separator {
-        border-top-color: @color-dark-border;
+        border-top-color: var(--stratus-dark-border);
     }
 
     .mp-radio-dot {
-        border-color: @color-dark-checkbox;
+        border-color: var(--stratus-dark-border);
     }
  
     
     #mp-sort-menu .mp-sort-dir-option.selected .mp-radio-dot {
-        border-color: @color-dark-main;
-        background: @color-dark-main;
-        box-shadow: inset 0 0 0 2.5px @color-dark-surface;
+        border-color: var(--stratus-primary-dark);
+        background: var(--stratus-primary-dark);
+        box-shadow: inset 0 0 0 2.5px var(--stratus-dark-surface);
     }
 
     .mp-mass-action-count {
-        color: @color-dark-font-secondary;
+        color: var(--stratus-dark-font-secondary);
     }
 
     .mp-smart-bar .prevpage,
     .mp-smart-bar .nextpage {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
 
         &:hover:not(.disabled) {
-            background: @mp-primary-dark-a12;
-            color: @color-dark-main;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+            color: var(--stratus-text-accent-dark);
         }
     }
 
     .mp-mass-action-divider {
-        background: @color-dark-border;
+        background: var(--stratus-dark-border);
     }
 
     .mp-action-btn {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
 
         &:hover:not(.disabled):not(.mp-folder-disabled):not([data-mp-folder-disabled="true"]) {
-            background: @mp-primary-dark-a12;
-            color: @color-dark-main;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+            color: var(--stratus-text-accent-dark);
         }
     }
 
     .mp-mass-action-chip {
-        background: @color-dark-main;
+        background: var(--stratus-primary-dark);
     }
 
     // ── TOGGLE SWITCH ───────────────────────────────────────────────────────────
     .mp-toggle-slider {
-        background: @color-dark-border;
+        background: var(--stratus-dark-border);
 
         input:checked + & {
-            background: @color-dark-main;
+            background: var(--stratus-primary-dark);
         }
     }
 }

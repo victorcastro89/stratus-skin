@@ -122,6 +122,75 @@
   // ══════════════════════════════════════════════
   initTinyMCEEmailComposer();
 
+  // ══════════════════════════════════════════════
+  //  Dark Mode — Email content classification
+  // ══════════════════════════════════════════════
+
+  function _parseColorSimple(c) {
+    if (!c) return null;
+    var m = c.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+    if (m) return [+m[1], +m[2], +m[3]];
+    var h = c.match(/^#([0-9a-f]{3,8})$/i);
+    if (h) {
+      var x = h[1];
+      if (x.length === 3) x = x[0]+x[0]+x[1]+x[1]+x[2]+x[2];
+      return [parseInt(x.substring(0,2),16), parseInt(x.substring(2,4),16), parseInt(x.substring(4,6),16)];
+    }
+    return null;
+  }
+  function _lumSimple(rgb) { return (rgb[0]*299 + rgb[1]*587 + rgb[2]*114) / 1000; }
+
+  // Returns true if color is white, near-white (luminance > 200), transparent, or unset
+  function _isWhiteOrLight(colorStr) {
+    if (!colorStr || colorStr === 'transparent' || colorStr === 'initial' || colorStr === 'inherit') return true;
+    var rgb = _parseColorSimple(colorStr);
+    if (!rgb) return true; // unparseable → treat as default/white
+    return _lumSimple(rgb) > 200;
+  }
+
+  // Classify a .message-htmlpart element: 'darkable' or 'styled'
+  function _classifyEmailPart(htmlpartEl) {
+    var rcmBody = htmlpartEl.querySelector('div.rcmBody');
+    if (!rcmBody) return 'darkable'; // plain text or no body → safe to darken
+
+    // Check rcmBody's own background (set by Roundcube from <body bgcolor>)
+    var bodyBg = rcmBody.style.backgroundColor;
+    if (bodyBg && !_isWhiteOrLight(bodyBg)) return 'styled';
+
+    // Check first ~8 direct children for explicit background colors
+    var children = rcmBody.children;
+    var limit = Math.min(children.length, 8);
+    for (var i = 0; i < limit; i++) {
+      var childBg = children[i].style.backgroundColor;
+      if (childBg && !_isWhiteOrLight(childBg)) return 'styled';
+    }
+
+    return 'darkable';
+  }
+
+  // Process all .message-htmlpart elements — add .stratus-styled to styled emails
+  function _processEmailParts(doc) {
+    if (!doc) return;
+    var parts = doc.querySelectorAll('.message-htmlpart');
+    for (var i = 0; i < parts.length; i++) {
+      var result = _classifyEmailPart(parts[i]);
+      if (result === 'styled') {
+        parts[i].classList.add('stratus-styled');
+      } else {
+        parts[i].classList.remove('stratus-styled');
+      }
+    }
+  }
+
+  // Remove .stratus-styled from all .message-htmlpart elements
+  function _clearEmailPartsStyled(doc) {
+    if (!doc) return;
+    var parts = doc.querySelectorAll('.message-htmlpart.stratus-styled');
+    for (var i = 0; i < parts.length; i++) {
+      parts[i].classList.remove('stratus-styled');
+    }
+  }
+
   rcmail.addEventListener('init', function () {
 
     installDebugHooksOnce();
@@ -132,7 +201,7 @@
 
     rcmail.addEventListener('plugin.stratus.scheme_applied', function (data) {
       if (!data) return;
-      applyScheme(data.primary, data.primary_dark);
+      applyScheme(data);
     });
 
     // ──────────────────────────────────────────
@@ -142,6 +211,15 @@
     rcmail.addEventListener('plugin.stratus.font_applied', function (data) {
       if (!data) return;
       applyFont(data.family, data.url);
+    });
+
+    // ──────────────────────────────────────────
+    //  2b. Font Size Switching
+    // ──────────────────────────────────────────
+
+    rcmail.addEventListener('plugin.stratus.fontsize_applied', function (data) {
+      if (!data) return;
+      applyFontSize(data.size, data.line_height);
     });
 
     // ──────────────────────────────────────────
@@ -159,6 +237,7 @@
     initDarkModeFramePropagation();
     if (document.documentElement.classList.contains('dark-mode')) {
       initTinyMCEDarkMode();
+      _processEmailParts(document);
     }
     initDarkModeObserver();
 
@@ -191,12 +270,146 @@
   //  Color Scheme Helpers
   // ══════════════════════════════════════════════
 
-  function applyScheme(primary, primaryDark) {
-    var root = document.documentElement;
-    root.style.setProperty('--stratus-primary', primary);
-    root.style.setProperty('--stratus-primary-dark', primaryDark);
-    root.style.setProperty('--stratus-primary-rgb', hexToRgb(primary));
-    root.style.setProperty('--stratus-primary-dark-rgb', hexToRgb(primaryDark));
+  // Collect all document roots that should receive CSS variable updates.
+  // When called from inside an iframe (settings preferences frame), include
+  // the parent frame so its shell (sidebar, toolbar, etc.) also updates live.
+  function _schemeRoots() {
+    var roots = [document.documentElement];
+    try {
+      if (window.parent && window.parent !== window && window.parent.document) {
+        roots.push(window.parent.document.documentElement);
+      }
+    } catch (e) {}
+    return roots;
+  }
+
+  function applyScheme(data) {
+    var roots = _schemeRoots();
+    for (var ri = 0; ri < roots.length; ri++) {
+      var root = roots[ri];
+
+      // Core accent
+      root.style.setProperty('--stratus-primary', data.primary);
+      root.style.setProperty('--stratus-primary-dark', data.primary_dark);
+      root.style.setProperty('--stratus-primary-rgb', hexToRgb(data.primary));
+      root.style.setProperty('--stratus-primary-dark-rgb', hexToRgb(data.primary_dark));
+
+      // Text accent
+      root.style.setProperty('--stratus-text-accent', data.text_accent || '#3949ab');
+      root.style.setProperty('--stratus-text-accent-dark', data.text_accent_dark || '#9fa8da');
+
+      // Sidebar tokens
+      if (data.sidebar_bg) root.style.setProperty('--stratus-sidebar-bg', data.sidebar_bg);
+      if (data.sidebar_gradient) root.style.setProperty('--stratus-sidebar-gradient', data.sidebar_gradient);
+      if (data.sidebar_text) root.style.setProperty('--stratus-sidebar-text', data.sidebar_text);
+      if (data.sidebar_text_hover) root.style.setProperty('--stratus-sidebar-text-hover', data.sidebar_text_hover);
+      if (data.sidebar_text_active) root.style.setProperty('--stratus-sidebar-text-active', data.sidebar_text_active);
+      if (data.sidebar_active_bg) root.style.setProperty('--stratus-sidebar-active-bg', data.sidebar_active_bg);
+
+      // Surface tint tokens
+      if (data.surface_tint) root.style.setProperty('--stratus-surface-tint', data.surface_tint);
+      if (data.hover_bg) root.style.setProperty('--stratus-hover-bg', data.hover_bg);
+      if (data.selected_bg) root.style.setProperty('--stratus-selected-bg', data.selected_bg);
+      if (data.focus_ring) root.style.setProperty('--stratus-focus-ring', data.focus_ring);
+
+      // Gradient tokens
+      if (data.gradient) root.style.setProperty('--stratus-gradient', data.gradient);
+      if (data.gradient_hover) root.style.setProperty('--stratus-gradient-hover', data.gradient_hover);
+
+      // Dark mode complementary light
+      if (data.primary_dark_light) root.style.setProperty('--stratus-primary-dark-light', data.primary_dark_light);
+
+      // Typography & border — scheme-derived hue-tinted values
+      if (data.font)           root.style.setProperty('--stratus-font', data.font);
+      if (data.font_secondary) root.style.setProperty('--stratus-font-secondary', data.font_secondary);
+      if (data.border)         root.style.setProperty('--stratus-border', data.border);
+
+      // Dark mode palette — scheme-aware dark surfaces, text, borders
+      if (data.dark_background) {
+        root.style.setProperty('--stratus-dark-background', data.dark_background);
+        root.style.setProperty('--stratus-dark-background-rgb', hexToRgb(data.dark_background));
+      }
+      if (data.dark_surface) {
+        root.style.setProperty('--stratus-dark-surface', data.dark_surface);
+        root.style.setProperty('--stratus-dark-surface-rgb', hexToRgb(data.dark_surface));
+      }
+      if (data.dark_surface_raised) {
+        root.style.setProperty('--stratus-dark-surface-raised', data.dark_surface_raised);
+      }
+      if (data.dark_font) {
+        root.style.setProperty('--stratus-dark-font', data.dark_font);
+      }
+      if (data.dark_font_secondary) {
+        root.style.setProperty('--stratus-dark-font-secondary', data.dark_font_secondary);
+      }
+      if (data.dark_border) {
+        root.style.setProperty('--stratus-dark-border', data.dark_border);
+        root.style.setProperty('--stratus-dark-border-rgb', hexToRgb(data.dark_border));
+      }
+
+      // Dark utility tokens — pre-computed lighten() replacements
+      if (data.dark_background) {
+        root.style.setProperty('--stratus-dark-input-bg-focus', _lightenHex(data.dark_background, 3));
+        root.style.setProperty('--stratus-dark-message-loading-bg', _lightenHex(data.dark_background, 10));
+      }
+      if (data.dark_surface_raised) {
+        root.style.setProperty('--stratus-dark-input-addon-focus-bg', _lightenHex(data.dark_surface_raised, 8));
+      }
+
+      // Re-apply dark styles to open TinyMCE editors when scheme changes
+      if (root.classList.contains('dark-mode') && window.tinymce) {
+        var editors = window.tinymce.editors || [];
+        for (var ei = 0; ei < editors.length; ei++) {
+          if (editors[ei].initialized) _applyDarkToEditor(editors[ei]);
+        }
+      }
+    }
+  }
+
+  /**
+   * Lighten a hex color by a percentage (simple HSL approach).
+   * Used for computing utility tokens client-side.
+   */
+  function _lightenHex(hex, percent) {
+    hex = hex.replace(/^#/, '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var r = parseInt(hex.substring(0,2),16)/255;
+    var g = parseInt(hex.substring(2,4),16)/255;
+    var b = parseInt(hex.substring(4,6),16)/255;
+    var max = Math.max(r,g,b), min = Math.min(r,g,b);
+    var h, s, l = (max+min)/2;
+    if (max === min) { h = s = 0; }
+    else {
+      var d = max - min;
+      s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+      if (max === r) h = (g-b)/d + (g<b?6:0);
+      else if (max === g) h = (b-r)/d + 2;
+      else h = (r-g)/d + 4;
+      h /= 6;
+    }
+    l = Math.min(1, l + percent/100);
+    if (s === 0) { r = g = b = l; }
+    else {
+      function hue2rgb(p,q,t) {
+        if (t<0) t+=1; if (t>1) t-=1;
+        if (t<1/6) return p+(q-p)*6*t;
+        if (t<1/2) return q;
+        if (t<2/3) return p+(q-p)*(2/3-t)*6;
+        return p;
+      }
+      var q2 = l<0.5 ? l*(1+s) : l+s-l*s;
+      var p2 = 2*l-q2;
+      r = hue2rgb(p2,q2,h+1/3);
+      g = hue2rgb(p2,q2,h);
+      b = hue2rgb(p2,q2,h-1/3);
+    }
+    var rr = Math.round(r*255).toString(16);
+    var gg = Math.round(g*255).toString(16);
+    var bb = Math.round(b*255).toString(16);
+    if (rr.length === 1) rr = '0'+rr;
+    if (gg.length === 1) gg = '0'+gg;
+    if (bb.length === 1) bb = '0'+bb;
+    return '#'+rr+gg+bb;
   }
 
   function hexToRgb(hex) {
@@ -215,21 +428,48 @@
   // ══════════════════════════════════════════════
 
   function applyFont(family, url) {
-    document.documentElement.style.setProperty('--stratus-font-family', family);
-    var existingLink = document.getElementById('stratus-helper-font');
+    var roots = _schemeRoots();
+    for (var ri = 0; ri < roots.length; ri++) {
+      roots[ri].style.setProperty('--stratus-font-family', family);
+    }
 
-    if (url) {
-      if (existingLink) {
-        existingLink.href = url;
-      } else {
-        var link = document.createElement('link');
-        link.id = 'stratus-helper-font';
-        link.rel = 'stylesheet';
-        link.href = url;
-        document.head.appendChild(link);
+    // Inject (or remove) the Google Fonts <link> in every document that uses
+    // the font — both the current frame and the parent shell frame.
+    var docs = [document];
+    try {
+      if (window.parent && window.parent !== window && window.parent.document) {
+        docs.push(window.parent.document);
       }
-    } else if (existingLink) {
-      existingLink.parentNode.removeChild(existingLink);
+    } catch (e) {}
+
+    for (var di = 0; di < docs.length; di++) {
+      var doc = docs[di];
+      var existingLink = doc.getElementById('stratus-helper-font');
+      if (url) {
+        if (existingLink) {
+          existingLink.href = url;
+        } else {
+          var link = doc.createElement('link');
+          link.id = 'stratus-helper-font';
+          link.rel = 'stylesheet';
+          link.href = url;
+          doc.head.appendChild(link);
+        }
+      } else if (existingLink) {
+        existingLink.parentNode.removeChild(existingLink);
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  //  Font Size Helpers
+  // ══════════════════════════════════════════════
+
+  function applyFontSize(size, lineHeight) {
+    var roots = _schemeRoots();
+    for (var ri = 0; ri < roots.length; ri++) {
+      roots[ri].style.setProperty('--stratus-font-size', size);
+      roots[ri].style.setProperty('--stratus-line-height', lineHeight);
     }
   }
 
@@ -238,17 +478,39 @@
   // ══════════════════════════════════════════════
 
   function initSettingsPreview() {
-    var schemeSelect = document.getElementById('ff_stratus_color_scheme');
-    if (schemeSelect) {
-      schemeSelect.addEventListener('change', function () {
-        rcmail.http_post('plugin.stratus.set_scheme', { _scheme: this.value });
+    // All three controls apply their change immediately as a live preview using
+    // client-side CSS variable updates (no AJAX, no save).
+    // Persistence happens only when the user clicks Save (standard form POST → prefs_save).
+
+    // Color scheme — each radio carries the full token set in data-scheme JSON
+    var schemeRadios = document.querySelectorAll('input[name="_stratus_color_scheme"]');
+    for (var i = 0; i < schemeRadios.length; i++) {
+      schemeRadios[i].addEventListener('change', function () {
+        if (!this.checked) return;
+        try {
+          var data = JSON.parse(this.getAttribute('data-scheme') || '{}');
+          if (data) applyScheme(data);
+        } catch (e) {}
       });
     }
 
+    // Font family — lookup map from rcmail.env (set by init_settings PHP)
     var fontSelect = document.getElementById('ff_stratus_font_family');
     if (fontSelect) {
+      var fontData = (rcmail.env && rcmail.env.stratus_fonts_data) || {};
       fontSelect.addEventListener('change', function () {
-        rcmail.http_post('plugin.stratus.set_font', { _font: this.value });
+        var f = fontData[this.value];
+        if (f) applyFont(f.family, f.url);
+      });
+    }
+
+    // Font size — lookup map from rcmail.env (set by init_settings PHP)
+    var fontSizeSelect = document.getElementById('ff_stratus_font_size');
+    if (fontSizeSelect) {
+      var sizeData = (rcmail.env && rcmail.env.stratus_font_sizes_data) || {};
+      fontSizeSelect.addEventListener('change', function () {
+        var s = sizeData[this.value];
+        if (s) applyFontSize(s.size, s.line_height);
       });
     }
   }
@@ -304,16 +566,16 @@
     var contentStyle = 'body {'
       + ' font-family: ' + DEFAULT_FONT_FAMILY + ';'
       + ' font-size: ' + DEFAULT_FONT_SIZE + ';'
-      + ' color: ' + (isDark ? '#c8d0e8' : DEFAULT_TEXT_COLOR) + ';'
+      + ' color: ' + (isDark ? getCSSVar('--stratus-text-accent-dark') : DEFAULT_TEXT_COLOR) + ';'
       + ' line-height: ' + DEFAULT_LINE_HEIGHT + ';'
       + ' margin: 8px;'
-      + ' background: ' + (isDark ? '#1a1f36' : 'transparent') + ';'
+      + ' background: ' + (isDark ? getCSSVar('--stratus-dark-surface') : 'transparent') + ';'
       + '}'
       + ' blockquote {'
       + '   margin: 0 0 0 0.8em;'
-      + '   border-left: 2px solid ' + (isDark ? '#7986cb' : '#ccc') + ';'
+      + '   border-left: 2px solid ' + (isDark ? getCSSVar('--stratus-primary-dark') : '#ccc') + ';'
       + '   padding-left: 0.8em;'
-      + '   color: ' + (isDark ? '#7e8aad' : '#555') + ';'
+      + '   color: ' + (isDark ? getCSSVar('--stratus-dark-font-secondary') : '#555') + ';'
       + ' }'
       + ' img { max-width: 100%; height: auto; }';
 
@@ -497,7 +759,17 @@
       var frame = document.getElementById(id);
       if (!frame) return;
       syncDarkMode(frame);
-      frame.addEventListener('load', function () { syncDarkMode(this); });
+      frame.addEventListener('load', function () {
+        syncDarkMode(this);
+        // Classify email parts for dark mode after frame loads
+        try {
+          var doc = this.contentDocument || (this.contentWindow && this.contentWindow.document);
+          var isDark = document.documentElement.classList.contains('dark-mode');
+          if (isDark && doc) {
+            setTimeout(function() { _processEmailParts(doc); }, 50);
+          }
+        } catch (e) {}
+      });
     });
 
     var observer = new MutationObserver(function (mutations) {
@@ -521,30 +793,28 @@
   //  Dark Mode — TinyMCE (iframe content + skin swap)
   // ══════════════════════════════════════════════
 
+  function getCSSVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
   // Dark mode content styles for the editor iframe.
   // Display-only — stripped on send by the sanitizer.
-  var _tinymceDarkCSS =
-    'html, body {' +
-    '  background-color: #1a1f36 !important;' +
-    '  color: #c8d0e8 !important;' +
-    '}' +
-    'a { color: #7986cb !important; }' +
-    'blockquote {' +
-    '  border-left: 3px solid #7986cb !important;' +
-    '  color: #7e8aad !important;' +
-    '}' +
-    'pre, code {' +
-    '  background: #212845 !important;' +
-    '  color: #c8d0e8 !important;' +
-    '  border-color: #2a3050 !important;' +
-    '}' +
-    'hr { border-color: #2a3050 !important; }' +
-    'table, td, th {' +
-    '  border-color: #2a3050 !important;' +
-    '}' +
-    'div[style*="color: #1a1a1a"], div[style*="color:#1a1a1a"] {' +
-    '  color: #c8d0e8 !important;' +
-    '}';
+  // Built at call-time so it always reflects the current CSS custom property values.
+  function _buildTinymceDarkCSS() {
+    var bg     = getCSSVar('--stratus-dark-surface');
+    var text   = getCSSVar('--stratus-text-accent-dark');
+    var accent = getCSSVar('--stratus-primary-dark');
+    var muted  = getCSSVar('--stratus-dark-font-secondary');
+    var raised = getCSSVar('--stratus-dark-surface-raised');
+    var border = getCSSVar('--stratus-dark-border');
+    return 'html, body { background-color: ' + bg + ' !important; color: ' + text + ' !important; }'
+      + 'a { color: ' + accent + ' !important; }'
+      + 'blockquote { border-left: 3px solid ' + accent + ' !important; color: ' + muted + ' !important; }'
+      + 'pre, code { background: ' + raised + ' !important; color: ' + text + ' !important; border-color: ' + border + ' !important; }'
+      + 'hr { border-color: ' + border + ' !important; }'
+      + 'table, td, th { border-color: ' + border + ' !important; }'
+      + 'div[style*="color: #1a1a1a"], div[style*="color:#1a1a1a"] { color: ' + text + ' !important; }';
+  }
 
   function _applyDarkToEditor(editor) {
     var doc = editor.getDoc ? editor.getDoc() : null;
@@ -554,14 +824,14 @@
     if (!doc.getElementById('stratus-tinymce-dark')) {
       var style = doc.createElement('style');
       style.id = 'stratus-tinymce-dark';
-      style.textContent = _tinymceDarkCSS;
+      style.textContent = _buildTinymceDarkCSS();
       doc.head.appendChild(style);
     }
     // Also set body inline styles (covers toggling from light → dark mid-session)
     var body = doc.body;
     if (body) {
-      body.style.backgroundColor = '#1a1f36';
-      body.style.color = '#c8d0e8';
+      body.style.backgroundColor = getCSSVar('--stratus-dark-surface');
+      body.style.color = getCSSVar('--stratus-text-accent-dark');
     }
   }
 
@@ -664,6 +934,19 @@
           if (doc && doc.documentElement) doc.documentElement.classList[isDark ? 'add' : 'remove']('dark-mode');
         } catch (e) {}
       });
+
+      // Classify/unclassify email parts for dark mode
+      var msgFrame = document.getElementById('messagecontframe');
+      if (msgFrame) {
+        try {
+          var msgDoc = msgFrame.contentDocument || (msgFrame.contentWindow && msgFrame.contentWindow.document);
+          if (isDark) {
+            _processEmailParts(msgDoc);
+          } else {
+            _clearEmailPartsStyled(msgDoc);
+          }
+        } catch (e) {}
+      }
 
       if (!window.tinymce) return;
       var editors = window.tinymce.editors || [];

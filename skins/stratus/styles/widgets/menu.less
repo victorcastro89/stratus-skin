@@ -18,13 +18,13 @@
         border-radius: @mp-tabs-link-border-radius;
 
         &:hover {
-            color: @color-main;
-            border-bottom-color: fadeout(@color-main, @mp-tabs-hover-underline-fade);
+            color: var(--stratus-text-accent);
+            border-bottom-color: rgba(var(--stratus-primary-rgb), 0.40);
         }
 
         &.active {
-            color: @color-main;
-            border-bottom-color: @color-main;
+            color: var(--stratus-text-accent);
+            border-bottom-color: var(--stratus-primary);
             background: transparent;
             font-weight: @mp-font-weight-semibold;
         }
@@ -38,19 +38,19 @@ html.dark-mode {
 
     // ── TABS ──────────────────────────────────────────────────────────────────────────
     .nav-tabs {
-        border-bottom-color: @color-dark-border;
+        border-bottom-color: var(--stratus-dark-border);
 
         .nav-item .nav-link {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
 
             &:hover {
-                color: @color-dark-main;
-                border-bottom-color: fadeout(@color-dark-main, @mp-tabs-hover-underline-fade);
+                color: var(--stratus-text-accent-dark);
+                border-bottom-color: rgba(var(--stratus-primary-dark-rgb), 0.40);
             }
 
             &.active {
-                color: @color-dark-main-light;
-                border-bottom-color: @color-dark-main;
+                color: var(--stratus-text-accent-dark);
+                border-bottom-color: var(--stratus-primary-dark);
             }
         }
     }

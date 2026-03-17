@@ -7,26 +7,26 @@
 .btn-primary, 
 a.btn-primary,
 button.btn-primary {
-    background: @color-main-gradient;
+    background: var(--stratus-gradient);
     border: none;
     color: @color-btn-primary;
     border-radius: @mp-radius-md;
     font-weight: @mp-font-weight-medium;
     letter-spacing: @mp-letter-spacing-wide;
     padding: 0.5rem 1.25rem;
-    box-shadow: 0 2px 8px @mp-primary-a30;
+    box-shadow: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.30);
 
     &:hover,
     &:focus {
-        background: @color-main-gradient-hover;
-        box-shadow: 0 4px 16px @mp-primary-a45;
+        background: var(--stratus-gradient-hover);
+        box-shadow: 0 4px 16px rgba(var(--stratus-primary-rgb), 0.45);
         transform: translateY(-1px);
         color: @color-btn-primary;
     }
 
     &:active { 
         transform: translateY(0);
-        box-shadow: 0 1px 4px fadeout(@color-main, 65%);
+        box-shadow: 0 1px 4px rgba(var(--stratus-primary-rgb), 0.35);
     }
 }
 
@@ -41,9 +41,19 @@ button.btn-secondary {
 
     &:hover,
     &:focus {
-        background: @mp-primary-a5;
-        border-color: @mp-primary-a40;
-        color: @color-main;
+        background: rgba(var(--stratus-primary-rgb), 0.05);
+        border-color: rgba(var(--stratus-border), 0.40);
+        color: var(--stratus-text-accent);
+    }
+
+    &:not(:disabled):not(.disabled) {
+        &:active,
+        &.active {
+            background: var(--stratus-primary);
+            border-color: var(--stratus-primary);
+            color: @color-btn-primary;
+            box-shadow: 0 0 0 0.2rem var(--stratus-border);
+        }
     }
 }
 
@@ -90,41 +100,51 @@ html.dark-mode {
     // ── TOOLBAR BUTTONS ──────────────────────────────────────────────────────────────
     .toolbar a.button,
     #toolbar a.button {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
 
         &:hover {
-            background: @mp-primary-dark-a12;
-            color: @color-dark-main;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+            color: var(--stratus-text-accent-dark);
         }
 
         &:active,
         &.active {
-            background: @mp-primary-dark-a18;
-            color: @color-dark-main;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+            color: var(--stratus-text-accent-dark);
         }
 
         &:hover:before {
-            color: @color-dark-main;
+            color: var(--stratus-text-accent-dark);
         }
     }
 
     // ── BUTTONS ──────────────────────────────────────────────────────────────────────
     .btn-primary {
-        box-shadow: 0 2px 8px @mp-primary-dark-a40;
+        box-shadow: 0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.40);
 
         &:hover {
-            box-shadow: 0 4px 16px @mp-primary-dark-a45;
+            box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
         }
     }
 
     .btn-secondary {
-        border-color: @color-dark-border;
-        color: @color-dark-font;
+        border-color: var(--stratus-dark-border);
+        color: var(--stratus-dark-font);
 
         &:hover {
-            background: @mp-primary-dark-a10;
-            border-color: @mp-primary-dark-a45;
-            color: @color-dark-main-light;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.10);
+            border-color: rgba(var(--stratus-primary-dark-rgb), 0.45);
+            color: var(--stratus-text-accent-dark);
+        }
+
+        &:not(:disabled):not(.disabled) {
+            &:active,
+            &.active {
+                background: var(--stratus-primary-dark);
+                border-color: var(--stratus-primary-dark);
+                color: @color-dark-on-primary;
+                box-shadow: 0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.35);
+            }
         }
     }
 }

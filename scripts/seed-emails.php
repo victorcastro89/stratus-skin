@@ -11,26 +11,80 @@ declare(strict_types=1);
 $config = [
     'mailserver' => getenv('IMAP_HOST') ?: 'mailserver',
     'port' => (int)(getenv('IMAP_PORT') ?: 143),
-    'users' => [
+    'ssl' => (bool)(getenv('IMAP_SSL') ?: (((int)(getenv('IMAP_PORT') ?: 143)) === 993)),
+    'users' => [],
+];
+
+// Allow single-user mode via env vars
+if (getenv('IMAP_USER')) {
+    $config['users'][] = [
+        'email' => getenv('IMAP_USER'),
+        'password' => getenv('IMAP_PASS') ?: '',
+    ];
+} else {
+    // Default test accounts for Docker dev environment
+    $config['users'] = [
         ['email' => 'victor@example.test', 'password' => 'password123'],
         ['email' => 'alice@example.test', 'password' => 'password123'],
         ['email' => 'bob@example.test', 'password' => 'password123'],
-    ],
-];
+    ];
+}
 
 class EmailSeeder
 {
     private array $users;
     private string $host;
     private int $port;
+    private bool $ssl;
     private bool $hasImap;
+    private string $nsPrefix = '';
 
-    public function __construct(string $host, int $port, array $users)
+    public function __construct(string $host, int $port, array $users, bool $ssl = false)
     {
         $this->host = $host;
         $this->port = $port;
+        $this->ssl = $ssl;
         $this->users = $users;
         $this->hasImap = extension_loaded('imap');
+    }
+
+    private function imapPath(string $mailbox = 'INBOX'): string
+    {
+        $flags = $this->ssl ? '/ssl/novalidate-cert' : '/novalidate-cert';
+        $server = "{{$this->host}:{$this->port}{$flags}}";
+        if ($mailbox === 'INBOX') {
+            return "{$server}INBOX";
+        }
+        return "{$server}{$this->nsPrefix}{$mailbox}";
+    }
+
+    private function ensureMailbox($imap, string $folder): void
+    {
+        $path = $this->imapPath($folder);
+        $exists = imap_list($imap, $this->imapPath('INBOX'), $this->nsPrefix . $folder);
+        imap_errors(); // clear any queued errors
+        if ($exists) {
+            return;
+        }
+        @imap_createmailbox($imap, imap_utf7_encode($path));
+        imap_errors(); // clear ALREADYEXISTS or other notices
+    }
+
+    private function detectNamespace($imap): void
+    {
+        $namespaces = imap_getmailboxes($imap, $this->imapPath('INBOX'), '*');
+        if (!$namespaces) {
+            return;
+        }
+
+        foreach ($namespaces as $mbox) {
+            $name = $mbox->name;
+            // Look for a mailbox like {server}INBOX.Sent or {server}INBOX/Sent
+            if (preg_match('/}INBOX([\.\\/])/', $name, $m)) {
+                $this->nsPrefix = 'INBOX' . $m[1];
+                break;
+            }
+        }
     }
 
     public function seed(): void
@@ -58,7 +112,7 @@ class EmailSeeder
         }
 
         $imap = @imap_open(
-            "{{$this->host}:{$this->port}/novalidate-cert}INBOX",
+            $this->imapPath('INBOX'),
             $email,
             $password
         );
@@ -67,6 +121,10 @@ class EmailSeeder
             echo "  ⚠️  Could not connect: " . imap_last_error() . "\n";
             return;
         }
+
+        $this->detectNamespace($imap);
+        echo "  🔍 Namespace prefix: '" . $this->nsPrefix . "'\n";
+        echo "  🔍 INBOX path: " . $this->imapPath('INBOX') . "\n";
 
         // Get other users for conversation simulation
         $otherUsers = array_values(array_filter($this->users, fn($u) => $u['email'] !== $email));
@@ -246,11 +304,14 @@ class EmailSeeder
 
         $templates = array_merge($templates, $threadMessages);
 
+        $appended = 0;
         foreach ($templates as $template) {
-            $this->appendMessage($imap, "INBOX", $template);
+            if ($this->appendMessage($imap, "INBOX", $template)) {
+                $appended++;
+            }
         }
 
-        echo " " . count($templates) . " emails\n";
+        echo " {$appended}/" . count($templates) . " emails\n";
     }
 
     private function seedSent($imap, string $email, array $otherUsers): void
@@ -258,7 +319,7 @@ class EmailSeeder
         echo "  📤 Sent...";
         
         // Create Sent folder if it doesn't exist
-        @imap_createmailbox($imap, "{{$this->host}:{$this->port}/novalidate-cert}Sent");
+        $this->ensureMailbox($imap, 'Sent');
 
         $templates = [
             $this->createSentEmail($email, $otherUsers[0]['email'] ?? 'alice@example.test', 'Project Update', 'Just wanted to share the latest progress...'),
@@ -266,56 +327,74 @@ class EmailSeeder
             $this->createSentEmail($email, 'team@example.com', 'Weekly Report', 'This week\'s accomplishments...'),
         ];
 
+        $appended = 0;
         foreach ($templates as $template) {
-            $this->appendMessage($imap, "Sent", $template);
+            if ($this->appendMessage($imap, "Sent", $template)) {
+                $appended++;
+            }
         }
 
-        echo " " . count($templates) . " emails\n";
+        echo " {$appended}/" . count($templates) . " emails\n";
     }
 
     private function seedDrafts($imap, string $email): void
     {
         echo "  📝 Drafts...";
         
-        @imap_createmailbox($imap, "{{$this->host}:{$this->port}/novalidate-cert}Drafts");
+        $this->ensureMailbox($imap, 'Drafts');
 
         $templates = [
             $this->createDraftEmail($email, 'alice@example.test', 'Unfinished thoughts', 'This is a draft I started but never sent...'),
             $this->createDraftEmail($email, 'bob@example.test', 'TODO: Send this', 'Remember to finish this email...'),
         ];
 
+        $appended = 0;
         foreach ($templates as $template) {
-            $this->appendMessage($imap, "Drafts", $template, "\\Draft");
+            if ($this->appendMessage($imap, "Drafts", $template, "\\Draft")) {
+                $appended++;
+            }
         }
 
-        echo " " . count($templates) . " emails\n";
+        echo " {$appended}/" . count($templates) . " emails\n";
     }
 
     private function seedCustomFolders($imap, string $email, array $otherUsers): void
     {
         echo "  📁 Custom folders...";
         
-        @imap_createmailbox($imap, "{{$this->host}:{$this->port}/novalidate-cert}Projects");
-        @imap_createmailbox($imap, "{{$this->host}:{$this->port}/novalidate-cert}Archive");
+        $this->ensureMailbox($imap, 'Projects');
+        $this->ensureMailbox($imap, 'Archive');
 
         $projectEmails = [
             $this->createProjectEmail($email, $otherUsers[0]['email'] ?? 'alice@example.test', 'Project Alpha'),
             $this->createProjectEmail($email, $otherUsers[1]['email'] ?? 'bob@example.test', 'Project Beta'),
         ];
 
+        $appended = 0;
         foreach ($projectEmails as $template) {
-            $this->appendMessage($imap, "Projects", $template);
+            if ($this->appendMessage($imap, "Projects", $template)) {
+                $appended++;
+            }
         }
 
-        echo " 2 emails\n";
+        echo " {$appended}/" . count($projectEmails) . " emails\n";
     }
 
     private function appendMessage($imap, string $mailbox, string $message, string $flags = ''): bool
     {
-        $imapPath = "{{$this->host}:{$this->port}/novalidate-cert}{$mailbox}";
+        $imapPath = $this->imapPath($mailbox);
         $internalDate = $this->extractImapInternalDate($message);
 
-        return imap_append($imap, $imapPath, $message, $flags, $internalDate ?: null);
+        $result = imap_append($imap, $imapPath, $message, $flags, $internalDate ?: null);
+
+        if (!$result) {
+            $err = imap_last_error();
+            echo "\n    ⚠️  imap_append failed for [{$mailbox}]: " . ($err ?: 'unknown error');
+            // Drain queued errors
+            imap_errors();
+        }
+
+        return $result;
     }
 
     private function extractImapInternalDate(string $rawMessage): string
@@ -825,7 +904,8 @@ EMAIL;
 $seeder = new EmailSeeder(
     $config['mailserver'],
     $config['port'],
-    $config['users']
+    $config['users'],
+    $config['ssl']
 );
 
 $seeder->seed();

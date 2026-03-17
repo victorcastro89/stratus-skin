@@ -7,10 +7,10 @@
 .tox.tox-tinymce {
     border-radius: @mp-radius-lg;
     border: 1px solid @color-input-border;
-    
+
     &.focused,
-    &:focus-within { 
-        border-color: @color-main;
+    &:focus-within {
+        border-color: var(--stratus-primary);
         .mp-focus-ring();
     }
 }
@@ -22,9 +22,9 @@
 .mce-tinymce {
     border-radius: @mp-radius-lg;
     border: 1px solid @color-input-border;
-    
+
     &.mce-focused {
-        border-color: @color-main;
+        border-color: var(--stratus-primary);
         .mp-focus-ring();
     }
 }
@@ -40,9 +40,9 @@
 .tox-tbtn {
     border-radius: @mp-radius-sm;
     transition: background @mp-transition-fast;
-    
+
     &:hover:not(.tox-tbtn--disabled) {
-        background: @mp-primary-a8 !important;
+        background: rgba(var(--stratus-primary-rgb), 0.08) !important;
     }
 }
 
@@ -62,9 +62,9 @@
 .mce-btn {
     // border-radius: @mp-radius-sm;
     // transition: background @mp-transition-fast;
-    
+
     &:hover {
-        background: @mp-primary-a8;
+        background: rgba(var(--stratus-primary-rgb), 0.08);
     }
 }
 
@@ -76,138 +76,138 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 html.dark-mode {
     .mce-content-body {
-        background: @color-dark-surface;
-        color: @color-dark-font;
+        background: var(--stratus-dark-surface);
+        color: var(--stratus-dark-font);
     }
     .tox.tox-tinymce {
-        border-color: @color-dark-border;
+        border-color: var(--stratus-dark-border);
 
         // Toolbar area
         .tox-toolbar-overlord,
         .tox-toolbar__primary {
-            background-color: @color-dark-surface-raised;
-            border-bottom-color: @color-dark-border;
+            background-color: var(--stratus-dark-surface-raised);
+            border-bottom-color: var(--stratus-dark-border);
         }
 
         // Separator lines between toolbar button groups
         .tox-toolbar__group {
-            border-right-color: @color-dark-border;
+            border-right-color: var(--stratus-dark-border);
         }
 
         // Toolbar icon buttons
         .tox-tbtn {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
 
             svg {
-                fill: @color-dark-font;
+                fill: var(--stratus-dark-font);
             }
 
             &:hover:not(.tox-tbtn--disabled) {
-                background: @mp-primary-dark-a15 !important;
+                background: rgba(var(--stratus-primary-dark-rgb), 0.15) !important;
             }
 
             &.tox-tbtn--enabled,
             &.tox-tbtn--enabled:hover {
-                background: @mp-primary-dark-a25 !important;
+                background: rgba(var(--stratus-primary-dark-rgb), 0.25) !important;
             }
         }
 
         // Menu-style toolbar buttons (e.g. Format, Insert dropdowns)
         .tox-mbtn {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
         }
 
         // Status bar (word count / resize handle)
         .tox-statusbar {
-            background-color: @color-dark-surface-raised;
-            border-top-color: @color-dark-border;
-            color: @color-dark-font-secondary;
+            background-color: var(--stratus-dark-surface-raised);
+            border-top-color: var(--stratus-dark-border);
+            color: var(--stratus-dark-font-secondary);
         }
 
         .tox-statusbar__path-item,
         .tox-statusbar__wordcount {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
         }
 
         // Ensure the edit-area iframe wrapper has the dark bg so there is no
         // white flash while the injected stylesheet loads
         .tox-edit-area {
-            background: @color-dark-surface;
+            background: var(--stratus-dark-surface);
         }
     }
 
     // TinyMCE 5+ dropdown menus and dialogs
     .tox-menu,
     .tox-collection {
-        background-color: @color-dark-surface-raised;
-        border-color: @color-dark-border;
+        background-color: var(--stratus-dark-surface-raised);
+        border-color: var(--stratus-dark-border);
     }
 
     .tox-collection__item {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
 
         &:hover,
         &--active {
-            background-color: @mp-primary-dark-a15;
+            background-color: rgba(var(--stratus-primary-dark-rgb), 0.15);
         }
     }
 
     .tox-collection__item-label {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
     }
 
     .tox-collection__item-checkmark svg {
-        fill: @color-dark-font;
+        fill: var(--stratus-dark-font);
     }
 
     // TinyMCE 5+ dialogs (link, image, search/replace, etc.)
     .tox-dialog-wrap__backdrop {
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: fadeout(@color-black, 40%);
     }
 
     .tox-dialog {
-        background-color: @color-dark-surface-raised;
-        border-color: @color-dark-border;
+        background-color: var(--stratus-dark-surface-raised);
+        border-color: var(--stratus-dark-border);
 
         .tox-dialog__header {
-            background-color: @color-dark-surface-raised;
-            color: @color-dark-font;
+            background-color: var(--stratus-dark-surface-raised);
+            color: var(--stratus-dark-font);
         }
 
         .tox-dialog__title {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
         }
 
         .tox-dialog__body {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
         }
 
         .tox-dialog__footer {
-            background-color: @color-dark-surface-raised;
-            border-top-color: @color-dark-border;
+            background-color: var(--stratus-dark-surface-raised);
+            border-top-color: var(--stratus-dark-border);
         }
 
         .tox-label,
         .tox-toolbar-label {
-            color: @color-dark-font-secondary;
+            color: var(--stratus-dark-font-secondary);
         }
 
         .tox-textfield,
         .tox-textarea,
         .tox-selectfield select {
-            background-color: @color-dark-surface;
-            border-color: @color-dark-border;
-            color: @color-dark-font;
+            background-color: var(--stratus-dark-surface);
+            border-color: var(--stratus-dark-border);
+            color: var(--stratus-dark-font);
         }
 
         .tox-button {
             &--secondary {
-                background-color: @color-dark-surface;
-                border-color: @color-dark-border;
-                color: @color-dark-font;
+                background-color: var(--stratus-dark-surface);
+                border-color: var(--stratus-dark-border);
+                color: var(--stratus-dark-font);
 
                 &:hover {
-                    background-color: @mp-primary-dark-a15;
+                    background-color: rgba(var(--stratus-primary-dark-rgb), 0.15);
                 }
             }
         }
@@ -215,34 +215,34 @@ html.dark-mode {
 
     // TinyMCE 5+ color picker swatches
     .tox-swatches__picker-btn svg {
-        fill: @color-dark-font;
+        fill: var(--stratus-dark-font);
     }
 
     // TinyMCE 5+ font/size select button labels
     .tox-tbtn--select .tox-tbtn__select-label {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
     }
 
     // TinyMCE 5+ select chevron
     .tox-tbtn__select-chevron svg {
-        fill: @color-dark-font;
+        fill: var(--stratus-dark-font);
     }
 
     // Legacy TinyMCE 4.x outer chrome
     .mce-tinymce {
-        border-color: @color-dark-border;
+        border-color: var(--stratus-dark-border);
     }
 
     .mce-toolbar-grp {
-        background: @color-dark-surface-raised;
-        border-bottom-color: @color-dark-border;
+        background: var(--stratus-dark-surface-raised);
+        border-bottom-color: var(--stratus-dark-border);
     }
 
     .mce-btn {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
 
         &:hover {
-            background: @mp-primary-dark-a15;
+            background: rgba(var(--stratus-primary-dark-rgb), 0.15);
         }
     }
 }

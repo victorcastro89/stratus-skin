@@ -26,33 +26,31 @@ if [ -z "$CONTAINER" ]; then
     exit 1
 fi
 
-echo "📦 Installing PHP IMAP extension if needed..."
-docker exec "$CONTAINER" bash -c "
-    set -e
+echo "📦 Checking PHP IMAP extension..."
+if docker exec "$CONTAINER" php -m 2>/dev/null | grep -qi '^imap$'; then
+    echo "  ✅ IMAP extension already installed"
+else
+    echo "  ℹ️  IMAP extension missing. Installing..."
+    docker exec "$CONTAINER" bash -c "
+        set -e
 
-    if php -m | grep -qi '^imap$'; then
-        echo '✅ IMAP extension already installed'
-        exit 0
-    fi
+        # Use mlocati/docker-php-extension-installer (handles deps automatically)
+        if [ ! -x /usr/local/bin/install-php-extensions ]; then
+            curl -sSLf -o /usr/local/bin/install-php-extensions \
+                https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions
+            chmod +x /usr/local/bin/install-php-extensions
+        fi
 
-    echo 'ℹ️  IMAP extension missing. Installing via install-php-extensions...'
+        install-php-extensions imap
 
-    # Use mlocati/docker-php-extension-installer (handles deps automatically)
-    if [ ! -x /usr/local/bin/install-php-extensions ]; then
-        curl -sSLf -o /usr/local/bin/install-php-extensions \
-            https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions
-        chmod +x /usr/local/bin/install-php-extensions
-    fi
-
-    install-php-extensions imap
-
-    if php -m | grep -qi '^imap$'; then
-        echo '✅ IMAP extension installed'
-    else
-        echo '❌ Failed to install/enable PHP IMAP extension'
-        exit 1
-    fi
-"
+        if php -m | grep -qi '^imap\$'; then
+            echo '  ✅ IMAP extension installed successfully'
+        else
+            echo '  ❌ Failed to install/enable PHP IMAP extension'
+            exit 1
+        fi
+    "
+fi
 
 echo ""
 echo "📧 Running email seeder..."

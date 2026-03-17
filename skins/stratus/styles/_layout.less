@@ -13,7 +13,7 @@ html:not(.layout-phone) #messagelist-header > a {
 // TASK MENU — Navy gradient sidebar with pill navigation
 // ═══════════════════════════════════════════════════════════════════════════════
 #layout-menu {
-    background: @mp-taskmenu-gradient;
+    background: var(--stratus-sidebar-gradient);
     position: relative; // For ::before accent. NOT on #taskmenu — it collapses to height:0 (floated children).
     overflow: visible; // Allow ::after tooltips on taskmenu items to escape
 
@@ -25,15 +25,17 @@ html:not(.layout-phone) #messagelist-header > a {
         left: 20%;
         right: 20%;
         height: 2px;
-        background: @color-main-gradient;
+        background: var(--stratus-sidebar-gradient);
         border-radius: @mp-radius-pill;
         z-index: 1;
     }
 
     // Logo container area
+    // Note: Elastic overrides background-color with @color-taskmenu-background !important
+    // at min-width:481px — we must match specificity + !important to win.
     .popover-header {
-        background: transparent;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: transparent !important;
+        border-bottom: 1px solid var(--stratus-sidebar-divider);
 
         img {
             filter: brightness(0) invert(1);
@@ -42,14 +44,14 @@ html:not(.layout-phone) #messagelist-header > a {
     }
 
     // Special-buttons (about + logout) pinned at viewport bottom-left.
-    // Background must match the gradient end color (#151a2e) to blend seamlessly.
+    // Background matches sidebar — uses the darkest shade of the gradient.
     .special-buttons {
-        background-color: #151a2e;
+        background-color: var(--stratus-sidebar-bg);
     }
 }
 
 #taskmenu {
-    background: @mp-taskmenu-gradient;
+    background: var(--stratus-sidebar-gradient);
     border-right: none;
     box-shadow: @mp-shadow-lg;
     overflow: visible; // Allow ::after tooltips to extend beyond the sidebar
@@ -66,6 +68,7 @@ html:not(.layout-phone) #messagelist-header > a {
         transition: background @mp-transition-smooth, color @mp-transition-base,
                     box-shadow @mp-transition-smooth, transform @mp-transition-fast;
         position: relative; // Safe: 'a' has content height, not floated children
+        color: var(--stratus-sidebar-text);
     }
 
     // Icon-only sidebar: span.inner acts as tooltip floating to the right.
@@ -80,7 +83,7 @@ html:not(.layout-phone) #messagelist-header > a {
         font-size: @mp-font-size-xs;
         white-space: nowrap;
         background: @color-black;
-        color: #fff;
+        color: @color-on-primary;
         padding: 4px 10px;
         border-radius: @mp-radius-sm;
         z-index: 9999;
@@ -108,7 +111,7 @@ html:not(.layout-phone) #messagelist-header > a {
             position: static;
             transform: none;
             background: none;
-            color: rgba(255, 255, 255, 0.75);
+            color: var(--stratus-sidebar-text);
             padding: 0;
             box-shadow: none;
             font-size: 80%;
@@ -116,7 +119,7 @@ html:not(.layout-phone) #messagelist-header > a {
         }
 
         a.selected span.inner {
-            color: #fff;
+            color: @color-taskmenu-button-selected;
         }
 
         a.logout,
@@ -124,60 +127,60 @@ html:not(.layout-phone) #messagelist-header > a {
             opacity: 1;
 
             span.inner {
-                color: rgba(255, 255, 255, 0.75);
+                color: var(--stratus-sidebar-text);
             }
         }
     }
 
     // Hover state — subtle glass fill
     a:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: #fff;
+        background: var(--stratus-sidebar-hover-bg);
+        color: var(--stratus-sidebar-text-hover);
     }
 
-    // Selected state — indigo glow pill
+    // Selected state — accent glow pill
     // NOTE: Do NOT override ::before here — elastic uses .menu a.{task}::before for icon font.
     // Same specificity, our file loads later, so ::before { content:'' } would wipe the icon.
     // NOTE: Do NOT use pointer-events:none — it swallows the click event before
     // rcmail.command('switch-task',...) can fire, breaking all task navigation.
     // Instead, lock the background via an explicit :hover override.
     a.selected {
-        background: @mp-primary-a25;
-        color: #fff;
-        box-shadow: 0 0 16px @mp-primary-a20,
-                    inset 0 0 0 1px @mp-primary-a30;
+        background: var(--stratus-sidebar-active-bg);
+        color: var(--stratus-sidebar-text-active);
+        box-shadow: 0 0 16px rgba(var(--stratus-primary-rgb), 0.20),
+                    inset 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.30);
         font-weight: @mp-font-weight-semibold;
         cursor: default;
 
         // Override elastic's `a.selected:hover { background: rgba(255,255,255,0.06) }`
         // so the active pill doesn't flicker on mouse-enter.
         &:hover {
-            background: @mp-primary-a25;
-            color: #fff;
-            box-shadow: 0 0 16px @mp-primary-a20,
-                        inset 0 0 0 1px @mp-primary-a30;
+            background: var(--stratus-sidebar-active-bg);
+            color: var(--stratus-sidebar-text-active);
+            box-shadow: 0 0 16px rgba(var(--stratus-primary-rgb), 0.20),
+                        inset 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.30);
         }
     }
 
     // Compose/action button — gradient pill with elevation
     a.compose,
     a.task-compose {
-        background: @color-main-gradient;
+        background: var(--stratus-gradient);
         color: @color-on-primary;
         border-radius: @mp-radius-pill;
         margin: 10px 0; // No horizontal margin — sidebar width is fixed, 6px each side would overflow
-        box-shadow: 0 4px 12px @mp-primary-a45;
+        box-shadow: 0 4px 12px rgba(var(--stratus-primary-rgb), 0.45);
         font-weight: @mp-font-weight-medium;
 
         &:hover {
-            background: @color-main-gradient-hover;
-            box-shadow: 0 6px 20px @mp-primary-a45;
+            background: var(--stratus-gradient-hover);
+            box-shadow: 0 6px 20px rgba(var(--stratus-primary-rgb), 0.45);
             transform: translateY(-1px);
         }
 
         &:active {
             transform: translateY(0);
-            box-shadow: 0 2px 8px @mp-primary-a40;
+            box-shadow: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.40);
         }
     }
 
@@ -215,8 +218,8 @@ html:not(.layout-phone) #messagelist-header > a {
         transition: background @mp-transition-base, color @mp-transition-base;
 
         &:hover {
-            background: @mp-primary-a8;
-            color: @color-main;
+            background: rgba(var(--stratus-primary-rgb), 0.08);
+            color: var(--stratus-text-accent);
         }
     }
 }
@@ -239,14 +242,14 @@ html:not(.layout-phone) #messagelist-header > a {
                     box-shadow @mp-transition-smooth;
 
         &:hover {
-            background: @mp-primary-a8;
-            color: @color-main;
+            background: rgba(var(--stratus-primary-rgb), 0.08);
+            color: var(--stratus-text-accent);
         }
 
         &:active,
         &.active {
-            background: @mp-primary-a12;
-            color: @color-main;
+            background: rgba(var(--stratus-primary-rgb), 0.12);
+            color: var(--stratus-text-accent);
         }
 
         // Icon color transition
@@ -255,7 +258,7 @@ html:not(.layout-phone) #messagelist-header > a {
         }
 
         &:hover:before {
-            color: @color-main;
+            color: var(--stratus-text-accent);
         }
     }
 
@@ -278,9 +281,10 @@ html:not(.layout-phone) #messagelist-header > a {
                 background @mp-transition-base;
 
     &:focus-within {
-        background: #fff;
-        border-color: @mp-primary-a40;
-        .mp-focus-ring(@color-main, 88%);
+        background: @color-searchbar-background;
+        border-color: rgba(var(--stratus-primary-rgb), 0.40);
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.12);
     }
 
     input[type="text"],
@@ -355,7 +359,7 @@ html:not(.layout-phone) #messagelist-header > a {
         border: 1px solid @color-layout-border;
         padding: @mp-space-lg;
         margin-bottom: @mp-space-lg;
-        background: #fff;
+        background: @color-layout-content-background;
     }
 
     legend {
@@ -376,7 +380,7 @@ html:not(.layout-phone) #messagelist-header > a {
 
     &:hover {
         opacity: 1;
-        background: @mp-primary-a30;
+        background: rgba(var(--stratus-primary-rgb), 0.30);
     }
 }
 
@@ -386,32 +390,33 @@ html:not(.layout-phone) #messagelist-header > a {
 html.dark-mode {
 
     // ── TASK MENU ────────────────────────────────────────────────────────────────────
+    // In dark mode the sidebar gradient darkens further. The sidebar CSS custom
+    // properties are NOT overridden here — they stay the same per-scheme values
+    // because the sidebar is already dark in every scheme. Only the gradient
+    // deepens slightly for better contrast in dark environments.
     #layout-menu {
-        background: @mp-taskmenu-dark-gradient;
-
         // Top accent line — more subtle in dark
         &::before {
             opacity: 0.7;
         }
 
         .popover-header {
-            border-bottom-color: rgba(255, 255, 255, 0.04);
+            border-bottom-color: var(--stratus-sidebar-divider);
         }
     }
 
     #taskmenu {
-        background: @mp-taskmenu-dark-gradient;
         box-shadow: @mp-shadow-dark-lg;
 
         a:hover {
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--stratus-sidebar-hover-bg);
         }
 
-        // Selected — indigo glow, more visible in dark
+        // Selected — accent glow, more visible in dark
         a.selected {
-            background: @mp-primary-dark-a20;
-            box-shadow: 0 0 20px @mp-primary-dark-a25,
-                        inset 0 0 0 1px @mp-primary-dark-a35;
+            background: var(--stratus-sidebar-active-bg);
+            box-shadow: 0 0 20px rgba(var(--stratus-primary-dark-rgb), 0.25),
+                        inset 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.35);
         }
 
         // Compose — dark-mode gradient with explicit white text/icon
@@ -419,18 +424,18 @@ html.dark-mode {
         // which washes out the compose button. We must restore #fff explicitly.
         a.compose,
         a.task-compose {
-            background: @color-dark-main-gradient;
+            background: var(--stratus-gradient);
             color: @color-dark-on-primary;
-            box-shadow: 0 4px 16px @mp-primary-dark-a45;
+            box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
 
             &:before {
                 color: @color-dark-on-primary;
             }
 
             &:hover {
-                background: @color-dark-main-gradient-hover;
+                background: var(--stratus-gradient-hover);
                 color: @color-dark-on-primary;
-                box-shadow: 0 6px 24px fadeout(@color-dark-main, 35%);
+                box-shadow: 0 6px 24px rgba(var(--stratus-primary-dark-rgb), 0.65);
 
                 &:before {
                     color: @color-dark-on-primary;
@@ -456,55 +461,57 @@ html.dark-mode {
 
     // ── HEADERS ────────────────────────────────────────────────────────────────────────
     #layout > div > .header {
-        .mp-frosted-glass-dark(@mp-glass-dark-bg-strong);
-        border-bottom-color: @color-dark-border;
+        background: rgba(var(--stratus-dark-surface-rgb), 0.90);
+        backdrop-filter: blur(@mp-glass-blur-strong);
+        -webkit-backdrop-filter: blur(@mp-glass-blur-strong);
+        border-bottom-color: var(--stratus-dark-border);
         box-shadow: @mp-shadow-dark-sm;
 
         .header-title {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
         }
 
         a.button {
-            color: @color-dark-font;
+            color: var(--stratus-dark-font);
 
             &:hover {
-                background: @mp-primary-dark-a12;
-                color: @color-dark-main;
+                background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+                color: var(--stratus-text-accent-dark);
             }
         }
     }
 
     #layout > div > .footer {
-        background: @color-dark-surface;
-        border-top-color: @color-dark-border;
+        background: var(--stratus-dark-surface);
+        border-top-color: var(--stratus-dark-border);
     }
 
     // ── PANELS ──────────────────────────────────────────────────────────────────────────
     #sidebar,
     #layout-sidebar {
-        background: @color-dark-surface;
-        border-right-color: @color-dark-border;
+        background: var(--stratus-dark-surface);
+        border-right-color: var(--stratus-dark-border);
     }
 
     #layout-list {
-        background: @color-dark-surface;
-        border-right-color: @color-dark-border;
+        background: var(--stratus-dark-surface);
+        border-right-color: var(--stratus-dark-border);
     }
 
     #layout-content {
-        background: @color-dark-background;
+        background: var(--stratus-dark-background);
     }
 
     // Content frames — dark cards
     .frame-content fieldset,
     .content fieldset {
-        background: @color-dark-surface;
-        border-color: @color-dark-border;
+        background: var(--stratus-dark-surface);
+        border-color: var(--stratus-dark-border);
     }
 
     .frame-content legend,
     .content legend {
-        color: @color-dark-font;
+        color: var(--stratus-dark-font);
     }
 
     // ── MOBILE ─────────────────────────────────────────────────────────────────────────
@@ -513,11 +520,11 @@ html.dark-mode {
 
             backdrop-filter: none;
 
-            .header-title { color: #fff; }
+            .header-title { color: var(--stratus-sidebar-text-hover); }
 
             a.button {
-                color: rgba(255, 255, 255, 0.85);
-                &:hover { background: rgba(255, 255, 255, 0.10); color: #fff; }
+                color: var(--stratus-sidebar-text);
+                &:hover { background: var(--stratus-sidebar-hover-bg); color: var(--stratus-sidebar-text-hover); }
             }
         }
     }
@@ -535,15 +542,15 @@ html.dark-mode {
         box-shadow: @mp-shadow-md;
 
         .header-title {
-            color: #fff;
+            color: var(--stratus-sidebar-text-hover);
         }
 
         a.button {
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--stratus-sidebar-text);
 
             &:hover {
-                background: rgba(255, 255, 255, 0.12);
-                color: #fff;
+                background: var(--stratus-sidebar-hover-bg);
+                color: var(--stratus-sidebar-text-hover);
             }
         }
     }
