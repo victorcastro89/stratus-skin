@@ -19,7 +19,8 @@ const ROOT = path.resolve(__dirname, '..');
 // ── Helpers ──────────────────────────────────────────────────────────
 
 function run(cmd, opts = {}) {
-  return execSync(cmd, { cwd: ROOT, encoding: 'utf8', ...opts }).trim();
+  const result = execSync(cmd, { cwd: ROOT, encoding: 'utf8', ...opts });
+  return result ? result.trim() : '';
 }
 
 function readJson(rel) {
