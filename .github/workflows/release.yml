@@ -35,5 +35,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: "Stratus v${{ steps.version.outputs.version }}"
-          body_path: CHANGELOG.md
+          body_path: changelog/${{ steps.version.outputs.version }}.md
           files: stratus-${{ steps.version.outputs.version }}.zip
