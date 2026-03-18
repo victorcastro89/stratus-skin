@@ -116,7 +116,7 @@ const linkLine = `[${newVersion}]: https://github.com/victorcastro89/stratus-ski
 
 // Insert new section before the first existing ## entry, append link at end
 const updated = changelog
-  .replace(/^(## \[)/, `${newEntry}$1`)
+  .replace(/(^|\n)(## \[)/, `$1${newEntry}$2`)
   .trimEnd() + '\n' + linkLine + '\n';
 
 fs.writeFileSync(changelogPath, updated);

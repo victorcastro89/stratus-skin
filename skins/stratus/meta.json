@@ -18,5 +18,14 @@
 		"viewport": "width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0",
 		"theme-color": "#5c6bc0",
 		"msapplication-navbutton-color": "#5c6bc0"
+	},
+	"links": {
+		"shortcut icon": { "href": "/images/favicon/favicon.ico" },
+		"icon": [
+			{ "type": "image/svg+xml", "href": "/images/favicon/favicon.svg" },
+			{ "type": "image/png", "sizes": "96x96", "href": "/images/favicon/favicon-96x96.png" }
+		],
+		"apple-touch-icon": { "sizes": "180x180", "href": "/images/favicon/apple-touch-icon.png" },
+		"manifest": { "href": "/images/favicon/site.webmanifest" }
 	}
 }
