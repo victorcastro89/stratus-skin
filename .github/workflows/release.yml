@@ -28,7 +28,7 @@ jobs:
           cp -r skins/stratus          dist/skins/stratus
           cp -r plugins/stratus_helper dist/plugins/stratus_helper
           cp -r plugins/undo_send      dist/plugins/undo_send
-          cp INSTALL.md CHANGELOG.md dist/
+          cp INSTALL.md dist/
           cd dist && zip -r "../stratus-${VERSION}.zip" . && cd ..
 
       - name: Create GitHub Release

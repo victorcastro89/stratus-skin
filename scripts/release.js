@@ -2,8 +2,7 @@
 'use strict';
 
 /**
- * Release script — assembles CHANGELOG, bumps versions, builds CSS,
- * commits, tags, and pushes.
+ * Release script — bumps versions, builds CSS, commits, tags, and pushes.
  *
  * Requires changelog/<version>.md to exist (create with `npm run changelog`).
  *
@@ -108,67 +107,11 @@ for (const rel of versionFiles) {
   console.log(`✓ ${rel}`);
 }
 
-// ── Assemble CHANGELOG.md from changelog/ files ─────────────────────
-
-const REPO_URL = 'https://github.com/victorcastro89/stratus-skin';
-
-// Read all changelog entries, sorted newest first
-const entries = fs.readdirSync(changelogDir)
-  .filter(f => f.endsWith('.md'))
-  .map(f => f.replace('.md', ''))
-  .sort((a, b) => {
-    const pa = a.split('.').map(Number);
-    const pb = b.split('.').map(Number);
-    for (let i = 0; i < 3; i++) {
-      if (pa[i] !== pb[i]) return pb[i] - pa[i];
-    }
-    return 0;
-  });
-
-// Look up date for each version (tag date or today for the new release)
-function getVersionDate(version) {
-  if (version === newVersion) return new Date().toISOString().slice(0, 10);
-  try {
-    return run(`git log -1 --format=%ai v${version}`).slice(0, 10);
-  } catch (_) {
-    return 'unreleased';
-  }
-}
-
-let changelogBody = '';
-const links = [];
-
-for (const version of entries) {
-  const date    = getVersionDate(version);
-  const content = fs.readFileSync(path.join(changelogDir, `${version}.md`), 'utf8').trimEnd();
-  changelogBody += `## [${version}] — ${date}\n\n${content}\n\n`;
-  links.push(`[${version}]: ${REPO_URL}/releases/tag/v${version}`);
-}
-
-const assembled = [
-  '# Changelog',
-  '',
-  'All notable changes to Stratus are documented here.',
-  'Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).',
-  'Versions follow [Semantic Versioning](https://semver.org/).',
-  '',
-  '---',
-  '',
-  changelogBody.trimEnd(),
-  '',
-  ...links,
-  '',
-].join('\n');
-
-fs.writeFileSync(path.join(ROOT, 'CHANGELOG.md'), assembled);
-console.log('✓ CHANGELOG.md (assembled from changelog/ entries)');
-
 // ── Git commit + tag ────────────────────────────────────────────────
 
 console.log('\nCommitting...');
 const stagedFiles = [
   ...versionFiles,
-  'CHANGELOG.md',
   `changelog/${newVersion}.md`,
   'skins/stratus/styles/styles.min.css',
 ];
