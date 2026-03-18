@@ -2,7 +2,10 @@
 'use strict';
 
 /**
- * Release script — bumps versions, updates CHANGELOG, commits, tags, pushes.
+ * Release script — assembles CHANGELOG, bumps versions, builds CSS,
+ * commits, tags, and pushes.
+ *
+ * Requires changelog/<version>.md to exist (create with `npm run changelog`).
  *
  * Usage:
  *   npm run release           # patch:  1.0.0 → 1.0.1
@@ -38,7 +41,7 @@ function abort(msg) {
   process.exit(1);
 }
 
-// ── Parse args ──────────────────────────────────────────────────────
+// ── Determine next version ──────────────────────────────────────────
 
 const bump = process.argv[2] || 'patch';
 if (!['patch', 'minor', 'major'].includes(bump)) {
@@ -53,7 +56,7 @@ const newVersion =
   bump === 'minor' ? `${maj}.${min + 1}.0` :
                      `${maj}.${min}.${pat + 1}`;
 
-console.log(`\nBumping ${pkg.version} → ${newVersion} (${bump})\n`);
+console.log(`\nReleasing ${pkg.version} → ${newVersion} (${bump})\n`);
 
 // ── Pre-flight checks ───────────────────────────────────────────────
 
@@ -63,10 +66,20 @@ try {
   abort(`✗ Tag v${newVersion} already exists. Aborting.`);
 } catch (_) { /* tag doesn't exist — good */ }
 
-// Abort if working tree is dirty
+// Abort if working tree is dirty (changelog file is allowed)
 const dirty = run('git status --porcelain');
 if (dirty) {
-  abort('✗ Working tree has uncommitted changes. Commit or stash them first.');
+  const nonChangelog = dirty.split('\n').filter(l => !l.includes(`changelog/${newVersion}.md`));
+  if (nonChangelog.length) {
+    abort('✗ Working tree has uncommitted changes. Commit or stash them first.');
+  }
+}
+
+// Abort if changelog entry is missing
+const changelogDir  = path.join(ROOT, 'changelog');
+const entryFile     = path.join(changelogDir, `${newVersion}.md`);
+if (!fs.existsSync(entryFile)) {
+  abort(`✗ changelog/${newVersion}.md not found. Run \`npm run changelog\` first and edit it.`);
 }
 
 // ── Build CSS (before any file changes) ─────────────────────────────
@@ -95,32 +108,60 @@ for (const rel of versionFiles) {
   console.log(`✓ ${rel}`);
 }
 
-// ── Update CHANGELOG ────────────────────────────────────────────────
+// ── Assemble CHANGELOG.md from changelog/ files ─────────────────────
 
-const changelogPath = path.join(ROOT, 'CHANGELOG.md');
-const changelog     = fs.readFileSync(changelogPath, 'utf8');
+const REPO_URL = 'https://github.com/victorcastro89/stratus-skin';
 
-// Collect commits since last tag
-let commitLines = ['- See commit history'];
-try {
-  const lastTag = run('git describe --tags --abbrev=0');
-  const log     = run(`git log ${lastTag}..HEAD --oneline --no-merges`);
-  if (log) {
-    commitLines = log.split('\n').map(l => `- ${l.replace(/^[0-9a-f]+ /, '')}`);
+// Read all changelog entries, sorted newest first
+const entries = fs.readdirSync(changelogDir)
+  .filter(f => f.endsWith('.md'))
+  .map(f => f.replace('.md', ''))
+  .sort((a, b) => {
+    const pa = a.split('.').map(Number);
+    const pb = b.split('.').map(Number);
+    for (let i = 0; i < 3; i++) {
+      if (pa[i] !== pb[i]) return pb[i] - pa[i];
+    }
+    return 0;
+  });
+
+// Look up date for each version (tag date or today for the new release)
+function getVersionDate(version) {
+  if (version === newVersion) return new Date().toISOString().slice(0, 10);
+  try {
+    return run(`git log -1 --format=%ai v${version}`).slice(0, 10);
+  } catch (_) {
+    return 'unreleased';
   }
-} catch (_) { /* no previous tag */ }
+}
 
-const today    = new Date().toISOString().slice(0, 10);
-const newEntry = [`## [${newVersion}] — ${today}`, '', ...commitLines, ''].join('\n');
-const linkLine = `[${newVersion}]: https://github.com/victorcastro89/stratus-skin/releases/tag/v${newVersion}`;
+let changelogBody = '';
+const links = [];
 
-// Insert new section before the first existing ## entry, append link at end
-const updated = changelog
-  .replace(/(^|\n)(## \[)/, `$1${newEntry}$2`)
-  .trimEnd() + '\n' + linkLine + '\n';
+for (const version of entries) {
+  const date    = getVersionDate(version);
+  const content = fs.readFileSync(path.join(changelogDir, `${version}.md`), 'utf8').trimEnd();
+  changelogBody += `## [${version}] — ${date}\n\n${content}\n\n`;
+  links.push(`[${version}]: ${REPO_URL}/releases/tag/v${version}`);
+}
 
-fs.writeFileSync(changelogPath, updated);
-console.log('✓ CHANGELOG.md');
+const assembled = [
+  '# Changelog',
+  '',
+  'All notable changes to Stratus are documented here.',
+  'Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).',
+  'Versions follow [Semantic Versioning](https://semver.org/).',
+  '',
+  '---',
+  '',
+  changelogBody.trimEnd(),
+  '',
+  ...links,
+  '',
+].join('\n');
+
+fs.writeFileSync(path.join(ROOT, 'CHANGELOG.md'), assembled);
+console.log('✓ CHANGELOG.md (assembled from changelog/ entries)');
 
 // ── Git commit + tag ────────────────────────────────────────────────
 
@@ -128,6 +169,7 @@ console.log('\nCommitting...');
 const stagedFiles = [
   ...versionFiles,
   'CHANGELOG.md',
+  `changelog/${newVersion}.md`,
   'skins/stratus/styles/styles.min.css',
 ];
 run(`git add ${stagedFiles.join(' ')}`);
