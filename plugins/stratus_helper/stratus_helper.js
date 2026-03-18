@@ -83,34 +83,37 @@
     }
   }
 
+  // ──────────────────────────────────────────
+  //  1. Color Scheme Switching
+  // ──────────────────────────────────────────
+  //  Registered before 'init' so that output->command() calls rendered
+  //  inline by prefs_save are caught even though they execute before
+  //  rcmail.init().
+
+  rcmail.addEventListener('plugin.stratus.scheme_applied', function (data) {
+    if (!data) return;
+    applyScheme(data);
+  });
+
+  // ──────────────────────────────────────────
+  //  2. Font Switching
+  // ──────────────────────────────────────────
+
+  rcmail.addEventListener('plugin.stratus.font_applied', function (data) {
+    if (!data) return;
+    applyFont(data.family, data.url);
+  });
+
+  // ──────────────────────────────────────────
+  //  2b. Font Size Switching
+  // ──────────────────────────────────────────
+
+  rcmail.addEventListener('plugin.stratus.fontsize_applied', function (data) {
+    if (!data) return;
+    applyFontSize(data.size, data.line_height);
+  });
+
   rcmail.addEventListener('init', function () {
-
-    // ──────────────────────────────────────────
-    //  1. Color Scheme Switching
-    // ──────────────────────────────────────────
-
-    rcmail.addEventListener('plugin.stratus.scheme_applied', function (data) {
-      if (!data) return;
-      applyScheme(data);
-    });
-
-    // ──────────────────────────────────────────
-    //  2. Font Switching
-    // ──────────────────────────────────────────
-
-    rcmail.addEventListener('plugin.stratus.font_applied', function (data) {
-      if (!data) return;
-      applyFont(data.family, data.url);
-    });
-
-    // ──────────────────────────────────────────
-    //  2b. Font Size Switching
-    // ──────────────────────────────────────────
-
-    rcmail.addEventListener('plugin.stratus.fontsize_applied', function (data) {
-      if (!data) return;
-      applyFontSize(data.size, data.line_height);
-    });
 
     // ──────────────────────────────────────────
     //  3. Settings Page Live Preview
@@ -236,6 +239,10 @@
         root.style.setProperty('--stratus-dark-border', data.dark_border);
         root.style.setProperty('--stratus-dark-border-rgb', hexToRgb(data.dark_border));
       }
+
+      // On-primary tokens — WCAG-validated text on primary backgrounds
+      root.style.setProperty('--stratus-on-primary', data.on_primary || '#ffffff');
+      root.style.setProperty('--stratus-on-primary-dark', data.on_primary_dark || '#ffffff');
 
       // Dark utility tokens — pre-computed lighten() replacements
       if (data.dark_background) {

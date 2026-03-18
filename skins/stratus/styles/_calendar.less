@@ -165,7 +165,7 @@
 
     // Today's date number — accent pill
     .fc-day-top.fc-today .fc-day-number {
-        color: @color-on-primary;
+        color: var(--stratus-on-primary);
         background: @mp-cal-today-number;
         border-radius: @mp-radius-circle;
         width: 1.65em;
@@ -240,16 +240,13 @@
         // }
 
         .btn.btn-secondary {
+            .mp-btn-base();
             background: transparent;
             border: none;
             border-radius: 12px;
             color: var(--stratus-font-secondary);
-            font-weight: @mp-font-weight-medium;
             font-size: @mp-font-size-sm;
             padding: 5px 14px;
-            // transition: background @mp-transition-base,
-            //             color @mp-transition-base,
-            //             box-shadow @mp-transition-base;
 
             &:hover:not(.active) {
                 background: rgba(var(--stratus-primary-rgb), 0.12);
@@ -258,7 +255,7 @@
 
             &.active {
                 background: var(--stratus-primary);
-                color: @color-on-primary;
+                color: var(--stratus-on-primary);
                 box-shadow: 0 1px 3px rgba(var(--stratus-primary-rgb), 0.25);
             }
         }
@@ -275,28 +272,13 @@
         padding: 0;
 
         .btn.btn-secondary {
-            border: 1px solid var(--stratus-border);
-            border-radius: @mp-radius-md;
-            color: var(--stratus-font);
-            font-size: @mp-font-size-sm;
-            font-weight: @mp-font-weight-medium;
+            .mp-btn-secondary();
             padding: 5px 12px;
-            transition: background @mp-transition-base,
-                        color @mp-transition-base,
-                        border-color @mp-transition-base,
-                        box-shadow @mp-transition-base;
-
-            &:hover {
-                background: rgba(var(--stratus-primary-rgb), 0.05);
-                border-color: rgba(var(--stratus-primary-rgb), 0.40);
-                color: var(--stratus-text-accent);
-            }
+            font-size: @mp-font-size-sm;
 
             // Today — primary pill CTA
             &.today {
-                background: var(--stratus-primary);
-                color: @color-on-primary;
-                border-color: var(--stratus-primary);
+                .mp-btn-primary();
                 border-radius: 12px;
                 padding: 5px 18px;
                 font-weight: @mp-font-weight-semibold;
@@ -304,20 +286,34 @@
 
                 &:hover,
                 &:focus {
-                    background: var(--stratus-primary);
-                    border-color: var(--stratus-primary);
                     box-shadow: @mp-cal-today-pill-shadow-hover;
-                    filter: brightness(0.88);
                 }
 
                 &:active {
-                    transform: translateY(0);
                     box-shadow: 0 1px 4px rgba(var(--stratus-primary-rgb), 0.30);
                 }
             }
         }
     }
 
+
+    // ── FullCalendar native buttons (.fc-button) — light mode base ─────────
+    .fc-button {
+        .mp-btn-secondary();
+        padding: 5px 12px;
+        font-size: @mp-font-size-sm;
+
+        &:active,
+        &.fc-button-active {
+            background: var(--stratus-primary);
+            color: var(--stratus-on-primary);
+            border-color: var(--stratus-primary);
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 3px rgba(var(--stratus-primary-rgb), 0.25);
+        }
+    }
 
     // ═══════════════════════════════════════════════════════════════════════════
     // EVENTS — softer, rounded, modern feel
@@ -472,7 +468,7 @@ body.task-calendar {
             flex-shrink: 0;
             padding: @mp-space-md @mp-space-sm @mp-space-xs;
             background: @color-layout-sidebar-background;
-            border-bottom: 1px solid @color-border;
+            border-bottom: 1px solid var(--stratus-border);
 
             // Make the datepicker fill the sidebar width with no extra chrome
             .ui-datepicker {
@@ -596,7 +592,7 @@ body.task-calendar {
     #datepicker .ui-datepicker td.ui-datepicker-today a,
     #datepicker .ui-datepicker td.ui-datepicker-today .ui-state-default {
         background: var(--stratus-primary);
-        color: @color-btn-primary;
+        color: var(--stratus-on-primary);
         font-weight: @mp-font-weight-semibold;
         box-shadow: 0 1px 3px rgba(var(--stratus-primary-rgb), 0.25);
     }
@@ -682,11 +678,11 @@ body.task-calendar {
         padding: .45rem;
         margin: 0;
         line-height: 1.5;
-        cursor: pointer;
         font-size: 1rem;
         text-align: center;
         box-shadow: none;
         font-weight: normal;
+        cursor: pointer;
         transition: color @mp-transition-base,
                     background @mp-transition-base;
 
@@ -850,7 +846,7 @@ body.task-calendar {
 }
 .invitebox.calendar-invitebox {
     background: @color-layout-content-background !important;
-    border: 1px solid @color-border!important;
+    border: 1px solid var(--stratus-border)!important;
     border-radius: @mp-radius-lg !important;
     box-shadow: @mp-shadow-sm !important;
     padding: @mp-space-lg !important;
@@ -867,7 +863,7 @@ body.task-calendar {
         font-size: @mp-font-size-base !important;
         color: var(--stratus-font) !important;
         padding: @mp-space-md 0 @mp-space-sm !important;
-        border-top: 1px solid @color-border !important;
+        border-top: 1px solid var(--stratus-border) !important;
         margin-top: @mp-space-sm !important;
     }
 
@@ -875,19 +871,14 @@ body.task-calendar {
     .itip-buttons {
         gap: @mp-space-sm !important;
 
-        // All RSVP buttons — base styling
+        // All RSVP buttons — secondary base (kolab !important needed for specificity)
         input.button {
-            border: 1px solid @color-border!important;
-            border-radius: @mp-radius-md!important;
+            .mp-btn-secondary();
             padding: @mp-space-sm @mp-space-lg!important;
-            font-weight: @mp-font-weight-medium!important;
             font-size: @mp-font-size-base!important;
-            cursor: pointer!important;
-            transition: background @mp-transition-base,
-                        border-color @mp-transition-base,
-                        color @mp-transition-base!important;
             background: transparent!important;
-            color: @color-font!important;
+            color: var(--stratus-font)!important;
+            border: 1px solid var(--stratus-border)!important;
             box-shadow: none!important;
 
             &:hover {
@@ -907,7 +898,7 @@ body.task-calendar {
         input.button[rel=accepted] {
             background: @color-success!important;
             border-color: @color-success!important;
-            color: @color-on-primary!important;
+            color: var(--stratus-on-primary)!important;
             box-shadow: 0 2px 8px fadeout(@color-success, 70%)!important;
 
             &:hover {
@@ -923,8 +914,8 @@ body.task-calendar {
 
         // Maybe — outlined secondary
         input.button[rel=tentative] {
-            border-color: @color-border!important;
-            color: @color-font!important;
+            border-color: var(--stratus-border)!important;
+            color: var(--stratus-font)!important;
 
             &:hover, &:focus ,&:active, &:visited {
                 background: rgba(var(--stratus-primary-rgb), 0.06)!important;
@@ -973,8 +964,8 @@ body.task-calendar {
         select {
             padding-right: 1.75rem!important;
             background-color: @color-layout-content-background!important;
-            border-color: @color-border!important;
-            color: @color-font!important;
+            border-color: var(--stratus-border)!important;
+            color: var(--stratus-font)!important;
         }
     }
 
@@ -1153,7 +1144,7 @@ html.dark-mode {
 
                 &.active {
                     background: var(--stratus-primary-dark);
-                    color: @color-dark-on-primary;
+                    color: var(--stratus-on-primary-dark);
                     box-shadow: 0 1px 3px rgba(var(--stratus-primary-dark-rgb), 0.28);
                 }
             }
@@ -1291,7 +1282,7 @@ html.dark-mode {
         &:active,
         &.fc-button-active {
             background-color: var(--stratus-primary-dark);
-            color: @color-dark-on-primary;
+            color: var(--stratus-on-primary-dark);
             border-color: var(--stratus-primary-dark);
         }
 
@@ -1340,7 +1331,7 @@ html.dark-mode {
         .itip-buttons input.button[rel=accepted] {
             background: @color-dark-success!important;
             border-color: @color-dark-success!important;
-            color: @color-dark-on-primary!important;
+            color: var(--stratus-on-primary-dark)!important;
             box-shadow: 0 2px 8px fadeout(@color-dark-success, 65%)!important;
 
             &:focus,

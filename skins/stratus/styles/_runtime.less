@@ -28,7 +28,7 @@ body {
     --mp-conv-main-rgb: var(--stratus-primary-rgb, 92, 107, 192);
     --mp-conv-main-light: rgba(var(--stratus-primary-rgb), 0.05);
 
-    --mp-conv-row-border: @color-list-border;               // no extra fadeout — variable is already subtle (ISSUE-002)
+    --mp-conv-row-border: var(--stratus-border);               // no extra fadeout — variable is already subtle (ISSUE-002)
     --mp-conv-row-hover-bg: rgba(var(--stratus-primary-rgb), 0.05);
     --mp-conv-row-selected-bg: rgba(var(--stratus-primary-rgb), 0.13);
 
@@ -37,29 +37,29 @@ body {
     --mp-conv-list-surface: @color-layout-list-background;
     --mp-conv-surface-raised: @color-layout-content-background;
 
-    --mp-conv-text: @color-font;
-    --mp-conv-text-strong: darken(@color-font, 22%);
-    --mp-conv-text-secondary: @color-font-secondary;
+    --mp-conv-text: var(--stratus-font);
+    --mp-conv-text-strong: var(--stratus-font);
+    --mp-conv-text-secondary: var(--stratus-font-secondary);
     --mp-conv-text-muted: lighten(@color-font-secondary, 18%);
 
-    --mp-conv-count-bg: @color-layout-border;
-    --mp-conv-count-text: @color-font-secondary;
+    --mp-conv-count-bg: var(--stratus-border);
+    --mp-conv-count-text: var(--stratus-font-secondary);
 
     --mp-conv-warning: @mp-color-amber;
     --mp-conv-danger: @color-error;
 
     --mp-conv-hover-actions-bg: fade(@color-layout-list-background, 97%);
     --mp-conv-hover-actions-shadow: 0 1px 6px fadeout(@color-black, 88%);
-    --mp-conv-hover-actions-btn-text: @color-font-secondary;
-    --mp-conv-hover-actions-btn-hover-text: @color-font;
+    --mp-conv-hover-actions-btn-text: var(--stratus-font-secondary);
+    --mp-conv-hover-actions-btn-hover-text: var(--stratus-font);
     --mp-conv-card-hover-shadow: 0 2px 8px fadeout(@color-black, 92%);
 
     --mp-conv-child-divider: var(--mp-conv-row-border);
     --mp-conv-child-bg: rgba(var(--stratus-primary-rgb), 0.02);
     --mp-conv-child-hover-bg: rgba(var(--stratus-primary-rgb), 0.05);
     --mp-conv-child-selected-bg: rgba(var(--stratus-primary-rgb), 0.07);
-    --mp-conv-child-text: @color-font;
-    --mp-conv-child-text-muted: @color-font-secondary;
+    --mp-conv-child-text: var(--stratus-font);
+    --mp-conv-child-text-muted: var(--stratus-font-secondary);
     --mp-conv-child-indent-guide: rgba(var(--stratus-primary-rgb), 0.12);
 
     --mp-conv-child-row-bg: var(--mp-conv-child-bg);
@@ -73,7 +73,7 @@ body {
     // HOVER ACTIONS — plugin CSS bridge for unified row hover actions
     --mp-hover-actions-bg: @mp-glass-bg-strong;
     --mp-hover-actions-shadow: @mp-shadow-md;
-    --mp-hover-actions-icon-color: @color-font-secondary;
+    --mp-hover-actions-icon-color: var(--stratus-font-secondary);
     --mp-hover-actions-icon-hover-bg: rgba(var(--stratus-primary-rgb), 0.10);
     --mp-hover-actions-icon-hover-color: var(--stratus-primary);
 }
@@ -83,39 +83,6 @@ body {
 // These use named tokens so opacity values are scheme-configurable.
 // ═══════════════════════════════════════════════════════════════════════════════
 // (Defined in :root block of _variables.less, consumed here and in widget files)
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// PRIMARY BUTTONS — gradient replaced with solid var() color for runtime switching
-// ═══════════════════════════════════════════════════════════════════════════════
-.btn-primary,
-a.btn-primary,
-button.btn-primary {
-    background: var(--stratus-primary);
-    box-shadow: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.3);
-
-    &:hover,
-    &:focus {
-        background: var(--stratus-primary);
-        filter: brightness(0.92);
-        box-shadow: 0 4px 16px rgba(var(--stratus-primary-rgb), 0.45);
-    }
-
-    &:active {
-        box-shadow: 0 1px 4px rgba(var(--stratus-primary-rgb), 0.35);
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// SECONDARY BUTTON HOVER — accent tint
-// ═══════════════════════════════════════════════════════════════════════════════
-.btn-secondary:hover,
-.btn-secondary:focus,
-a.btn-secondary:hover,
-a.btn-secondary:focus {
-    background: rgba(var(--stratus-primary-rgb), 0.06);
-    border-color: rgba(var(--stratus-primary-rgb), 0.40);
-    color: var(--stratus-text-accent);
-}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BADGES — accent background
@@ -196,28 +163,6 @@ textarea:focus {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// TOOLBAR BUTTON HOVER — accent tint
-// ═══════════════════════════════════════════════════════════════════════════════
-.toolbar a.button:hover,
-a.button.icon:not(.btn):hover {
-    background: rgba(var(--stratus-primary-rgb), 0.08);
-    color: var(--stratus-text-accent);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// FLOATING ACTION BUTTON — accent glow
-// ═══════════════════════════════════════════════════════════════════════════════
-.floating-action-buttons a.button {
-    box-shadow: 0 10px 15px -3px rgba(var(--stratus-primary-rgb), 0.3),
-                0 0 10px rgba(var(--stratus-primary-rgb), 0.2);
-
-    &:hover {
-        box-shadow: 0 20px 25px -5px rgba(var(--stratus-primary-rgb), 0.35),
-                    0 0 20px rgba(var(--stratus-primary-rgb), 0.3);
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
 // DARK MODE — use dark variant of primary
 // ═══════════════════════════════════════════════════════════════════════════════
 html.dark-mode {
@@ -246,21 +191,6 @@ html.dark-mode {
 
         --mp-hover-actions-icon-hover-bg: rgba(var(--stratus-primary-dark-rgb), 0.12);
         --mp-hover-actions-icon-hover-color: var(--stratus-primary-dark);
-    }
-
-    .btn-primary,
-    a.btn-primary,
-    button.btn-primary {
-        background: var(--stratus-primary-dark);
-        filter: brightness(0.82);
-        box-shadow: 0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.3);
-
-        &:hover,
-        &:focus {
-            background: var(--stratus-primary-dark);
-            filter: brightness(0.72);
-            box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
-        }
     }
 
     a {
@@ -302,26 +232,4 @@ html.dark-mode {
         box-shadow: 0 0 14px rgba(var(--stratus-primary-dark-rgb), 0.35);
     }
 
-    .toolbar a.button:hover,
-    a.button.icon:not(.btn):hover {
-        background: rgba(var(--stratus-primary-dark-rgb), 0.12);
-        color: var(--stratus-text-accent-dark);
-    }
-
-    .btn-secondary,
-    a.btn-secondary,
-    button.btn-secondary {
-        background: rgba(var(--stratus-primary-dark-rgb), 0.05);
-        filter: brightness(0.9);
-    }
-
-    .btn-secondary:hover,
-    .btn-secondary:focus,
-    a.btn-secondary:hover,
-    a.btn-secondary:focus {
-        background: rgba(var(--stratus-primary-dark-rgb), 0.18);
-        border-color: rgba(var(--stratus-primary-dark-rgb), 0.40);
-        color: var(--stratus-text-accent-dark);
-        filter: brightness(0.80);
-    }
 }

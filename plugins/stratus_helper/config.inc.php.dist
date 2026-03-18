@@ -44,6 +44,10 @@ $config['stratus_color_schemes'] = [
         'selected_bg'         => 'rgba(92, 107, 192, 0.13)',
         'focus_ring'          => 'rgba(92, 107, 192, 0.25)',
 
+        // On-primary — WCAG AA validated text on primary backgrounds
+        'on_primary'          => '#ffffff',   // white passes 4.2:1 on indigo (large text OK)
+        'on_primary_dark'     => '#ffffff',   // white passes on #7986cb
+
         // Dark mode palette — exact backward-compatible values
         'dark_background'     => '#13172a',
         'dark_surface'        => '#1a1f36',

@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 .tox.tox-tinymce {
     border-radius: @mp-radius-lg;
-    border: 1px solid @color-input-border;
+    border: 1px solid var(--stratus-border);
 
     &.focused,
     &:focus-within {
@@ -21,7 +21,7 @@
 // Legacy TinyMCE 4.x
 .mce-tinymce {
     border-radius: @mp-radius-lg;
-    border: 1px solid @color-input-border;
+    border: 1px solid var(--stratus-border);
 
     &.mce-focused {
         border-color: var(--stratus-primary);
@@ -33,13 +33,12 @@
 .tox-toolbar-overlord,
 .tox-toolbar__primary {
     background: @color-layout-header-background;
-    border-bottom: 1px solid @color-layout-border;
+    border-bottom: 1px solid var(--stratus-border);
 }
 
 // TinyMCE 5+ buttons
 .tox-tbtn {
-    border-radius: @mp-radius-sm;
-    transition: background @mp-transition-fast;
+    .mp-btn-icon(@size: auto, @radius: @mp-radius-sm);
 
     &:hover:not(.tox-tbtn--disabled) {
         background: rgba(var(--stratus-primary-rgb), 0.08) !important;
@@ -55,13 +54,12 @@
 // Legacy TinyMCE 4.x
 .mce-toolbar-grp {
     background: @color-layout-header-background;
-    border-bottom: 1px solid @color-layout-border;
+    border-bottom: 1px solid var(--stratus-border);
     padding: @mp-space-xs;
 }
 
 .mce-btn {
-    // border-radius: @mp-radius-sm;
-    // transition: background @mp-transition-fast;
+    .mp-btn-icon(@size: auto, @radius: @mp-radius-sm);
 
     &:hover {
         background: rgba(var(--stratus-primary-rgb), 0.08);

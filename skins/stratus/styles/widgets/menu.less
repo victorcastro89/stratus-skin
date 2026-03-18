@@ -5,7 +5,7 @@
 // TABS — clean underline style
 // ═══════════════════════════════════════════════════════════════════════════════
 .nav-tabs {
-    border-bottom: @mp-tabs-border-width solid @color-layout-border;
+    border-bottom: @mp-tabs-border-width solid var(--stratus-border);
 
     .nav-item .nav-link {
         border: none;
@@ -13,7 +13,7 @@
         margin-bottom: @mp-tabs-link-margin-compensation;
         padding: @mp-space-sm @mp-space-lg;
         font-weight: @mp-font-weight-medium;
-        color: @color-font-secondary;
+        color: var(--stratus-font-secondary);
         transition: color @mp-transition-base, border-color @mp-transition-base;
         border-radius: @mp-tabs-link-border-radius;
 

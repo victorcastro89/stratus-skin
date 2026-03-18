@@ -153,18 +153,14 @@
 		}
 
 		// ── Move ──────────────────────────────────────────────────
-		if (this._moveBtn) {
-			this._moveBtn.addEventListener('click', function() {
-				self._schedulePostAction();
-			});
-
-			// Popper.js miscalculates the move button's position because it sits inside
-			// a flex-reordered container that also has overflow:hidden (.footer from
-			// Elastic's layout CSS).  Fix the popover coordinates after Bootstrap renders.
-			$(this._moveBtn).on('shown.bs.popover', function() {
-				self._fixMovePopoverPosition();
-			});
-		}
+		// NOTE: Do NOT call _schedulePostAction() on click here. The move button
+		// click only opens the folder-picker popover — no move has happened yet.
+		// Calling it here triggers post-action cleanup at setTimeout(0), which
+		// removes mp-has-selection and hides the button *before* Elastic's
+		// setTimeout(popover.show, 1) fires. Popper.js then reads
+		// getBoundingClientRect() = {0,0} for the hidden button and sets
+		// x-out-of-boundaries, placing the popover at top:0 left:4px.
+		// Post-action cleanup for moves is triggered from _bindResponseAfterMove.
 
 		// ── Mark toggle ────────────────────────────────────────────
 		if (this._markToggleBtn) {
@@ -209,8 +205,13 @@
 	 */
 	ns.ActionDispatcher.prototype._bindResponseAfterMove = function() {
 		var self = this;
-		this.rcmail.addEventListener('responseaftermove', function() {
-			if (!self._archiveActionPending) return;
+
+		var handler = function() {
+			if (!self._archiveActionPending) {
+				// Regular (non-archive) move completed — clean up bar state.
+				self._schedulePostAction();
+				return;
+			}
 			self._archiveActionPending = false;
 
 			var archiveRoot = self.rcmail.env.archive_folder;
@@ -242,48 +243,10 @@
 			}
 
 			self.rcmail.refresh();
-		});
-	};
+		};
 
-	/**
-	 * Reposition the folder-selector popover so it opens directly below the
-	 * move button.  Called from the shown.bs.popover handler because Popper.js
-	 * computes wrong coordinates when the trigger is inside a flex-reordered
-	 * container with overflow:hidden (Elastic's .footer layout rule).
-	 */
-	ns.ActionDispatcher.prototype._fixMovePopoverPosition = function() {
-		if (!this._moveBtn) return;
-
-		var popoverId = this._moveBtn.getAttribute('aria-describedby');
-		if (!popoverId) return;
-		var popover = document.getElementById(popoverId);
-		if (!popover) return;
-
-		var rect    = this._moveBtn.getBoundingClientRect();
-		var scrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
-		var scrollY = window.pageYOffset || document.documentElement.scrollTop  || 0;
-		var winW    = window.innerWidth  || document.documentElement.clientWidth || 0;
-		var pw      = popover.offsetWidth;
-
-		// Place the popover below the button, horizontally centred on it
-		var top  = rect.bottom + scrollY;
-		var left = rect.left + scrollX + rect.width / 2 - pw / 2;
-
-		// Keep the popover within the viewport
-		left = Math.max(scrollX + 4, Math.min(left, scrollX + winW - pw - 4));
-
-		popover.style.transform = 'none';
-		popover.style.top       = top  + 'px';
-		popover.style.left      = left + 'px';
-
-		// Align the arrow with the button's horizontal centre
-		var arrow = popover.querySelector('.arrow');
-		if (arrow) {
-			var btnCx      = rect.left + rect.width / 2;
-			var popoverBCR = popover.getBoundingClientRect();
-			var arrowLeft  = btnCx - popoverBCR.left - arrow.offsetWidth / 2;
-			arrow.style.left = Math.max(0, arrowLeft) + 'px';
-		}
+		this.rcmail.addEventListener('responseaftermove', handler);
+		this.rcmail.addEventListener('responseafterplugin.move2archive', handler);
 	};
 
 	// ── Public API ─────────────────────────────────────────────────────

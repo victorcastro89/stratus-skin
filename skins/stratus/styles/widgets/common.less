@@ -52,7 +52,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 ::selection {
     background: rgba(var(--stratus-primary-rgb), 0.25);
-    color: @color-font;
+    color: var(--stratus-font);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -192,7 +192,7 @@ html.layout-phone #layout-list > .searchbar {
     border-radius: @mp-radius-sm;
     cursor: pointer;
     transition: background @mp-transition-fast;
-    color: @color-font;
+    color: var(--stratus-font);
     text-decoration: none;
     min-width: 0 !important;    // override elastic .pagenav a min-width
     flex-grow: 0 !important;    // override elastic .pagenav a flex-grow
@@ -218,7 +218,7 @@ html.layout-phone #layout-list > .searchbar {
     justify-content: center;
     width: 16px;
     height: 16px;
-    border: 2px solid @color-input-border;
+    border: 2px solid var(--stratus-border);
     border-radius: 3px;
     background: transparent;
     transition: border-color @mp-transition-fast, background @mp-transition-fast;
@@ -260,7 +260,7 @@ html.layout-phone #layout-list > .searchbar {
         top: 0;
         width: 5px;
         height: 9px;
-        border: solid @color-on-primary;
+        border: solid var(--stratus-on-primary);
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
     }
@@ -275,9 +275,9 @@ html.layout-phone #layout-list > .searchbar {
     height: 28px;
     padding: 0;
     cursor: pointer;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
     text-decoration: none;
-    border-right: 1px solid @color-layout-border;
+    border-right: 1px solid var(--stratus-border);
     margin-right: 4px;
     flex-shrink: 0;
     min-width: 0 !important;
@@ -344,7 +344,7 @@ html.layout-phone #layout-list > .searchbar {
     border-radius: @mp-radius-sm;
     cursor: pointer;
     transition: background @mp-transition-fast;
-    color: @color-font;
+    color: var(--stratus-font);
     text-decoration: none;
     white-space: nowrap;
     flex-grow: 0 !important;
@@ -376,7 +376,7 @@ html.layout-phone #layout-list > .searchbar {
     width: 1.25rem;
     height: 1.25rem;
     flex-shrink: 0;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
 
     &::before {
         font-family: 'Icons';
@@ -404,7 +404,7 @@ html.layout-phone #layout-list > .searchbar {
 // Sort text label
 .mp-sort-label {
     font-size: @mp-font-size-sm;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
     font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -414,7 +414,7 @@ html.layout-phone #layout-list > .searchbar {
 // Elevate label colour when a direction is active (sibling selector — arrow precedes label)
 .mp-sort-arrow.mp-sort-asc ~ .mp-sort-label,
 .mp-sort-arrow.mp-sort-desc ~ .mp-sort-label {
-    color: @color-font;
+    color: var(--stratus-font);
 }
 
 // Phone: hide text label, show icon-only
@@ -448,7 +448,7 @@ html.layout-phone #layout-list > .searchbar {
 
 // Separator <li> between column list and direction options
 #mp-sort-menu .mp-sort-dir-separator {
-    border-top: 1px solid @color-layout-border;
+    border-top: 1px solid var(--stratus-border);
     height: 0;
     padding: 0;
     margin: @mp-space-xs 0;
@@ -476,7 +476,7 @@ html.layout-phone #layout-list > .searchbar {
     width: 12px;
     min-width: 12px;
     height: 12px;
-    border: 1.5px solid @color-input-border;
+    border: 1.5px solid var(--stratus-border);
     border-radius: 50%;
     background: transparent;
     box-sizing: border-box;
@@ -507,7 +507,7 @@ html.layout-phone #layout-list > .searchbar {
 
 .mp-mass-action-count {
     font-size: @mp-font-size-sm;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
     white-space: nowrap;
     flex-grow: 0 !important;   // override elastic .pagenav-text flex-grow
     padding: 0 @mp-space-xs;
@@ -516,25 +516,15 @@ html.layout-phone #layout-list > .searchbar {
 // Prev/next buttons inside mass-action bar
 .mp-smart-bar .prevpage,
 .mp-smart-bar .nextpage {
+    .mp-btn-icon(28px);
+    display: flex !important;
     flex-grow: 0 !important;
     min-width: 28px !important;
-    width: 28px;
     height: 28px !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    border-radius: @mp-radius-sm;
-    transition: background @mp-transition-fast;
-    color: @color-font;
 
     &:hover:not(.disabled) {
         background: rgba(var(--stratus-primary-rgb), 0.08);
         color: var(--stratus-text-accent);
-    }
-
-    &.disabled {
-        opacity: 0.35;
-        cursor: default;
     }
 
     &:before {
@@ -582,25 +572,19 @@ html.layout-phone #layout-list > .searchbar {
 .mp-mass-action-divider {
     width: 1px;
     height: 20px;
-    background: @color-layout-border;
+    background: var(--stratus-border);
     margin: 0 @mp-space-xs;
     flex-shrink: 0;
 }
 
 // Individual action buttons (icon-only, compact)
 .mp-action-btn {
+    .mp-btn-icon(32px);
     display: flex !important;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
     height: 32px !important;
     min-height: 32px !important;
     line-height: 32px !important;
-    border-radius: @mp-radius-sm;
-    color: @color-font;
     text-decoration: none;
-    cursor: pointer;
-    transition: background @mp-transition-fast, color @mp-transition-fast;
     flex-shrink: 0;
     flex-grow: 0 !important;
     min-width: 0 !important;
@@ -641,6 +625,10 @@ html.layout-phone #layout-list > .searchbar {
         color: var(--stratus-text-accent);
     }
 
+    &:active:not(.disabled):not(.mp-folder-disabled) {
+        background: rgba(var(--stratus-primary-rgb), 0.16);
+    }
+
     &.disabled,
     &.mp-folder-disabled,
     &[data-mp-folder-disabled="true"] {
@@ -661,7 +649,7 @@ html.layout-phone #layout-list > .searchbar {
     align-items: center;
     padding: 2px @mp-space-sm;
     background: var(--stratus-primary);
-    color: @color-on-primary;
+    color: var(--stratus-on-primary);
     font-size: @mp-font-size-xs;
     border-radius: @mp-radius-pill;
     white-space: nowrap;
@@ -746,7 +734,7 @@ html.layout-phone {
     display: inline-block;
     width: 40px;
     height: 22px;
-    background: @color-layout-border;
+    background: var(--stratus-border);
     border-radius: @mp-radius-pill;
     transition: background @mp-transition-fast;
 
@@ -757,7 +745,7 @@ html.layout-phone {
         height: 16px;
         left: 3px;
         top: 3px;
-        background: @color-on-primary;
+        background: var(--stratus-on-primary);
         border-radius: @mp-radius-circle;
         transition: transform @mp-transition-smooth;
         box-shadow: @mp-shadow-xs;

@@ -6,6 +6,7 @@ html:not(.layout-phone) #messagelist-header > a {
     display: none !important; // Desktop: hide header nav buttons — navigation lives in the smart bar
 }
 
+
 #messagelist-header > a.button.selection.icon.toolbar-button {
     display: none !important; // Hide the "selection" toggle button on desktop — it duplicates the smart bar's mass-select checkbox and takes up valuable header space. On mobile, it remains visible as a convenient way to enter multi-select mode.
 }
@@ -69,6 +70,16 @@ html:not(.layout-phone) #messagelist-header > a {
                     box-shadow @mp-transition-smooth, transform @mp-transition-fast;
         position: relative; // Safe: 'a' has content height, not floated children
         color: var(--stratus-sidebar-text);
+        // Center the ::before icon — font-icon-class sets float:left which defeats
+        // text-align:center. Flexbox makes ::before a flex item and ignores its float.
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:before {
+            float: none; // Override font-icon-class float:left — flex container handles positioning
+            margin: 0;
+        }
     }
 
     // Icon-only sidebar: span.inner acts as tooltip floating to the right.
@@ -83,7 +94,7 @@ html:not(.layout-phone) #messagelist-header > a {
         font-size: @mp-font-size-xs;
         white-space: nowrap;
         background: @color-black;
-        color: @color-on-primary;
+        color: var(--stratus-on-primary);
         padding: 4px 10px;
         border-radius: @mp-radius-sm;
         z-index: 9999;
@@ -119,7 +130,7 @@ html:not(.layout-phone) #messagelist-header > a {
         }
 
         a.selected span.inner {
-            color: @color-taskmenu-button-selected;
+            color: var(--stratus-sidebar-text-active);
         }
 
         a.logout,
@@ -166,7 +177,7 @@ html:not(.layout-phone) #messagelist-header > a {
     a.compose,
     a.task-compose {
         background: var(--stratus-gradient);
-        color: @color-on-primary;
+        color: var(--stratus-on-primary);
         border-radius: @mp-radius-pill;
         margin: 10px 0; // No horizontal margin — sidebar width is fixed, 6px each side would overflow
         box-shadow: 0 4px 12px rgba(var(--stratus-primary-rgb), 0.45);
@@ -201,7 +212,7 @@ html:not(.layout-phone) #messagelist-header > a {
 // ═══════════════════════════════════════════════════════════════════════════════
 #layout > div > .header {
     .mp-frosted-glass(@mp-glass-bg-strong);
-    border-bottom: 1px solid fadeout(@color-layout-border, 30%);
+    border-bottom: 1px solid var(--stratus-border);
     box-shadow: @mp-shadow-xs;
 
     // Header title
@@ -212,7 +223,7 @@ html:not(.layout-phone) #messagelist-header > a {
     // Header nav/icon buttons only (back-list-button, toolbar-menu-button, etc.)
     // Excludes plugin toolbar buttons (archive, junk) which have .button but not .icon
     a.button.icon {
-        color: @color-font;
+        color: var(--stratus-font);
         border-radius: @mp-radius-md;
         padding: 4px 8px;
         transition: background @mp-transition-base, color @mp-transition-base;
@@ -226,7 +237,7 @@ html:not(.layout-phone) #messagelist-header > a {
 
 #layout > div > .footer {
     background: @color-layout-footer-background;
-    border-top: 1px solid @color-layout-border;
+    border-top: 1px solid var(--stratus-border);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -237,7 +248,7 @@ html:not(.layout-phone) #messagelist-header > a {
     a.button {
         border-radius: @mp-radius-md;
         padding: 0.45rem;  // match elastic .menu.toolbar a — keeps archive/junk aligned with other toolbar buttons
-        color: @color-font;
+        color: var(--stratus-font);
         transition: background @mp-transition-base, color @mp-transition-base,
                     box-shadow @mp-transition-smooth;
 
@@ -311,7 +322,7 @@ html:not(.layout-phone) #messagelist-header > a {
 #sidebar,
 #layout-sidebar {
     background: @color-layout-sidebar-background;
-    border-right: 1px solid @color-layout-border;
+    border-right: 1px solid var(--stratus-border);
 
     // Smooth panel transitions
     & > .scroller {
@@ -323,7 +334,7 @@ html:not(.layout-phone) #messagelist-header > a {
 // LIST PANEL
 // ═══════════════════════════════════════════════════════════════════════════════
 #layout-list {
-    border-right: 1px solid @color-layout-border;
+    border-right: 1px solid var(--stratus-border);
     background: @color-layout-list-background;
 }
 
@@ -333,7 +344,7 @@ html:not(.layout-phone) #messagelist-header > a {
     #layout-list > .header > .header-title {
         display: block !important;
         font-weight: @mp-font-weight-semibold;
-        color: @color-font;
+        color: var(--stratus-font);
         font-size: @mp-font-size-base;
     }
 }
@@ -356,7 +367,7 @@ html:not(.layout-phone) #messagelist-header > a {
     // Content frames get subtle card-like treatment
     fieldset {
         border-radius: @mp-radius-lg;
-        border: 1px solid @color-layout-border;
+        border: 1px solid var(--stratus-border);
         padding: @mp-space-lg;
         margin-bottom: @mp-space-lg;
         background: @color-layout-content-background;
@@ -365,7 +376,7 @@ html:not(.layout-phone) #messagelist-header > a {
     legend {
         font-weight: @mp-font-weight-semibold;
         font-size: @mp-font-size-md;
-        color: @color-font;
+        color: var(--stratus-font);
         padding: 0 @mp-space-sm;
     }
 }
@@ -425,28 +436,28 @@ html.dark-mode {
         a.compose,
         a.task-compose {
             background: var(--stratus-gradient);
-            color: @color-dark-on-primary;
+            color: var(--stratus-on-primary-dark);
             box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
 
             &:before {
-                color: @color-dark-on-primary;
+                color: var(--stratus-on-primary-dark);
             }
 
             &:hover {
                 background: var(--stratus-gradient-hover);
-                color: @color-dark-on-primary;
+                color: var(--stratus-on-primary-dark);
                 box-shadow: 0 6px 24px rgba(var(--stratus-primary-dark-rgb), 0.65);
 
                 &:before {
-                    color: @color-dark-on-primary;
+                    color: var(--stratus-on-primary-dark);
                 }
             }
 
             &:active {
-                color: @color-dark-on-primary;
+                color: var(--stratus-on-primary-dark);
 
                 &:before {
-                    color: @color-dark-on-primary;
+                    color: var(--stratus-on-primary-dark);
                 }
             }
         }

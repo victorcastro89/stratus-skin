@@ -32,6 +32,17 @@ html.dark-mode {
         color: var(--stratus-dark-font);
     }
 
+    // ── Typography — dark overrides for _typography.less ───────────────────
+    small,
+    .text-muted,
+    .form-text {
+        color: var(--stratus-dark-font-secondary);
+    }
+
+    .mp-section-header {
+        color: var(--stratus-dark-font-secondary);
+    }
+
     // ═══════════════════════════════════════════════════════════════════════════
     // SCROLLBARS
     // ═══════════════════════════════════════════════════════════════════════════
@@ -282,6 +293,7 @@ html.dark-mode {
     .custom-file-label,
     .form-control {
         background-color: var(--stratus-dark-background);
+        border-color: var(--stratus-dark-border);
         color: var(--stratus-dark-font);
 
         &:focus {
@@ -300,7 +312,7 @@ html.dark-mode {
     }
 
     .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
-        background-color: var(--stratus-dark-font);
+        background-color: var(--stratus-on-primary-dark);
     }
 
     .recipient-input {

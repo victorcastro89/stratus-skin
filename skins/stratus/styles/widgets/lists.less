@@ -8,7 +8,7 @@
     // Subtle row separators — use variable directly (value tuned in _variables.less for ISSUE-002)
     tbody td,
     li {
-        border-bottom: 1px solid @color-list-border;
+        border-bottom: 1px solid var(--stratus-border);
         transition: background @mp-transition-fast, box-shadow @mp-transition-smooth;
     }
 
@@ -121,7 +121,7 @@ html:not(.touch) {
         // Date/size columns — secondary text
         td.date,
         td.size {
-            color: @color-font-secondary;
+            color: var(--stratus-font-secondary);
             font-size: @mp-font-size-sm;
         }
 
@@ -211,7 +211,7 @@ html:not(.touch) {
     min-width: @mp-hover-actions-btn-size;
     min-height: @mp-hover-actions-btn-size;
     border-radius: @mp-radius-sm;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
     text-decoration: none;
     cursor: pointer;
     transition: background @mp-transition-fast, color @mp-transition-fast;
@@ -323,7 +323,7 @@ html.touch {
 #messagelist-content .listing-info {
     font-weight: @mp-font-weight-normal;
     font-size: @mp-font-size-md;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
     opacity: 0.8;
 
     &::before {
@@ -353,7 +353,7 @@ html.touch {
     text-align: center;
     font-weight: @mp-font-weight-normal;
     font-size: @mp-font-size-md;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
     opacity: 0.8;
     z-index: 4;
     pointer-events: none;
@@ -461,7 +461,7 @@ html.dark-mode #mp-search-empty-state {
 .unreadcount,
 .badge {
     background: @color-list-badge-background;
-    color: @color-list-badge;
+    color: var(--stratus-on-primary);
     border-radius: @mp-radius-pill;
     font-size: @mp-font-size-xs;
     font-weight: @mp-font-weight-semibold;
@@ -567,7 +567,7 @@ html.dark-mode {
     .unreadcount,
     .badge {
         background: var(--stratus-primary-dark);
-        color: @color-dark-on-primary;
+        color: var(--stratus-on-primary-dark);
         box-shadow: 0 0 8px rgba(var(--stratus-primary-dark-rgb), 0.40);
     }
 
@@ -576,7 +576,7 @@ html.dark-mode {
     .folderlist li.mailbox .unreadcount {
         border-radius: @mp-radius-pill;
         background: var(--stratus-primary-dark);
-        color: @color-dark-on-primary;
+        color: var(--stratus-on-primary-dark);
     }
 
     // ── HOVER MENU ───────────────────────────────────────────────────────────────────

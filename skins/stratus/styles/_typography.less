@@ -14,7 +14,7 @@ html {
 }
 
 body {
-    font-family: @mp-font-family;
+    font-family: var(--stratus-font-family);
     font-size: @mp-font-size-base;
     font-weight: @mp-font-weight-normal;
     line-height: @mp-line-height-normal;
@@ -63,18 +63,18 @@ h3, .h3 { font-size: @mp-font-size-md; }
 // ─── Labels & secondary text ─────────────────────────────────────────────────
 label,
 .form-label {
-    font-size: @mp-font-size-sm;
-    font-weight: @mp-font-weight-medium;
-    color: @color-font-secondary;
-    letter-spacing: @mp-letter-spacing-wide;
-}
+    font-size:  @mp-font-size-sm  ;
+    font-weight: @mp-font-weight-medium ;
+    color: var(--stratus-font-secondary) ;
+    letter-spacing: @mp-letter-spacing-wide ;
+} 
 
 // Small / hint text
 small,
 .text-muted,
 .form-text {
     font-size: @mp-font-size-xs;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
 }
 
 // ─── Section headers (uppercase label style) ─────────────────────────────────
@@ -83,7 +83,7 @@ small,
     font-weight: @mp-font-weight-semibold;
     text-transform: uppercase;
     letter-spacing: @mp-letter-spacing-caps;
-    color: @color-font-secondary;
+    color: var(--stratus-font-secondary);
     padding: @mp-space-sm @mp-space-md;
 }
 

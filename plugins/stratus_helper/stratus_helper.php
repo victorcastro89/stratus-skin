@@ -254,6 +254,14 @@ class stratus_helper extends rcube_plugin
             $css .= "  --stratus-dark-border-rgb: " . $this->hex_to_rgb($dark_bd) . ";\n";
         }
 
+        // On-primary tokens — WCAG-validated text color on primary backgrounds
+        if (!empty($scheme['on_primary'])) {
+            $css .= "  --stratus-on-primary: " . $this->sanitize_color($scheme['on_primary']) . ";\n";
+        }
+        if (!empty($scheme['on_primary_dark'])) {
+            $css .= "  --stratus-on-primary-dark: " . $this->sanitize_color($scheme['on_primary_dark']) . ";\n";
+        }
+
         // Dark utility tokens — pre-computed lighten() replacements
         if (!empty($scheme['dark_background'])) {
             $css .= "  --stratus-dark-input-bg-focus: " . $this->lighten_hex($this->sanitize_color($scheme['dark_background']), 3) . ";\n";
@@ -480,7 +488,7 @@ class stratus_helper extends rcube_plugin
             if (isset($schemes[$value])) {
                 $args['prefs']['stratus_color_scheme'] = $value;
                 $scheme = $schemes[$value];
-                $this->rcmail->output->command('plugin.stratus.scheme_applied',
+                $this->add_save_script('plugin.stratus.scheme_applied',
                     array_merge(['key' => $value], $this->get_scheme_js_data($scheme))
                 );
             }
@@ -493,7 +501,7 @@ class stratus_helper extends rcube_plugin
             if (isset($fonts[$value])) {
                 $args['prefs']['stratus_font_family'] = $value;
                 $font = $fonts[$value];
-                $this->rcmail->output->command('plugin.stratus.font_applied', [
+                $this->add_save_script('plugin.stratus.font_applied', [
                     'key'    => $value,
                     'family' => $font['family'],
                     'url'    => $font['url'],
@@ -508,7 +516,7 @@ class stratus_helper extends rcube_plugin
             if (isset($sizes[$value])) {
                 $args['prefs']['stratus_font_size'] = $value;
                 $sz = $sizes[$value];
-                $this->rcmail->output->command('plugin.stratus.fontsize_applied', [
+                $this->add_save_script('plugin.stratus.fontsize_applied', [
                     'key'         => $value,
                     'size'        => $sz['size'],
                     'line_height' => $sz['line_height'],
@@ -517,6 +525,21 @@ class stratus_helper extends rcube_plugin
         }
 
         return $args;
+    }
+
+    /**
+     * Queue a triggerEvent call that runs on DOM-ready, after all external
+     * plugin scripts have loaded.  output->command() renders inline JS that
+     * executes before plugin scripts, so the event listeners aren't
+     * registered yet.
+     */
+    private function add_save_script(string $event, array $data): void
+    {
+        $json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $this->rcmail->output->add_script(
+            "rcmail.triggerEvent(" . json_encode($event) . ", {$json});",
+            'docready'
+        );
     }
 
     /**
@@ -787,6 +810,8 @@ public function messages_list($args)
             'dark_font'             => $scheme['dark_font'] ?? '',
             'dark_font_secondary'   => $scheme['dark_font_secondary'] ?? '',
             'dark_border'           => $scheme['dark_border'] ?? '',
+            'on_primary'            => $scheme['on_primary'] ?? '#ffffff',
+            'on_primary_dark'       => $scheme['on_primary_dark'] ?? '#ffffff',
         ];
     }
 
@@ -997,6 +1022,32 @@ public function messages_list($args)
         return $darken ? '#3949ab' : '#9fa8da';
     }
 
+    /**
+     * Derive a WCAG-compliant text color for use ON a colored background.
+     * Returns white if it passes, otherwise darkens from the background hue.
+     */
+    private function derive_on_color(string $bg, float $target_ratio): string
+    {
+        if ($this->contrast_ratio('#ffffff', $bg) >= $target_ratio) {
+            return '#ffffff';
+        }
+
+        // White fails — primary is too light, need dark text.
+        // Darken from the background's hue to maintain visual harmony.
+        $hsl = $this->hex_to_hsl($bg);
+        $l = $hsl[2];
+        for ($i = 0; $i < 50; $i++) {
+            $l -= 2;
+            $l = max(0, $l);
+            $candidate = $this->hsl_to_hex($hsl[0], $hsl[1], $l);
+            if ($this->contrast_ratio($candidate, $bg) >= $target_ratio) {
+                return $candidate;
+            }
+        }
+
+        return '#000000';
+    }
+
     private function derive_full_palette(array $scheme): array
     {
         $primary = $scheme['primary'];
@@ -1014,10 +1065,15 @@ public function messages_list($args)
             $scheme['text_accent'] = $this->derive_text_accent($primary, '#ffffff', 4.5);
         }
 
-        // text_accent_dark
+        // text_accent_dark — validated against actual dark_background (not hardcoded)
+        // dark_background must be derived first; inline the derivation if needed
+        if (empty($scheme['dark_background'])) {
+            $dark_bg_s = max(8, min((int)round($s * 0.30), 20));
+            $scheme['dark_background'] = $this->hsl_to_hex($h, $dark_bg_s, 8);
+        }
         if (empty($scheme['text_accent_dark'])) {
             $scheme['text_accent_dark'] = $this->derive_text_accent(
-                $scheme['primary_dark'], '#1a1f36', 4.5
+                $scheme['primary_dark'], $scheme['dark_background'], 4.5
             );
         }
 
@@ -1033,9 +1089,16 @@ public function messages_list($args)
             $scheme['sidebar_gradient'] = "linear-gradient(180deg, {$top} 0%, {$bottom} 100%)";
         }
 
-        // sidebar_text
+        // sidebar_text — validated: >= 4.5:1 on sidebar_bg; lighten if needed
         if (empty($scheme['sidebar_text'])) {
-            $scheme['sidebar_text'] = $this->hsl_to_hex($h, max($s * 0.35, 12), 55);
+            $st_s = max($s * 0.35, 12);
+            $candidate = $this->hsl_to_hex($h, $st_s, 55);
+            $l = 55;
+            while ($this->contrast_ratio($candidate, $scheme['sidebar_bg']) < 4.5 && $l < 90) {
+                $l += 1;
+                $candidate = $this->hsl_to_hex($h, $st_s, $l);
+            }
+            $scheme['sidebar_text'] = $candidate;
         }
 
         // sidebar_text_hover
@@ -1079,15 +1142,29 @@ public function messages_list($args)
         }
 
         // font — hue-tinted body text (matches @color-font at s=43%: hsl(h, 25, 38))
+        // Validated: >= 4.5:1 on white; darken if needed
         if (empty($scheme['font'])) {
             $font_s = max(10, min((int)round($s * 0.58), 28));
-            $scheme['font'] = $this->hsl_to_hex($h, $font_s, 38);
+            $candidate = $this->hsl_to_hex($h, $font_s, 38);
+            $l = 38;
+            while ($this->contrast_ratio($candidate, '#ffffff') < 4.5 && $l > 5) {
+                $l -= 1;
+                $candidate = $this->hsl_to_hex($h, $font_s, $l);
+            }
+            $scheme['font'] = $candidate;
         }
 
         // font_secondary — muted text (matches @color-font-secondary at s=43%: hsl(h, 18, 51))
+        // Validated: >= 4.5:1 on white; darken if needed
         if (empty($scheme['font_secondary'])) {
             $font_sec_s = max(8, min((int)round($s * 0.42), 22));
-            $scheme['font_secondary'] = $this->hsl_to_hex($h, $font_sec_s, 51);
+            $candidate = $this->hsl_to_hex($h, $font_sec_s, 51);
+            $l = 51;
+            while ($this->contrast_ratio($candidate, '#ffffff') < 4.5 && $l > 5) {
+                $l -= 1;
+                $candidate = $this->hsl_to_hex($h, $font_sec_s, $l);
+            }
+            $scheme['font_secondary'] = $candidate;
         }
 
         // border — very light hue-tinted divider (matches @color-border at s=43%: hsl(h, 32, 91))
@@ -1132,13 +1209,14 @@ public function messages_list($args)
             $scheme['dark_font'] = $candidate;
         }
 
-        // dark_font_secondary — muted text (>= 4.5:1 AA against dark_background)
+        // dark_font_secondary — muted text (>= 4.5:1 AA against dark_background AND dark_surface_raised)
         if (empty($scheme['dark_font_secondary'])) {
             $dark_fs_s = max(5, min((int)round($s * 0.18), 14));
             $candidate = $this->hsl_to_hex($h, $dark_fs_s, 58);
             $bg = $scheme['dark_background'];
+            $raised = $scheme['dark_surface_raised'];
             $l = 58;
-            while ($this->contrast_ratio($candidate, $bg) < 4.5 && $l < 80) {
+            while (($this->contrast_ratio($candidate, $bg) < 4.5 || $this->contrast_ratio($candidate, $raised) < 4.5) && $l < 80) {
                 $l += 1;
                 $candidate = $this->hsl_to_hex($h, $dark_fs_s, $l);
             }
@@ -1149,6 +1227,17 @@ public function messages_list($args)
         if (empty($scheme['dark_border'])) {
             $dark_b_s = max(6, min((int)round($s * 0.25), 16));
             $scheme['dark_border'] = $this->hsl_to_hex($h, $dark_b_s, 20);
+        }
+
+        // on_primary — text/icon color on primary background
+        // White if >= 4.5:1 contrast, else darken from primary hue until passing
+        if (empty($scheme['on_primary'])) {
+            $scheme['on_primary'] = $this->derive_on_color($primary, 4.5);
+        }
+
+        // on_primary_dark — text/icon color on primary_dark background (dark mode buttons, badges)
+        if (empty($scheme['on_primary_dark'])) {
+            $scheme['on_primary_dark'] = $this->derive_on_color($scheme['primary_dark'], 4.5);
         }
 
         return $scheme;

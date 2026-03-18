@@ -149,3 +149,159 @@
     box-shadow: @shadow;
     transform: translateY(@lift);
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BUTTON BASE
+// Shared foundation for all button tiers: radius, typography, cursor,
+// transition, focus-visible, and disabled state.
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-btn-base() {
+    border-radius: @mp-radius-md;
+    font-weight: @mp-font-weight-medium;
+    letter-spacing: @mp-letter-spacing-wide;
+    cursor: pointer;
+    transition: background @mp-transition-smooth,
+                box-shadow @mp-transition-smooth,
+                border-color @mp-transition-smooth,
+                color @mp-transition-smooth,
+                filter @mp-transition-fast,
+                transform @mp-transition-fast;
+
+    &:focus-visible {
+        outline: 2px solid var(--stratus-primary);
+        outline-offset: 2px;
+    }
+
+    &:disabled,
+    &.disabled {
+        opacity: 0.45;
+        pointer-events: none;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PRIMARY BUTTON
+// Solid filled CTA. Uses brightness filter for hover — works with any scheme.
+// @rgb:        CSS custom property name for rgba() shadow (e.g. --stratus-primary-rgb)
+// @brightness: hover brightness factor (lower = darker)
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-btn-primary(@rgb: --stratus-primary-rgb; @brightness: 0.92) {
+    .mp-btn-base();
+    background: var(--stratus-primary);
+    border: none;
+    color: var(--stratus-on-primary);
+    padding: 0.5rem 1.25rem;
+    box-shadow: ~"0 2px 8px rgba(var(@{rgb}), 0.30)";
+
+    &:hover {
+        filter: brightness(@brightness);
+        transform: translateY(-1px);
+        box-shadow: ~"0 4px 16px rgba(var(@{rgb}), 0.45)";
+        color: var(--stratus-on-primary);
+    }
+
+    &:active {
+        transform: translateY(0);
+        filter: brightness(@brightness - 0.04);
+        box-shadow: ~"0 1px 4px rgba(var(@{rgb}), 0.35)";
+    }
+
+    &:focus-visible {
+        outline: 2px solid;
+        box-shadow: ~"0 0 0 3px rgba(var(@{rgb}), 0.25)";
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECONDARY BUTTON
+// Outlined ghost with accent tint on hover.
+// @rgb: CSS custom property name for rgba() tints
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-btn-secondary(@rgb: --stratus-primary-rgb) {
+    .mp-btn-base();
+    background: transparent;
+    border: 1px solid var(--stratus-border);
+    color: var(--stratus-font);
+    padding: 0.5rem 1.25rem;
+    font-size: @mp-font-size-base;
+
+    &:hover {
+        background: ~"rgba(var(@{rgb}), 0.06)";
+        border-color: ~"rgba(var(@{rgb}), 0.40)";
+        color: var(--stratus-text-accent);
+    }
+
+    &:not(:disabled):not(.disabled) {
+        &:active,
+        &.active {
+            background: var(--stratus-primary);
+            border-color: var(--stratus-primary);
+            color: var(--stratus-on-primary);
+            box-shadow: 0 0 0 0.2rem var(--stratus-border);
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--stratus-primary);
+        outline-offset: 2px;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DANGER BUTTON
+// Outlined with error-red accent. Hover fills with danger tint.
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-btn-danger() {
+    .mp-btn-base();
+    border: 1px solid fadeout(@color-error, 60%);
+    color: @color-error;
+    background: transparent;
+    padding: 0.5rem 1.25rem;
+
+    &:hover {
+        background: fadeout(@color-error, 92%);
+        border-color: @color-error;
+        box-shadow: 0 2px 8px fadeout(@color-error, 60%);
+    }
+
+    &:focus-visible {
+        outline-color: @color-error;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ICON BUTTON
+// Square icon-only button for toolbars, smart bar, TinyMCE.
+// @size:   width & height
+// @radius: border-radius
+// @rgb:    CSS custom property name for rgba() hover tint
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-btn-icon(@size: 32px; @radius: @mp-radius-sm; @rgb: --stratus-primary-rgb) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: @size;
+    height: @size;
+    border-radius: @radius;
+    background: transparent;
+    border: none;
+    color: var(--stratus-font);
+    cursor: pointer;
+    transition: background @mp-transition-fast, color @mp-transition-fast;
+
+    &:hover {
+        background: ~"rgba(var(@{rgb}), 0.08)";
+        color: var(--stratus-text-accent);
+    }
+
+    &:disabled,
+    &.disabled {
+        opacity: 0.35;
+        pointer-events: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--stratus-primary);
+        outline-offset: 2px;
+    }
+}

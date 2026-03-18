@@ -396,6 +396,12 @@
     --stratus-dark-message-loading-bg:    lighten(@color-dark-background, 10%);
     --stratus-dark-input-addon-focus-bg:  lighten(@color-dark-surface-raised, 8%);
 
+    // On-primary — WCAG-validated text/icon color on primary backgrounds.
+    // White for dark primaries; flips to dark text for light primaries (e.g. Amber).
+    // Overridden at runtime by stratus_helper's injected <style> block.
+    --stratus-on-primary:            @color-on-primary;
+    --stratus-on-primary-dark:       @color-dark-on-primary;
+
     // Sidebar interaction helpers
     --stratus-sidebar-hover-bg:      rgba(255, 255, 255, 0.08);
     --stratus-sidebar-divider:       rgba(255, 255, 255, 0.06);

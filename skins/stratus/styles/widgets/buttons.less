@@ -1,150 +1,169 @@
 // stratus widgets — Buttons
-// Gradient primary, ghost secondary, danger, toolbar icons, FAB
+// Mixin-based button system: primary, secondary, danger, icon, FAB
+// !important is used here (not in mixins) to beat Elastic/Bootstrap specificity.
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// BUTTONS — rounded with gradient primary & ghost secondary
+// LIGHT MODE
 // ═══════════════════════════════════════════════════════════════════════════════
-.btn-primary, 
+.btn-primary,
 a.btn-primary,
 button.btn-primary {
-    background: var(--stratus-gradient);
-    border: none;
-    color: @color-btn-primary;
-    border-radius: @mp-radius-md;
-    font-weight: @mp-font-weight-medium;
-    letter-spacing: @mp-letter-spacing-wide;
-    padding: 0.5rem 1.25rem;
-    box-shadow: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.30);
+    .mp-btn-primary();
+    background: var(--stratus-primary) !important;
+    color: var(--stratus-on-primary) !important;
+    border: none !important;
 
     &:hover,
     &:focus {
-        background: var(--stratus-gradient-hover);
-        box-shadow: 0 4px 16px rgba(var(--stratus-primary-rgb), 0.45);
-        transform: translateY(-1px);
-        color: @color-btn-primary;
+        background: var(--stratus-primary) !important;
+        color: var(--stratus-on-primary) !important;
     }
 
-    &:active { 
-        transform: translateY(0);
-        box-shadow: 0 1px 4px rgba(var(--stratus-primary-rgb), 0.35);
+    &:not(:disabled):not(.disabled):active,
+    &:active {
+        background: var(--stratus-primary) !important;
+        color: var(--stratus-on-primary) !important;
+        box-shadow: ~"0 1px 4px rgba(var(--stratus-primary-rgb), 0.35)" !important;
     }
 }
 
 .btn-secondary,
 a.btn-secondary,
 button.btn-secondary {
-    background: transparent;
-    border: 1px solid @color-border;
-    color: @color-font;
-    border-radius: @mp-radius-md;
-    font-weight: @mp-font-weight-medium;
+    .mp-btn-secondary();
+    background: transparent !important;
+    border: 1px solid var(--stratus-border) !important;
+    color: var(--stratus-font) !important;
 
     &:hover,
     &:focus {
-        background: rgba(var(--stratus-primary-rgb), 0.05);
-        border-color: rgba(var(--stratus-border), 0.40);
-        color: var(--stratus-text-accent);
+        background: ~"rgba(var(--stratus-primary-rgb), 0.06)" !important;
+        border-color: ~"rgba(var(--stratus-primary-rgb), 0.40)" !important;
+        color: var(--stratus-text-accent) !important;
     }
 
-    &:not(:disabled):not(.disabled) {
-        &:active,
-        &.active {
-            background: var(--stratus-primary);
-            border-color: var(--stratus-primary);
-            color: @color-btn-primary;
-            box-shadow: 0 0 0 0.2rem var(--stratus-border);
-        }
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active {
+        background: var(--stratus-primary) !important;
+        border-color: var(--stratus-primary) !important;
+        color: var(--stratus-on-primary) !important;
+        box-shadow: 0 0 0 0.2rem var(--stratus-border) !important;
     }
 }
 
 .btn-danger,
 a.btn-danger {
-    border-radius: @mp-radius-md;
+    .mp-btn-danger();
+    border-color: fadeout(@color-error, 60%) !important;
+    color: @color-error !important;
 
     &:hover {
-        box-shadow: 0 2px 8px fadeout(@color-error, 60%);
+        background: fadeout(@color-error, 92%) !important;
+        border-color: @color-error !important;
+        box-shadow: 0 2px 8px fadeout(@color-error, 60%) !important;
     }
 }
 
-// Icon-only buttons in toolbars → circular
+// Icon-only buttons in toolbars
 .toolbar a.button,
 a.button.icon:not(.btn) {
-    border-radius: @mp-radius-md;
-
-    &.disabled {
-        opacity: 0.35;
-    }
+    .mp-btn-icon(@size: 36px, @radius: @mp-radius-md);
 }
 
 // Floating action button — elevated circle
 .floating-action-buttons {
     z-index: 999;
     bottom: 30px;
+
     a.button {
-        box-shadow: @mp-shadow-lg, @mp-shadow-glow-sm;
+        box-shadow: ~"0 10px 15px -3px rgba(var(--stratus-primary-rgb), 0.3)",
+                    ~"0 0 10px rgba(var(--stratus-primary-rgb), 0.2)";
         border-radius: @mp-radius-circle;
         transition: box-shadow @mp-transition-smooth, transform @mp-transition-fast;
 
         &:hover {
-            box-shadow: @mp-shadow-xl, @mp-shadow-glow;
+            box-shadow: ~"0 20px 25px -5px rgba(var(--stratus-primary-rgb), 0.35)",
+                        ~"0 0 20px rgba(var(--stratus-primary-rgb), 0.3)";
             transform: scale(1.05);
         }
     }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════════
 // DARK MODE
-// ═════════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════════
 html.dark-mode {
 
-    // ── TOOLBAR BUTTONS ──────────────────────────────────────────────────────────────
+    // ── PRIMARY ─────────────────────────────────────────────────────────────────
+    .btn-primary,
+    a.btn-primary,
+    button.btn-primary {
+        background: var(--stratus-primary-dark) !important;
+        color: var(--stratus-on-primary-dark) !important;
+        filter: brightness(0.82);
+        box-shadow: ~"0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.40)" !important;
+
+        &:hover,
+        &:focus {
+            background: var(--stratus-primary-dark) !important;
+            color: var(--stratus-on-primary-dark) !important;
+            filter: brightness(0.72);
+            box-shadow: ~"0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45)" !important;
+            transform: translateY(-1px);
+        }
+
+        &:not(:disabled):not(.disabled):active,
+        &:active {
+            background: var(--stratus-primary-dark) !important;
+            color: var(--stratus-on-primary-dark) !important;
+            filter: brightness(0.68);
+            transform: translateY(0);
+            box-shadow: ~"0 1px 4px rgba(var(--stratus-primary-dark-rgb), 0.35)" !important;
+        }
+    }
+
+    // ── SECONDARY ───────────────────────────────────────────────────────────────
+    .btn-secondary,
+    a.btn-secondary,
+    button.btn-secondary {
+        border-color: var(--stratus-dark-border) !important;
+        color: var(--stratus-dark-font) !important;
+        background: transparent !important;
+
+        &:hover,
+        &:focus {
+            background: ~"rgba(var(--stratus-primary-dark-rgb), 0.10)" !important;
+            border-color: ~"rgba(var(--stratus-primary-dark-rgb), 0.45)" !important;
+            color: var(--stratus-text-accent-dark) !important;
+        }
+
+        &:not(:disabled):not(.disabled):active,
+        &:not(:disabled):not(.disabled).active {
+            background: var(--stratus-primary-dark) !important;
+            border-color: var(--stratus-primary-dark) !important;
+            color: var(--stratus-on-primary-dark) !important;
+            box-shadow: ~"0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.35)" !important;
+        }
+    }
+
+    // ── TOOLBAR BUTTONS ─────────────────────────────────────────────────────────
     .toolbar a.button,
     #toolbar a.button {
         color: var(--stratus-dark-font);
 
         &:hover {
-            background: rgba(var(--stratus-primary-dark-rgb), 0.12);
+            background: ~"rgba(var(--stratus-primary-dark-rgb), 0.12)";
             color: var(--stratus-text-accent-dark);
         }
 
         &:active,
         &.active {
-            background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+            background: ~"rgba(var(--stratus-primary-dark-rgb), 0.18)";
             color: var(--stratus-text-accent-dark);
         }
 
         &:hover:before {
             color: var(--stratus-text-accent-dark);
-        }
-    }
-
-    // ── BUTTONS ──────────────────────────────────────────────────────────────────────
-    .btn-primary {
-        box-shadow: 0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.40);
-
-        &:hover {
-            box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
-        }
-    }
-
-    .btn-secondary {
-        border-color: var(--stratus-dark-border);
-        color: var(--stratus-dark-font);
-
-        &:hover {
-            background: rgba(var(--stratus-primary-dark-rgb), 0.10);
-            border-color: rgba(var(--stratus-primary-dark-rgb), 0.45);
-            color: var(--stratus-text-accent-dark);
-        }
-
-        &:not(:disabled):not(.disabled) {
-            &:active,
-            &.active {
-                background: var(--stratus-primary-dark);
-                border-color: var(--stratus-primary-dark);
-                color: @color-dark-on-primary;
-                box-shadow: 0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.35);
-            }
         }
     }
 }

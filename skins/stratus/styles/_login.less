@@ -83,14 +83,14 @@
         label[for="rcmloginuser"],
         .row:has(#rcmloginuser) label,
         .form-group:has(#rcmloginuser) label {
-            color: @color-main;
+            color: var(--stratus-primary);
         }
 
         // Password label — muted
         label[for="rcmloginpwd"],
         .row:has(#rcmloginpwd) label,
         .form-group:has(#rcmloginpwd) label {
-            color: @color-font-secondary;
+            color: var(--stratus-font-secondary);
         }
 
         // ─── All inputs base ───────────────────────────────────────────────
@@ -117,11 +117,11 @@
 
         // ─── Username — full outlined box, primary border ──────────────────
         #rcmloginuser {
-            border: 2px solid @color-main;
+            border: 2px solid var(--stratus-primary);
             border-radius: @mp-radius-xs;
 
             &:focus {
-                border-color: @color-main;
+                border-color: var(--stratus-primary);
                 box-shadow: 0 0 0 3px rgba(var(--stratus-primary-rgb), 0.12);
                 outline: none;
             }
@@ -130,12 +130,12 @@
         // ─── Password — filled style, bottom border only ───────────────────
         #rcmloginpwd {
             border: none;
-            border-bottom: 1px solid @color-input-border;
+            border-bottom: 1px solid var(--stratus-border);
             border-radius: @mp-radius-xs @mp-radius-xs 0 0;
 
             &:focus {
-                border-bottom-color: @color-main;
-                box-shadow: 0 1px 0 0 @color-main;
+                border-bottom-color: var(--stratus-primary);
+                box-shadow: 0 1px 0 0 var(--stratus-primary);
                 outline: none;
             }
         }
@@ -164,7 +164,7 @@
                     background: none;
                     border: none;
                     padding: 7px;
-                    color: @color-font-secondary;
+                    color: var(--stratus-font-secondary);
                     cursor: pointer;
                     line-height: 1;
 
@@ -180,42 +180,17 @@
             }
         }
 
-        // ─── Submit button — primary gradient style ────────────────────────
+        // ─── Submit button — primary ─────────────────────────────────────
         input[type="submit"],
         button[type="submit"],
         .input-group-append .btn-primary,
         #rcmloginsubmit {
-            background: var(--stratus-gradient);
-            border: none;
-            color: @color-btn-primary;
-            border-radius: @mp-radius-md;
+            .mp-btn-primary();
             font-size: 17px;
-            font-weight: @mp-font-weight-medium;
             line-height: 24px;
-            letter-spacing: @mp-letter-spacing-wide;
             padding: 11px @mp-space-lg;
             width: 100%;
             margin-top: @mp-space-sm;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.30);
-            transition: background @mp-transition-smooth, box-shadow @mp-transition-smooth, transform @mp-transition-fast;
-
-            &:hover {
-                background: var(--stratus-gradient-hover);
-                box-shadow: 0 4px 16px rgba(var(--stratus-primary-rgb), 0.45);
-                transform: translateY(-1px);
-                color: @color-btn-primary;
-            }
-
-            &:active {
-                transform: translateY(0);
-                box-shadow: 0 1px 4px rgba(var(--stratus-primary-rgb), 0.35);
-            }
-
-            &:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px rgba(var(--stratus-primary-rgb), 0.25);
-            }
         }
 
         // ─── Remember me / other checkboxes ───────────────────────────────
@@ -224,7 +199,7 @@
 
             .custom-control-label {
                 font-size: @mp-font-size-sm;
-                color: @color-font-secondary;
+                color: var(--stratus-font-secondary);
             }
         }
 
@@ -298,11 +273,12 @@ html.dark-mode .task-login {
         button[type="submit"],
         #rcmloginsubmit {
             background: var(--stratus-primary-dark);
-            color: @color-btn-primary;
+            color: var(--stratus-on-primary-dark);
+            filter: brightness(0.82);
             box-shadow: 0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.40);
 
             &:hover {
-                background: var(--stratus-gradient-hover);
+                filter: brightness(0.72);
                 box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
             }
         }
