@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * Release script — bumps versions, updates CHANGELOG, commits, tags.
+ * Release script — bumps versions, updates CHANGELOG, commits, tags, pushes.
  *
  * Usage:
  *   npm run release           # patch:  1.0.0 → 1.0.1
@@ -32,12 +32,16 @@ function writeJson(rel, obj) {
   fs.writeFileSync(path.join(ROOT, rel), JSON.stringify(obj, null, useTab ? '\t' : '    ') + '\n');
 }
 
-// ── Version bump ─────────────────────────────────────────────────────
+function abort(msg) {
+  console.error(msg);
+  process.exit(1);
+}
+
+// ── Parse args ──────────────────────────────────────────────────────
 
 const bump = process.argv[2] || 'patch';
 if (!['patch', 'minor', 'major'].includes(bump)) {
-  console.error('Usage: npm run release [patch|minor|major]');
-  process.exit(1);
+  abort('Usage: npm run release [patch|minor|major]');
 }
 
 const pkg = readJson('package.json');
@@ -50,21 +54,31 @@ const newVersion =
 
 console.log(`\nBumping ${pkg.version} → ${newVersion} (${bump})\n`);
 
+// ── Pre-flight checks ───────────────────────────────────────────────
+
 // Abort if tag already exists
 try {
   run(`git rev-parse v${newVersion} 2>/dev/null`);
-  console.error(`✗ Tag v${newVersion} already exists. Aborting.`);
-  process.exit(1);
+  abort(`✗ Tag v${newVersion} already exists. Aborting.`);
 } catch (_) { /* tag doesn't exist — good */ }
 
 // Abort if working tree is dirty
 const dirty = run('git status --porcelain');
 if (dirty) {
-  console.error('✗ Working tree has uncommitted changes. Commit or stash them first.');
-  process.exit(1);
+  abort('✗ Working tree has uncommitted changes. Commit or stash them first.');
 }
 
-// ── Bump versions in all files ────────────────────────────────────────
+// ── Build CSS (before any file changes) ─────────────────────────────
+
+console.log('Building CSS...');
+try {
+  run('npm run less:build', { stdio: 'inherit' });
+  console.log('✓ CSS compiled\n');
+} catch (_) {
+  abort('✗ less:build failed — aborting (no files were modified)');
+}
+
+// ── Bump versions in all files ──────────────────────────────────────
 
 const versionFiles = [
   'package.json',
@@ -80,18 +94,7 @@ for (const rel of versionFiles) {
   console.log(`✓ ${rel}`);
 }
 
-// ── Build CSS ─────────────────────────────────────────────────────────
-
-console.log('\nBuilding CSS...');
-try {
-  run('npm run less:build', { stdio: 'inherit' });
-  console.log('✓ CSS compiled');
-} catch (_) {
-  console.error('✗ less:build failed — aborting');
-  process.exit(1);
-}
-
-// ── Update CHANGELOG ──────────────────────────────────────────────────
+// ── Update CHANGELOG ────────────────────────────────────────────────
 
 const changelogPath = path.join(ROOT, 'CHANGELOG.md');
 const changelog     = fs.readFileSync(changelogPath, 'utf8');
@@ -118,7 +121,7 @@ const updated = changelog
 fs.writeFileSync(changelogPath, updated);
 console.log('✓ CHANGELOG.md');
 
-// ── Git commit + tag ──────────────────────────────────────────────────
+// ── Git commit + tag ────────────────────────────────────────────────
 
 console.log('\nCommitting...');
 const stagedFiles = [
@@ -130,6 +133,25 @@ run(`git add ${stagedFiles.join(' ')}`);
 run(`git commit -m "chore: release v${newVersion}"`);
 run(`git tag v${newVersion}`);
 
-console.log(`\n✓ Committed and tagged v${newVersion}`);
-console.log('\nTo publish:');
-console.log(`  git push origin main --tags\n`);
+console.log(`✓ Committed and tagged v${newVersion}`);
+
+// ── Push (rollback commit + tag on failure) ─────────────────────────
+
+console.log('\nPushing...');
+try {
+  run('git push origin main --tags', { stdio: 'inherit' });
+  console.log(`\n✓ v${newVersion} released and pushed successfully\n`);
+} catch (_) {
+  console.error('\n✗ Push failed — rolling back commit and tag...');
+  try {
+    run(`git tag -d v${newVersion}`);
+    run('git reset --soft HEAD~1');
+    console.error('✓ Rolled back commit and tag. Working tree preserved (files still staged).');
+    console.error('  Fix the issue and run the release again.');
+  } catch (rollbackErr) {
+    console.error('✗ Rollback failed — manual cleanup needed:');
+    console.error(`    git tag -d v${newVersion}`);
+    console.error('    git reset --soft HEAD~1');
+  }
+  process.exit(1);
+}

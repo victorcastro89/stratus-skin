@@ -1,47 +1,47 @@
 {
-  "name": "stratus-skin",
-  "version": "1.0.0",
-  "description": "Stratus — A modern Roundcube skin extending elastic",
-  "private": true,
-  "scripts": {
-    "setup": "./scripts/setup.sh",
-    "rc:clone": "./scripts/clone-roundcube.sh",
-    "rc:update": "cd roundcubemail && git pull && cd .. && ./scripts/clone-roundcube.sh",
-    "docker:up": "cd docker && docker compose up -d --build",
-    "docker:down": "cd docker && docker compose down",
-    "docker:downv": "cd docker && docker compose down -v",
-    "docker:rebuild": "cd docker && docker compose up -d --build --force-recreate",
-    "docker:restart": "cd docker && docker compose restart roundcube",
-    "docker:logs": "cd docker && docker compose logs -f roundcube",
-    "docker:logs:mail": "cd docker && docker compose logs -f mailserver",
-    "docker:logs:all": "cd docker && docker compose logs -f",
-    "docker:ps": "cd docker && docker compose ps",
-    "docker:shell": "docker exec -it roundcube-dev bash",
-    "start": "./scripts/setup.sh && cd docker && docker compose up -d --build",
-    "stop": "cd docker && docker compose down",
-    "mail:seed": "./scripts/seed-emails.sh",
-    "mail:clean": "./scripts/clean-emails.sh",
-    "less:build": "lessc --include-path=roundcubemail/skins --clean-css=\"--s1 --advanced\" skins/stratus/styles/styles.less skins/stratus/styles/styles.min.css",
-    "less:watch": "chokidar \"skins/stratus/styles/**/*.less\" -c \"npm run less:build\"",
-    "release": "node scripts/release.js",
-    "thumbnail": "node scripts/generate-thumbnail.js",
-    "test": "./vendor/bin/phpunit",
-    "test:watch": "fswatch -o plugins/stratus_helper plugins/undo_send | xargs -n1 -I{} ./vendor/bin/phpunit"
-  },
-  "keywords": [
-    "roundcube",
-    "skin",
-    "webmail"
-  ],
-  "author": "Victor Faria",
-  "license": "CC-BY-SA-3.0",
-  "type": "commonjs",
-  "devDependencies": {
-    "chokidar-cli": "^3.0.0",
-    "less": "^4.5.1",
-    "less-plugin-clean-css": "^1.6.0"
-  },
-  "dependencies": {
-    "@playwright/test": "^1.58.2"
-  }
+    "name": "stratus-skin",
+    "version": "1.0.0",
+    "description": "Stratus — A modern Roundcube skin extending elastic",
+    "private": true,
+    "scripts": {
+        "setup": "./scripts/setup.sh",
+        "rc:clone": "./scripts/clone-roundcube.sh",
+        "rc:update": "cd roundcubemail && git pull && cd .. && ./scripts/clone-roundcube.sh",
+        "docker:up": "cd docker && docker compose up -d --build",
+        "docker:down": "cd docker && docker compose down",
+        "docker:downv": "cd docker && docker compose down -v",
+        "docker:rebuild": "cd docker && docker compose up -d --build --force-recreate",
+        "docker:restart": "cd docker && docker compose restart roundcube",
+        "docker:logs": "cd docker && docker compose logs -f roundcube",
+        "docker:logs:mail": "cd docker && docker compose logs -f mailserver",
+        "docker:logs:all": "cd docker && docker compose logs -f",
+        "docker:ps": "cd docker && docker compose ps",
+        "docker:shell": "docker exec -it roundcube-dev bash",
+        "start": "./scripts/setup.sh && cd docker && docker compose up -d --build",
+        "stop": "cd docker && docker compose down",
+        "mail:seed": "./scripts/seed-emails.sh",
+        "mail:clean": "./scripts/clean-emails.sh",
+        "less:build": "lessc --include-path=roundcubemail/skins --clean-css=\"--s1 --advanced\" skins/stratus/styles/styles.less skins/stratus/styles/styles.min.css",
+        "less:watch": "chokidar \"skins/stratus/styles/**/*.less\" -c \"npm run less:build\"",
+        "release": "node scripts/release.js",
+        "thumbnail": "node scripts/generate-thumbnail.js",
+        "test": "./vendor/bin/phpunit",
+        "test:watch": "fswatch -o plugins/stratus_helper plugins/undo_send | xargs -n1 -I{} ./vendor/bin/phpunit"
+    },
+    "keywords": [
+        "roundcube",
+        "skin",
+        "webmail"
+    ],
+    "author": "Victor Faria",
+    "license": "CC-BY-SA-3.0",
+    "type": "commonjs",
+    "devDependencies": {
+        "chokidar-cli": "^3.0.0",
+        "less": "^4.5.1",
+        "less-plugin-clean-css": "^1.6.0"
+    },
+    "dependencies": {
+        "@playwright/test": "^1.58.2"
+    }
 }
