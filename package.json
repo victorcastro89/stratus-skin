@@ -1,6 +1,6 @@
 {
     "name": "stratus-skin",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Stratus — A modern Roundcube skin extending elastic",
     "private": true,
     "scripts": {

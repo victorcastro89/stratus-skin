@@ -6,6 +6,20 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.1] — 2026-03-18
+
+### Added
+- Two-step release flow with changelog/ history
+- Add custom favicons and fix release script changelog
+
+### Changed
+- Release workflow now produces a single bundle  -
+- Release script: builds CSS before version bump, auto-pushes with rollback 
+- undo_send default delay changed from 5s to 3s 
+
+### Fixed
+- Removed debug log helpers from Smart Bar action-dispatcher.js and stratus_helper.js
+
 ## [1.0.0] — 2026-03-17
 
 ### Stratus Skin
@@ -33,4 +47,5 @@ Versions follow [Semantic Versioning](https://semver.org/).
 - Countdown toast with Undo link; cancels SMTP delivery within the window
 - Compatible with Elastic, Larry, and Stratus skins
 
+[1.0.1]: https://github.com/victorcastro89/stratus-skin/releases/tag/v1.0.1
 [1.0.0]: https://github.com/victorcastro89/stratus-skin/releases/tag/v1.0.0
