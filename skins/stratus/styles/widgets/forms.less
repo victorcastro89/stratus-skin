@@ -1,10 +1,12 @@
 // stratus widgets — Forms
-// Form controls, inputs, switches, checkboxes, recipient chips
+// Standard input/select system with scheme-aware states.
+// Uses .mp-input() / .mp-input-dark() mixins for all form controls.
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FORMS — rounded inputs with animated focus
+// FORMS — standard inputs with scheme-aware focus
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// Compact variant for settings panels — tighter padding, smaller text
 .formcontent:not(.popupmenu) {
     padding: 0.5rem;
     font-size: @mp-font-size-sm !important;
@@ -12,8 +14,8 @@
     .form-control,
     .form-control-plaintext,
     .custom-select {
-        font-size: @mp-font-size-sm;
-        padding: 0.35rem 0.65rem;
+        font-size: @mp-font-size-sm !important;
+        padding: 0.35rem 0.65rem !important;
     }
 
     .input-group-text {
@@ -21,27 +23,15 @@
         padding: 0.35rem 0.65rem;
     }
 }
+
+// ── Standard input & select ─────────────────────────────────────────────────
 .form-control,
 .custom-select {
-    border-radius: @mp-radius-md;
-    border: 1px solid var(--stratus-border);
-    // Bootstrap sets height:calc(1.5em + .75rem + 2px) ~38px; our 0.55rem padding
-    // needs ~44px — reset to auto so the taller padding isn't clipped.
-    height: auto;
-    padding: 0.55rem 0.75rem;
-    font-size: @mp-font-size-base;
-    transition: border-color @mp-transition-base, box-shadow @mp-transition-smooth,
-                background @mp-transition-base;
-
-    &:focus {
-        border-color: var(--stratus-primary);
-        outline: none;
-        box-shadow: 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.15);
-    }
+    .mp-input();
 }
 
 textarea.form-control {
-    border-radius: @mp-radius-lg;
+    border-radius: @mp-radius-xs;
 }
 
 // Datepicker header selects — pre-styled to prevent FOUC
@@ -62,7 +52,7 @@ textarea.form-control {
         appearance: none;
         background: @color-layout-list-background url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
         border: 1px solid var(--stratus-border);
-        border-radius: @mp-radius-md;
+        border-radius: @mp-radius-xs;
         color: var(--stratus-font);
     }
 }
@@ -71,7 +61,7 @@ textarea.form-control {
 .input-group {
     .input-group-prepend .input-group-text,
     .input-group-prepend .btn {
-        border-radius: @mp-radius-xs 0 0 @mp-radius-md;
+        border-radius: @mp-radius-xs 0 0 @mp-radius-xs ;
     }
 
     .input-group-append .input-group-text,
@@ -92,14 +82,24 @@ textarea.form-control {
         border-color: var(--stratus-border);
     }
 
-    .custom-control-input:checked ~ .custom-control-label::before {
+    .custom-control-input:checked:not(:disabled) ~ .custom-control-label::before {
         background-color: var(--stratus-primary);
         border-color: var(--stratus-primary);
     }
 
     // Knob on primary track — must contrast against primary
-    .custom-control-input:checked ~ .custom-control-label::after {
+    .custom-control-input:checked:not(:disabled) ~ .custom-control-label::after {
         background-color: var(--stratus-on-primary);
+    }
+
+    // Disabled state — muted appearance + not-allowed cursor
+    .custom-control-input:disabled ~ .custom-control-label {
+        opacity: 0.45;
+        cursor: not-allowed;
+        &::before,
+        &::after {
+            cursor: not-allowed;
+        }
     }
 }
 
@@ -115,34 +115,14 @@ textarea.form-control {
     }
 }
 
-// Compose headers — subject input matches recipient-input rows
-// .compose-headers #compose_subject .form-control {
-//     padding: 0.35rem 0.75rem;
-//     border-radius: @mp-radius-xs;
-//      background-color: var(--stratus-dark-background);
-//      border-color: var(--stratus-dark-border);                                                                                                                                                                                                             
-//     color: var(--stratus-dark-font);               
-// }
-
-// Recipient inputs (compose)
+// ── Recipient inputs (compose) ──────────────────────────────────────────────
 .recipient-input {
-    border-radius: @mp-radius-md;
-    border: 1px solid var(--stratus-border);
-    padding: 0.35rem 0.75rem;
-    height: auto;
-    transition: border-color @mp-transition-base, box-shadow @mp-transition-smooth,
-                background @mp-transition-base;
-
-    &.focus {
-        border-color: var(--stratus-primary);
-        outline: none;
-        box-shadow: 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.15);
-    }
+    .mp-recipient-input();
 
     // Inside .input-group, keep left corners rounded to match standalone .form-control
     .input-group & {
-        border-top-left-radius: @mp-radius-md;
-        border-bottom-left-radius: @mp-radius-md;
+        border-top-left-radius: @mp-radius-xs !important;
+        border-bottom-left-radius: @mp-radius-xs  !important;
     }
 
     .recipient {
@@ -155,6 +135,76 @@ textarea.form-control {
 
         &:hover {
             background: rgba(var(--stratus-primary-rgb), 0.15);
+        }
+    }
+}
+
+// When .form-control and .recipient-input coexist on the same <ul>,
+// the recipient container owns all visual chrome. Suppress .form-control's
+// :focus pseudo — the container uses the JS-toggled .focus class instead.
+.recipient-input.form-control {
+    padding: 0.35rem 0.75rem !important;  // recipient's tighter padding wins
+
+    &:focus {
+        border-color: var(--stratus-border) !important;
+        box-shadow: none !important;
+    }
+}
+
+// Inner <input> inside recipient is invisible — just a text cursor.
+// Applies in both light and dark modes.
+// margin-top: 0 cancels Elastic's 4px offset — our container padding (0.35rem)
+// already provides the visual spacing, and without this the recipient row is
+// ~4px taller than the From select and Subject input in the same form.
+.recipient-input .input input {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    margin-top: 0 !important;
+
+  
+
+    &:focus {
+        border-color: transparent !important;
+        box-shadow: none !important;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPOSE HEADERS — unified field height and spacing
+// All rows (From select, To/Cc/Bcc recipients, Subject input) share the same
+// visual treatment inside .compose-headers.
+// ═══════════════════════════════════════════════════════════════════════════════
+.compose-headers {
+    // Slightly tighter padding for compose fields — matches recipient chip height
+    .form-control,
+    .custom-select {
+        padding: 0.45rem 0.75rem !important;
+    }
+
+    // Recipient container keeps its own tighter padding for chip layout
+    .recipient-input.form-control {
+        padding: 0.35rem 0.75rem !important;
+    }
+
+    // Input-group radius: left element gets left radius only,
+    // right append gets right radius only — clean joined ends
+    .input-group {
+        .form-control,
+        .custom-select,
+        .recipient-input {
+            &:first-child {
+                border-top-right-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+            }
+        }
+
+        .input-group-append:last-child .input-group-text {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+            border-top-right-radius: @mp-radius-xs  !important;
+            border-bottom-right-radius: @mp-radius-xs  !important;
         }
     }
 }
@@ -186,7 +236,7 @@ textarea.form-control {
             gap: 5px;
             cursor: pointer;
             padding: 6px;
-            border-radius: @mp-radius-md;
+            border-radius: @mp-radius-xs;
             border: 2px solid transparent;
             transition: border-color @mp-transition-base, background @mp-transition-base;
 
@@ -210,7 +260,7 @@ textarea.form-control {
         display: block;
         width: 44px;
         height: 30px;
-        border-radius: @mp-radius-sm;
+        border-radius: @mp-radius-xs;
         border: 1px solid fadeout(@color-black, 87%);
         flex-shrink: 0;
     }
@@ -244,16 +294,9 @@ html.dark-mode {
         }
     }
 
-    // ── FORM CONTROLS ──────────────────────────────────────────────────────────────
+    // ── FORM CONTROLS — dark mode via mixin ─────────────────────────────────────
     .form-control {
-        border-color: var(--stratus-dark-border);
-        color: var(--stratus-dark-font);
-
-        &:focus {
-            border-color: var(--stratus-primary-dark);
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.25);
-        }
+        .mp-input-dark();
     }
 
     // Use background-color (not background shorthand) so we don't overwrite
@@ -261,15 +304,7 @@ html.dark-mode {
     // `background: url(svg) no-repeat …`. The image layer survives; we only
     // change the fill color beneath it.
     .custom-select {
-        background-color: var(--stratus-dark-background);
-        border-color: var(--stratus-dark-border);
-        color: var(--stratus-dark-font);
-
-        &:focus {
-            border-color: var(--stratus-primary-dark);
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.25);
-        }
+        .mp-input-dark() !important;
     }
 
     // Datepicker month/year selects live inside the header — give them the
@@ -285,12 +320,10 @@ html.dark-mode {
             &:focus {
                 background: var(--stratus-dark-surface-raised) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='@{color-arrow}' viewBox='0 0 4 5'%3e%3cpath d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem ~"center/8px" 10px;
                 border-color: var(--stratus-primary-dark);
-                box-shadow: 0 0 0 2px rgba(var(--stratus-primary-dark-rgb), 0.18);
+                box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.18);
             }
         }
     }
-
- 
 
     // ── LABELS — must use !important to override _typography.less !important ──
     label,
@@ -320,16 +353,7 @@ html.dark-mode {
     }
 
     .recipient-input {
-        background-color: var(--stratus-dark-background);
-        border-color: var(--stratus-dark-border);
-        color: var(--stratus-dark-font);
-
-        &.focus {
-            border-color: var(--stratus-primary-dark);
-            outline: none;
-            box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.18);
-            background-color: var(--stratus-dark-input-bg-focus);
-        }
+        .mp-recipient-input-dark();
 
         .recipient {
             background: rgba(var(--stratus-primary-dark-rgb), 0.12);
@@ -340,6 +364,12 @@ html.dark-mode {
                 background: rgba(var(--stratus-primary-dark-rgb), 0.20);
             }
         }
+    }
+
+    // Suppress .form-control dark focus on recipient container (uses .focus class)
+    .recipient-input.form-control:focus {
+        border-color: var(--stratus-dark-border) !important;
+        box-shadow: none !important;
     }
 
     // ── FILE UPLOAD ───────────────────────────────────────────────────────────────────

@@ -4,35 +4,36 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // TINYMCE EDITOR — proper content margin and styling
 // ═══════════════════════════════════════════════════════════════════════════════
-.tox.tox-tinymce {
-    border-radius: @mp-radius-lg;
-    border: 1px solid var(--stratus-border);
+.tox.tox-tinymce,.div.tox  {
+    border-radius: @mp-radius-xs !important;
+    border: 1px solid var(--stratus-border) !important;
+    transition: border-color @mp-transition-base, box-shadow @mp-transition-smooth !important;
 
     &.focused,
     &:focus-within {
-        border-color: var(--stratus-primary);
-        .mp-focus-ring();
+        border-color: var(--stratus-primary) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 1px var(--stratus-focus-ring) !important;
     }
 }
-.tox.tox-tinymce.focused, .tox.tox-tinymce:focus-within {
-  box-shadow: none !important
-}
-
 // Legacy TinyMCE 4.x
 .mce-tinymce {
-    border-radius: @mp-radius-lg;
+    border-radius: @mp-radius-xs;
     border: 1px solid var(--stratus-border);
+    transition: border-color @mp-transition-base, box-shadow @mp-transition-smooth;
 
     &.mce-focused {
         border-color: var(--stratus-primary);
-        .mp-focus-ring();
+        outline: none;
+        box-shadow: 0 0 0 1px var(--stratus-focus-ring);
     }
 }
 
 // TinyMCE 5+ toolbar styling
+div.tox .tox-toolbar,
 .tox-toolbar-overlord,
 .tox-toolbar__primary {
-    background: @color-layout-header-background;
+    background-color: unset !important;
     border-bottom: 1px solid var(--stratus-border);
 }
 
@@ -53,7 +54,7 @@
 
 // Legacy TinyMCE 4.x
 .mce-toolbar-grp {
-    background: @color-layout-header-background;
+
     border-bottom: 1px solid var(--stratus-border);
     padding: @mp-space-xs;
 }

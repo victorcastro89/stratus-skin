@@ -2,13 +2,34 @@
 // Overrides: elastic layout structure — taskmenu, header, toolbar, panels
 // Design: "Atmospheric Modern" — layered depth, fluid motion, generous spacing
 
-html:not(.layout-phone) #messagelist-header > a {
-    display: none !important; // Desktop: hide header nav buttons — navigation lives in the smart bar
+// Desktop: hide task-menu and back-sidebar nav buttons — navigation lives in the smart bar
+html:not(.layout-phone) #messagelist-header {
+    > a.task-menu-button,
+    > a.back-sidebar-button {
+        display: none !important;
+    }
 }
 
-
 #messagelist-header > a.button.selection.icon.toolbar-button {
-    display: none !important; // Hide the "selection" toggle button on desktop — it duplicates the smart bar's mass-select checkbox and takes up valuable header space. On mobile, it remains visible as a convenient way to enter multi-select mode.
+    display: none !important;
+}
+
+// Mobile: proper spacing and alignment for header nav buttons
+html.layout-phone #messagelist-header {
+    display: flex;
+    align-items: center;
+
+    > a.task-menu-button,
+    > a.back-sidebar-button {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        margin: 0 .125rem;
+        flex-shrink: 0;
+    }
 }
 // ═══════════════════════════════════════════════════════════════════════════════
 // TASK MENU — Navy gradient sidebar with pill navigation
@@ -17,7 +38,7 @@ html:not(.layout-phone) #messagelist-header > a {
     background: var(--stratus-sidebar-gradient);
     position: relative; // For ::before accent. NOT on #taskmenu — it collapses to height:0 (floated children).
     overflow: visible; // Allow ::after tooltips on taskmenu items to escape
-
+    
     // Subtle top accent line
     &::before {
         content: '';
@@ -36,7 +57,7 @@ html:not(.layout-phone) #messagelist-header > a {
     // at min-width:481px — we must match specificity + !important to win.
     .popover-header {
         background: transparent !important;
-        border-bottom: 1px solid var(--stratus-sidebar-divider);
+        // border-bottom: 1px solid var(--stratus-sidebar-divider);
 
         img {
             filter: brightness(0) invert(1);
@@ -45,16 +66,54 @@ html:not(.layout-phone) #messagelist-header > a {
     }
 
     // Special-buttons (about + logout) pinned at viewport bottom-left.
-    // Background matches sidebar — uses the darkest shade of the gradient.
-    .special-buttons {
-        background-color: var(--stratus-sidebar-bg);
+    // Background only needed on desktop where Elastic positions it as an absolute footer.
+    // On mobile it flows inline — background must be transparent so items sit on the
+    // same gradient as the regular nav items.
+    @media screen and (min-width: (@screen-width-xs + 1px)) {
+        .special-buttons {
+            background-color: var(--stratus-sidebar-bg);
+            width: 100%; // Span full sidebar — Elastic's fixed `a` width did this implicitly
+            // NOTE: do NOT set position here — Elastic uses position:absolute;bottom:0
+            // to anchor special-buttons to the viewport bottom via #layout-menu.
+            padding-top: 8px;
+
+            // Group divider above utility buttons — uses border-top since
+            // we cannot add position:relative (would override Elastic's absolute).
+            border-top: 1px solid var(--stratus-sidebar-divider);
+        }
     }
+    span.action-buttons {
+        display: block;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        position: relative;
+
+        // Gradient divider — fades out at both edges for a modern atmospheric feel
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 8px;
+            right: 8px;
+            height: 1px;
+            background: linear-gradient(
+                to right,
+                transparent,
+                var(--stratus-sidebar-divider) 25%,
+                var(--stratus-sidebar-divider) 75%,
+                transparent
+            );
+        }
+    }
+
 }
 
 #taskmenu {
     background: var(--stratus-sidebar-gradient);
     border-right: none;
     box-shadow: @mp-shadow-lg;
+        width: auto;
+  
     overflow: visible; // Allow ::after tooltips to extend beyond the sidebar
     // NOTE: DO NOT add position:relative here — #taskmenu has float:left children
     // so it collapses to height:0. Adding position:relative would make
@@ -63,9 +122,11 @@ html:not(.layout-phone) #messagelist-header > a {
 
     // All menu items — pill shape with smooth transitions
     a {
-        border-radius: @mp-radius-pill;
-        margin: 2px 0;
+                width: auto;
+                       margin: 2px 6px;
         padding: 8px 4px;
+        border-radius: @mp-radius-pill;
+  
         transition: background @mp-transition-smooth, color @mp-transition-base,
                     box-shadow @mp-transition-smooth, transform @mp-transition-fast;
         position: relative; // Safe: 'a' has content height, not floated children
@@ -81,7 +142,8 @@ html:not(.layout-phone) #messagelist-header > a {
             margin: 0;
         }
     }
-
+    
+  
     // Icon-only sidebar: span.inner acts as tooltip floating to the right.
     // Using a real DOM element (gmail_plus pattern) instead of ::after + opacity
     // transition — display:none/block is instantaneous and never missed on fast
@@ -96,7 +158,7 @@ html:not(.layout-phone) #messagelist-header > a {
         background: @color-black;
         color: var(--stratus-on-primary);
         padding: 4px 10px;
-        border-radius: @mp-radius-sm;
+        border-radius: @mp-radius-xs;
         z-index: 9999;
         pointer-events: none;
         box-shadow: @mp-shadow-md;
@@ -108,24 +170,94 @@ html:not(.layout-phone) #messagelist-header > a {
         display: block !important; // Instant — no transition timing to miss
     }
 
-    // Mobile popover: hide compose button — it's already a FAB on mobile
+    // Mobile popover: hide compose, make menu a flex column for group layout
     @media screen and (max-width: @screen-width-xs) {
+        & {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
         span.action-buttons {
             display: none;
         }
     }
 
-    // Mobile popover: labels must be visible inline (not tooltips)
+    // Mobile popover: labels must be visible inline (not tooltips).
+    // Elastic uses float:left + line-height trick for icon alignment — we use flex,
+    // so we must reset Elastic's !important overrides to avoid conflicts.
     @media screen and (max-width: @screen-width-xs) {
+        // Remove Elastic's per-item border-bottom — spacing handles grouping
+        a {
+            justify-content: flex-start;
+            padding: 10px 16px;
+            gap: 10px;
+            height: auto;       // Reset Elastic's fixed height — flex handles sizing
+            line-height: 1.4;   // Reset Elastic's large line-height used for icon trick
+            border-bottom: none !important; // Override Elastic's 1px solid border
+            margin: 1px 8px;
+            border-radius: @mp-radius-md;
+
+            &:before {
+                float: none !important;    // Override Elastic's float:left !important
+                width: auto !important;    // Override Elastic's fixed 1.2em width
+                margin-right: 0 !important; // Override Elastic's margin — gap handles spacing
+                font-size: 1.15rem;
+            }
+        }
+
+        // Active state — strong contrast: accent left bar + bolder bg
+        a.selected {
+            background: var(--stratus-sidebar-active-bg) !important;
+            color: var(--stratus-sidebar-text-active);
+            font-weight: @mp-font-weight-semibold;
+            position: relative;
+
+            // Left accent bar for clear active indication
+            &::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 20%;
+                bottom: 20%;
+                width: 3px;
+                border-radius: 0 3px 3px 0;
+                background: var(--stratus-sidebar-text-active);
+            }
+        }
+
+        // Special group — theme, about, logout pushed to bottom with divider
+        span.special-buttons {
+            display: block;
+            margin-top: auto; // Push to bottom in flex layout
+            padding: 8px 0;
+            position: relative;
+
+            // Group divider — subtle gradient line between nav and utilities
+            &::before {
+                content: '';
+                display: block;
+                margin: 0 16px 8px;
+                height: 1px;
+                background: linear-gradient(
+                    to right,
+                    transparent,
+                    var(--stratus-sidebar-divider) 25%,
+                    var(--stratus-sidebar-divider) 75%,
+                    transparent
+                );
+            }
+        }
+
         span.inner {
-            display: inline !important;
+            display: block !important;
             position: static;
             transform: none;
             background: none;
             color: var(--stratus-sidebar-text);
             padding: 0;
             box-shadow: none;
-            font-size: 80%;
+            font-size: @mp-font-size-base;
             white-space: normal;
         }
 
@@ -135,10 +267,26 @@ html:not(.layout-phone) #messagelist-header > a {
 
         a.logout,
         a[href*="logout"] {
-            opacity: 1;
+            opacity: 0.75;
+            color: @color-taskmenu-button-logout;
+
+            &:before {
+                color: @color-taskmenu-button-logout;
+            }
 
             span.inner {
-                color: var(--stratus-sidebar-text);
+                color: @color-taskmenu-button-logout;
+            }
+
+            &:hover {
+                opacity: 1;
+                background: fadeout(@color-taskmenu-button-logout, 88%);
+                color: @color-taskmenu-button-logout-hover;
+
+                &:before,
+                span.inner {
+                    color: @color-taskmenu-button-logout-hover;
+                }
             }
         }
     }
@@ -149,7 +297,7 @@ html:not(.layout-phone) #messagelist-header > a {
         color: var(--stratus-sidebar-text-hover);
     }
 
-    // Selected state — accent glow pill
+    // Selected state — accent glow pill with left indicator bar
     // NOTE: Do NOT override ::before here — elastic uses .menu a.{task}::before for icon font.
     // Same specificity, our file loads later, so ::before { content:'' } would wipe the icon.
     // NOTE: Do NOT use pointer-events:none — it swallows the click event before
@@ -163,6 +311,18 @@ html:not(.layout-phone) #messagelist-header > a {
         font-weight: @mp-font-weight-semibold;
         cursor: default;
 
+        // Left accent bar — clear active indicator beyond color alone
+        &::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background: var(--stratus-sidebar-text-active);
+        }
+
         // Override elastic's `a.selected:hover { background: rgba(255,255,255,0.06) }`
         // so the active pill doesn't flicker on mouse-enter.
         &:hover {
@@ -173,25 +333,29 @@ html:not(.layout-phone) #messagelist-header > a {
         }
     }
 
-    // Compose/action button — gradient pill with elevation
+    // Compose/action button — always white pill, scheme-agnostic emphasis
     a.compose,
     a.task-compose {
-        background: var(--stratus-gradient);
-        color: var(--stratus-on-primary);
+        background: #fff;
+        color: @color-font;
         border-radius: @mp-radius-pill;
-        margin: 10px 0; // No horizontal margin — sidebar width is fixed, 6px each side would overflow
-        box-shadow: 0 4px 12px rgba(var(--stratus-primary-rgb), 0.45);
+        // margin: 10px 0; // No horizontal margin — sidebar width is fixed, 6px each side would overflow
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
         font-weight: @mp-font-weight-medium;
 
+        &:before {
+            color: @color-font;
+        }
+
         &:hover {
-            background: var(--stratus-gradient-hover);
-            box-shadow: 0 6px 20px rgba(var(--stratus-primary-rgb), 0.45);
+            background: #f5f5f5;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
             transform: translateY(-1px);
         }
 
         &:active {
             transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(var(--stratus-primary-rgb), 0.40);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
     }
 
@@ -224,7 +388,7 @@ html:not(.layout-phone) #messagelist-header > a {
     // Excludes plugin toolbar buttons (archive, junk) which have .button but not .icon
     a.button.icon {
         color: var(--stratus-font);
-        border-radius: @mp-radius-md;
+        border-radius: @mp-radius-xs;
         padding: 4px 8px;
         transition: background @mp-transition-base, color @mp-transition-base;
 
@@ -243,10 +407,13 @@ html:not(.layout-phone) #messagelist-header > a {
 // ═══════════════════════════════════════════════════════════════════════════════
 // TOOLBAR — clean ghost buttons with smooth fills
 // ═══════════════════════════════════════════════════════════════════════════════
+#toolbar-list-menu > li > a.button.select.active{ 
+    background-color: transparent;
+}
 .toolbar,
 #toolbar {
     a.button {
-        border-radius: @mp-radius-md;
+        border-radius: @mp-radius-xs;
         padding: 0.45rem;  // match elastic .menu.toolbar a — keeps archive/junk aligned with other toolbar buttons
         color: var(--stratus-font);
         transition: background @mp-transition-base, color @mp-transition-base,
@@ -298,6 +465,8 @@ html:not(.layout-phone) #messagelist-header > a {
         box-shadow: 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.12);
     }
 
+    // Inner inputs inherit the searchbar's container-level focus — suppress
+    // their own border/ring so it doesn't double up.
     input[type="text"],
     input[type="search"] {
         border-radius: @mp-radius-pill;
@@ -307,6 +476,7 @@ html:not(.layout-phone) #messagelist-header > a {
 
         &:focus {
             box-shadow: none;
+            border-color: transparent;
         }
     }
 
@@ -357,7 +527,7 @@ html:not(.layout-phone) #messagelist-header > a {
 }
 
 #compose-content { 
-    padding: 0;
+    padding: @mp-space-xs;
 }
 // Frame content (settings pages, help, etc.)
 .frame-content,
@@ -366,7 +536,7 @@ html:not(.layout-phone) #messagelist-header > a {
 
     // Content frames get subtle card-like treatment
     fieldset {
-        border-radius: @mp-radius-lg;
+        border-radius: @mp-radius-xs;
         border: 1px solid var(--stratus-border);
         padding: @mp-space-lg;
         margin-bottom: @mp-space-lg;
@@ -430,34 +600,34 @@ html.dark-mode {
                         inset 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.35);
         }
 
-        // Compose — dark-mode gradient with explicit white text/icon
-        // IMPORTANT: Elastic dark.less sets color:@color-dark-font on all #taskmenu a,
-        // which washes out the compose button. We must restore #fff explicitly.
+        // Compose — always white/dark regardless of dark mode
+        // IMPORTANT: Elastic dark.less sets color:@color-dark-font on all #taskmenu a;
+        // force white background + dark text explicitly to keep emphasis in any scheme.
         a.compose,
         a.task-compose {
-            background: var(--stratus-gradient);
-            color: var(--stratus-on-primary-dark);
-            box-shadow: 0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45);
+            background: #fff;
+            color: @color-font;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.30);
 
             &:before {
-                color: var(--stratus-on-primary-dark);
+                color: @color-font;
             }
 
             &:hover {
-                background: var(--stratus-gradient-hover);
-                color: var(--stratus-on-primary-dark);
-                box-shadow: 0 6px 24px rgba(var(--stratus-primary-dark-rgb), 0.65);
+                background: #f5f5f5;
+                color: @color-font;
+                box-shadow: 0 6px 24px rgba(0, 0, 0, 0.38);
 
                 &:before {
-                    color: var(--stratus-on-primary-dark);
+                    color: @color-font;
                 }
             }
 
             &:active {
-                color: var(--stratus-on-primary-dark);
+                color: @color-font;
 
                 &:before {
-                    color: var(--stratus-on-primary-dark);
+                    color: @color-font;
                 }
             }
         }

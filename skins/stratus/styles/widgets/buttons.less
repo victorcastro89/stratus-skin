@@ -66,8 +66,8 @@ a.btn-danger {
 
 // Icon-only buttons in toolbars
 .toolbar a.button,
-a.button.icon:not(.btn) {
-    .mp-btn-icon(@size: 36px, @radius: @mp-radius-md);
+a.button.icon:not(.btn,.button) {
+    .mp-btn-icon(@size: 36px, @radius: @mp-radius-xs );
 }
 
 // Floating action button — elevated circle
@@ -76,12 +76,32 @@ a.button.icon:not(.btn) {
     bottom: 30px;
 
     a.button {
+        background: var(--stratus-primary);
+        color: var(--stratus-on-primary);
         box-shadow: ~"0 10px 15px -3px rgba(var(--stratus-primary-rgb), 0.3)",
                     ~"0 0 10px rgba(var(--stratus-primary-rgb), 0.2)";
         border-radius: @mp-radius-circle;
         transition: box-shadow @mp-transition-smooth, transform @mp-transition-fast;
+        // Absolute centering for the :before icon — bypasses Elastic's float/block/line-height approach
+        position: relative;
+        overflow: hidden;
+
+        &:before {
+            position: absolute;
+            top: 53%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            float: none;
+            width: auto;
+            height: auto;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+            color: var(--stratus-on-primary);
+        }
 
         &:hover {
+            background: var(--stratus-primary);
             box-shadow: ~"0 20px 25px -5px rgba(var(--stratus-primary-rgb), 0.35)",
                         ~"0 0 20px rgba(var(--stratus-primary-rgb), 0.3)";
             transform: scale(1.05);
@@ -143,6 +163,24 @@ html.dark-mode {
             border-color: var(--stratus-primary-dark) !important;
             color: var(--stratus-on-primary-dark) !important;
             box-shadow: ~"0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.35)" !important;
+        }
+    }
+
+    // ── FLOATING ACTION BUTTONS ─────────────────────────────────────────────────
+    .floating-action-buttons a.button {
+        background: var(--stratus-primary-dark);
+        color: var(--stratus-on-primary-dark);
+        box-shadow: ~"0 10px 15px -3px rgba(var(--stratus-primary-dark-rgb), 0.35)",
+                    ~"0 0 10px rgba(var(--stratus-primary-dark-rgb), 0.25)";
+
+        &:before {
+            color: var(--stratus-on-primary-dark);
+        }
+
+        &:hover {
+            background: var(--stratus-primary-dark);
+            box-shadow: ~"0 20px 25px -5px rgba(var(--stratus-primary-dark-rgb), 0.45)",
+                        ~"0 0 20px rgba(var(--stratus-primary-dark-rgb), 0.35)";
         }
     }
 

@@ -356,7 +356,7 @@ button.btn {
     &.notes:before          { content: @mi-sticky-note; }
     &.chat:before           { content: @mi-comments; }
     &.addressbook:before    { content: @mi-user; }
-    &.archive:before        { content: @mi-archive; }
+    &.archive:before        { content: @mi-archive; font-weight: 400; }
     &.assigngroup:before    { content: @mi-user-plus; }
     &.attach:before,
     &.vcard:before          { content: @mi-paperclip; }
@@ -368,7 +368,7 @@ button.btn {
     &.collapse:before       { content: @mi-angle-down; }
     &.copy:before           { content: @mi-copy; }
     &.create:before         { content: @mi-plus-square; }
-    &.delete:before         { content: @mi-trash-alt; }
+    &.delete:before         { content: @mi-trash-alt; font-weight: 400; }
     &.download:before,
     &.download.eml:before,
     &.download.maildir:before,
@@ -410,7 +410,7 @@ button.btn {
     &.notjunk:before        { content: @mi-inbox; }
     &.markmessage:before    { content: @mi-tag; }
     &.more:before           { content: @mi-ellipsis-h; }
-    &.move:before           { content: @mi-move-icon !important}
+    &.move:before           { content: @mi-move-icon !important; font-weight: 400; }
     &.print:before          { content: @mi-print; }
     &.properties:before     { content: @mi-file; }
     &.purge:before          { content: @mi-eraser; }
@@ -527,7 +527,7 @@ ul.treelist li {
     tr.thread.expanded td.threads div:before { content: @mi-angle-down; }
 
     td.subject span.msgicon.status {
-        &:before                   { content: @mi-circle; }
+        &:before                   { content: @mi-circle; color: @mp-primary-a40; }
         &.unread:before            { content: @mi-circle; }
         &.unreadchildren:before    { content: @mi-circle; font-weight: 400; }
         &.replied:before           { content: @mi-reply; font-weight: 400; }

@@ -45,8 +45,32 @@ class stratus_helper extends rcube_plugin
     {
         $this->rcmail = rcmail::get_instance();
 
+        // Capture any values already set in Roundcube's main config before loading
+        // plugin defaults — load_config() overwrites them, so we re-apply afterwards.
+        $plugin_keys = [
+            'stratus_color_schemes', 'stratus_color_scheme_default',
+            'stratus_fonts', 'stratus_font_default',
+            'stratus_font_sizes', 'stratus_font_size_default',
+            'stratus_folder_refresh',
+        ];
+        $main_config = [];
+        foreach ($plugin_keys as $key) {
+            $val = $this->rcmail->config->get($key);
+            if ($val !== null) {
+                $main_config[$key] = $val;
+            }
+        }
+
         $this->load_config('config.inc.php.dist');
+
+        // Re-apply main RC config values so they override .dist defaults.
+        foreach ($main_config as $key => $value) {
+            $this->rcmail->config->set($key, $value);
+        }
+
+        // Plugin-local config.inc.php (highest priority — overrides everything above).
         $this->load_config();
+
         $this->add_texts('localization/', true);
 
         $skin = $this->rcmail->config->get('skin', 'elastic');
@@ -194,6 +218,12 @@ class stratus_helper extends rcube_plugin
         }
         if (!empty($scheme['sidebar_active_bg'])) {
             $css .= "  --stratus-sidebar-active-bg: " . $this->sanitize_css_value($scheme['sidebar_active_bg']) . ";\n";
+        }
+        if (!empty($scheme['sidebar_hover_bg'])) {
+            $css .= "  --stratus-sidebar-hover-bg: " . $this->sanitize_css_value($scheme['sidebar_hover_bg']) . ";\n";
+        }
+        if (!empty($scheme['sidebar_divider'])) {
+            $css .= "  --stratus-sidebar-divider: " . $this->sanitize_css_value($scheme['sidebar_divider']) . ";\n";
         }
 
         // Surface tint tokens
@@ -794,6 +824,8 @@ public function messages_list($args)
             'sidebar_text_hover' => $scheme['sidebar_text_hover'] ?? '',
             'sidebar_text_active'=> $scheme['sidebar_text_active'] ?? '',
             'sidebar_active_bg'  => $scheme['sidebar_active_bg'] ?? '',
+            'sidebar_hover_bg'   => $scheme['sidebar_hover_bg'] ?? '',
+            'sidebar_divider'    => $scheme['sidebar_divider'] ?? '',
             'surface_tint'       => $scheme['surface_tint'] ?? '',
             'hover_bg'           => $scheme['hover_bg'] ?? '',
             'selected_bg'        => $scheme['selected_bg'] ?? '',
@@ -1115,6 +1147,16 @@ public function messages_list($args)
         if (empty($scheme['sidebar_active_bg'])) {
             $rgb = $this->hex_to_rgb($primary);
             $scheme['sidebar_active_bg'] = "rgba({$rgb}, 0.20)";
+        }
+
+        // sidebar_hover_bg — subtle white overlay for hover on dark sidebar
+        if (empty($scheme['sidebar_hover_bg'])) {
+            $scheme['sidebar_hover_bg'] = 'rgba(255, 255, 255, 0.08)';
+        }
+
+        // sidebar_divider — subtle separator between nav groups
+        if (empty($scheme['sidebar_divider'])) {
+            $scheme['sidebar_divider'] = 'rgba(255, 255, 255, 0.10)';
         }
 
         // surface_tint

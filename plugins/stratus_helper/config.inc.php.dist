@@ -37,6 +37,8 @@ $config['stratus_color_schemes'] = [
         'sidebar_text_hover'  => '#ffffff',
         'sidebar_text_active' => '#ffffff',
         'sidebar_active_bg'   => 'rgba(92, 107, 192, 0.20)',
+        'sidebar_hover_bg'    => 'rgba(255, 255, 255, 0.08)',
+        'sidebar_divider'     => 'rgba(136, 146, 184, 0.14)',   // indigo-tinted from sidebar_text
 
         // Surfaces
         'surface_tint'        => 'rgba(92, 107, 192, 0.03)',
@@ -71,6 +73,8 @@ $config['stratus_color_schemes'] = [
         'sidebar_text_hover'  => '#ffffff',
         'sidebar_text_active' => '#ffffff',
         'sidebar_active_bg'   => 'rgba(2, 136, 209, 0.22)',
+        'sidebar_hover_bg'    => 'rgba(255, 255, 255, 0.07)',
+        'sidebar_divider'     => 'rgba(107, 156, 194, 0.14)',   // ocean-blue-tinted from sidebar_text
 
         'surface_tint'        => 'rgba(2, 136, 209, 0.03)',
         'hover_bg'            => 'rgba(2, 136, 209, 0.06)',
@@ -92,6 +96,8 @@ $config['stratus_color_schemes'] = [
         'sidebar_text_hover'  => '#ffffff',
         'sidebar_text_active' => '#ffffff',
         'sidebar_active_bg'   => 'rgba(46, 125, 50, 0.22)',
+        'sidebar_hover_bg'    => 'rgba(255, 255, 255, 0.08)',
+        'sidebar_divider'     => 'rgba(107, 156, 116, 0.14)',   // green-tinted from sidebar_text
 
         'surface_tint'        => 'rgba(46, 125, 50, 0.03)',
         'hover_bg'            => 'rgba(46, 125, 50, 0.06)',
@@ -113,6 +119,8 @@ $config['stratus_color_schemes'] = [
         'sidebar_text_hover'  => '#ffffff',
         'sidebar_text_active' => '#ffffff',
         'sidebar_active_bg'   => 'rgba(198, 40, 40, 0.22)',
+        'sidebar_hover_bg'    => 'rgba(255, 255, 255, 0.08)',
+        'sidebar_divider'     => 'rgba(184, 122, 122, 0.14)',   // warm rose-tinted from sidebar_text
 
         'surface_tint'        => 'rgba(198, 40, 40, 0.03)',
         'hover_bg'            => 'rgba(198, 40, 40, 0.06)',
@@ -134,6 +142,8 @@ $config['stratus_color_schemes'] = [
         'sidebar_text_hover'  => '#ffffff',
         'sidebar_text_active' => '#ffffff',
         'sidebar_active_bg'   => 'rgba(245, 127, 23, 0.22)',
+        'sidebar_hover_bg'    => 'rgba(255, 255, 255, 0.08)',
+        'sidebar_divider'     => 'rgba(184, 156, 107, 0.14)',   // warm amber-tinted from sidebar_text
 
         'surface_tint'        => 'rgba(245, 127, 23, 0.03)',
         'hover_bg'            => 'rgba(245, 127, 23, 0.06)',
@@ -155,6 +165,8 @@ $config['stratus_color_schemes'] = [
         'sidebar_text_hover'  => '#ffffff',
         'sidebar_text_active' => '#ffffff',
         'sidebar_active_bg'   => 'rgba(123, 31, 162, 0.22)',
+        'sidebar_hover_bg'    => 'rgba(255, 255, 255, 0.08)',
+        'sidebar_divider'     => 'rgba(156, 122, 184, 0.14)',   // purple-tinted from sidebar_text
 
         'surface_tint'        => 'rgba(123, 31, 162, 0.03)',
         'hover_bg'            => 'rgba(123, 31, 162, 0.06)',
@@ -176,6 +188,8 @@ $config['stratus_color_schemes'] = [
         'sidebar_text_hover'  => '#ffffff',
         'sidebar_text_active' => '#ffffff',
         'sidebar_active_bg'   => 'rgba(0, 121, 107, 0.22)',
+        'sidebar_hover_bg'    => 'rgba(255, 255, 255, 0.08)',
+        'sidebar_divider'     => 'rgba(107, 156, 150, 0.14)',   // teal-tinted from sidebar_text
 
         'surface_tint'        => 'rgba(0, 121, 107, 0.03)',
         'hover_bg'            => 'rgba(0, 121, 107, 0.06)',
@@ -197,6 +211,8 @@ $config['stratus_color_schemes'] = [
         'sidebar_text_hover'  => '#ffffff',
         'sidebar_text_active' => '#ffffff',
         'sidebar_active_bg'   => 'rgba(69, 90, 100, 0.22)',
+        'sidebar_hover_bg'    => 'rgba(255, 255, 255, 0.07)',
+        'sidebar_divider'     => 'rgba(136, 153, 164, 0.14)',   // cool gray-tinted from sidebar_text
 
         'surface_tint'        => 'rgba(69, 90, 100, 0.03)',
         'hover_bg'            => 'rgba(69, 90, 100, 0.06)',

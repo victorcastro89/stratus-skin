@@ -162,8 +162,15 @@ html.dark-mode {
         border-right-color: var(--stratus-dark-border);
 
         .special-buttons a:not(:focus) {
-            background: var(--stratus-dark-background);
+            background: transparent;
         }
+    }
+
+    // Elastic dark mode sets `html.dark-mode #taskmenu a { width: 41px/77px }`
+    // with specificity (1,2,0) — higher than our `#taskmenu a { width: auto }`
+    // at (1,1,0). Restore pill layout width here at equal specificity, later cascade.
+    #taskmenu a {
+        width: auto;
     }
 
     &.layout-phone #layout-menu {
@@ -253,15 +260,15 @@ html.dark-mode {
     .messagelist {
         color: var(--stratus-dark-font);
 
+        td.subject span.msgicon.status:before {
+            color: var(--stratus-dark-font-secondary);
+        }
+
         tr:not(.flagged):not(.deleted) td.subject {
             span.size,
             span.date,
             span.fromto {
                 color: var(--stratus-dark-font-secondary);
-            }
-
-            span.msgicon.status {
-                color: var(--stratus-dark-font);
             }
         }
 
@@ -289,9 +296,10 @@ html.dark-mode {
         color: var(--stratus-dark-font);
     }
 
-    // ── Form controls — Elastic's backgrounds + borders ──────────────────────
-    .custom-file-label,
-    .form-control {
+    // ── Form controls — .form-control & .recipient-input dark overrides live
+    //    in widgets/forms.less (via .mp-input-dark() / .mp-recipient-input-dark()).
+    //    Only non-input form chrome (file-label, addons, switches) remains here. ──
+    .custom-file-label {
         background-color: var(--stratus-dark-background);
         border-color: var(--stratus-dark-border);
         color: var(--stratus-dark-font);
@@ -311,22 +319,8 @@ html.dark-mode {
         background-color: var(--stratus-dark-font);
     }
 
-    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+    .custom-switch .custom-control-input:checked:not(:disabled) ~ .custom-control-label::after {
         background-color: var(--stratus-on-primary-dark);
-    }
-
-    .recipient-input {
-        background-color: var(--stratus-dark-background);
-        border-color: var(--stratus-dark-border);
-        color: var(--stratus-dark-font);
-
-        &.focus {
-            background-color: var(--stratus-dark-input-bg-focus);
-        }
-
-        .recipient {
-            background-color: var(--stratus-dark-surface-raised);
-        }
     }
 
     .image-upload {

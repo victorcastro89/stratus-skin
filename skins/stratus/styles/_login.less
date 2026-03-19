@@ -68,7 +68,7 @@
             margin-bottom: 18px;
         }
 
-        // Labels
+        // Labels — muted, consistent
         label {
             font-size: 12px;
             font-weight: 400;
@@ -76,68 +76,21 @@
             letter-spacing: 0.4px;
             margin-bottom: 4px;
             display: block;
-        }
-
-        // Username label — primary color
-        #rcmloginuser + label,
-        label[for="rcmloginuser"],
-        .row:has(#rcmloginuser) label,
-        .form-group:has(#rcmloginuser) label {
-            color: var(--stratus-primary);
-        }
-
-        // Password label — muted
-        label[for="rcmloginpwd"],
-        .row:has(#rcmloginpwd) label,
-        .form-group:has(#rcmloginpwd) label {
             color: var(--stratus-font-secondary);
         }
 
-        // ─── All inputs base ───────────────────────────────────────────────
+        // ─── All inputs — standard system, slightly larger for login ─────
         .form-control,
         input[type="text"],
         input[type="password"],
         input[type="email"] {
+            .mp-input();
             font-size: 14px;
             font-weight: 400;
             line-height: 20px;
             letter-spacing: 0.25px;
-            padding: 8px 16px;
-            border-radius: @mp-radius-xs;
+            padding: 10px 16px;
             width: 100%;
-            background: fadeout(@color-black, 97%);
-            color: @color-black;
-            transition: border-color @mp-transition-base, box-shadow @mp-transition-base;
-            box-shadow: none;
-
-            &::placeholder {
-                color: fadeout(@color-black, 52%);
-            }
-        }
-
-        // ─── Username — full outlined box, primary border ──────────────────
-        #rcmloginuser {
-            border: 2px solid var(--stratus-primary);
-            border-radius: @mp-radius-xs;
-
-            &:focus {
-                border-color: var(--stratus-primary);
-                box-shadow: 0 0 0 3px rgba(var(--stratus-primary-rgb), 0.12);
-                outline: none;
-            }
-        }
-
-        // ─── Password — filled style, bottom border only ───────────────────
-        #rcmloginpwd {
-            border: none;
-            border-bottom: 1px solid var(--stratus-border);
-            border-radius: @mp-radius-xs @mp-radius-xs 0 0;
-
-            &:focus {
-                border-bottom-color: var(--stratus-primary);
-                box-shadow: 0 1px 0 0 var(--stratus-primary);
-                outline: none;
-            }
         }
 
         // Hide user/lock icons on input fields
@@ -227,15 +180,7 @@ html.dark-mode .task-login {
     }
 
     #login-form {
-        label[for="rcmloginuser"],
-        .row:has(#rcmloginuser) label,
-        .form-group:has(#rcmloginuser) label {
-            color: var(--stratus-primary-dark);
-        }
-
-        label[for="rcmloginpwd"],
-        .row:has(#rcmloginpwd) label,
-        .form-group:has(#rcmloginpwd) label {
+        label {
             color: var(--stratus-dark-font-secondary);
         }
 
@@ -243,30 +188,7 @@ html.dark-mode .task-login {
         input[type="text"],
         input[type="password"],
         input[type="email"] {
-            background: var(--stratus-dark-surface-raised);
-            color: var(--stratus-dark-font);
-
-            &::placeholder {
-                color: var(--stratus-dark-font-secondary);
-            }
-        }
-
-        #rcmloginuser {
-            border-color: var(--stratus-primary-dark);
-
-            &:focus {
-                border-color: var(--stratus-primary-dark);
-                box-shadow: 0 0 0 3px rgba(var(--stratus-primary-dark-rgb), 0.25);
-            }
-        }
-
-        #rcmloginpwd {
-            border-bottom-color: var(--stratus-dark-border);
-
-            &:focus {
-                border-bottom-color: var(--stratus-primary-dark);
-                box-shadow: 0 1px 0 0 var(--stratus-primary-dark);
-            }
+            .mp-input-dark();
         }
 
         input[type="submit"],

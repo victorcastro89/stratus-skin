@@ -99,10 +99,12 @@ body {
 // ═══════════════════════════════════════════════════════════════════════════════
 // LIST SELECTION — accent highlight
 // ═══════════════════════════════════════════════════════════════════════════════
-// .listing tbody tr.focused > td,
-// .listing tbody tr.selected > td,
+.listing tbody tr.focused > td {
+    background-color: rgba(var(--stratus-primary-rgb), 0.05);
+}
+.listing tbody tr.selected > td,
 .listing li.selected {
-    background: rgba(var(--stratus-primary-rgb), 0.13);
+   background-color: rgba(var(--stratus-primary-rgb), 0.05) !important;
 }
 .calname:before {
     color: var(--stratus-sidebar-text)!important;
@@ -111,7 +113,10 @@ body {
 // Div-wrapper children (kolab calendar/addressbook): accent text on selection
 .listing li.selected > div > *:not(.count) {
     background-color: var(--stratus-sidebar-active-bg)!important;
+    
 }
+// Div-wrapper children (kolab calendar/addressbook): accent text on selection
+
 
 // // Quickview icon (kolab calendar list)
 // .listing li > div a.quickview:before {
@@ -136,7 +141,7 @@ a {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// INPUT FOCUS — accent border
+// INPUT FOCUS — accent border + standardised 3px focus ring
 // ═══════════════════════════════════════════════════════════════════════════════
 .form-control:focus,
 .recipient-input.focus,
@@ -144,6 +149,8 @@ input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--stratus-primary);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--stratus-focus-ring);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -160,6 +167,14 @@ textarea:focus {
 // ═══════════════════════════════════════════════════════════════════════════════
 #taskmenu a.selected {
     box-shadow: 0 0 14px rgba(var(--stratus-primary-rgb), 0.35);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MESSAGE LIST — Unread status icon uses primary color
+// Overrides Elastic's @color-warning default so the dot matches the color scheme.
+// ═══════════════════════════════════════════════════════════════════════════════
+.messagelist td.subject span.msgicon.status.unread:before {
+    color: var(--stratus-primary, @color-main);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -202,10 +217,12 @@ html.dark-mode {
         background-color: var(--stratus-primary-dark);
     }
 
-    .listing tbody tr.focused > td,
+    .listing tbody tr.focused > td {
+        background: rgba(var(--stratus-primary-dark-rgb), 0.05);
+    }
     .listing tbody tr.selected > td,
     .listing li.selected {
-        background: rgba(var(--stratus-primary-dark-rgb), 0.15);
+        background: rgba(var(--stratus-primary-dark-rgb), 0.05);
     }
 
     .form-control:focus,
@@ -214,13 +231,17 @@ html.dark-mode {
     select:focus,
     textarea:focus {
         border-color: var(--stratus-primary-dark);
-        box-shadow: 0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.25);
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.25);
     }
 
-    .recipient-input input:focus {
-        border-color: transparent;
-        box-shadow: none;
+    // Beat Elastic's `html.dark-mode .form-control:focus:not(.is-invalid)`
+    // which compiles border-color from a LESS var, ignoring the runtime scheme.
+    .form-control:focus:not(.is-invalid) {
+        border-color: var(--stratus-primary-dark);
     }
+
+    // .recipient-input inner input suppression is now in widgets/forms.less (both modes)
 
     .custom-control-input:checked ~ .custom-control-label::before,
     .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
@@ -230,6 +251,10 @@ html.dark-mode {
 
     #taskmenu a.selected {
         box-shadow: 0 0 14px rgba(var(--stratus-primary-dark-rgb), 0.35);
+    }
+
+    .messagelist td.subject span.msgicon.status.unread:before {
+        color: var(--stratus-primary-dark, @color-dark-main);
     }
 
 }

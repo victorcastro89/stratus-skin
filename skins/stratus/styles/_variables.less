@@ -54,11 +54,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 @mp-radius-xs:      4px;
 @mp-radius-sm:      6px;
-@mp-radius-md:      8px;
+@mp-radius-md :      8px;
 @mp-radius-lg:      12px;
 @mp-radius-xl:      16px;
 @mp-radius-2xl:     24px;
-@mp-radius-pill:    10px;
+@mp-radius-pill:    6px;
 @mp-radius-circle:  50%;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -117,18 +117,37 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // PRIMARY PALETTE — Indigo atmosphere
 // ═══════════════════════════════════════════════════════════════════════════════
-@color-main:                #000000;
-@color-main-dark:           darken(@color-main, 35%);
-@color-main-light:          #000000;
-@color-main-lighter:        #c5caf0;
-@color-main-gradient:       linear-gradient(135deg, #000000 0%, #000000 100%);
-@color-main-gradient-hover: linear-gradient(135deg, darken(#000000, 6%) 0%, darken(#000000, 6%) 100%);
-@color-black:               #1a1f36;
-@color-font:                #000000;
-@color-font-secondary:      #000000;
-@color-link:                #000000;
-@color-link-hover:          darken(@color-link, 12%);
-@color-border:              #e0e3ef;
+/* =========================
+   Core brand / main colors
+   ========================= */
+
+@color-main:                #111827;  // gray-900 (modern near-black)
+
+@color-main-dark:           #020617;  // slate-950 (true dark, not derived)
+
+
+@color-main-light:          #1F2937;  // gray-800
+
+@color-main-lighter:        #c7d2fe;  // indigo-200 (cleaner than #c5caf0)
+
+@color-main-gradient:       
+  linear-gradient(135deg, #111827 0%, #1F2937 100%);
+
+@color-main-gradient-hover: 
+  linear-gradient(135deg, #020617 0%, #111827 100%);
+
+@color-black:               #020617;  // true dark neutral (not text)
+@color-font:                #111827;  // primary text (white mode)
+@color-font-secondary:      #374151;  // secondary text (labels, descriptions)
+@color-link:                #1D4ED8;  // blue-700 (clear affordance)
+@color-link-hover:          #1E40AF;  // blue-800 (no darken() magic)
+
+/* =========================
+   Borders / dividers
+   ========================= */
+
+@color-border:              #E5E7EB;  // gray-200 (soft, modern)
+
 
 // ─── Status / Semantic colors ──────────────────────────────────────────────
 @color-information:          @color-main;
@@ -165,7 +184,7 @@
 // ─── List Top Shell (search + smart bar subtle merge) ───────────────────────
 @mp-list-top-shell-gutter:          @mp-space-sm;
 @mp-list-top-shell-gap:             0;
-@mp-list-top-shell-radius:          @mp-radius-md;
+@mp-list-top-shell-radius:          @mp-radius-xs ;
 @mp-list-top-row-height:            40px;
 @color-layout-list-top-background:  #ffffff;
 @color-layout-list-top-border:      fadeout(@color-layout-border, 25%);    // border uses layout-border, not primary
@@ -363,7 +382,7 @@
     // Values are scheme-configurable because some colors need higher opacity to be visible.
     --stratus-surface-tint:  rgba(92, 107, 192, 0.03);
     --stratus-hover-bg:      rgba(92, 107, 192, 0.06);
-    --stratus-selected-bg:   rgba(92, 107, 192, 0.13);
+    --stratus-selected-bg:   rgba(var(--stratus-primary-rgb), 0.05);
     --stratus-focus-ring:    rgba(92, 107, 192, 0.25);
 
     // Gradient — accent gradient for buttons and UI chrome.
@@ -404,5 +423,5 @@
 
     // Sidebar interaction helpers
     --stratus-sidebar-hover-bg:      rgba(255, 255, 255, 0.08);
-    --stratus-sidebar-divider:       rgba(255, 255, 255, 0.06);
+    --stratus-sidebar-divider:       rgba(255, 255, 255, 0.10);
 }

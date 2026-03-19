@@ -5,14 +5,14 @@
 // DIALOGS & POPOVERS — glassmorphic elevated cards
 // ═══════════════════════════════════════════════════════════════════════════════
 .ui-dialog {
-    border-radius: @mp-radius-xl;
+    border-radius: @mp-radius-pill;
     box-shadow: @mp-shadow-2xl;
     border: 1px solid var(--stratus-border);
     // NOTE: Do NOT add overflow:hidden — it clips resize handles.
     // Do NOT add padding — .ui-dialog uses box-sizing:content-box (elastic override).
 
     .ui-dialog-titlebar {
-        border-radius: @mp-radius-xl @mp-radius-xl 0 0;
+        border-radius: @mp-radius-pill @mp-radius-pill 0 0;
         // NOTE: No custom padding — titlebar has fixed height:58px with border-box.
         // Extra padding squishes content (line-height:58px title overflows).
         font-weight: @mp-font-weight-semibold;
@@ -52,20 +52,26 @@
 
 // Popovers
 .popover {
-    border-radius: @mp-radius-sm;
+    border-radius: @mp-radius-xs;
     box-shadow: @mp-shadow-sm;
     border: 1px solid var(--stratus-border);
 
     .popover-header {
-        border-radius: @mp-radius-sm @mp-radius-sm 0 0;
+        border-radius: @mp-radius-xs @mp-radius-sm 0 0;
         font-weight: @mp-font-weight-semibold;
         background: @color-layout-header-background;
         border-bottom: 1px solid var(--stratus-border);
     }
 
     .popover-body {
-        padding: @mp-space-sm 0;
+        padding: @mp-space-xs 0;
     }
+}
+
+
+// Select-menu popovers — tighten padding so single-item menus aren't oversized
+.select-menu .popover-body {
+    padding: @mp-space-xs 0;
 }
 
 // Popup menus
@@ -74,9 +80,9 @@
         border-bottom: none;
 
         a {
-            border-radius: @mp-radius-sm;
+            border-radius: @mp-radius-xs;
             margin: 0.1em @mp-space-sm;
-            padding: @mp-space-sm @mp-space-sm;
+            padding: @mp-space-xs @mp-space-xs;
             transition: background @mp-transition-fast, color @mp-transition-fast;
 
             &:hover {

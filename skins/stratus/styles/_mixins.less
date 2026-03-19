@@ -37,13 +37,125 @@
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FOCUS RING
-// Consistent indigo focus ring for accessibility.
-// Usage: .mp-focus-ring();  — light mode
-//        .mp-focus-ring(@color-dark-main, 82%);  — dark mode
+// Consistent focus ring for accessibility — uses scheme-aware token.
+// Usage: .mp-focus-ring();
 // ═══════════════════════════════════════════════════════════════════════════════
-.mp-focus-ring(@color: @color-main; @fade: 85%) {
+.mp-focus-ring() {
     outline: none;
-    box-shadow: 0 0 0 1px fadeout(@color, @fade);
+    box-shadow: 0 0 0 1px var(--stratus-focus-ring);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STANDARD INPUT — light mode
+// One consistent style for all text inputs, selects, textareas.
+// States: default → hover → focus → disabled.
+// All colors use runtime CSS custom properties so they follow the active scheme.
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-input() {
+    border-radius: @mp-radius-xs !important;
+    border: 1px solid var(--stratus-border) !important;
+    height: auto !important;
+    padding: 0.55rem 0.75rem !important;
+    font-size: @mp-font-size-base !important;
+
+    // Use background-color (NOT shorthand `background`) to preserve
+    // Elastic's SVG dropdown-arrow on .custom-select elements.
+    background-color: transparent !important;
+    transition: border-color @mp-transition-base,
+                box-shadow @mp-transition-smooth,
+                background @mp-transition-base !important;
+
+    &::placeholder {
+        color: var(--stratus-font-secondary) !important;
+    }
+
+    &:hover:not(:disabled):not(:focus) {
+        border-color: rgba(var(--stratus-primary-rgb), 0.40) !important;
+    }
+
+    &:focus {
+        border-color: var(--stratus-primary) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 1px var(--stratus-focus-ring) !important;
+    }
+
+    &:disabled {
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+        background-color: rgba(0, 0, 0, 0.03) !important;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STANDARD INPUT — dark mode overrides
+// Apply inside html.dark-mode { } blocks.
+// Uses background-color (not background shorthand) on selects to preserve
+// Elastic's SVG dropdown-arrow injected via background: url(...).
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-input-dark() {
+    background-color: var(--stratus-dark-background) !important;
+    border-color: var(--stratus-dark-border) !important;
+
+
+    &::placeholder {
+        color: var(--stratus-dark-font-secondary) !important;
+    }
+
+    &:hover:not(:disabled):not(:focus) {
+        border-color: rgba(var(--stratus-primary-dark-rgb), 0.50) !important;
+    }
+
+    &:focus {
+        background-color: var(--stratus-dark-input-bg-focus) !important;
+        border-color: var(--stratus-primary-dark) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.25) !important;
+    }
+
+    // Beat Elastic's `html.dark-mode .form-control:focus:not(.is-invalid)`
+    // which compiles border-color from a LESS var instead of our CSS custom property.
+    &:focus:not(.is-invalid) {
+        border-color: var(--stratus-primary-dark) !important;
+    }
+
+    &:disabled {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STANDARD RECIPIENT INPUT — light mode (container div, uses .focus class)
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-recipient-input() {
+    border-radius: @mp-radius-xs !important;
+    border: 1px solid var(--stratus-border) !important;
+    padding: 0.35rem 0.75rem !important;
+    height: auto !important;
+    transition: border-color @mp-transition-base,
+                box-shadow @mp-transition-smooth,
+                background @mp-transition-base !important;
+
+    &.focus {
+        border-color: var(--stratus-primary) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 1px var(--stratus-focus-ring) !important;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STANDARD RECIPIENT INPUT — dark mode overrides
+// ═══════════════════════════════════════════════════════════════════════════════
+.mp-recipient-input-dark() {
+    background-color: var(--stratus-dark-background) !important;
+    border-color: var(--stratus-dark-border) !important;
+    color: var(--stratus-dark-font) !important;
+
+    &.focus {
+        border-color: var(--stratus-primary-dark) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.25) !important;
+        background-color: var(--stratus-dark-input-bg-focus) !important;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -156,7 +268,7 @@
 // transition, focus-visible, and disabled state.
 // ═══════════════════════════════════════════════════════════════════════════════
 .mp-btn-base() {
-    border-radius: @mp-radius-md;
+    border-radius: @mp-radius-xs;
     font-weight: @mp-font-weight-medium;
     letter-spacing: @mp-letter-spacing-wide;
     cursor: pointer;
@@ -168,7 +280,7 @@
                 transform @mp-transition-fast;
 
     &:focus-visible {
-        outline: 2px solid var(--stratus-primary);
+        outline: 2px solid var(--stratus-primary); 
         outline-offset: 2px;
     }
 
@@ -208,7 +320,7 @@
 
     &:focus-visible {
         outline: 2px solid;
-        box-shadow: ~"0 0 0 3px rgba(var(@{rgb}), 0.25)";
+        box-shadow: ~"0 0 0 1px rgba(var(@{rgb}), 0.25)";
     }
 }
 

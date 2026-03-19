@@ -14,7 +14,7 @@
 @mp-cal-today-number:        var(--stratus-primary);
 @mp-cal-today-indicator:     var(--stratus-primary);
 @mp-cal-event-radius:        @mp-radius-sm;
-@mp-cal-popover-radius:      @mp-radius-lg;
+@mp-cal-popover-radius:      @mp-radius-md;
 
 // Dark mode calendar tokens
 @mp-cal-dark-grid-color:         fadeout(@color-dark-border, 65%);
@@ -311,7 +311,7 @@
         }
 
         &:focus {
-            box-shadow: 0 0 0 3px rgba(var(--stratus-primary-rgb), 0.25);
+            box-shadow: 0 0 0 1px rgba(var(--stratus-primary-rgb), 0.25);
         }
     }
 
@@ -455,7 +455,7 @@
 
 body.task-calendar {
     .calendar-datepicker .ui-datepicker {
-        border-radius: @mp-radius-md;
+        border-radius: @mp-radius-xs;
     }
 
     // ── Sidebar layout: datepicker at top ────────────────────────────────────
@@ -801,7 +801,7 @@ body.task-calendar {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 #calendar.content {
-    border-radius: @mp-radius-md;
+    border-radius: @mp-radius-xs;
 }
 
 
@@ -824,7 +824,7 @@ body.task-calendar {
 #agendaoptions {
     background-color: @mp-cal-header-bg !important;
     border-bottom: 1px solid @mp-cal-grid-color;
-    border-radius: @mp-radius-md @mp-radius-md 0 0;
+    border-radius: @mp-radius-xs @mp-radius-xs  0 0;
 }
 
 
@@ -847,7 +847,7 @@ body.task-calendar {
 .invitebox.calendar-invitebox {
     background: @color-layout-content-background !important;
     border: 1px solid var(--stratus-border)!important;
-    border-radius: @mp-radius-lg !important;
+    border-radius: @mp-radius-xs !important;
     box-shadow: @mp-shadow-sm !important;
     padding: @mp-space-lg !important;
 
@@ -971,7 +971,7 @@ body.task-calendar {
 
     // RSVP status (post-response) — pill indicator
     .rsvp-status {
-        border-radius: @mp-radius-md!important;
+        border-radius: @mp-radius-xs!important;
         padding: @mp-space-sm @mp-space-md!important;
         font-weight: @mp-font-weight-medium!important;
 
@@ -1287,7 +1287,7 @@ html.dark-mode {
         }
 
         &:focus {
-            box-shadow: 0 0 0 3px rgba(var(--stratus-primary-dark-rgb), 0.30);
+            box-shadow: 0 0 0 1px rgba(var(--stratus-primary-dark-rgb), 0.30);
         }
     }
 

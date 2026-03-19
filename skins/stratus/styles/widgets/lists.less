@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIL MESSAGE LIST — card-hover, indigo accents, generous spacing
 // ═══════════════════════════════════════════════════════════════════════════════
+   
 .listing {
     // Subtle row separators — use variable directly (value tuned in _variables.less for ISSUE-002)
     tbody td,
@@ -14,6 +15,7 @@
 
     // Hover — gentle elevation
     tbody tr:hover > td,
+    tbody tr.focused > td,
     li:hover {
         background: rgba(var(--stratus-primary-rgb), 0.05);
     }
@@ -27,11 +29,13 @@
     // Div-wrapper children (kolab calendar/addressbook): text color on selection
     li.selected > div > *:not(.count) {
         color: @color-list-selected !important;
+      
+    
     }
-
+ 
     // Quickview icon (kolab calendar list)
     li > div a.quickview:before {
-        color: @color-link !important;
+        color: @color-link !important; 
     }
 
     // Focus indicator — indigo bar
@@ -86,7 +90,8 @@ html:not(.touch) {
         transition: background @mp-transition-fast, box-shadow @mp-transition-smooth;
 
         // Hover — subtle card lift
-        &:hover {
+        &:hover,
+        &.focused {
             background: rgba(var(--stratus-primary-rgb), 0.05);
             box-shadow: @mp-shadow-xs;
         }
@@ -95,15 +100,13 @@ html:not(.touch) {
         &.unread td {
             font-weight: @mp-font-weight-semibold;
         }
-        &.unread td:first-child,
-        &.unread:not(.withselection) td.selection + td {
+        &.unread td:first-child {
             border-left: 3px solid var(--stratus-primary);
         }
 
         // Selected
         &.selected td {
             background: var(--stratus-selected-bg);
-            border-left-color: var(--stratus-primary);
         }
 
         // Flagged — flag icon red, no text color change
@@ -148,6 +151,10 @@ html:not(.touch) {
             }
         }
     }
+
+    &:not(.withselection) tr.unread td.selection + td {
+        border-left: 3px solid var(--stratus-primary);
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -175,7 +182,7 @@ html:not(.touch) {
     min-width: max-content;
     white-space: nowrap;
     .mp-frosted-glass(@mp-glass-bg-strong);
-    border-radius: @mp-radius-md;
+    border-radius: @mp-radius-xs;
     box-shadow: @mp-shadow-md;
     opacity: 0;
     pointer-events: none;
@@ -210,7 +217,7 @@ html:not(.touch) {
     height: @mp-hover-actions-btn-size;
     min-width: @mp-hover-actions-btn-size;
     min-height: @mp-hover-actions-btn-size;
-    border-radius: @mp-radius-sm;
+    border-radius: @mp-radius-xs;
     color: var(--stratus-font-secondary);
     text-decoration: none;
     cursor: pointer;
@@ -410,7 +417,19 @@ html.dark-mode #mp-search-empty-state {
 // FOLDER LIST — pill selections, clean hierarchy
 // ═══════════════════════════════════════════════════════════════════════════════
 .listing.folderlist,
-#mailboxlist {
+#mailboxlist,
+#directorylist,
+
+#subscription-table  >li.selected >div>label {  background-color:transparent !important; }
+
+// Override Elastic's ul.treelist li.selected > a — clear anchor bg so li.selected bg shows through
+.listing.folderlist li.selected > a,
+#mailboxlist li.selected > a,
+#directorylist li.selected > a {
+    background: transparent;
+}
+
+#settings-menu {
     li {
         border-bottom: none;
     }
@@ -424,7 +443,7 @@ html.dark-mode #mp-search-empty-state {
 
     // Selected folder — pill shape (Gmail-style, rounded right)
     li.selected > a {
-        background: rgba(var(--stratus-primary-rgb), 0.12);
+        background: transparent;
         color: var(--stratus-text-accent);
         font-weight: @mp-font-weight-medium;
     }
@@ -497,30 +516,34 @@ html.dark-mode {
         }
 
         tbody tr:hover > td,
+        tbody tr.focused > td,
         li:hover {
             background: rgba(var(--stratus-primary-dark-rgb), 0.05);
         }
 
         li.selected,
         tr.selected td {
-            background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+            background: rgba(var(--stratus-primary-dark-rgb), 0.05);
         }
     }
 
     #messagelist,
     .messagelist {
-        tr:hover {
+        tr:hover,
+        tr.focused {
             background: rgba(var(--stratus-primary-dark-rgb), 0.05);
             box-shadow: @mp-shadow-dark-sm;
         }
 
-        tr.unread td:first-child,
-        tr.unread:not(.withselection) td.selection + td {
+        tr.unread td:first-child {
+            border-left-color: var(--stratus-primary-dark);
+        }
+        &:not(.withselection) tr.unread td.selection + td {
             border-left-color: var(--stratus-primary-dark);
         }
 
         tr.selected td {
-            background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+            background: rgba(var(--stratus-primary-dark-rgb), 0.05);
         }
 
         tr.flagged td.flag:before {
@@ -553,13 +576,17 @@ html.dark-mode {
 
     // ── FOLDER LIST ───────────────────────────────────────────────────────────────────
     .listing.folderlist li.selected > a,
-    #mailboxlist li.selected > a {
-        background: rgba(var(--stratus-primary-dark-rgb), 0.18);
+    #mailboxlist li.selected > a,
+    #directorylist li.selected > a,
+    #settings-menu li.selected > a {
+        background: transparent;
         color: var(--stratus-text-accent-dark);
     }
 
     .listing.folderlist li > a:hover,
-    #mailboxlist li > a:hover {
+    #mailboxlist li > a:hover,
+    #directorylist li > a:hover,
+    #settings-menu li > a:hover {
         background: rgba(var(--stratus-primary-dark-rgb), 0.08);
     }
 

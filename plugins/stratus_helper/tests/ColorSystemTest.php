@@ -325,6 +325,7 @@ class ColorSystemTest extends PHPUnit\Framework\TestCase
             'primary_dark', 'text_accent', 'text_accent_dark',
             'sidebar_bg', 'sidebar_gradient', 'sidebar_text',
             'sidebar_text_hover', 'sidebar_text_active', 'sidebar_active_bg',
+            'sidebar_hover_bg', 'sidebar_divider',
             'surface_tint', 'hover_bg', 'selected_bg', 'focus_ring',
             'font', 'font_secondary', 'border',
             'dark_background', 'dark_surface', 'dark_surface_raised',

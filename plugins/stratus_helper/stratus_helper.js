@@ -198,6 +198,8 @@
       if (data.sidebar_text_hover) root.style.setProperty('--stratus-sidebar-text-hover', data.sidebar_text_hover);
       if (data.sidebar_text_active) root.style.setProperty('--stratus-sidebar-text-active', data.sidebar_text_active);
       if (data.sidebar_active_bg) root.style.setProperty('--stratus-sidebar-active-bg', data.sidebar_active_bg);
+      if (data.sidebar_hover_bg) root.style.setProperty('--stratus-sidebar-hover-bg', data.sidebar_hover_bg);
+      if (data.sidebar_divider) root.style.setProperty('--stratus-sidebar-divider', data.sidebar_divider);
 
       // Surface tint tokens
       if (data.surface_tint) root.style.setProperty('--stratus-surface-tint', data.surface_tint);
@@ -552,6 +554,16 @@
 
     // Setup callback — keyboard shortcuts + on-send sanitizer
     function setupCallback(editor) {
+      // Inject toolbar background override after TinyMCE skin CSS loads to prevent FOUC
+      editor.on('init', function() {
+        if (!document.getElementById('stratus-tox-toolbar-fix')) {
+          var s = document.createElement('style');
+          s.id = 'stratus-tox-toolbar-fix';
+          s.textContent = 'div.tox .tox-toolbar, .tox-toolbar-overlord, .tox-toolbar__primary { background-color: unset !important; }';
+          document.head.appendChild(s);
+        }
+      });
+
       // Ctrl+Enter / Cmd+Enter = Send
       editor.addShortcut('ctrl+return', 'Send email', function() {
         if (window.rcmail) rcmail.command('send');
