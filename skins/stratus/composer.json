@@ -4,7 +4,7 @@
 	"description": "Stratus skin for Roundcube — extends Elastic with custom color palette, dark mode, quick filters new UI, undo send and visual polish",
 	"homepage": "https://github.com/victorcastro89/stratus-skin",
 	"license": "CC-BY-SA-3.0",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"authors": [
 		{
 			"name": "Victor Faria"
