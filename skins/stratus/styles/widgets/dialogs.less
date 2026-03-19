@@ -81,7 +81,7 @@
 
         a {
             border-radius: @mp-radius-xs;
-            margin: 0.1em @mp-space-sm;
+            margin: @mp-space-sm @mp-space-sm;
             padding: @mp-space-xs @mp-space-xs;
             transition: background @mp-transition-fast, color @mp-transition-fast;
 
@@ -89,8 +89,21 @@
                 background: rgba(var(--stratus-primary-rgb), 0.10);
                 color: var(--stratus-text-accent);
             }
+
+            // Chevron arrows on submenu/popup triggers (More, Select, dropdowns)
+            &[aria-haspopup]::after {
+                    margin-right: 2rem;
+                    margin-bottom: 2rem;
+            }
         }
     }
+}
+
+// Dropdown arrow button and select button in popover menus — remove grey background
+.popover .menu .dropbutton a.dropdown,
+.popover .menu a.button.select {
+    background-color: transparent;
+    color: @color-font;
 }
 
 // ═════════════════════════════════════════════════════════════════════════════════
