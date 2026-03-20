@@ -57,6 +57,11 @@ $config['enable_spellcheck']  = true;
 $config['spellcheck_engine']  = 'pspell';
 $config['zipdownload_selection'] = true;
 
+// ── Contacts (use only CardDAV via Davis) ───────────────────────────────────
+$config['address_book_type'] = '';
+$config['collected_recipients'] = false;
+$config['collected_senders']    = false;
+
 // ── Archive ────────────────────────────────────────────────────────────────
 $config['archive_mbox'] = 'Archive';
 

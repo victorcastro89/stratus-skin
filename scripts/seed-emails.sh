@@ -58,7 +58,14 @@ echo ""
 
 # Copy the seeder script into the container and run it
 docker cp "$SCRIPT_DIR/seed-emails.php" "$CONTAINER:/tmp/seed-emails.php"
-docker exec "$CONTAINER" php /tmp/seed-emails.php
+ENV_ARGS=""
+[ -n "$SEED_COUNT" ] && ENV_ARGS="$ENV_ARGS -e SEED_COUNT=$SEED_COUNT"
+[ -n "$IMAP_USER" ] && ENV_ARGS="$ENV_ARGS -e IMAP_USER=$IMAP_USER"
+[ -n "$IMAP_PASS" ] && ENV_ARGS="$ENV_ARGS -e IMAP_PASS=$IMAP_PASS"
+[ -n "$IMAP_HOST" ] && ENV_ARGS="$ENV_ARGS -e IMAP_HOST=$IMAP_HOST"
+[ -n "$IMAP_PORT" ] && ENV_ARGS="$ENV_ARGS -e IMAP_PORT=$IMAP_PORT"
+[ -n "$IMAP_SSL" ] && ENV_ARGS="$ENV_ARGS -e IMAP_SSL=$IMAP_SSL"
+docker exec $ENV_ARGS "$CONTAINER" php /tmp/seed-emails.php
 
 echo ""
 echo "🎉 Done! Log in to Roundcube at http://localhost:8000"

@@ -144,6 +144,16 @@
 		}
 
 		// ── Initialize ───────────────────────────────────────────────
+		// ── Sync mobile pagenav count from primary countdisplay ─
+		var primaryCount = bar.querySelector('.mp-mass-action-count');
+		var mobileCount  = document.getElementById('mp-mobile-countdisplay');
+		if (primaryCount && mobileCount) {
+			mobileCount.textContent = primaryCount.textContent;
+			new MutationObserver(function() {
+				mobileCount.textContent = primaryCount.textContent;
+			}).observe(primaryCount, { childList: true, characterData: true, subtree: true });
+		}
+
 		sort.updateDisplay();
 		massAction.updateFolderButtons();
 		selection.refresh();

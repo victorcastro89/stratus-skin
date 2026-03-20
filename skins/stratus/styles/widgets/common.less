@@ -673,7 +673,7 @@ html.layout-phone #layout-list > .searchbar {
 
 // Hidden by default; desktop uses smart bar pagination
 #mp-mobile-pagenav {
-    display: none;
+    display: none !important;
     order: 3; // after messagelist-content (order: 2) in layout-list flex column
 }
 
@@ -685,8 +685,8 @@ html.layout-phone #layout-list > .searchbar {
 html.layout-phone {
     // Show mobile pagenav instead of smart bar pagination
     #mp-mobile-pagenav {
-        display: flex;
-        position: relative;
+        display: flex !important;;
+        position: relative !important;;
         z-index: 10; // sit above scrolling messagelist-content and .floating-action-buttons
     }
 

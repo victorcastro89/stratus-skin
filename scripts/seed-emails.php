@@ -13,6 +13,7 @@ $config = [
     'port' => (int)(getenv('IMAP_PORT') ?: 143),
     'ssl' => (bool)(getenv('IMAP_SSL') ?: (((int)(getenv('IMAP_PORT') ?: 143)) === 993)),
     'users' => [],
+    'count' => (int)(getenv('SEED_COUNT') ?: 50),
 ];
 
 // Allow single-user mode via env vars
@@ -39,18 +40,75 @@ class EmailSeeder
     private bool $hasImap;
     private string $nsPrefix = '';
 
-    public function __construct(string $host, int $port, array $users, bool $ssl = false)
+    private int $count;
+
+    private array $randomSenders = [
+        'Sarah Chen <sarah.chen@techcorp.io>',
+        'Marcus Williams <marcus.w@startup.dev>',
+        'Priya Patel <priya@designstudio.co>',
+        'James O\'Brien <jobrien@enterprise.com>',
+        'Yuki Tanaka <yuki.tanaka@global.jp>',
+        'Elena Rodriguez <elena.r@consulting.biz>',
+        'David Kim <dkim@fintech.io>',
+        'Lisa Johansson <lisa.j@nordic.se>',
+        'Ahmed Hassan <ahmed@cloudops.net>',
+        'Rachel Green <rgreen@marketing.co>',
+        'Tom Bradley <tom.bradley@agency.com>',
+        'Nina Kowalski <nina.k@research.edu>',
+        'Carlos Mendez <cmendez@logistics.com>',
+        'Aisha Mohammed <aisha.m@healthcare.org>',
+        'Kevin O\'Malley <kevin@devtools.io>',
+    ];
+
+    private array $randomSubjects = [
+        'Quick sync on the roadmap',
+        'Thoughts on the new proposal?',
+        'Can you review this by EOD?',
+        'Follow up from yesterday\'s call',
+        'Budget approval needed',
+        'New hire onboarding checklist',
+        'Vendor contract renewal',
+        'Feedback on the presentation',
+        'Schedule change for next week',
+        'FYI: Policy update',
+        'Lunch plans?',
+        'Conference travel arrangements',
+        'Client feedback summary',
+        'Quarterly goals check-in',
+        'Re: Invoice #4821',
+        'Introducing our new team member',
+        'Parking lot discussion items',
+        'Action items from standup',
+        'Request for time off',
+        'Happy birthday!',
+    ];
+
+    private array $randomBodies = [
+        "Hi,\n\nJust wanted to loop back on our earlier conversation. I think we're aligned on the next steps, but let me know if anything has changed on your end.\n\nCheers",
+        "Hey,\n\nAttaching the latest version of the document. I've incorporated all the feedback from the last round of reviews.\n\nPlease take a look when you get a chance.\n\nThanks",
+        "Hi team,\n\nQuick reminder that the deadline for submissions is this Friday. Please make sure your sections are complete and uploaded to the shared drive.\n\nBest",
+        "Hello,\n\nI've been looking into the issue you mentioned and I think I found the root cause. Let's discuss in our next 1:1.\n\nRegards",
+        "Hi,\n\nJust a heads up — I'll be out of office next Monday and Tuesday. I've asked Sarah to cover for me on anything urgent.\n\nThanks for understanding",
+        "Hey,\n\nGreat job on the presentation today! The client seemed really impressed with the demo. Let's keep the momentum going.\n\nCheers",
+        "Hi,\n\nCould you send me the access credentials for the staging environment? I need to run some tests before the release.\n\nThanks",
+        "Hello,\n\nPlease find below the summary from our last meeting:\n\n1. Finalize the design specs\n2. Review the test results\n3. Schedule the deployment window\n\nLet me know if I missed anything.",
+        "Hi,\n\nI noticed a discrepancy in the latest report. The numbers on page 3 don't match what we discussed. Can you double-check?\n\nThanks",
+        "Hey,\n\nAre you free for a quick coffee chat this afternoon? I'd love to pick your brain on something.\n\nNo rush if you're busy!",
+    ];
+
+    public function __construct(string $host, int $port, array $users, bool $ssl = false, int $count = 50)
     {
         $this->host = $host;
         $this->port = $port;
         $this->ssl = $ssl;
         $this->users = $users;
         $this->hasImap = extension_loaded('imap');
+        $this->count = max(10, $count);
     }
 
     private function imapPath(string $mailbox = 'INBOX'): string
     {
-        $flags = $this->ssl ? '/ssl/novalidate-cert' : '/novalidate-cert';
+        $flags = $this->ssl ? '/ssl/novalidate-cert' : '/notls/novalidate-cert';
         $server = "{{$this->host}:{$this->port}{$flags}}";
         if ($mailbox === 'INBOX') {
             return "{$server}INBOX";
@@ -131,6 +189,7 @@ class EmailSeeder
 
         // Seed different types of emails
         $this->seedInbox($imap, $email, $otherUsers);
+        $this->seedBulk($imap, $email, $otherUsers);
         $this->seedSent($imap, $email, $otherUsers);
         $this->seedDrafts($imap, $email);
         $this->seedCustomFolders($imap, $email, $otherUsers);
@@ -171,6 +230,27 @@ class EmailSeeder
         ];
 
         $templates = array_merge($templates, $threadMessages);
+
+        // Bulk random emails to reach target count
+        $remaining = $this->count - count($templates);
+        if ($remaining > 0) {
+            $bag = ['random','random','random','notification','notification','marketing','cc','forward','autoreply','inline_image'];
+            for ($i = 0; $i < $remaining; $i++) {
+                $type = $bag[array_rand($bag)];
+                $daysAgo = mt_rand(0, 180);
+                $date = date('r', strtotime("-{$daysAgo} days -" . mt_rand(0, 86400) . " seconds"));
+                $sender = $this->pickRandomSender();
+                $templates[] = match ($type) {
+                    'notification' => $this->createNotificationEmail($email, $date),
+                    'marketing'    => $this->createMarketingEmail($email, $date),
+                    'cc'           => $this->createCcEmail($email, $sender, $date),
+                    'forward'      => $this->createForwardedEmail($email, $sender, $date),
+                    'autoreply'    => $this->createAutoReplyEmail($email, $sender, $date),
+                    'inline_image' => $this->createInlineImageEmail($email, $sender, $date),
+                    default        => $this->createRandomEmail($email, $sender, $date),
+                };
+            }
+        }
 
         $sent = 0;
         foreach ($templates as $template) {
@@ -378,6 +458,335 @@ class EmailSeeder
         }
 
         echo " {$appended}/" . count($projectEmails) . " emails\n";
+    }
+
+    private function seedBulk($imap, string $email, array $otherUsers): void
+    {
+        // Existing templates already seed ~25 emails; bulk fills the rest
+        $remaining = $this->count - 25;
+        if ($remaining <= 0) {
+            return;
+        }
+
+        echo "  📦 Bulk ({$remaining} random)...";
+
+        // Weighted template pool — ratios roughly mimic a real inbox
+        $templateTypes = [
+            'random'       => 30,
+            'notification' => 20,
+            'marketing'    => 15,
+            'cc'           => 10,
+            'forward'      => 10,
+            'autoreply'    => 5,
+            'inline_image' => 10,
+        ];
+
+        // Build weighted bag
+        $bag = [];
+        foreach ($templateTypes as $type => $weight) {
+            for ($i = 0; $i < $weight; $i++) {
+                $bag[] = $type;
+            }
+        }
+
+        $appended = 0;
+        for ($i = 0; $i < $remaining; $i++) {
+            $type = $bag[array_rand($bag)];
+            $daysAgo = mt_rand(0, 180);
+            $date = date('r', strtotime("-{$daysAgo} days -" . mt_rand(0, 86400) . " seconds"));
+            $sender = $this->pickRandomSender();
+            $flags = ($i % 3 === 0) ? '' : '\\Seen'; // ~1/3 unread
+
+            $message = match ($type) {
+                'notification' => $this->createNotificationEmail($email, $date),
+                'marketing'    => $this->createMarketingEmail($email, $date),
+                'cc'           => $this->createCcEmail($email, $sender, $date),
+                'forward'      => $this->createForwardedEmail($email, $sender, $date),
+                'autoreply'    => $this->createAutoReplyEmail($email, $sender, $date),
+                'inline_image' => $this->createInlineImageEmail($email, $sender, $date),
+                default        => $this->createRandomEmail($email, $sender, $date),
+            };
+
+            if ($this->appendMessage($imap, "INBOX", $message, $flags)) {
+                $appended++;
+            }
+        }
+
+        echo " {$appended}/{$remaining} emails\n";
+    }
+
+    private function pickRandomSender(): string
+    {
+        return $this->randomSenders[array_rand($this->randomSenders)];
+    }
+
+    private function createRandomEmail(string $to, string $from, string $date): string
+    {
+        $subject = $this->randomSubjects[array_rand($this->randomSubjects)];
+        $body = $this->randomBodies[array_rand($this->randomBodies)];
+        $messageId = $this->generateMessageId();
+
+        return <<<EMAIL
+From: $from
+To: $to
+Subject: $subject
+Date: $date
+Message-ID: <$messageId>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+$body
+EMAIL;
+    }
+
+    private function createNotificationEmail(string $to, string $date): string
+    {
+        $messageId = $this->generateMessageId();
+        $notifications = [
+            [
+                'from'    => 'GitHub <notifications@github.com>',
+                'subject' => '[acme/webapp] Pull request #' . mt_rand(100, 999) . ': ' . $this->randomSubjects[array_rand($this->randomSubjects)],
+                'body'    => $this->githubNotificationBody(),
+            ],
+            [
+                'from'    => 'Jira <jira@acme.atlassian.net>',
+                'subject' => '[PROJ-' . mt_rand(1000, 9999) . '] Issue updated: ' . $this->randomSubjects[array_rand($this->randomSubjects)],
+                'body'    => $this->jiraNotificationBody(),
+            ],
+            [
+                'from'    => 'CI/CD Pipeline <builds@ci.example.com>',
+                'subject' => (mt_rand(0, 1) ? '✅' : '❌') . ' Build #' . mt_rand(400, 999) . ' — main',
+                'body'    => $this->ciNotificationBody(),
+            ],
+            [
+                'from'    => 'Sentry <noreply@sentry.io>',
+                'subject' => '⚠️ New issue: TypeError in /api/users (seen ' . mt_rand(2, 200) . 'x)',
+                'body'    => "A new issue was detected in production.\n\nTypeError: Cannot read property 'id' of undefined\n  at /api/users/handler.js:42\n  at processRequest (/lib/server.js:118)\n\nView issue: https://sentry.io/issues/" . mt_rand(100000, 999999),
+            ],
+            [
+                'from'    => 'Slack <no-reply@slack.com>',
+                'subject' => 'New message in #engineering',
+                'body'    => "You have a new message in #engineering:\n\n@here Deploy going out in 10 minutes. Hold merges.\n\nReply in Slack to continue the conversation.",
+            ],
+        ];
+
+        $n = $notifications[array_rand($notifications)];
+
+        return <<<EMAIL
+From: {$n['from']}
+To: $to
+Subject: {$n['subject']}
+Date: $date
+Message-ID: <$messageId>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Mailer: notification-service/2.1
+
+{$n['body']}
+EMAIL;
+    }
+
+    private function githubNotificationBody(): string
+    {
+        $user = explode(' ', $this->randomSenders[array_rand($this->randomSenders)])[0];
+        $actions = ['opened', 'commented on', 'approved', 'requested changes on', 'merged'];
+        $action = $actions[array_rand($actions)];
+        return "{$user} {$action} this pull request.\n\n> Refactored the auth middleware to support token rotation.\n> Added tests for edge cases around expired sessions.\n\n---\nYou are receiving this because you are subscribed to this thread.\nReply to this email directly or view it on GitHub.";
+    }
+
+    private function jiraNotificationBody(): string
+    {
+        $user = explode(' ', $this->randomSenders[array_rand($this->randomSenders)])[0];
+        $statuses = ['To Do', 'In Progress', 'In Review', 'Done'];
+        $from = $statuses[array_rand($statuses)];
+        $to = $statuses[array_rand($statuses)];
+        return "{$user} updated the issue.\n\nStatus changed: {$from} → {$to}\nPriority: Medium\nAssignee: You\n\nComment:\n\"Moving this forward — blocked dependency was resolved yesterday.\"\n\n---\nThis message was sent by Atlassian Jira.";
+    }
+
+    private function ciNotificationBody(): string
+    {
+        $pass = (bool)mt_rand(0, 1);
+        $duration = mt_rand(30, 600);
+        $mins = intdiv($duration, 60);
+        $secs = $duration % 60;
+        $status = $pass ? 'passed' : 'failed';
+        $details = $pass
+            ? "All 247 tests passed.\nCoverage: 84.2%\nArtifacts: 3 uploaded"
+            : "2 tests failed:\n  - test_user_auth_flow (AssertionError)\n  - test_payment_webhook (TimeoutError)\n\n12 tests skipped.";
+        return "Build #{$this->randomInt(400, 999)} {$status} in {$mins}m {$secs}s.\n\nBranch: main\nCommit: " . substr(md5((string)mt_rand()), 0, 8) . "\n\n{$details}";
+    }
+
+    private function createMarketingEmail(string $to, string $date): string
+    {
+        $messageId = $this->generateMessageId();
+        $campaigns = [
+            [
+                'from'    => 'TechDeals Weekly <deals@techdeals.io>',
+                'subject' => '🔥 Flash Sale: 70% off developer tools — Today only!',
+                'html'    => '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;"><div style="background:linear-gradient(135deg,#ff6b35,#f7c948);padding:30px;text-align:center;color:#fff;"><h1 style="margin:0;font-size:28px;">FLASH SALE</h1><p style="font-size:18px;">Up to 70% off premium dev tools</p></div><div style="padding:20px;"><p>Hi there,</p><p>For the next 24 hours, get exclusive discounts on:</p><ul><li><strong>JetBrains All Products Pack</strong> — $89/yr (was $299)</li><li><strong>Figma Professional</strong> — $6/mo (was $15)</li><li><strong>1Password Teams</strong> — $2/mo (was $8)</li></ul><div style="text-align:center;margin:20px 0;"><a href="#" style="background:#ff6b35;color:#fff;padding:12px 30px;text-decoration:none;border-radius:5px;font-weight:bold;">SHOP NOW</a></div><p style="color:#999;font-size:11px;">You received this email because you signed up at techdeals.io.<br><a href="#">Unsubscribe</a> | <a href="#">Update preferences</a></p></div></div>',
+            ],
+            [
+                'from'    => 'CloudHost Pro <marketing@cloudhost.pro>',
+                'subject' => 'Your servers are lonely 😢 Upgrade to Pro and save 50%',
+                'html'    => '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;"><div style="background:#1a1a2e;padding:30px;text-align:center;"><h1 style="color:#e94560;margin:0;">Don\'t Miss Out!</h1><p style="color:#eee;">Your free trial ends in 3 days</p></div><div style="padding:20px;background:#f8f8f8;"><p>Upgrade to <strong>CloudHost Pro</strong> and get:</p><ul><li>Unlimited bandwidth</li><li>24/7 priority support</li><li>Automatic backups</li><li>One-click deployments</li></ul><p style="text-align:center;"><a href="#" style="background:#e94560;color:#fff;padding:10px 25px;text-decoration:none;border-radius:4px;">Upgrade Now — 50% OFF</a></p><p style="color:#999;font-size:11px;text-align:center;">2093 Marketing Blvd, San Jose, CA 95134<br><a href="#">Unsubscribe</a></p></div></div>',
+            ],
+            [
+                'from'    => 'LearnCode Academy <hello@learncode.academy>',
+                'subject' => 'New course alert: Master Rust in 30 days 🦀',
+                'html'    => '<div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:20px;"><h2 style="color:#2d3748;">New Course Available</h2><p>Hi learner,</p><p>We just launched <strong>"Rust from Zero to Production"</strong> — our most requested course ever.</p><p>What you\'ll learn:</p><ol><li>Ownership & borrowing demystified</li><li>Building async web services with Actix</li><li>Error handling patterns that scale</li><li>Publishing your first crate</li></ol><p><a href="#" style="color:#e53e3e;font-weight:bold;">Start learning →</a></p><p style="color:#a0aec0;font-size:12px;">You\'re receiving this because you enrolled in a LearnCode course.<br><a href="#">Unsubscribe</a></p></div>',
+            ],
+        ];
+
+        $c = $campaigns[array_rand($campaigns)];
+
+        return <<<EMAIL
+From: {$c['from']}
+To: $to
+Subject: {$c['subject']}
+Date: $date
+Message-ID: <$messageId>
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+List-Unsubscribe: <mailto:unsub@example.com>
+Precedence: bulk
+
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body>{$c['html']}</body>
+</html>
+EMAIL;
+    }
+
+    private function createCcEmail(string $to, string $from, string $date): string
+    {
+        $messageId = $this->generateMessageId();
+        $cc1 = $this->randomSenders[array_rand($this->randomSenders)];
+        $cc2 = $this->randomSenders[array_rand($this->randomSenders)];
+        $subject = 'FYI: ' . $this->randomSubjects[array_rand($this->randomSubjects)];
+        $body = $this->randomBodies[array_rand($this->randomBodies)] . "\n\n(CC'ing the rest of the team for visibility)";
+
+        return <<<EMAIL
+From: $from
+To: $to
+Cc: $cc1, $cc2
+Subject: $subject
+Date: $date
+Message-ID: <$messageId>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+$body
+EMAIL;
+    }
+
+    private function createForwardedEmail(string $to, string $from, string $date): string
+    {
+        $messageId = $this->generateMessageId();
+        $originalSender = $this->randomSenders[array_rand($this->randomSenders)];
+        $originalSubject = $this->randomSubjects[array_rand($this->randomSubjects)];
+        $originalBody = $this->randomBodies[array_rand($this->randomBodies)];
+        $originalDate = date('r', strtotime($date . ' -' . mt_rand(1, 30) . ' days'));
+        $forwarderName = explode(' <', $from)[0];
+
+        return <<<EMAIL
+From: $from
+To: $to
+Subject: Fwd: $originalSubject
+Date: $date
+Message-ID: <$messageId>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Thought you should see this.
+
+— {$forwarderName}
+
+---------- Forwarded message ----------
+From: $originalSender
+Date: $originalDate
+Subject: $originalSubject
+To: $from
+
+$originalBody
+EMAIL;
+    }
+
+    private function createAutoReplyEmail(string $to, string $originalTo, string $date): string
+    {
+        $messageId = $this->generateMessageId();
+        $name = explode(' <', $originalTo)[0];
+        $returnDate = date('M j', strtotime($date . ' +' . mt_rand(2, 14) . ' days'));
+        $delegates = $this->randomSenders[array_rand($this->randomSenders)];
+
+        return <<<EMAIL
+From: $originalTo
+To: $to
+Subject: Out of Office: Re: {$this->randomSubjects[array_rand($this->randomSubjects)]}
+Date: $date
+Message-ID: <$messageId>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Auto-Submitted: auto-replied
+X-Auto-Response-Suppress: All
+
+Hi,
+
+Thank you for your email. I am currently out of the office and will return on {$returnDate}.
+
+I will have limited access to email during this time. For urgent matters, please contact {$delegates}.
+
+Best regards,
+{$name}
+EMAIL;
+    }
+
+    private function createInlineImageEmail(string $to, string $from, string $date): string
+    {
+        $messageId = $this->generateMessageId();
+        $subject = $this->randomSubjects[array_rand($this->randomSubjects)];
+        $name = explode(' <', $from)[0];
+        $cid = 'img' . mt_rand(1000, 9999) . '@example.test';
+
+        // 1x1 red PNG pixel (68 bytes) as a placeholder inline image
+        $pngData = base64_encode(base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
+        ));
+
+        return <<<EMAIL
+From: $from
+To: $to
+Subject: $subject (with screenshot)
+Date: $date
+Message-ID: <$messageId>
+MIME-Version: 1.0
+Content-Type: multipart/related; boundary="----INLINE_BOUND"
+
+------INLINE_BOUND
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html>
+<html><body>
+<p>Hi,</p>
+<p>Here's the screenshot I mentioned:</p>
+<p><img src="cid:$cid" alt="Screenshot" style="max-width:100%;border:1px solid #ddd;border-radius:4px;" /></p>
+<p>Let me know what you think.</p>
+<p>— {$name}</p>
+</body></html>
+
+------INLINE_BOUND
+Content-Type: image/png; name="screenshot.png"
+Content-Transfer-Encoding: base64
+Content-ID: <$cid>
+Content-Disposition: inline; filename="screenshot.png"
+
+$pngData
+------INLINE_BOUND--
+EMAIL;
+    }
+
+    private function randomInt(int $min, int $max): int
+    {
+        return mt_rand($min, $max);
     }
 
     private function appendMessage($imap, string $mailbox, string $message, string $flags = ''): bool
@@ -912,7 +1321,8 @@ $seeder = new EmailSeeder(
     $config['mailserver'],
     $config['port'],
     $config['users'],
-    $config['ssl']
+    $config['ssl'],
+    $config['count']
 );
 
 $seeder->seed();
