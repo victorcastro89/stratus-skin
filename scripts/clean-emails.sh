@@ -12,7 +12,8 @@ echo "🧹 Roundcube Mail Cleanup"
 echo "=========================="
 echo ""
 
-if ! docker compose -f "$COMPOSE_FILE" ps | grep -q "Up"; then
+PS_OUTPUT=$(docker compose -f "$COMPOSE_FILE" ps 2>/dev/null)
+if ! echo "$PS_OUTPUT" | grep -q "Up"; then
     echo "❌ Docker containers are not running."
     echo "   Start them with: npm run docker:up"
     exit 1

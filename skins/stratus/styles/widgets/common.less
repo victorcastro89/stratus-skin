@@ -308,7 +308,7 @@ html.layout-phone #layout-list > .searchbar {
 
     &::before {
         font-family: 'Icons';
-        font-weight: 900;
+        .mi-icon-style();
         font-size: @mp-icon-size-md;
         content: @mi-caret-down; // arrow_drop_down
         line-height: 1;
@@ -380,7 +380,7 @@ html.layout-phone #layout-list > .searchbar {
 
     &::before {
         font-family: 'Icons';
-        font-weight: 900;
+        .mi-icon-style();
         font-style: normal;
         font-size: @mp-icon-size-sm;
         line-height: 1;
@@ -426,7 +426,7 @@ html.layout-phone #layout-list > .searchbar {
 .mp-smart-bar-default .mp-action-btn.refresh {
     &:before {
         content: @mi-sync; // sync
-        font-weight: 900;
+        .mi-icon-style();
     }
 }
 
@@ -531,7 +531,7 @@ html.layout-phone #layout-list > .searchbar {
         margin: 0 !important;
         line-height: 28px !important;
         font-size: @mp-icon-size-md;
-        font-weight: 900; // angle-left/right are solid-only
+        .mi-icon-style();
     }
 
     // Hide elastic's inner label text
@@ -594,30 +594,16 @@ html.layout-phone #layout-list > .searchbar {
         display: block;
         font-size: @mp-icon-size-md;
         line-height: 1 !important;
-        font-weight: 400; // fa-regular-400 outline icons
-    }
-
-    // "more" (ellipsis) only exists in solid set
-    &.more:before {
-        font-weight: 900;
+        .mi-icon-style();
     }
 
     // sync (refresh) icon — not in elastic's icon map, define explicitly
     &.sync:before {
         content: @mi-sync; // sync
-        font-weight: 900;
     }
 
-    // move — inline SVG (mdi-folder-move); suppress icon-font ::before
-    // !important needed: elastic's .menu a.move:before has higher specificity (0,2,1) vs our (0,2,0)
     &.move:before {
-        content: none !important;
-    }
-    &.move svg {
-        width: 25px;
-        height: 25px;
-        fill: currentColor;
-        flex-shrink: 0;
+        content: @mi-move-icon;
     }
 
     &:hover:not(.disabled):not(.mp-folder-disabled):not([data-mp-folder-disabled="true"]) {

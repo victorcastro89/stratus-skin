@@ -174,15 +174,9 @@
 
 		var deleteBtn = this._deleteBtn;
 		if (deleteBtn) {
-			if (isInTrash) {
-				deleteBtn.setAttribute('data-mp-folder-disabled', 'true');
-				deleteBtn.classList.add('mp-folder-disabled');
-				deleteBtn.setAttribute('aria-disabled', 'true');
-			} else {
-				deleteBtn.removeAttribute('data-mp-folder-disabled');
-				deleteBtn.classList.remove('mp-folder-disabled');
-				deleteBtn.removeAttribute('aria-disabled');
-			}
+			deleteBtn.removeAttribute('data-mp-folder-disabled');
+			deleteBtn.classList.remove('mp-folder-disabled');
+			deleteBtn.removeAttribute('aria-disabled');
 		}
 
 		var archiveBtn = this._archiveBtn;

@@ -99,6 +99,12 @@ class stratus_helper extends rcube_plugin
 
         $this->inject_appearance();
 
+        // Neutralize xframework/xskin icon system — Stratus uses its own
+        // Material Symbols icons via Elastic's 'Icons' font-family.
+        // xframework scopes all icon rules under body.xskin + html.xicons-*,
+        // so removing those classes disables its icon overrides entirely.
+        $this->add_hook('send_page', [$this, 'strip_xframework_icons']);
+
         if ($this->rcmail->task === 'mail') {
             $this->init_mail();
         }
@@ -106,6 +112,30 @@ class stratus_helper extends rcube_plugin
         if ($this->rcmail->task === 'settings') {
             $this->init_settings();
         }
+    }
+
+    /**
+     * Neutralize xframework's icon system so Stratus Material Symbols win.
+     *
+     * xframework applies font-family: RcpIconFont !important and custom
+     * content codepoints on a huge selector list. We:
+     *   1. Strip xicons-* from <html> so variant content rules don't match.
+     *   2. Inject a <style> block that resets font-family back to 'Icons'
+     *      with !important, overriding RcpIconFont. This loads last in the
+     *      cascade, so Stratus's content overrides from _icons.less win.
+     */
+    public function strip_xframework_icons($args)
+    {
+        // Remove xframework's elastic.css — it overrides all icon selectors
+        // with font-family: RcpIconFont !important and custom codepoints.
+        // Path varies: plugins/xskin/../xframework/assets/styles/elastic.css
+        $args['content'] = preg_replace(
+            '#<link[^>]+xframework/assets/styles/elastic\.css[^>]*>#',
+            '',
+            $args['content']
+        );
+
+        return $args;
     }
 
     private function init_mail()
@@ -302,6 +332,7 @@ class stratus_helper extends rcube_plugin
         }
 
         $css .= "}\n";
+        $css .= "body { opacity: 1; }\n";
 
         if ($font['family']) {
             $css .= ":root { --stratus-font-family: {$font['family']}; }\n";

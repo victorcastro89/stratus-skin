@@ -9,9 +9,10 @@
  */
 
 $config = [];
-$config['htmleditor'] = 1;
-$config['default_list_mode'] = '';
+$config['htmleditor'] = 0;
+
 $config['reply_mode'] = 1;
+$config['allow_mobile_html_composing'] = true; 
 // ── Database (SQLite, persisted on host via Docker volume) ─────────────────
 $config['db_dsnw'] = 'sqlite:////var/roundcube/db/sqlite.db?mode=0646';
 
@@ -39,10 +40,11 @@ $config['prettydate'] = true;
 
 // ── Plugins ────────────────────────────────────────────────────────────────
 $config['plugins'] = [
+    'stratus_helper',
     	'xskin',
 	'xframework',
 	'archive',
-	'stratus_helper',
+	
 	'calendar',
     'carddav',
     'undo_send',
@@ -99,7 +101,7 @@ $config['stratus_font_sizes'] = [
     'default' => ['size' => '0.875rem',  'line_height' => '1.5',  'label' => 'Default'],   // 14px — Gmail/Outlook default
     'large'   => ['size' => '1rem',      'line_height' => '1.55', 'label' => 'Large'],     // 16px — accessibility-friendly
 ];
-$config['stratus_color_scheme_default'] = 'emerald';
+$config['stratus_color_scheme_default'] = 'indigo';
 // ── Stratus Color Schemes ───────────────────────────────────────────────
 // Full palette per scheme. Admins can add/remove schemes.
 // Keys must be alphanumeric + hyphens.

@@ -65,7 +65,17 @@
 
 
 #attachment-list li {
+    line-height: 1.2rem;
+
+    &:before {
+        height: 1.2rem;
+        line-height: 1.2rem;
+        font-size: 1.2rem;
+    }
+
     a {
+        line-height: 1.2rem;
+        height: 1.2rem;
         border: 0;
         background: transparent;
         border-radius: @mp-radius-xs;
@@ -93,11 +103,17 @@
         color: var(--stratus-font-secondary);
         padding: 0 @mp-space-sm;
 
+        &:before {
+            line-height: 1.6rem;
+            height: 1.6rem;
+        }
+
         &:hover,
         &:focus-visible {
             color: var(--stratus-font);
         }
     }
+  
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -12,7 +12,8 @@ echo "=========================="
 echo ""
 
 # Check if docker-compose is running
-if ! docker compose -f "$PROJECT_ROOT/docker/docker-compose.yml" ps | grep -q "Up"; then
+PS_OUTPUT=$(docker compose -f "$PROJECT_ROOT/docker/docker-compose.yml" ps 2>/dev/null)
+if ! echo "$PS_OUTPUT" | grep -q "Up"; then
     echo "❌ Docker containers are not running."
     echo "   Start them with: cd docker && docker compose up -d"
     exit 1

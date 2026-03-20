@@ -31,7 +31,7 @@
         color: @color-list-selected !important;
       
     
-    }
+    }   
  
     // Quickview icon (kolab calendar list)
     li > div a.quickview:before {
@@ -230,10 +230,10 @@ html:not(.touch) {
         width: 100%;
         height: 100%;
         font-family: 'Icons';
+        .mi-icon-style();
         font-size: @mp-hover-actions-icon-size;
         line-height: 1;
         margin: 0;
-        font-weight: 400 !important;
     }
 
     &:hover {
@@ -243,31 +243,33 @@ html:not(.touch) {
 
     &.archive:before {
         content: @mi-archive; // archive
-        font-weight: 900;
     }
 
     &.delete:before {
         content: @mi-trash-alt; // delete
-        font-weight: 400;
     }
 
     &.flag:before {
         content: @mi-flag; // flag
-        font-weight: 400; // outline
     }
 
     // When row is flagged, show solid flag
     tr.flagged & .flag:before {
-        font-weight: 900; // solid
+        font-variation-settings: 'wght' @mi-weight, 'FILL' 1, 'GRAD' -25, 'opsz' 24;
         color: @color-list-flagged;
     }
 }
 
-// Host cell for absolute hover actions
+// Host cell for absolute hover actions/
 .mp-hover-action-host {
     position: relative;
     overflow: visible;
     vertical-align: top;
+
+    // Reduce all indicator icons (flag, attachment, etc.)
+    span:before {
+        font-size: @mp-icon-size-xl !important;
+    }
 }
 
 #messagelist td.flags.mp-hover-action-host,
@@ -336,7 +338,7 @@ html.touch {
     &::before {
         content: @mi-envelope; // mail
         font-family: 'Icons';
-        font-weight: 400;
+        .mi-icon-style();
         font-size: @mp-icon-size-xl;
         display: block;
         margin-bottom: @mp-space-md;
@@ -347,7 +349,6 @@ html.touch {
 // SEARCH EMPTY STATE — swap icon to magnifying glass
 #messagelist-content.mp-search-empty .listing-info::before {
     content: @mi-search; // search
-    font-weight: 900;
 }
 
 // SEARCH EMPTY STATE — standalone div (independent of Elastic, no timing conflicts)
@@ -369,7 +370,7 @@ html.touch {
     &::before {
         content: @mi-search; // search
         font-family: 'Icons';
-        font-weight: 900;
+        .mi-icon-style();
         font-size: @mp-icon-size-xl;
         display: block;
         margin-bottom: @mp-space-md;
@@ -400,7 +401,7 @@ html.dark-mode #mp-search-empty-state {
 .menu.toolbar a.button.conv-toggle::before {
     content: @mi-comments; // forum
     font-family: 'Icons';
-    font-weight: 900;
+    .mi-icon-style();
     font-style: normal;
     display: inline-block;
     margin-right: 0.25rem;
@@ -416,13 +417,14 @@ html.dark-mode #mp-search-empty-state {
 // ═══════════════════════════════════════════════════════════════════════════════
 // FOLDER LIST — pill selections, clean hierarchy
 // ═══════════════════════════════════════════════════════════════════════════════
-.listing.folderlist,
-#mailboxlist,
-#directorylist,
+#subscription-table > li.selected > div > label { background-color: transparent !important; }
 
-#subscription-table  >li.selected >div>label {  background-color:transparent !important; }
+// Override Elastic's ul.treelist li.selected { background-color: transparent } —
+// restore selected bg on the li, clear anchor bg so it shows through
+ul.treelist.listing li.selected {
+    background-color: var(--stratus-selected-bg);
+}
 
-// Override Elastic's ul.treelist li.selected > a — clear anchor bg so li.selected bg shows through
 .listing.folderlist li.selected > a,
 #mailboxlist li.selected > a,
 #directorylist li.selected > a {

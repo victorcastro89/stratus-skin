@@ -113,6 +113,26 @@
     applyFontSize(data.size, data.line_height);
   });
 
+
+  // ══════════════════════════════════════════
+  //  Suppress browser's native beforeunload dialog
+  //  Roundcube's confirm_dialog handles unsaved compose warnings;
+  //  the browser's duplicate "Leave site?" prompt is unnecessary.
+  //  All navigation paths (rcmail.command + taskmenu) check for
+  //  unsaved changes before navigating.
+  // ══════════════════════════════════════════
+  (function() {
+    var realHandler = null;
+    Object.defineProperty(window, 'onbeforeunload', {
+      get: function() { return realHandler; },
+      set: function(fn) {
+        if (typeof fn !== 'function') { realHandler = fn; return; }
+        realHandler = function() { fn(); };
+      },
+      configurable: true
+    });
+  })();
+
   rcmail.addEventListener('init', function () {
 
     // ──────────────────────────────────────────
@@ -1018,6 +1038,18 @@
           var rowData = list0.rows && list0.rows[uid];
           var flag = (rowData && rowData.flagged) ? 'unflagged' : 'flagged';
           rcmail.mark_message(flag, uid);
+        } else if (cmd === 'delete') {
+          // Bypass delete_messages/get_selection which may expand UIDs via
+          // the 'getselection' event (e.g. conversation_mode). Pass the
+          // single UID explicitly so only the hovered message is trashed.
+          var trash = rcmail.env.trash_mailbox;
+          if (rcmail.env.flag_for_deletion) {
+            rcmail.mark_message('delete', uid);
+          } else if (!trash || rcmail.env.mailbox === trash) {
+            rcmail.permanently_remove_messages();
+          } else {
+            rcmail.move_messages(trash, null, [uid]);
+          }
         } else {
           rcmail.command(cmd, '', row, evt);
         }
@@ -1026,7 +1058,15 @@
       }
 
       try {
+        var removesMessage = (cmd === 'delete' && !rcmail.env.flag_for_deletion) || cmd === 'archive';
         if (typeof list0.clear_selection === 'function') list0.clear_selection(null, true);
+        if (removesMessage) {
+          // The hovered message was moved/deleted — remove it from the restored selection
+          // so Roundcube doesn't try to load a message that no longer exists in the list.
+          savedSelection = savedSelection.filter(function(id) { return id !== uid; });
+          if (savedLastSelected === uid) savedLastSelected = savedSelection[savedSelection.length - 1] || null;
+          if (savedUid === uid) savedUid = null;
+        }
         list0.selection     = savedSelection;
         list0.last_selected = savedLastSelected;
         if (rcmail.env) rcmail.env.uid = savedUid;

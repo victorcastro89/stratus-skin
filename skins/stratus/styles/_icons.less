@@ -3,7 +3,7 @@
 //
 // Replaces every FontAwesome content: value in Elastic with the Material
 // Icons equivalent. Imported after _fonts.less (which swaps the font files)
-// so the cascade wins without !important on most rules.
+// so the cascade wins without  on most rules.
 //
 // Structure:
 //   Section 1 — @mi-* variable definitions (118 icons)
@@ -121,7 +121,7 @@
 @mi-search-minus:             "\e400";  // zoom_out
 @mi-filter:                   "\ef4f";  // filter_alt
 @mi-cog:                      "\e8b8";  // settings
-@mi-sliders-h:                "\e429";  // tune
+@mi-sliders-h:                "\E429";  // tune
 @mi-wrench:                   "\e869";  // build
 @mi-bars:                     "\e5d2";  // menu
 @mi-ellipsis-h:               "\e5d3";  // more_horiz
@@ -146,7 +146,7 @@
 @mi-sign-in-alt:              "\ea77";  // login
 
 // ─── Communication ───────────────────────────────────────────────────────
-@mi-comment:                  "\e0b9";  // comment
+@mi-comment:                  "\eb9d";  // comment
 @mi-comments:                 "\e0bf";  // forum
 @mi-share:                    "\e154";  // share
 @mi-share-alt:                "\e80d";  // share
@@ -251,6 +251,54 @@
 
  
 // ═══════════════════════════════════════════════════════════════════════════
+// Global icon weight — Material Symbols variable font axes
+// wght 100 = thinnest, 700 = heaviest.  FILL 0 = outlined, 1 = filled.
+// GRAD -25 slightly reduces apparent weight.  opsz 24 = default optical size.
+// ═══════════════════════════════════════════════════════════════════════════
+@mi-weight: 300;
+
+.mi-icon-style() {
+    font-size: 1.5em ;
+    font-weight: @mi-weight;
+    font-variation-settings: 'wght' @mi-weight, 'FILL' 0, 'GRAD' -25, 'opsz' 24 !important;
+}
+
+// ─── Apply thin icon weight globally ────────────────────────────────────
+// Elastic sets font-weight: 900 on icon pseudo-elements in two places:
+//   1. .font-icon-class (via &:extend) — base mixin for all icons
+//   2. .font-icon-solid() — inline mixin on specific selectors (folder, status icons)
+// A single .font-icon-class redefinition covers (1) but not (2), because (2)
+// outputs font-weight: 900 at the same specificity on different selectors.
+// Using !important in .mi-icon-style() guarantees our variable-font axes win
+// regardless of specificity or source order.
+.font-icon-class {
+    .mi-icon-style();
+}
+
+// // ─── RcpIconFont icons (xframework plugin) ──────────────────────────────
+// // xframework injects `font-family: RcpIconFont !important; font-weight: normal !important`
+// // on a large selector list. These bypass .font-icon-class entirely.
+// // Target common parent patterns to apply our variable-font axes.
+// #apps-menu a::before,
+// #apps-menu div.icon::before,
+// #sections-table td.section::before,
+// #settings-menu a::before,
+// #settings-tabs a::before,
+// .listing.iconized li > a::before,
+// .listing.iconized li > i::before,
+// .listing.iconized tr td::before,
+// .listing.iconized.selectable li a.selected::before,
+// #settingstabplugintwofactor_gauthenticator a::before,
+// #twofactor_gauthenticator-form .show-codes::before,
+// .password-toggle-container .password-toggle-button::before,
+// span.xclipboard::before,
+// .xdatepicker .ui-datepicker-header .ui-datepicker-prev::before,
+// .xdatepicker .ui-datepicker-header .ui-datepicker-next::before {
+//     font-variation-settings: 'wght' @mi-weight, 'FILL' 0, 'GRAD' -25, 'opsz' 24 !important;
+// }
+
+
+// ═══════════════════════════════════════════════════════════════════════════
 // SECTION 2: Elastic icon overrides
 // Override every content: @fa-var-* in Elastic with the MI codepoint.
 // Organized by Elastic source file for maintainability.
@@ -259,473 +307,480 @@
 // ─── From: carddav plugin (elastic/carddav.css) ───────────────────────────
 // CardDAV loads after the skin, so we need `body` prefix for higher specificity.
 body .listing.iconized {
-    tr.cd_preferences > td.section:before { font-family: 'Icons' !important; content: @mi-users !important; font-weight: 400 !important; }
-    li.cd_preferences > a:before          { font-family: 'Icons' !important; content: @mi-users !important; font-weight: 400 !important; }
-    li.addressbook > a:before             { font-family: 'Icons' !important; content: @mi-address-book !important; font-weight: 400 !important; }
-    & > li.account.preset > a:before      { font-family: 'Icons' !important; content: @mi-cloud !important; font-weight: 400 !important; }
-    & > li.account:not(.preset) > a:before { font-family: 'Icons' !important; content: @mi-user !important; font-weight: 400 !important; }
+    tr.cd_preferences > td.section:before { font-family: 'Icons' ; .mi-icon-style(); content: @mi-users ;  }
+    li.cd_preferences > a:before          { font-family: 'Icons' ; .mi-icon-style(); content: @mi-users ;  }
+    li.addressbook > a:before             { font-family: 'Icons' ; .mi-icon-style(); content: @mi-address-book ;  }
+    & > li.account.preset > a:before      { font-family: 'Icons' ; .mi-icon-style(); content: @mi-cloud ;  }
+    & > li.account:not(.preset) > a:before { font-family: 'Icons' ; .mi-icon-style(); content: @mi-user ;  }
 }
 
 body .menu a {
-    &.carddav_AccAdd:before    { font-family: 'Icons' !important; content: @mi-user-plus !important; font-weight: 400 !important; }
-    &.carddav_AccRm:before     { font-family: 'Icons' !important; content: @mi-user-times !important; font-weight: 400 !important; }
-    &.carddav_AccRedisc:before { font-family: 'Icons' !important; content: @mi-sync !important; font-weight: 400 !important; }
-    &.carddav_AbSync:before    { font-family: 'Icons' !important; content: @mi-sync !important; font-weight: 400 !important; }
-    &.carddav_AbClrCache:before { font-family: 'Icons' !important; content: @mi-eraser !important; font-weight: 400 !important; }
+    &.carddav_AccAdd:before    { font-family: 'Icons' ; .mi-icon-style(); content: @mi-user-plus ;  }
+    &.carddav_AccRm:before     { font-family: 'Icons' ; .mi-icon-style(); content: @mi-user-times ;  }
+    &.carddav_AccRedisc:before { font-family: 'Icons' ; .mi-icon-style(); content: @mi-sync ;  }
+    &.carddav_AbSync:before    { font-family: 'Icons' ; .mi-icon-style(); content: @mi-sync ;  }
+    &.carddav_AbClrCache:before { font-family: 'Icons' ; .mi-icon-style(); content: @mi-eraser ;  }
 }
 
 // ─── From: elastic/styles/widgets/buttons.less ───────────────────────────
 a.button.icon,
 button.btn {
-  
+
     &.sidebar-menu:before,
     &.toolbar-menu-button:before,
-    &.toolbar-list-button:before     { content: @mi-ellipsis-v; }
-    &.task-menu-button:before        { content: @mi-bars; }
+    &.toolbar-list-button:before     { content: @mi-ellipsis-v; .mi-icon-style(); }
+    &.task-menu-button:before        { content: @mi-bars; .mi-icon-style(); }
     &.back-sidebar-button:before,
     &.back-content-button:before,
-    &.back-list-button:before        { content: @mi-chevron-left; }
-    &.refresh:before                 { content: @mi-sync; }
+    &.back-list-button:before        { content: @mi-chevron-left; .mi-icon-style(); }
+    &.refresh:before                 { content: @mi-sync; .mi-icon-style(); }
     &.generate:before,
     &.yes:before,
     &.submit:before,
     &.continue:before,
-    &.save:before                    { content: @mi-check; }
-    &.create:before                  { content: @mi-plus-square; }
-    &.edit:before                    { content: @mi-pencil-alt; }
-    &.qrcode:before                  { content: @mi-qrcode; }
-    &.search:before                  { content: @mi-search; }
-    &.filter:before                  { content: @mi-filter; }
-    &.import:before                  { content: @mi-upload; }
-    &.export:before                  { content: @mi-download; }
+    &.save:before                    { content: @mi-check; .mi-icon-style(); }
+    &.create:before                  { content: @mi-plus-square; .mi-icon-style(); }
+    &.edit:before                    { content: @mi-pencil-alt; .mi-icon-style(); }
+    &.qrcode:before                  { content: @mi-qrcode; .mi-icon-style(); }
+    &.search:before                  { content: @mi-search; .mi-icon-style(); }
+    &.filter:before                  { content: @mi-filter; .mi-icon-style(); }
+    &.import:before                  { content: @mi-upload; .mi-icon-style(); }
+    &.export:before                  { content: @mi-download; .mi-icon-style(); }
     &.discard:before,
-    &.delete:before                  { content: @mi-trash-alt; font-weight: 400; }
-    &.next:before                    { content: @mi-arrow-right; }
-    &.restore:before                 { content: @mi-undo; }
+    &.delete:before                  { content: @mi-trash-alt; .mi-icon-style(); }
+    &.next:before                    { content: @mi-arrow-right; .mi-icon-style(); }
+    &.restore:before                 { content: @mi-undo; .mi-icon-style(); }
     &.send:before,
-    &.bounce:before                  { content: @mi-paper-plane !important; }
-    &.attach:before                  { content: @mi-paperclip; }
-    &.attach.vcard:before            { content: @mi-user; }
+    &.bounce:before                  { content: @mi-paper-plane; .mi-icon-style(); }
+    &.attach:before                  { content: @mi-paperclip; .mi-icon-style(); }
+    &.attach.vcard:before            { content: @mi-user; .mi-icon-style(); }
     &.no:before,
     &.close:before,
-    &.cancel:before                  { content: @mi-times; }
-    &.back:before                    { content: @mi-chevron-left; }
-    &.remove:before                  { content: @mi-times; }
-    &.unlock:before                  { content: @mi-unlock; }
-    &.help:before                    { content: @mi-life-ring; font-weight: 400; }
-    &.folders:before                 { content: @mi-folder-open; }
-    &.options:before                 { content: @mi-sliders-h; }
+    &.cancel:before                  { content: @mi-times; .mi-icon-style(); }
+    &.back:before                    { content: @mi-chevron-left; .mi-icon-style(); }
+    &.remove:before                  { content: @mi-times; .mi-icon-style(); }
+    &.unlock:before                  { content: @mi-unlock; .mi-icon-style(); }
+    &.help:before                    { content: @mi-life-ring; .mi-icon-style(); }
+    &.folders:before                 { content: @mi-folder-open; .mi-icon-style(); }
+    &.options:before                 { content: @mi-sliders-h; .mi-icon-style(); }
     &.tools:before,
-    &.settings:before                { content: @mi-cog; }
-    &.properties:before              { content: @mi-info-circle; }
-    &.selection:before               { content: @mi-check-square; font-weight: 400; }
-    &.insert.recipient:before        { content: @mi-user-plus; }
-    &.encrypt:before                 { content: @mi-lock; }
-    &.sign:before                    { content: @mi-signature; }
-    &.sso:before                     { content: @mi-sign-in-alt; }
-    &.extwin:before                  { content: @mi-external-link-square-alt; }
-    &.dropdown:before                { content: @mi-caret-down; }
+    &.settings:before                { content: @mi-cog; .mi-icon-style(); }
+    &.properties:before              { content: @mi-info-circle; .mi-icon-style(); }
+    &.selection:before               { content: @mi-check-square; .mi-icon-style(); }
+    &.insert.recipient:before        { content: @mi-user-plus; .mi-icon-style(); }
+    &.encrypt:before                 { content: @mi-lock; .mi-icon-style(); }
+    &.sign:before                    { content: @mi-signature; .mi-icon-style(); }
+    &.sso:before                     { content: @mi-sign-in-alt; .mi-icon-style(); }
+    &.extwin:before                  { content: @mi-external-link-square-alt; .mi-icon-style(); }
+    &.dropdown:before                { content: @mi-caret-down; .mi-icon-style(); }
 }
 
 .floating-action-buttons a.button {
-    &:before         { content: @mi-plus; }
-    &.compose:before { content: @mi-pen; }
+    &:before         { content: @mi-plus; .mi-icon-style(); }
+    &.compose:before { content: @mi-pen; .mi-icon-style(); }
 }
 
-.popover-header a.button:before    { content: @mi-plus; }
-.input-group-append .icon:before   { content: @mi-pen; }
+.popover-header a.button:before    { content: @mi-plus; .mi-icon-style(); }
+.input-group-append .icon:before   { content: @mi-pen; .mi-icon-style(); }
 
 // ─── From: elastic/styles/widgets/menu.less ──────────────────────────────
 .menu a {
-      
-    &.mail:before           { content: @mi-envelope; }
-    &.contacts:before       { content: @mi-users; }
-    &.options:before        { content: @mi-sliders-h; }
+
+    &.mail:before           { content: @mi-envelope; .mi-icon-style(); }
+    &.contacts:before       { content: @mi-users; .mi-icon-style(); }
+    &.options:before        { content: @mi-sliders-h; .mi-icon-style(); }
     &.settings:before,
-    &.actions:before        { content: @mi-cog; }
-    &.theme.light:before    { content: @mi-sun; }
-    &.theme.dark:before     { content: @mi-moon; }
-    &.help:before           { content: @mi-life-ring; }
-    &.logout:before         { content: @mi-power-off; }
-    &.about:before          { content: @mi-question; }
-    &.refresh:before        { content: @mi-sync; }
-    &.compose:before        { content: @mi-edit; }
-    &.calendar:before       { content: @mi-calendar-alt; }
-    &.tasklist:before       { content: @mi-tasks; }
-    &.files:before          { content: @mi-folder; }
-    &.notes:before          { content: @mi-sticky-note; }
-    &.chat:before           { content: @mi-comments; }
-    &.addressbook:before    { content: @mi-user; }
-    &.archive:before        { content: @mi-archive; font-weight: 400; }
-    &.assigngroup:before    { content: @mi-user-plus; }
+    &.actions:before        { content: @mi-cog; .mi-icon-style(); }
+    &.theme.light:before    { content: @mi-sun; .mi-icon-style(); }
+    &.theme.dark:before     { content: @mi-moon; .mi-icon-style(); }
+    &.help:before           { content: @mi-life-ring; .mi-icon-style(); }
+    &.logout:before         { content: @mi-power-off; .mi-icon-style(); }
+    &.about:before          { content: @mi-question; .mi-icon-style(); }
+    &.refresh:before        { content: @mi-sync; .mi-icon-style(); }
+    &.compose:before        { content: @mi-edit; .mi-icon-style(); }
+    &.calendar:before       { content: @mi-calendar-alt; .mi-icon-style(); }
+    &.tasklist:before       { content: @mi-tasks; .mi-icon-style(); }
+    &.files:before          { content: @mi-folder; .mi-icon-style(); }
+    &.notes:before          { content: @mi-sticky-note; .mi-icon-style(); }
+    &.chat:before           { content: @mi-comments; .mi-icon-style(); }
+    &.addressbook:before    { content: @mi-user; .mi-icon-style(); }
+    &.archive:before        { content: @mi-archive; .mi-icon-style(); }
+    &.assigngroup:before    { content: @mi-user-plus; .mi-icon-style(); }
     &.attach:before,
-    &.vcard:before          { content: @mi-paperclip; }
-    &.next:before           { content: @mi-arrow-right; }
+    &.vcard:before          { content: @mi-paperclip; .mi-icon-style(); }
+    &.next:before           { content: @mi-arrow-right; .mi-icon-style(); }
     &.prev:before,
-    &.back:before           { content: @mi-arrow-left; }
-    &.check.selected:before { content: @mi-check; }
-    &.closewin:before       { content: @mi-window-close; }
-    &.collapse:before       { content: @mi-angle-down; }
-    &.copy:before           { content: @mi-copy; }
-    &.create:before         { content: @mi-plus-square; }
-    &.delete:before         { content: @mi-trash-alt; font-weight: 400; }
+    &.back:before           { content: @mi-arrow-left; .mi-icon-style(); }
+    &.check.selected:before { content: @mi-check; .mi-icon-style(); }
+    &.closewin:before       { content: @mi-window-close; .mi-icon-style(); }
+    &.collapse:before       { content: @mi-angle-down; .mi-icon-style(); }
+    &.copy:before           { content: @mi-copy; .mi-icon-style(); }
+    &.create:before         { content: @mi-plus-square; .mi-icon-style(); }
+    &.delete:before         { content: @mi-trash-alt; .mi-icon-style(); }
     &.download:before,
     &.download.eml:before,
     &.download.maildir:before,
-    &.download.mbox:before  { content: @mi-download; }
-    &.dropdown:before       { content: @mi-caret-down; }
+    &.download.mbox:before  { content: @mi-download; .mi-icon-style(); }
+    &.dropdown:before       { content: @mi-caret-down; .mi-icon-style(); }
     &.edit:before,
-    &.rename:before         { content: @mi-pencil-alt; }
+    &.rename:before         { content: @mi-pencil-alt; .mi-icon-style(); }
     &.encrypt:before,
     &.enigma:before,
-    &.encrypt.sign:before   { content: @mi-lock; }
-    &.expand:before         { content: @mi-angle-right; }
-    &.expand.all:before     { content: @mi-angle-double-down; }
-    &.expand.none:before    { content: @mi-angle-double-up; }
+    &.encrypt.sign:before   { content: @mi-lock; .mi-icon-style(); }
+    &.expand:before         { content: @mi-angle-right; .mi-icon-style(); }
+    &.expand.all:before     { content: @mi-angle-double-down; .mi-icon-style(); }
+    &.expand.none:before    { content: @mi-angle-double-up; .mi-icon-style(); }
     &.export:before,
     &.export.all:before,
-    &.export.selection:before { content: @mi-download; }
-    &.expunge:before        { content: @mi-compress-arrows-alt; }
-    &.extwin:before         { content: @mi-external-link-square-alt; }
+    &.export.selection:before { content: @mi-download; .mi-icon-style(); }
+    &.expunge:before        { content: @mi-compress-arrows-alt; .mi-icon-style(); }
+    &.extwin:before         { content: @mi-external-link-square-alt; .mi-icon-style(); }
     &.filter:before,
-    &.filterlink:before     { content: @mi-filter; }
-    &.firstpage:before      { content: @mi-angle-double-left; }
-    &.nextpage:before       { content: @mi-angle-right; }
-    &.prevpage:before       { content: @mi-angle-left; }
-    &.lastpage:before       { content: @mi-angle-double-right; }
+    &.filterlink:before     { content: @mi-filter; .mi-icon-style(); }
+    &.firstpage:before      { content: @mi-angle-double-left; .mi-icon-style(); }
+    &.nextpage:before       { content: @mi-angle-right; .mi-icon-style(); }
+    &.prevpage:before       { content: @mi-angle-left; .mi-icon-style(); }
+    &.lastpage:before       { content: @mi-angle-double-right; .mi-icon-style(); }
     &.flag:before,
-    &.select.flagged:before { content: @mi-flag; font-weight: 400; }
-    &.unflag:before         { content: @mi-flag; font-weight: 400; }
-    &.undo:before           { content: @mi-redo; }
-    &.folders:before        { content: @mi-folder; }
+    &.select.flagged:before { content: @mi-flag; .mi-icon-style(); }
+    &.select:before { content: "\f82f"; .mi-icon-style(); }
+    &.unflag:before         { content: @mi-flag; .mi-icon-style(); }
+    &.undo:before           { content: @mi-redo; .mi-icon-style(); }
+    &.folders:before        { content: @mi-folder; .mi-icon-style(); }
     &.forward:before,
     &.forward.attachment:before,
     &.forward.bounce:before,
-    &.forward.inline:before { content: @mi-share; }
+    &.forward.inline:before { content: @mi-share; .mi-icon-style(); }
     &.import:before,
-    &.upload:before         { content: @mi-upload; }
+    &.upload:before         { content: @mi-upload; .mi-icon-style(); }
     &.insertresponse:before,
-    &.responses:before      { content: @mi-comment; }
-    &.junk:before           { content: @mi-fire-alt; }
-    &.notjunk:before        { content: @mi-inbox; }
-    &.markmessage:before    { content: @mi-tag; }
-    &.more:before           { content: @mi-ellipsis-h; }
-    &.move:before           { content: @mi-move-icon !important; font-weight: 400; }
-    &.print:before          { content: @mi-print; }
-    &.properties:before     { content: @mi-file; }
-    &.purge:before          { content: @mi-eraser; }
-    &.qrcode:before         { content: @mi-qrcode; }
-    &.read:before           { content: @mi-envelope-open; font-weight: 400; }
+    &.responses:before      { content: @mi-comment; .mi-icon-style(); }
+    &.junk:before           { content: @mi-fire-alt; .mi-icon-style(); }
+    &.notjunk:before        { content: @mi-inbox; .mi-icon-style(); }
+    &.markmessage:before    { content: @mi-tag; .mi-icon-style(); }
+    &.more:before           { content: @mi-ellipsis-h; .mi-icon-style(); }
+    &.move:before           { content: @mi-move-icon; .mi-icon-style(); }
+    &.print:before          { content: @mi-print; .mi-icon-style(); }
+    &.properties:before     { content: @mi-file; .mi-icon-style(); }
+    &.purge:before          { content: @mi-eraser; .mi-icon-style(); }
+    &.qrcode:before         { content: @mi-qrcode; .mi-icon-style(); }
+    &.read:before           { content: @mi-envelope-open; .mi-icon-style(); }
     &.unread:before,
     &.expand.unread:before,
-    &.select.unread:before  { content: @mi-envelope; font-weight: 400; }
-    &.recipient:before      { content: @mi-envelope; font-weight: 400; }
-    &.refresh:before        { content: @mi-sync; }
-    &.remove:before         { content: @mi-eraser; }
-    &.removegroup:before    { content: @mi-user-times; }
-    &.reply:before          { content: @mi-reply; }
+    &.select.unread:before  { content: @mi-envelope; .mi-icon-style(); }
+    &.recipient:before      { content: @mi-envelope; .mi-icon-style(); }
+    &.refresh:before        { content: @mi-sync; .mi-icon-style(); }
+    &.remove:before         { content: @mi-eraser; .mi-icon-style(); }
+    &.removegroup:before    { content: @mi-user-times; .mi-icon-style(); }
+    &.reply:before          { content: @mi-reply; .mi-icon-style(); }
     &.reply-all:before,
     &.reply.all:before,
-    &.reply.list:before     { content: @mi-reply-all; }
-    &.rotate:before         { content: @mi-redo-alt; }
-    &.save:before           { content: @mi-save; font-weight: 400; }
-    &.search:before         { content: @mi-search; }
-    &.search.delete:before  { content: @mi-trash-alt; }
-    // &.select:before         { content: @mi-mouse-pointer; }
-    &.select.all:before     { content: @mi-asterisk; }
-    &.select.invert:before  { content: @mi-check-square; }
-    &.select.none:before    { content: @mi-times; font-weight: 400; }
-    &.select.page:before    { content: @mi-bars; font-weight: 400; }
-    &.selection:before      { content: @mi-check-square; font-weight: 400 !important; }
-    &.send:before           { content: @mi-paper-plane !important; }
-    &.showurl:before        { content: @mi-link; }
-    &.signature:before      { content: @mi-signature; }
-    &.source:before         { content: @mi-file-code; }
-    &.spellcheck:before     { content: @mi-spell-check; }
-    &.status:before         { content: @mi-lightbulb; font-weight: 400; }
-    &.submit:before         { content: @mi-check; }
-    &.info:before           { content: @mi-info-circle; }
-    &.threads:before        { content: @mi-comments; }
-    &.zoomin:before         { content: @mi-search-plus; }
-    &.zoomout:before        { content: @mi-search-minus; }
+    &.reply.list:before     { content: @mi-reply-all; .mi-icon-style(); }
+    &.rotate:before         { content: @mi-redo-alt; .mi-icon-style(); }
+    &.save:before           { content: @mi-save; .mi-icon-style(); }
+    &.search:before         { content: @mi-search; .mi-icon-style(); }
+    &.search.delete:before  { content: @mi-trash-alt; .mi-icon-style(); }
+    &.select.all:before     { content: @mi-asterisk; .mi-icon-style(); }
+    &.select.invert:before  { content: @mi-check-square; .mi-icon-style(); }
+    &.select.none:before    { content: @mi-times; .mi-icon-style(); }
+    &.select.page:before    { content: @mi-bars; .mi-icon-style(); }
+    &.selection:before      { content: @mi-check-square; .mi-icon-style(); }
+    &.send:before           { content: @mi-paper-plane; .mi-icon-style(); }
+    &.showurl:before        { content: @mi-link; .mi-icon-style(); }
+    &.signature:before      { content: @mi-signature; .mi-icon-style(); }
+    &.source:before         { content: @mi-file-code; .mi-icon-style(); }
+    &.spellcheck:before     { content: @mi-spell-check; .mi-icon-style(); }
+    &.status:before         { content: @mi-lightbulb; }
+    &.submit:before         { content: @mi-check; .mi-icon-style(); }
+    &.info:before           { content: @mi-info-circle; .mi-icon-style(); }
+    &.threads:before        { content: @mi-comments; .mi-icon-style(); }
+    &.zoomin:before         { content: @mi-search-plus; .mi-icon-style(); }
+    &.zoomout:before        { content: @mi-search-minus; .mi-icon-style(); }
 }
 
-.menu[aria-haspopup]:after { content: @mi-chevron-right; }
+.menu[aria-haspopup]:after { content: @mi-chevron-right; .mi-icon-style(); }
 
 .searchbar {
-    form:before             { content: @mi-search; }
-    a.options:before        { content: @mi-angle-down; }
-    a.reset:before          { content: @mi-times; }
-    a.unread:before         { content: @mi-envelope; font-weight: 400; }
-    &.open a.options:before { content: @mi-angle-up; }
+    form:before             { content: @mi-search; .mi-icon-style(); }
+    a.options:before        { content: @mi-angle-down; .mi-icon-style(); }
+    a.reset:before          { content: @mi-times; .mi-icon-style(); }
+    a.unread:before         { content: @mi-envelope; .mi-icon-style(); }
+    &.open a.options:before { content: @mi-angle-up; .mi-icon-style(); }
 }
 
 // ─── From: elastic/styles/widgets/lists.less ─────────────────────────────
 .listing.iconized li {
-    &.preferences > a:before    { content: @mi-sliders-h; }
-    & > a.cd_preferences:before { content: @mi-users; }
-    &.folders > a:before       { content: @mi-folder; }
-    &.responses > a:before     { content: @mi-comment; }
-    &.identities > a:before    { content: @mi-id-card; }
-    &.password > a:before      { content: @mi-lock; }
-    &.addressbook a:before     { content: @mi-address-book; font-weight: 400; }
-    &.contactgroup a:before    { content: @mi-users; font-weight: 400; }
-    &.contactsearch a:before   { content: @mi-search; }
-    &.filter > a:before        { content: @mi-filter; }
-    &.vacation > a:before      { content: @mi-calendar; font-weight: 400; }
-    &.forward > a:before       { content: @mi-share-square; }
-    &.enigma.keys > a:before   { content: @mi-key; }
+    &.preferences > a:before    { content: @mi-sliders-h; .mi-icon-style() !important; }
+    & > a.cd_preferences:before { content: @mi-users; .mi-icon-style(); }
+    &.folders > a:before       { content: @mi-folder; .mi-icon-style(); }
+    &.responses > a:before     { content: @mi-comment; .mi-icon-style(); }
+    &.identities > a:before    { content: @mi-id-card; .mi-icon-style(); }
+    &.password > a:before      { content: @mi-lock; .mi-icon-style(); }
+    &.addressbook a:before     { content: @mi-address-book; .mi-icon-style(); }
+    &.contactgroup a:before    { content: @mi-users; .mi-icon-style(); }
+    &.contactsearch a:before   { content: @mi-search; .mi-icon-style(); }
+    &.filter > a:before        { content: @mi-filter; .mi-icon-style(); }
+    &.vacation > a:before      { content: @mi-calendar; .mi-icon-style(); }
+    &.forward > a:before       { content: @mi-share-square; .mi-icon-style(); }
+    &.enigma.keys > a:before   { content: @mi-key; .mi-icon-style(); }
     &.info > a:before,
-    &.userinfo > a:before      { content: @mi-info-circle; }
-    a.help:before              { content: @mi-life-ring; }
-    a.about:before             { content: @mi-question-circle; font-weight: 400; }
-    a.license:before           { content: @mi-shield-alt; }
-    & > i:before               { content: @mi-user; }
-    &.group > i:before         { content: @mi-users; }
+    &.userinfo > a:before      { content: @mi-info-circle; .mi-icon-style(); }
+    a.help:before              { content: @mi-life-ring; .mi-icon-style(); }
+    a.about:before             { content: @mi-question-circle; .mi-icon-style(); }
+    a.license:before           { content: @mi-shield-alt; .mi-icon-style(); }
+    & > i:before               { content: @mi-user; .mi-icon-style(); }
+    &.group > i:before         { content: @mi-users; .mi-icon-style(); }
 }
 
 .listing.iconized tr {
-    &.contact.person td.name:before   { content: @mi-user; }
-    &.contact.group td.name:before    { content: @mi-users; }
-    &.general > td.section:before     { content: @mi-desktop; }
-    &.mailbox > td.section:before     { content: @mi-envelope; font-weight: 400; }
-    &.mailview > td.section:before    { content: @mi-inbox; }
-    &.compose > td.section:before     { content: @mi-paper-plane; }
-    &.addressbook > td.section:before { content: @mi-users; }
-    &.folders > td.section:before     { content: @mi-folder; font-weight: 400; }
-    &.server > td.section:before      { content: @mi-server; }
-    &.encryption > td.section:before  { content: @mi-lock; }
-    &.calendar > td.section:before    { content: @mi-calendar; }
-    &.chat > td.section:before        { content: @mi-comments; }
-    &.undo_send > td.section:before   { content: @mi-undo; }
+    &.contact.person td.name:before   { content: @mi-user; .mi-icon-style(); }
+    &.contact.group td.name:before    { content: @mi-users; .mi-icon-style(); }
+    &.general > td.section:before     { content: @mi-desktop; .mi-icon-style(); }
+    &.mailbox > td.section:before     { content: @mi-envelope; .mi-icon-style(); }
+    &.mailview > td.section:before    { content: @mi-inbox; .mi-icon-style(); }
+    &.compose > td.section:before     { content: @mi-paper-plane; .mi-icon-style(); }
+    &.addressbook > td.section:before { content: @mi-users; .mi-icon-style(); }
+    &.folders > td.section:before     { content: @mi-folder; .mi-icon-style(); }
+    &.server > td.section:before      { content: @mi-server; .mi-icon-style(); }
+    &.encryption > td.section:before  { content: @mi-lock; .mi-icon-style(); }
+    &.calendar > td.section:before    { content: @mi-calendar; .mi-icon-style(); }
+    &.chat > td.section:before        { content: @mi-comments; .mi-icon-style(); }
+    &.undo_send > td.section:before   { content: @mi-undo; .mi-icon-style(); }
 }
 
-.listing.iconized.selectable li a.selected:before { content: @mi-check; }
+.listing.iconized.selectable li a.selected:before { content: @mi-check; .mi-icon-style(); }
 
-.listing td.action a.pushgroup:before { content: @mi-chevron-right; }
+.listing td.action a.pushgroup:before { content: @mi-chevron-right; .mi-icon-style(); }
 
 ul.treelist li {
-    div.treetoggle:before          { content: @mi-angle-right; }
-    div.treetoggle.expanded:before { content: @mi-angle-down; }
+    div.treetoggle:before          { content: @mi-angle-right; .mi-icon-style(); }
+    div.treetoggle.expanded:before { content: @mi-angle-down; .mi-icon-style(); }
 }
 
 .folderlist li {
-    a:before                 { content: @mi-folder; font-weight: 400; }
-    &.inbox > a:before       { content: @mi-inbox; font-weight: 400; }
-    &.trash a:before         { content: @mi-trash-alt; font-weight: 400; }
-    &.trash.empty > a:before { content: @mi-trash-alt; font-weight: 400; }
-    &.drafts a:before        { content: @mi-pencil-alt; font-weight: 400; }
-    &.sent a:before          { content: @mi-paper-plane; font-weight: 400; }
-    &.junk a:before          { content: @mi-fire-alt; font-weight: 400; }
-    &.archive > a:before     { content: @mi-archive; font-weight:400; }
-    &.ns-shared > a:before   { content: @mi-share-alt; font-weight: 400; }
-    &.ns-other > a:before    { content: @mi-user-friends; font-weight: 400; }
+    a:before                 { content: @mi-folder; .mi-icon-style(); }
+    &.inbox > a:before       { content: @mi-inbox; .mi-icon-style(); }
+    &.trash a:before         { content: @mi-trash-alt; .mi-icon-style(); }
+    &.trash.empty > a:before { content: @mi-trash-alt; .mi-icon-style(); }
+    &.drafts a:before        { content: @mi-pencil-alt; .mi-icon-style(); }
+    &.sent a:before          { content: @mi-paper-plane; .mi-icon-style(); }
+    &.junk a:before          { content: @mi-fire-alt; .mi-icon-style(); }
+    &.archive > a:before     { content: @mi-archive; .mi-icon-style(); }
+    &.ns-shared > a:before   { content: @mi-share-alt; .mi-icon-style(); }
+    &.ns-other > a:before    { content: @mi-user-friends; .mi-icon-style(); }
 }
 
 .messagelist {
-    tr.thread td.threads div:before          { content: @mi-angle-right; }
-    tr.thread.expanded td.threads div:before { content: @mi-angle-down; }
+    tr.thread td.threads div:before          { content: @mi-angle-right; .mi-icon-style(); }
+    tr.thread.expanded td.threads div:before { content: @mi-angle-down; .mi-icon-style(); }
 
     td.subject span.msgicon.status {
-        &:before                   { content: @mi-circle; color: @mp-primary-a40; }
+        &:before                   { content: @mi-circle;  color: @mp-primary-a40; font-size: 0.3em; font-variation-settings: 'wght' @mi-weight, 'FILL' 1, 'GRAD' -25, 'opsz' 24 !important; }
         &.unread:before            { content: @mi-circle; }
-        &.unreadchildren:before    { content: @mi-circle; font-weight: 400; }
-        &.replied:before           { content: @mi-reply; font-weight: 400; }
-        &.forwarded:before         { content: @mi-share; font-weight: 400; }
-        &.replied.forwarded:before { content: @mi-reply; font-weight: 400; }
-        &.replied.forwarded:after  { content: @mi-share; font-weight: 400; }
-    } 
+        &.unreadchildren:before    { content: @mi-circle; }
+        &.replied:before           { content: @mi-reply;  }
+        &.forwarded:before         { content: @mi-share; }
+        &.replied.forwarded:before { content: @mi-reply; }
+        &.replied.forwarded:after  { content: @mi-share; }
+    }
 
     tr.deleted td.subject span.msgicon.status:before {
-        content: @mi-ban !important;
-        font-weight: 400 !important;
+        content: @mi-ban; 
+
     }
 
     span.attachment span {
-        &:before           { content: @mi-paperclip; }
-        &.report:before    { content: @mi-file-alt; font-weight: 400; }
-        &.encrypted:before { content: @mi-lock; }
-        &.vcard:before     { content: @mi-user; font-weight: 400; }
+        &:before           { content: @mi-paperclip; .mi-icon-style(); }
+        &.report:before    { content: @mi-file-alt; .mi-icon-style(); }
+        &.encrypted:before { content: @mi-lock; .mi-icon-style(); }
+        &.vcard:before     { content: @mi-user; .mi-icon-style(); }
     }
 
-    span.flagged:before                          { content: @mi-flag; }
-    tr.flaggedroot:not(:hover) span.unflagged:before { content: @mi-flag; }
-    tr:hover span.unflagged:before               { content: @mi-flag; font-weight: 400; }
+    span.flagged:before                              { content: @mi-flag; .mi-icon-style(); }
+    tr.flaggedroot:not(:hover) span.unflagged:before  { content: @mi-flag; .mi-icon-style(); }
+    tr:hover span.unflagged:before                    { content: @mi-flag; .mi-icon-style(); }
 }
 
 .contactlist {
-    td.contact:before      { content: @mi-user; }
-    td.contactgroup:before { content: @mi-users; }
+    td.contact:before      { content: @mi-user; .mi-icon-style(); }
+    td.contactgroup:before { content: @mi-users; .mi-icon-style(); }
     li {
-        a.addressbook::before  { content: @mi-address-book; font-weight: 400; }
-        a.contactgroup::before { content: @mi-users; font-weight: 400; }
+        a.addressbook::before  { content: @mi-address-book; .mi-icon-style(); }
+        a.contactgroup::before { content: @mi-users; .mi-icon-style(); }
     }
 }
 
 .attachmentslist li {
-    &:before           { content: @mi-file; font-weight: 400; }
+    &:before           { content: @mi-file; .mi-icon-style(); }
     &.txt:before,
-    &.text:before      { content: @mi-file-alt; font-weight: 400; }
-    &.pdf:before       { content: @mi-file-pdf; font-weight: 400; }
+    &.text:before      { content: @mi-file-alt; .mi-icon-style(); }
+    &.pdf:before       { content: @mi-file-pdf; .mi-icon-style(); }
     &.odt:before,
     &.doc:before,
     &.docx:before,
-    &.msword:before    { content: @mi-file-word; font-weight: 400; }
+    &.msword:before    { content: @mi-file-word; .mi-icon-style(); }
     &.ods:before,
     &.xls:before,
     &.xlsx:before,
-    &.msexcel:before   { content: @mi-file-excel; font-weight: 400; }
+    &.msexcel:before   { content: @mi-file-excel; .mi-icon-style(); }
     &.rar:before,
     &.zip:before,
-    &.gz:before        { content: @mi-file-archive; font-weight: 400; }
+    &.gz:before        { content: @mi-file-archive; .mi-icon-style(); }
     &.image:before,
     &.jpg:before,
     &.jpeg:before,
-    &.png:before       { content: @mi-file-image; font-weight: 400; }
+    &.png:before       { content: @mi-file-image; .mi-icon-style(); }
     &.mp3:before,
-    &.audio:before     { content: @mi-file-audio; font-weight: 400; }
+    &.audio:before     { content: @mi-file-audio; .mi-icon-style(); }
     &.m4p:before,
-    &.video:before     { content: @mi-file-video; font-weight: 400; }
-    &.vcard:before     { content: @mi-address-card; font-weight: 400; }
-    &.html:before      { content: @mi-file-code; font-weight: 400; }
+    &.video:before     { content: @mi-file-video; .mi-icon-style(); }
+    &.vcard:before     { content: @mi-address-card; .mi-icon-style(); }
+    &.html:before      { content: @mi-file-code; .mi-icon-style(); }
     &.odp:before,
     &.otp:before,
     &.ppt:before,
     &.pptx:before,
-    &.ppsx:before      { content: @mi-file-powerpoint; font-weight: 400; }
+    &.ppsx:before      { content: @mi-file-powerpoint; .mi-icon-style(); }
     a.cancelupload:before,
-    a.delete:before    { content: @mi-trash-alt; }
-    &.uploading:before { content: @mi-circle-notch; font-weight: 400; }
+    a.delete:before    { content: @mi-trash-alt; .mi-icon-style(); }
+    &.uploading:before { content: @mi-circle-notch; .mi-icon-style(); }
 }
 
-.keylist li:before            { content: @mi-key; }
-#identities-table td.mail:before  { content: @mi-id-card; }
-#responses-table td.name:before   { content: @mi-comment; }
-#filterslist td.name:before       { content: @mi-filter; }
-#filtersetslist td.name:before    { content: @mi-file-alt; }
+.keylist li:before            { content: @mi-key; .mi-icon-style(); }
+#identities-table td.mail:before  { content: @mi-id-card; .mi-icon-style(); }
+#responses-table td.name:before   { content: @mi-comment; .mi-icon-style(); }
+#filterslist td.name:before       { content: @mi-filter; .mi-icon-style(); }
+#filtersetslist td.name:before    { content: @mi-file-alt; .mi-icon-style(); }
 
 // ─── From: elastic/styles/widgets/forms.less ─────────────────────────────
 .propform td.rowbuttons {
-    a:before          { content: @mi-plus; }
-    a.delete:before   { content: @mi-trash-alt; }
-    a.advanced:before { content: @mi-cog; }
+    a:before          { content: @mi-plus; .mi-icon-style(); }
+    a.delete:before   { content: @mi-trash-alt; .mi-icon-style(); }
+    a.advanced:before { content: @mi-cog; .mi-icon-style(); }
 }
 
 fieldset.advanced > legend {
-    &:after        { content: @mi-angle-up; }
-    &.closed:after { content: @mi-angle-down; }
+    &:after        { content: @mi-angle-up; .mi-icon-style(); }
+    &.closed:after { content: @mi-angle-down; .mi-icon-style(); }
 }
 
 .input-group .icon {
-    &.user:before         { content: @mi-user; }
-    &.pass:before         { content: @mi-lock; }
-    &.host:before         { content: @mi-home; }
-    &.language:before     { content: @mi-globe; }
-    &.cancel:before       { content: @mi-times; }
-    &.delete:before       { content: @mi-trash-alt; }
-    &.edit:before         { content: @mi-pencil-alt; }
-    &.add:before          { content: @mi-plus; }
-    &.add.recipient:before { content: @mi-users; }
-    &.search:before       { content: @mi-search; }
-    &.filter:before       { content: @mi-filter; }
-    &.key:before          { content: @mi-key; }
+    &.user:before         { content: @mi-user; .mi-icon-style(); }
+    &.pass:before         { content: @mi-lock; .mi-icon-style(); }
+    &.host:before         { content: @mi-home; .mi-icon-style(); }
+    &.language:before     { content: @mi-globe; .mi-icon-style(); }
+    &.cancel:before       { content: @mi-times; .mi-icon-style(); }
+    &.delete:before       { content: @mi-trash-alt; .mi-icon-style(); }
+    &.edit:before         { content: @mi-pencil-alt; .mi-icon-style(); }
+    &.add:before          { content: @mi-plus; .mi-icon-style(); }
+    &.add.recipient:before { content: @mi-users; .mi-icon-style(); }
+    &.search:before       { content: @mi-search; .mi-icon-style(); }
+    &.filter:before       { content: @mi-filter; .mi-icon-style(); }
+    &.key:before          { content: @mi-key; .mi-icon-style(); }
 }
 
-.multi-input a.icon.reset:before { content: @mi-trash-alt; }
+.multi-input a.icon.reset:before { content: @mi-trash-alt; .mi-icon-style(); }
 
-.tagedit-list li.tagedit-listelement-old a:before { content: @mi-times; }
+.tagedit-list li.tagedit-listelement-old a:before { content: @mi-times; .mi-icon-style(); }
 
 .googie_list li {
-    .googie_list_revert:before  { content: @mi-undo; }
-    .googie_add_to_dict:before  { content: @mi-plus-square; }
+    .googie_list_revert:before  { content: @mi-undo; .mi-icon-style(); }
+    .googie_add_to_dict:before  { content: @mi-plus-square; .mi-icon-style(); }
 }
 
 // ─── From: elastic/styles/widgets/messages.less ──────────────────────────
 .ui.alert {
-    & > i.icon:before                  { content: @mi-info-circle; }
-    &.loading > i.icon:before          { content: @mi-circle-notch; }
-    &.alert-success > i.icon:before    { content: @mi-check-circle; }
-    &.alert-warning > i.icon:before    { content: @mi-exclamation-triangle; }
-    &.alert-danger > i.icon:before     { content: @mi-exclamation-circle; }
-    &.vcardattachment > i.icon:before  { content: @mi-address-card; }
-    &.enigmaattachment > i.icon:before { content: @mi-key; }
+    & > i.icon:before                  { content: @mi-info-circle; .mi-icon-style(); }
+    &.loading > i.icon:before          { content: @mi-circle-notch; .mi-icon-style(); }
+    &.alert-success > i.icon:before    { content: @mi-check-circle; .mi-icon-style(); }
+    &.alert-warning > i.icon:before    { content: @mi-exclamation-triangle; .mi-icon-style(); }
+    &.alert-danger > i.icon:before     { content: @mi-exclamation-circle; .mi-icon-style(); }
+    &.vcardattachment > i.icon:before  { content: @mi-address-card; .mi-icon-style(); }
+    &.enigmaattachment > i.icon:before { content: @mi-key; .mi-icon-style(); }
     &.signed > i.icon:before,
-    &.encrypted > i.icon:before        { content: @mi-lock; }
-    &.chat > i.icon:before             { content: @mi-comment; }
+    &.encrypted > i.icon:before        { content: @mi-lock; .mi-icon-style(); }
+    &.chat > i.icon:before             { content: @mi-comment; .mi-icon-style(); }
 }
 
 // ─── From: elastic/styles/widgets/common.less ────────────────────────────
-.quota-widget:before { content: @mi-hdd; }
+.quota-widget:before { content: @mi-hdd; .mi-icon-style(); }
 
 .table.table th.checkbox-cell {
-    &.subscription:before { content: @mi-rss-square; }
-    &.alarm:before        { content: @mi-bell; font-weight: 400; }
-    &.read:before         { content: @mi-eye; }
-    &.write:before        { content: @mi-pencil-alt; }
+    &.subscription:before { content: @mi-rss-square; .mi-icon-style(); }
+    &.alarm:before        { content: @mi-bell; .mi-icon-style(); }
+    &.read:before         { content: @mi-eye; .mi-icon-style(); }
+    &.write:before        { content: @mi-pencil-alt; .mi-icon-style(); }
 }
 
 .table-widget table.options-table {
-    td.enabled span:before { content: @mi-check; }
-    td.partial span:before { content: @mi-check; }
+    td.enabled span:before { content: @mi-check; .mi-icon-style(); }
+    td.partial span:before { content: @mi-check; .mi-icon-style(); }
 }
 
 p.image-attachment .attachment-links {
-    a.open:before     { content: @mi-external-link-square-alt; }
-    a.download:before { content: @mi-download; }
+    a.open:before     { content: @mi-external-link-square-alt; .mi-icon-style(); }
+    a.download:before { content: @mi-download; .mi-icon-style(); }
 }
 
 // ─── From: elastic/styles/widgets/editor.less ────────────────────────────
 div.tox {
-    .tox-dialog__header .tox-button:before                       { content: @mi-times; }
-    .tox-dialog__footer .tox-button:before                       { content: @mi-check; }
-    .tox-dialog__footer .tox-button.tox-button--secondary:before { content: @mi-times; }
+    .tox-dialog__header .tox-button:before                       { content: @mi-times; .mi-icon-style(); }
+    .tox-dialog__footer .tox-button:before                       { content: @mi-check; .mi-icon-style(); }
+    .tox-dialog__footer .tox-button.tox-button--secondary:before { content: @mi-times; .mi-icon-style(); }
     .tox-search-dialog .tox-dialog__footer-end {
-        button:nth-of-type(1):before { content: @mi-search !important; }
-        button:before                { content: @mi-pencil-alt !important; }
+        button:nth-of-type(1):before { content: @mi-search; .mi-icon-style(); }
+        button:before                { content: @mi-pencil-alt; .mi-icon-style(); }
     }
 }
 
-.html-editor .editor-toolbar .mce-i-html:before { content: @mi-image; }
+.html-editor .editor-toolbar .mce-i-html:before { content: @mi-image; .mi-icon-style(); }
 
 // ─── From: elastic/styles/widgets/dialogs.less ───────────────────────────
 .pgpkeyimport {
-    label.keyid + a:before { content: @mi-key; }
-    li.uid:before          { content: @mi-user; }
+    label.keyid + a:before { content: @mi-key; .mi-icon-style(); }
+    li.uid:before          { content: @mi-user; .mi-icon-style(); }
 }
 
 // ─── From: elastic/styles/widgets/jqueryui.less ──────────────────────────
-.ui-dialog .ui-dialog-titlebar-close:before                      { content: @mi-times; }
-.ui-dialog .ui-dialog-buttonpane a.btn-link.options:before       { content: @mi-cog; }
+.ui-dialog .ui-dialog-titlebar-close:before                      { content: @mi-times; .mi-icon-style(); }
+.ui-dialog .ui-dialog-buttonpane a.btn-link.options:before       { content: @mi-cog; .mi-icon-style(); }
 
 // jQuery UI datepicker: hardcoded FA hex in Elastic (\f053, \f054)
-.ui-datepicker .ui-datepicker-prev:before { content: @mi-chevron-left; }
-.ui-datepicker .ui-datepicker-next:before { content: @mi-chevron-right; }
+.ui-datepicker .ui-datepicker-prev:before { content: @mi-chevron-left; .mi-icon-style(); }
+.ui-datepicker .ui-datepicker-next:before { content: @mi-chevron-right; .mi-icon-style(); }
 
 // ─── From: elastic/styles/styles.less ────────────────────────────────────
 #message-header > .subject {
-    body.status-flagged &:before { content: @mi-flag; }
-    a.extwin:before              { content: @mi-external-link-square-alt; }
+    body.status-flagged &:before { content: @mi-flag; .mi-icon-style(); }
+    a.extwin:before              { content: @mi-external-link-square-alt; .mi-icon-style(); }
 }
-
+.popover .menu li a[aria-haspopup]:after  { content: @mi-chevron-right; .mi-icon-style(); }
 #message-header .header-links {
-    a.headers-details:before { content: @mi-envelope; }
-    a.headers-summary:before { content: @mi-envelope; font-weight: 400; }
-    a.headers-all:before     { content: @mi-info-circle; }
-    a.html:before            { content: @mi-image; }
-    a.plain:before           { content: @mi-align-justify; }
-    a.zipdownload:before     { content: @mi-download; }
+    a.headers-details:before { content: @mi-envelope; .mi-icon-style(); }
+    a.headers-summary:before { content: @mi-envelope; .mi-icon-style(); }
+    a.headers-all:before     { content: @mi-info-circle; .mi-icon-style(); }
+    a.html:before            { content: @mi-image; .mi-icon-style(); }
+    a.plain:before           { content: @mi-align-justify; .mi-icon-style(); }
+    a.zipdownload:before     { content: @mi-download; .mi-icon-style(); }
 }
 
 .message-part blockquote span.blockquote-link {
-    &:after          { content: @mi-angle-down; }
-    &.collapsed:after { content: @mi-angle-up; }
+    &:after           { content: @mi-angle-down; .mi-icon-style(); }
+    &.collapsed:after { content: @mi-angle-up; .mi-icon-style(); }
 }
 
 .settings-default-icon {
- 
-    tr > td.section::before { content: @mi-cog; }
-    li > a:before           { content: @mi-cog; }
+    tr > td.section::before { content: @mi-cog; .mi-icon-style(); }
+    li > a:before           { content: @mi-cog; .mi-icon-style(); }
 }
 
 // ─── From: elastic/styles/embed.less ─────────────────────────────────────
-.rcmail-inline-message:before { content: @mi-exclamation-triangle; }
+.rcmail-inline-message:before { content: @mi-exclamation-triangle; .mi-icon-style(); }
+
+// ─── From: libkolab/skins/elastic/include/calendar.less ──────────────────
+.fc button.prev:before { content: @mi-angle-left !important; .mi-icon-style() !important; }
+.fc button.next:before { content: @mi-angle-right !important; .mi-icon-style() !important; }
+
+//libkolab calendar quickvie
+.listing li > div  .quickview:before {  content: "\e8f4"!important ; .mi-icon-style() !important;}
+.listing li > div.calendar .calname:before {content: "\ebcc" !important; .mi-icon-style() !important;}

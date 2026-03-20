@@ -42,6 +42,8 @@ class EmailSeeder
 
     private int $count;
 
+    private array $internalSenders = [];
+
     private array $randomSenders = [
         'Sarah Chen <sarah.chen@techcorp.io>',
         'Marcus Williams <marcus.w@startup.dev>',
@@ -104,6 +106,30 @@ class EmailSeeder
         $this->users = $users;
         $this->hasImap = extension_loaded('imap');
         $this->count = max(10, $count);
+
+        // Build internal sender list from the primary user's domain
+        $primaryEmail = $users[0]['email'] ?? '';
+        $domain = strstr($primaryEmail, '@') ? ltrim(strstr($primaryEmail, '@'), '@') : 'example.test';
+        $this->buildInternalSenders($domain);
+    }
+
+    private function buildInternalSenders(string $domain): void
+    {
+        $names = [
+            ['Alex Turner',    'alex.turner'],
+            ['Jamie Rivera',   'jrivera'],
+            ['Morgan Lee',     'morgan.lee'],
+            ['Casey Park',     'cpark'],
+            ['Jordan Smith',   'jsmith'],
+            ['Taylor Brown',   'taylor.b'],
+            ['Sam Nguyen',     'snguyen'],
+            ['Riley Davis',    'riley.davis'],
+            ['Quinn Wilson',   'qwilson'],
+            ['Avery Johnson',  'avery.j'],
+        ];
+        foreach ($names as [$display, $local]) {
+            $this->internalSenders[] = "{$display} <{$local}@{$domain}>";
+        }
     }
 
     private function imapPath(string $mailbox = 'INBOX'): string
@@ -231,7 +257,33 @@ class EmailSeeder
 
         $templates = array_merge($templates, $threadMessages);
 
-        // Bulk random emails to reach target count
+        // Target 50% threads. Fixed threads above = 16 msgs; generate extras to hit count/2.
+        $threadTarget = (int)($this->count / 2);
+        $extraThreadMsgsNeeded = max(0, $threadTarget - count($threadMessages));
+        $threadSubjects = [
+            'API integration plan', 'Performance review follow-up', 'Deployment timeline',
+            'Feature spec feedback', 'Bug triage: auth failures', 'Q2 roadmap alignment',
+            'Onboarding checklist update', 'Infrastructure cost review', 'UX audit findings',
+            'Sprint retrospective items',
+        ];
+        $threadMsgsAdded = 0;
+        $threadIdx = 0;
+        while ($threadMsgsAdded < $extraThreadMsgsNeeded) {
+            $subject = $threadSubjects[$threadIdx % count($threadSubjects)];
+            $threadIdx++;
+            $length = mt_rand(3, 6);
+            $counterparty = $otherUsers[array_rand($otherUsers)]['email'] ?? 'alice@example.test';
+            $daysAgo = mt_rand(0, 90);
+            $start = strtotime("-{$daysAgo} days -" . mt_rand(0, 86400) . " seconds");
+            $msgs = $this->createConversationThread($email, $counterparty, $length, $subject, $start);
+            foreach ($msgs as $msg) {
+                $templates[] = $msg;
+                $threadMsgsAdded++;
+                if ($threadMsgsAdded >= $extraThreadMsgsNeeded) break;
+            }
+        }
+
+        // Fill remaining budget with random singles
         $remaining = $this->count - count($templates);
         if ($remaining > 0) {
             $bag = ['random','random','random','notification','notification','marketing','cc','forward','autoreply','inline_image'];
@@ -468,7 +520,62 @@ class EmailSeeder
             return;
         }
 
-        echo "  📦 Bulk ({$remaining} random)...";
+        // Target: 50% of total count should be thread messages.
+        // seedInbox already seeds 16 thread messages (3+5+8).
+        $threadTarget = (int)($this->count / 2);
+        $extraThreadMsgsNeeded = max(0, $threadTarget - 16);
+
+        $threadSubjects = [
+            'API integration plan',
+            'Performance review follow-up',
+            'Deployment timeline',
+            'Feature spec feedback',
+            'Bug triage: auth failures',
+            'Q2 roadmap alignment',
+            'Onboarding checklist update',
+            'Infrastructure cost review',
+            'UX audit findings',
+            'Sprint retrospective items',
+            'Data migration approach',
+            'Security policy changes',
+            'Client feedback: v2 launch',
+            'Contract renewal discussion',
+            'Team offsite planning',
+        ];
+
+        $appended = 0;
+        $threadMsgsAppended = 0;
+        $threadIdx = 0;
+
+        // Seed extra threads until we hit the thread target
+        $allSenders = array_merge([$email], array_column($otherUsers, 'email'));
+        while ($threadMsgsAppended < $extraThreadMsgsNeeded) {
+            $subject = $threadSubjects[$threadIdx % count($threadSubjects)];
+            $threadIdx++;
+            $length = mt_rand(3, 6);
+            $counterparty = count($allSenders) > 1
+                ? $allSenders[array_rand(array_slice($allSenders, 1))]
+                : ($otherUsers[0]['email'] ?? 'alice@example.test');
+            $daysAgo = mt_rand(0, 90);
+            $startTimestamp = strtotime("-{$daysAgo} days -" . mt_rand(0, 86400) . " seconds");
+
+            $messages = $this->createConversationThread($email, $counterparty, $length, $subject, $startTimestamp);
+            foreach ($messages as $j => $message) {
+                $flags = ($j === count($messages) - 1) ? '' : '\\Seen'; // last message unread
+                if ($this->appendMessage($imap, "INBOX", $message, $flags)) {
+                    $appended++;
+                    $threadMsgsAppended++;
+                }
+                if ($threadMsgsAppended >= $extraThreadMsgsNeeded) {
+                    break;
+                }
+            }
+        }
+
+        // Fill remaining budget with random singles
+        $singlesNeeded = $remaining - $threadMsgsAppended;
+
+        echo "  📦 Bulk ({$threadMsgsAppended} thread msgs + {$singlesNeeded} singles)...";
 
         // Weighted template pool — ratios roughly mimic a real inbox
         $templateTypes = [
@@ -489,8 +596,7 @@ class EmailSeeder
             }
         }
 
-        $appended = 0;
-        for ($i = 0; $i < $remaining; $i++) {
+        for ($i = 0; $i < $singlesNeeded; $i++) {
             $type = $bag[array_rand($bag)];
             $daysAgo = mt_rand(0, 180);
             $date = date('r', strtotime("-{$daysAgo} days -" . mt_rand(0, 86400) . " seconds"));
@@ -517,6 +623,10 @@ class EmailSeeder
 
     private function pickRandomSender(): string
     {
+        // 60% internal (same domain), 40% external
+        if (!empty($this->internalSenders) && (mt_rand(1, 100) <= 60)) {
+            return $this->internalSenders[array_rand($this->internalSenders)];
+        }
         return $this->randomSenders[array_rand($this->randomSenders)];
     }
 

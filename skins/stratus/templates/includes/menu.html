@@ -70,6 +70,17 @@
         });
         link.classList.add('selected');
 
+        // If composing with unsaved changes, show Roundcube's confirm dialog
+        if (rcmail.env.action == 'compose' && !rcmail.env.is_sent
+            && !rcmail.compose_skip_unsavedcheck
+            && rcmail.cmp_hash != rcmail.compose_field_hash()) {
+          rcmail.confirm_dialog(rcmail.get_label('notsentwarning'), 'discard', function () {
+            rcmail.compose_skip_unsavedcheck = true;
+            window.location.href = link.href;
+          });
+          return;
+        }
+
         // Navigate directly — always works regardless of rcmail.busy state
         window.location.href = link.href;
     });

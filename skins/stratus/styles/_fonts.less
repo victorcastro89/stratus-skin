@@ -4,61 +4,30 @@
 @mp-font-path: "../fonts";
 
 
+// Material Symbols Outlined — variable font (wght 100–700, FILL, GRAD, opsz)
+// Single file replaces both material-icons-outlined and the weight-900 entry.
+// Use font-weight or font-variation-settings 'wght' to control thickness.
 @font-face {
   font-family: 'Icons';
   font-style: normal;
-  font-weight: 900;
+  font-weight: 100 900;
   src: url("../fonts/material-symbols-outlined.woff2") format('woff2');
-  unicode-range: U+E000-EFFF;
-}
 
-@font-face {
-  font-family: 'Icons';
-  font-style: normal;
-  font-weight: 400;
-  src: url("../fonts/material-icons-outlined.woff2") format('woff2'),
-       url("../fonts/material-icons-outlined.woff") format('woff');
-  unicode-range: U+E000-EFFF;
 }
 
 
-@font-face {
-  font-family: 'Icons';
-  font-style: normal;
-  font-weight: 900;
-  src: url("@{mp-font-path}/fa-solid-900.woff2") format('woff2');
-  unicode-range: U+F000-FFFF;
-}
 
-@font-face {
-  font-family: 'Icons';
-  font-style: normal;
-  font-weight: 400;
-  src: url("@{mp-font-path}/fa-regular-400.woff2") format('woff2');
-  unicode-range: U+F000-FFFF;
-}
-
-// Alias RcpIconFont → Icons so plugins that hardcode RcpIconFont (with
-// font-weight: normal !important) still render correctly.
-// Both weight 400 and 900 point to the filled/solid sources because the
-// xframework plugin forces font-weight: normal on all icon selectors.
+// Alias RcpIconFont → Material Symbols so plugins that hardcode
+// font-family: RcpIconFont !important (e.g. xframework) still render
+// our Material Symbols glyphs instead of falling back to a missing font.
 @font-face {
   font-family: 'RcpIconFont';
   font-style: normal;
-  font-weight: 400 900;
-  src: url("../fonts/material-icons.woff") format('woff');
-  unicode-range: U+E000-EFFF;
+  font-weight: 100 900;
+  src: url("../fonts/material-symbols-outlined.woff2") format('woff2');;
 }
 
-@font-face {
-  font-family: 'RcpIconFont';
-  font-style: normal;
-  font-weight: 400 900;
-  src: url("@{mp-font-path}/fa-solid-900.woff2") format('woff2');
-  unicode-range: U+F000-FFFF;
-}
-
-@font-face {
+@font-face { 
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;

@@ -2,6 +2,15 @@
 // TinyMCE 5+ and legacy TinyMCE 4.x overrides
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Hide textarea until TinyMCE replaces it (prevents text-mode flash)
+// ═══════════════════════════════════════════════════════════════════════════════
+textarea.mce_editor {
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // TINYMCE EDITOR — proper content margin and styling
 // ═══════════════════════════════════════════════════════════════════════════════
 .tox.tox-tinymce,.div.tox  {

@@ -35,10 +35,10 @@
 	<roundcube:if condition="env:action != 'print' && !config:devel_mode && config:dark_mode_support" />
 		<script>
 		try {
-			if (document.cookie.indexOf('colorMode=dark') > -1
-				|| (document.cookie.indexOf('colorMode=light') === -1 && window.matchMedia('(prefers-color-scheme: dark)').matches)
-			) {
+			if (document.cookie.indexOf('colorMode=dark') > -1) {
 				document.documentElement.className += ' dark-mode';
+			} else if (document.cookie.indexOf('colorMode=') === -1) {
+				document.cookie = 'colorMode=light;path=/';
 			}
 		} catch (e) { }
 		</script>

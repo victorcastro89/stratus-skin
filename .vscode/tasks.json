@@ -5,6 +5,12 @@
       "label": "Watch & Compile Stratus LESS",
       "type": "shell",
       "command": "npm run less:watch",
+      "options": {
+        "shell": {
+          "executable": "/bin/zsh",
+          "args": ["-l", "-c"]
+        }
+      },
       "group": {
         "kind": "build",
         "isDefault": true
@@ -42,6 +48,12 @@
       "label": "Compile Stratus LESS (once)",
       "type": "shell",
       "command": "npm run less:build",
+      "options": {
+        "shell": {
+          "executable": "/bin/zsh",
+          "args": ["-l", "-c"]
+        }
+      },
       "group": "build",
       "presentation": {
         "reveal": "always",

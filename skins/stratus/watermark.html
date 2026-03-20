@@ -40,9 +40,7 @@
      After load, Elastic owns the html.dark-mode class via switch_iframe_color_mode(). -->
 <script>
   try {
-    if (document.cookie.indexOf('colorMode=dark') > -1
-      || (document.cookie.indexOf('colorMode=light') === -1 && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
+    if (document.cookie.indexOf('colorMode=dark') > -1) {
       document.documentElement.className += ' dark-mode';
     }
   } catch (e) {}

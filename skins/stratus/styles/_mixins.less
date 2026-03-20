@@ -129,7 +129,7 @@
 .mp-recipient-input() {
     border-radius: @mp-radius-xs !important;
     border: 1px solid var(--stratus-border) !important;
-    padding: 0.35rem 0.75rem !important;
+    padding: 0 0.75rem 0.35rem 0.75rem !important;
     height: auto !important;
     transition: border-color @mp-transition-base,
                 box-shadow @mp-transition-smooth,
@@ -302,7 +302,7 @@
     background: var(--stratus-primary);
     border: none;
     color: var(--stratus-on-primary);
-    padding: 0.5rem 1.25rem;
+    padding: 0.35rem 0.9rem;
     box-shadow: ~"0 2px 8px rgba(var(@{rgb}), 0.30)";
 
     &:hover {
@@ -334,7 +334,7 @@
     background: transparent;
     border: 1px solid var(--stratus-border);
     color: var(--stratus-font);
-    padding: 0.5rem 1.25rem;
+    padding: 0.35rem 0.9rem;
     font-size: @mp-font-size-base;
 
     &:hover {
@@ -368,12 +368,12 @@
     border: 1px solid fadeout(@color-error, 60%);
     color: @color-error;
     background: transparent;
-    padding: 0.5rem 1.25rem;
+    padding: 0.35rem 0.9rem !important;
 
     &:hover {
         background: fadeout(@color-error, 92%);
         border-color: @color-error;
-        box-shadow: 0 2px 8px fadeout(@color-error, 60%);
+        box-shadow: none;
     }
 
     &:focus-visible {

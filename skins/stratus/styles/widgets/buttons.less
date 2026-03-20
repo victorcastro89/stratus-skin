@@ -1,6 +1,6 @@
 // stratus widgets — Buttons
 // Mixin-based button system: primary, secondary, danger, icon, FAB
-// !important is used here (not in mixins) to beat Elastic/Bootstrap specificity.
+//  is used here (not in mixins) to beat Elastic/Bootstrap specificity.
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LIGHT MODE
@@ -9,21 +9,21 @@
 a.btn-primary,
 button.btn-primary {
     .mp-btn-primary();
-    background: var(--stratus-primary) !important;
-    color: var(--stratus-on-primary) !important;
-    border: none !important;
+    background: var(--stratus-primary) ;
+    color: var(--stratus-on-primary) ;
+    border: none ;
 
     &:hover,
     &:focus {
-        background: var(--stratus-primary) !important;
-        color: var(--stratus-on-primary) !important;
+        background: var(--stratus-primary) ;
+        color: var(--stratus-on-primary) ;
     }
 
     &:not(:disabled):not(.disabled):active,
     &:active {
-        background: var(--stratus-primary) !important;
-        color: var(--stratus-on-primary) !important;
-        box-shadow: ~"0 1px 4px rgba(var(--stratus-primary-rgb), 0.35)" !important;
+        background: var(--stratus-primary) ;
+        color: var(--stratus-on-primary) ;
+        box-shadow: ~"0 1px 4px rgba(var(--stratus-primary-rgb), 0.35)" ;
     }
 }
 
@@ -31,36 +31,48 @@ button.btn-primary {
 a.btn-secondary,
 button.btn-secondary {
     .mp-btn-secondary();
-    background: transparent !important;
-    border: 1px solid var(--stratus-border) !important;
-    color: var(--stratus-font) !important;
+    background: transparent ;
+    border: 1px solid var(--stratus-border) ;
+    color: var(--stratus-font) ;
 
     &:hover,
     &:focus {
-        background: ~"rgba(var(--stratus-primary-rgb), 0.06)" !important;
-        border-color: ~"rgba(var(--stratus-primary-rgb), 0.40)" !important;
-        color: var(--stratus-text-accent) !important;
+        background: ~"rgba(var(--stratus-primary-rgb), 0.06)" ;
+        border-color: ~"rgba(var(--stratus-primary-rgb), 0.40)" ;
+        color: var(--stratus-text-accent) ;
     }
 
     &:not(:disabled):not(.disabled):active,
     &:not(:disabled):not(.disabled).active {
-        background: var(--stratus-primary) !important;
-        border-color: var(--stratus-primary) !important;
-        color: var(--stratus-on-primary) !important;
-        box-shadow: 0 0 0 0.2rem var(--stratus-border) !important;
+        background: var(--stratus-primary) ; 
+        border-color: var(--stratus-primary) ;
+        color: var(--stratus-on-primary) ;
+        box-shadow: 0 0 0 0.2rem var(--stratus-border)
     }
 }
 
 .btn-danger,
-a.btn-danger {
+a.btn-danger,
+button.btn-danger {
     .mp-btn-danger();
-    border-color: fadeout(@color-error, 60%) !important;
-    color: @color-error !important;
+    background: transparent ;
+    border-color: fadeout(@color-error, 60%) ;
+    color: @color-error ;
 
-    &:hover {
-        background: fadeout(@color-error, 92%) !important;
-        border-color: @color-error !important;
-        box-shadow: 0 2px 8px fadeout(@color-error, 60%) !important;
+    &:hover,
+    &:focus {
+        background: fadeout(@color-error, 92%) ;
+        border-color: @color-error ;
+        color: @color-error ;
+        box-shadow: none ;
+    }
+
+    &:not(:disabled):not(.disabled):active,
+    &:active {
+        background: fadeout(@color-error, 92%) ;
+        border-color: @color-error ;
+        color: @color-error ;
+        box-shadow: none ;
     }
 }
 
@@ -118,27 +130,27 @@ html.dark-mode {
     .btn-primary,
     a.btn-primary,
     button.btn-primary {
-        background: var(--stratus-primary-dark) !important;
-        color: var(--stratus-on-primary-dark) !important;
+        background: var(--stratus-primary-dark) ;
+        color: var(--stratus-on-primary-dark) ;
         filter: brightness(0.82);
-        box-shadow: ~"0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.40)" !important;
+        box-shadow: ~"0 2px 8px rgba(var(--stratus-primary-dark-rgb), 0.40)" ;
 
         &:hover,
         &:focus {
-            background: var(--stratus-primary-dark) !important;
-            color: var(--stratus-on-primary-dark) !important;
+            background: var(--stratus-primary-dark) ;
+            color: var(--stratus-on-primary-dark) ;
             filter: brightness(0.72);
-            box-shadow: ~"0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45)" !important;
+            box-shadow: ~"0 4px 16px rgba(var(--stratus-primary-dark-rgb), 0.45)" ;
             transform: translateY(-1px);
         }
 
         &:not(:disabled):not(.disabled):active,
         &:active {
-            background: var(--stratus-primary-dark) !important;
-            color: var(--stratus-on-primary-dark) !important;
+            background: var(--stratus-primary-dark) ;
+            color: var(--stratus-on-primary-dark) ;
             filter: brightness(0.68);
             transform: translateY(0);
-            box-shadow: ~"0 1px 4px rgba(var(--stratus-primary-dark-rgb), 0.35)" !important;
+            box-shadow: ~"0 1px 4px rgba(var(--stratus-primary-dark-rgb), 0.35)" ;
         }
     }
 
@@ -146,23 +158,23 @@ html.dark-mode {
     .btn-secondary,
     a.btn-secondary,
     button.btn-secondary {
-        border-color: var(--stratus-dark-border) !important;
-        color: var(--stratus-dark-font) !important;
-        background: transparent !important;
+        border-color: var(--stratus-dark-border) ;
+        color: var(--stratus-dark-font) ;
+        background: transparent ;
 
         &:hover,
         &:focus {
-            background: ~"rgba(var(--stratus-primary-dark-rgb), 0.10)" !important;
-            border-color: ~"rgba(var(--stratus-primary-dark-rgb), 0.45)" !important;
-            color: var(--stratus-text-accent-dark) !important;
+            background: ~"rgba(var(--stratus-primary-dark-rgb), 0.10)" ;
+            border-color: ~"rgba(var(--stratus-primary-dark-rgb), 0.45)" ;
+            color: var(--stratus-text-accent-dark) ;
         }
 
         &:not(:disabled):not(.disabled):active,
         &:not(:disabled):not(.disabled).active {
-            background: var(--stratus-primary-dark) !important;
-            border-color: var(--stratus-primary-dark) !important;
-            color: var(--stratus-on-primary-dark) !important;
-            box-shadow: ~"0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.35)" !important;
+            background: var(--stratus-primary-dark) ;
+            border-color: var(--stratus-primary-dark) ;
+            color: var(--stratus-on-primary-dark) ;
+            box-shadow: ~"0 0 0 0.2rem rgba(var(--stratus-primary-dark-rgb), 0.35)" ;
         }
     }
 
