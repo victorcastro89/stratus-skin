@@ -312,6 +312,13 @@ html.touch {
     display: flex !important;
 }
 
+// On mobile, hide hover actions entirely (no hover on touch devices)
+html.layout-phone #messagelist .mp-hover-action-host > .mp-hover-actions,
+html.layout-phone #conv-messagelist .mp-hover-action-host > .mp-hover-actions,
+html.layout-phone .mp-hover-actions {
+    display: none !important;
+}
+
 // Hide elastic's default flag-only hover (we replace it with our 3-action strip)
 #messagelist .listing-hover-menu {
     display: none !important;

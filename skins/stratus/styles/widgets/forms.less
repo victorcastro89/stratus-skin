@@ -408,3 +408,19 @@ html.dark-mode {
         }
     }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUTOCOMPLETE SEARCH PANE — contact suggestions in compose
+// On mobile the pane is too narrow and truncates names/emails.
+// ═══════════════════════════════════════════════════════════════════════════════
+html.layout-phone #rcmKSearchpane {
+    max-width: ~"calc(100vw - 20px)" !important;
+    width: auto !important;
+    min-width: 280px !important;
+
+    li {
+        white-space: normal;
+        word-break: break-word;
+        font-size: @mp-font-size-sm;
+    }
+}
