@@ -38,7 +38,17 @@ html.layout-phone #messagelist-header {
     background: var(--stratus-sidebar-gradient);
     position: relative; // For ::before accent. NOT on #taskmenu — it collapses to height:0 (floated children).
     overflow: visible; // Allow ::after tooltips on taskmenu items to escape
-    
+
+    // Tablet: widen from Elastic's 42px to meet touch-target guidelines
+    @media screen and (min-width: (@screen-width-xs + 1px)) and (max-width: @screen-width-medium) {
+        width: 60px !important;
+    }
+
+    // Override Elastic's short-viewport rule that resets width to 42px
+    @media screen and (max-height: 750px) and (min-width: 769px) {
+        width: 65px !important;
+    }
+      
     // Subtle top accent line
     &::before {
         content: '';
@@ -60,8 +70,13 @@ html.layout-phone #messagelist-header {
         // border-bottom: 1px solid var(--stratus-sidebar-divider);
 
         img {
+            max-width: 100% !important;
             filter: brightness(0) invert(1);
             opacity: 0.9;
+
+            @media screen and (max-width: @screen-width-xs) {
+                max-width: 100px !important;
+            }
         }
     }
 
@@ -82,6 +97,7 @@ html.layout-phone #messagelist-header {
             border-top: 1px solid var(--stratus-sidebar-divider);
         }
     }
+
     span.action-buttons {
         display: block;
         padding-bottom: 12px;
@@ -120,9 +136,17 @@ html.layout-phone #messagelist-header {
     // .special-buttons { position:absolute; bottom:0 } anchor to a 0-height box,
     // causing about/logout to appear at the top overlapping the compose button.
 
+    // Override Elastic's short-viewport 42px width on special-buttons
+    @media screen and (max-height: 750px) and (min-width: 769px) {
+        .special-buttons {
+            width: 100% !important;
+        }
+    }
+
     // All menu items — pill shape with smooth transitions
     a {
-                width: auto;
+           width: auto !important;
+            height: auto !important;
                        margin: 2px 6px;
         padding: 8px 4px;
         border-radius: @mp-radius-pill;
@@ -232,7 +256,7 @@ html.layout-phone #messagelist-header {
             margin-top: auto; // Push to bottom in flex layout
             padding: 8px 0;
             position: relative;
-
+            width: 100% !important;
             // Group divider — subtle gradient line between nav and utilities
             &::before {
                 content: '';
