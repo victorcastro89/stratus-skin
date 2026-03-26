@@ -138,11 +138,7 @@
 		}
 
 		// ── Action button wiring ────────────────────────────────────
-		if (deleteBtn) {
-			deleteBtn.addEventListener('click', function() {
-				schedulePostAction();
-			});
-		}
+
 
 		if (exportBtn) {
 			exportBtn.addEventListener('click', function(e) {
@@ -298,16 +294,35 @@
 		});
 		rcmail.addEventListener('responseaftergroup-addmembers', function() {
 			fetchGroupBadges();
+			rcmail.list_contacts();
 			reloadContactFrame();
 		});
+		rcmail.addEventListener('responseafterdelete', function() {
+			var listEmpty = rcmail.contact_list && rcmail.contact_list.rowcount === 0;
+			if (listEmpty && rcmail.env.group) {
+				rcmail.remove_group_item({ source: rcmail.env.source, id: rcmail.env.group });
+			} else {
+				rcmail.list_contacts();
+			}
+		});
 		rcmail.addEventListener('responseaftergroup-delmembers', function() {
-			fetchGroupBadges();
-			reloadContactFrame();
 			// Deferred cleanup for group-remove (selection must survive until response)
 			exitMultiSelect();
 			bar.classList.remove('mp-has-selection');
 			if (chip) chip.textContent = '';
 			onSelectionChange();
+
+			// If the contact list is now empty while viewing a group, CardDAV will
+			// auto-delete the group in its shutdown (after the response). Remove it
+			// from the sidebar immediately via remove_group_item — same path RC takes
+			// after an explicit group-delete — so the UI stays consistent.
+			var listEmpty = rcmail.contact_list && rcmail.contact_list.rowcount === 0;
+			if (listEmpty && rcmail.env.group) {
+				rcmail.remove_group_item({ source: rcmail.env.source, id: rcmail.env.group });
+			} else {
+				fetchGroupBadges();
+				reloadContactFrame();
+			}
 		});
 
 		// ── Cross-frame sync ───────────────────────────────────────
@@ -338,6 +353,9 @@
 					});
 					iwin.rcmail.addEventListener('responseaftergroup-delmembers', function() {
 						fetchGroupBadges();
+					});
+					iwin.rcmail.addEventListener('responseaftersave', function() {
+						rcmail.list_contacts();
 					});
 				} catch(e) {}
 			});
