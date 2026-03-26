@@ -46,6 +46,7 @@ $labels['font_size_large']   = 'Large';
 // Smart bar aria labels
 $labels['listcontrols']      = 'List controls';
 $labels['messageactions']    = 'Message actions';
+$labels['contactactions']    = 'Contact actions';
 $labels['sortoptions']       = 'Sort options';
 $labels['selected_count']    = '$count selected';
 $labels['showunread']        = 'Show unread messages';

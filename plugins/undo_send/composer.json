@@ -4,7 +4,7 @@
     "description": "Undo-send for Roundcube. Delays message delivery with a countdown toast and Undo link. Works with elastic, larry, and stratus skins.",
     "homepage": "https://github.com/victorcastro89/stratus-skin",
     "license": "GPL-3.0-or-later",
-    "version": "1.0.4",
+    "version": "1.0.6",
     "authors": [
         {
             "name": "Victor Faria"

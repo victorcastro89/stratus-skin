@@ -150,6 +150,38 @@ html.layout-phone #layout-list > .searchbar {
     order: 2;
 }
 
+// Addressbook: push contact scroller after the contact navbar
+.task-addressbook #layout-list > .scroller {
+    order: 2;
+}
+
+// Addressbook: hide elastic's header select button — replaced by smart bar checkbox
+.task-addressbook #layout-list > .header .button.selection {
+    display: none !important;
+}
+
+// Addressbook toolbar: hide export on desktop (moved to smart bar)
+@media screen and (min-width: (@screen-width-xs + 1px)) {
+    .task-addressbook .dropbutton:has(.export) {
+        display: none !important;
+    }
+}
+
+// Contact group badges in contact list
+.contact-group-badge {
+    display: inline-block;
+    font-size: 0.7em;
+    line-height: 1;
+    padding: 2px 6px;
+    margin-left: 6px;
+    border-radius: 10px;
+    background: fade(@color-main, 12%);
+    color: @color-main;
+    vertical-align: middle;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
 // Smart bar layout
 .mp-smart-bar {
     display: flex;
@@ -604,6 +636,22 @@ html.layout-phone #layout-list > .searchbar {
 
     &.move:before {
         content: @mi-move-icon;
+    }
+
+    // Contact navbar action icons
+    &.export:before {
+        content: @mi-download;
+        .mi-icon-style();
+    }
+
+    &.assigngroup:before {
+        content: @mi-user-plus;
+        .mi-icon-style();
+    }
+
+    &.removegroup:before {
+        content: @mi-user-times;
+        .mi-icon-style();
     }
 
     &:hover:not(.disabled):not(.mp-folder-disabled):not([data-mp-folder-disabled="true"]) {

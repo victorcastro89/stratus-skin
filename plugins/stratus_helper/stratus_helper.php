@@ -109,6 +109,10 @@ class stratus_helper extends rcube_plugin
             $this->init_mail();
         }
 
+        if ($this->rcmail->task === 'addressbook') {
+            $this->init_addressbook();
+        }
+
         if ($this->rcmail->task === 'settings') {
             $this->init_settings();
         }
@@ -176,6 +180,139 @@ class stratus_helper extends rcube_plugin
 
         // Outlook-style reply divider
         $this->add_hook('message_compose_body', [$this, 'outlook_reply_divider']);
+    }
+
+    /**
+     * @var array|null Group info saved before member removal, used to
+     *                 recreate the group if the CardDAV plugin auto-deletes it.
+     */
+    private $pending_group_restore;
+
+    private function init_addressbook()
+    {
+        $this->include_script('../../skins/stratus/js/contact-navbar.js');
+
+        // AJAX endpoint: return group memberships for visible contacts
+        $this->register_action('plugin.contact_groups_map', [$this, 'ajax_contact_groups_map']);
+
+        // Preserve empty groups: CardDAV's sync handler auto-deletes
+        // CATEGORIES-type groups when all members are removed. We save
+        // the group name before removal and recreate it after the AJAX
+        // response is sent via shutdown function.
+        $this->add_hook('group_delmembers', [$this, 'before_group_delmembers']);
+    }
+
+    /**
+     * AJAX handler: returns a map of contact_id => [group names]
+     * for the current address book source.
+     */
+    public function ajax_contact_groups_map()
+    {
+        $source = rcube_utils::get_input_string('_source', rcube_utils::INPUT_GPC);
+        $ids    = rcube_utils::get_input_string('_ids', rcube_utils::INPUT_GPC);
+
+        $result = [];
+
+        if ($source !== null && $ids) {
+            $contacts = $this->rcmail->get_address_book($source);
+            if ($contacts && method_exists($contacts, 'get_record_groups')) {
+                foreach (explode(',', $ids) as $cid) {
+                    $cid = trim($cid);
+                    if ($cid === '') continue;
+                    $groups = $contacts->get_record_groups($cid);
+                    if (!empty($groups)) {
+                        $result[$cid] = array_values($groups);
+                    }
+                }
+            }
+        }
+
+        $this->rcmail->output->command('plugin.contact_groups_map_response', ['map' => $result]);
+        $this->rcmail->output->send();
+    }
+
+    /**
+     * Save group info before members are removed so we can restore it
+     * if the CardDAV sync deletes the now-empty group.
+     */
+    public function before_group_delmembers($args)
+    {
+        $source   = $args['source'] ?? '';
+        $group_id = $args['group_id'] ?? '';
+
+        rcube::write_log('stratus', "before_group_delmembers: source=$source, group_id=$group_id, ids=" . json_encode($args['ids'] ?? []));
+
+        if (!$group_id) {
+            rcube::write_log('stratus', "before_group_delmembers: no group_id, skipping");
+            return $args;
+        }
+
+        $contacts = $this->rcmail->get_address_book($source);
+        if (!$contacts) {
+            rcube::write_log('stratus', "before_group_delmembers: no contacts source for '$source'");
+            return $args;
+        }
+
+        $group = $contacts->get_group($group_id);
+        rcube::write_log('stratus', "before_group_delmembers: get_group result=" . json_encode($group));
+
+        if ($group && !empty($group['name'])) {
+            $this->pending_group_restore = [
+                'source'   => $source,
+                'group_id' => $group_id,
+                'name'     => $group['name'],
+            ];
+            rcube::write_log('stratus', "before_group_delmembers: saved pending restore for group '{$group['name']}'");
+
+            // Register shutdown function — runs after the AJAX response is sent
+            // and after CardDAV's resync/finalizeSync has deleted the group.
+            $self = $this;
+            register_shutdown_function(function() use ($self) {
+                $self->restore_empty_group_shutdown();
+            });
+        }
+
+        return $args;
+    }
+
+    /**
+     * After the response is built (sync has completed), check whether
+     * the group still exists. If not, recreate it as an empty group.
+     */
+    /**
+     * Shutdown function — runs after response is sent and CardDAV sync
+     * has completed. Checks if the group was deleted and recreates it.
+     */
+    public function restore_empty_group_shutdown()
+    {
+        rcube::write_log('stratus', "restore_empty_group_shutdown: called, pending=" . json_encode($this->pending_group_restore));
+
+        if (empty($this->pending_group_restore)) {
+            return;
+        }
+
+        $info = $this->pending_group_restore;
+        $this->pending_group_restore = null;
+
+        $contacts = $this->rcmail->get_address_book($info['source']);
+        if (!$contacts) {
+            rcube::write_log('stratus', "restore_empty_group_shutdown: no contacts source for '{$info['source']}'");
+            return;
+        }
+
+        // Check if the group still exists
+        $group = $contacts->get_group($info['group_id']);
+        rcube::write_log('stratus', "restore_empty_group_shutdown: get_group({$info['group_id']}) = " . json_encode($group));
+
+        if ($group) {
+            rcube::write_log('stratus', "restore_empty_group_shutdown: group still exists, nothing to do");
+            return;
+        }
+
+        // Group was deleted by sync — recreate it
+        rcube::write_log('stratus', "restore_empty_group_shutdown: group deleted, recreating '{$info['name']}'");
+        $result = $contacts->create_group($info['name']);
+        rcube::write_log('stratus', "restore_empty_group_shutdown: create_group result=" . json_encode($result));
     }
 
     private function init_settings()
