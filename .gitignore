@@ -54,3 +54,8 @@ claude\ init
 
 # ── PHPUnit cache ──────────────────────────────────────────────────────
 .phpunit.result.cache
+
+skills-lock.json
+package_copy.json
+.agents
+.claude
