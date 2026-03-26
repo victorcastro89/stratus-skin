@@ -1,6 +1,6 @@
 {
     "name": "stratus-skin",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "Stratus — A modern Roundcube skin extending elastic",
     "private": true,
     "scripts": {
@@ -20,7 +20,7 @@
         "start": "./scripts/setup.sh && cd docker && docker compose up -d --build",
         "stop": "cd docker && docker compose down",
         "mail:seed": "./scripts/seed-emails.sh",
-        "mail:clean":  "./scripts/clean-emails.sh",
+        "mail:clean": "./scripts/clean-emails.sh",
         "mail:seedlocal": "SEED_COUNT=200  IMAP_USER=alice@example.test IMAP_PASS=password123 ./scripts/seed-emails.sh",
         "less:build": "lessc --include-path=roundcubemail/skins --clean-css=\"--s1 --advanced\" skins/stratus/styles/styles.less skins/stratus/styles/styles.min.css",
         "less:watch": "chokidar \"skins/stratus/styles/**/*.less\" -c \"npm run less:build\"",
